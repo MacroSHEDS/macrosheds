@@ -1,18 +1,20 @@
 # example use:
-#   chloride_data <- load_entire_product(
+#   chloride_data <- load_product(
 #       macrosheds_root = '/path/to/macrosheds_dataset_v0.3',
 #       prodname = 'stream_chemistry',
 #       sort_result = TRUE,
 #       filter_vars = 'Cl')
 
-load_entire_product <- function(macrosheds_root,
-                                prodname,
-                                sort_result = FALSE,
-                                filter_vars){
+load_product <- function(macrosheds_root,
+                         prodname,
+                         sort_result = FALSE,
+                         filter_vars){
 
-    require(tidyverse)
-    require(feather)
-    require(errors)
+    #These are the packages required by this function, but instead of
+    #using library() or require() to load them, we'll use the DESCRIPTION file
+    #require(tidyverse)
+    #require(feather)
+    #require(errors)
 
     #WARNING: this could easily eat up 20 GB RAM for a product like discharge.
     #As the dataset grows, that number will increase. This warning only applies
