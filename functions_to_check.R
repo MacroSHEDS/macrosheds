@@ -1,0 +1,12 @@
+#these function could be checked
+derive_stream_flux
+derive_precip_pchem_pflux
+pull_usgs_discharge
+scale_flux_by_area
+insert_gap_border_NA
+get_nrcs_soils
+extract_ws_mean
+generate_watershed_summaries
+generate_watershed_raw_spatial_dataset
+compute_yearly_summary
+compute_yearly_summary_ws
