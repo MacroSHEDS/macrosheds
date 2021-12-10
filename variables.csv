@@ -1,0 +1,448 @@
+variable_code,variable_name,unit,method,variable_type,variable_subtype,R_display,valence,flux_convertible,molecule,notes,val_min,val_max
+Al_ICP,Aluminum ICP,mg/L,UNKNOWN,chem_discrete,Cations,expression(Al^'+3'),3,1,Al,,0,10
+OMAl,Aluminum OM,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),3,1,Al,,0,10
+TMAl,Aluminum TM,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),3,1,Al,,0,10
+Al,Aluminum,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),3,1,Al,,0,10
+NH4,Ammonium,mg/L,UNKNOWN,chem_discrete,Cations,expression(NH^'+4'),1,1,,,0,100
+Ca,Calcium,mg/L,flame atomic absorption spectroscopy,chem_discrete,Cations,expression(Ca^'+2'),2,1,,,0,1000
+Cl,Chloride,mg/L,ion chromatography,chem_discrete,Anions,expression(Cl^'-'),1,1,,,0,10000
+F,Fluorine,mg/L,UNKNOWN,chem_discrete,Anions,expression(F^'-'),1,1,,,0,100
+Fe,Iron,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),2.5,1,,,0,100
+Mg,Magnesium,mg/L,flame atomic absorption spectroscopy,chem_discrete,Cations,expression(Mg^'+2'),2,1,,,0,10000
+Mn,Manganese,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),3,1,,,0,100
+NO3,Nitrate,mg/L,UNKNOWN,chem_discrete,Anions,expression(NO[3]^'-'),1,1,,,0,100
+PO4,Phosphate,mg/L,UNKNOWN,chem_discrete,Anions,expression(PO[4]^'-3'),3,1,,,0,100
+K,Potassium,mg/L,flame atomic absorption spectroscopy,chem_discrete,Cations,expression(K^'+'),1,1,,,0,1000
+Na,Sodium,mg/L,flame atomic absorption spectroscopy,chem_discrete,Cations,expression(Na^'+'),1,1,,,0,10000
+SO4,Sulfate,mg/L,UNKNOWN,chem_discrete,Anions,expression(SO[4]^'-2'),2,1,,,0,10000
+anionCharge,TOTAL Anion Charge,ueq/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,,
+cationCharge,TOTAL Cation Charge,ueq/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,,
+pH,pH,unitless,glass electrode,chem_mix,Other,expression(UNKNOWN),,0,,,0,14
+pHmetrohm,pH Metrohm,unitless,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,0,
+DOC,Dissolved Organic Carbon,mg/L,combustion,chem_mix,Other,expression(UNKNOWN),1,1,C,,0,1000
+TDN,Total Dissolved Nitrogen,mg/L,persulfate digestion - calorimetric analysis,chem_mix,Other,expression(UNKNOWN),1,1,N,,0,3000
+DON,Dissolved Organic Nitrogen,mg/L,derived,chem_mix,Other,expression(UNKNOWN),1,1,N,,0,1000
+DIC,Dissolved Inorganic Carbon,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,C,,0,100000
+DIN,Dissolved Inorganic Nitrogen,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,N,,,2000
+SiO2,Silica,mg/L,molybdenum blue,chem_discrete,Other,expression(SiO[2]),1,1,,,0,1000
+SiO2_Si,Silica-Si,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),1,1,Si,,0,1000
+SiO3,Silicate,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),1,1,Si,,0,1000
+SiO3_Si,Silicate-Si,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),1,1,Si,,0,1000
+ANC960,Acid Neutralizing Capacity 960,ueq/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,standardize this to ANC (hbef?),,
+ANCMet,Acid Neutralizing Capacity Met,ueq/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,standardize this to ANC (hbef?),,
+spCond,Specific Conductivity,uS/cm,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,0,20000
+theoryCond,Theoretical Conductivity,uS/cm,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,0,
+temp,Water Temperature,degrees C,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,-100,100
+ionBalance,Ion Balance,ueq/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,,
+CUSTOMprecipitation,Basin Precipitation (determined by source),mm,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,0,
+precipitation,Precipitation at gauge,mm,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,0,
+discharge,Discharge,L/s,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,0,250000000
+alk,Alkalinity,mg/L,electrometric titration to pH 4.5,chem_mix,Other,expression(UNKNOWN),,1,,,0,100000
+suspSed,Suspended Sediment,mg/L,gravimetric,phys,Other,expression(UNKNOWN),,1,,,0,100000
+NH4_N,Ammonium-N,mg/L,phenate method,chem_discrete,Cations,expression(UNKNOWN),1,1,N,,0,100
+NH3_N,Ammonia-N,mg/L,phenate method,chem_discrete,Cations,expression(UNKNOWN),3,1,N,,0,100
+NH4_NH3_N,Ammonia-N and Ammonium-N,mg/L,UNKNOWN,chem_mix,Cations,expression(UNKNOWN),,1,N,,0,100
+NO3_N,Nitrate-N,mg/L,cadmium reduction,chem_discrete,Anions,expression(UNKNOWN),1,1,N,,0,100
+PO4_P,Phosphate-P,mg/L,ascorbic acid,chem_discrete,Anions,expression(UNKNOWN),3,1,P,,0,100
+P,Phosphorus,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,P,,0,100
+SO4_S,Sulfate-S,mg/L,ion chromatography,chem_discrete,Anions,expression(UNKNOWN),2,1,S,,0,10000
+TDP,Total Dissolved Phosphorus,mg/L,persulfate digestion - ascorbic acid finish,chem_mix,Other,expression(UNKNOWN),1,1,P,,0,100
+TKN,Total Kjeldahl Nitrogen,mg/L,Kjeldahl digestion - nessler finish,chem_mix,Other,expression(UNKNOWN),1,1,N,,0,2000
+UTKN,Unfilt. Total Kjeldahl Nitrogen,mg/L,Kjeldahl digestion - nessler finish,chem_mix,Other,expression(UNKNOWN),1,1,N,,0,2000
+UTN,Unfiltered Total Nitrogen,mg/L,persulfate digestion - calorimetric analysis,chem_mix,Other,expression(UNKNOWN),1,1,N,,0,5000
+UTP,Unfiltered Total Phosphorus,mg/L,persulfate digestion - ascorbic acid finish,chem_mix,Other,expression(UNKNOWN),1,1,P,,0,10000
+ANC,Acid Neutralizing Capacity,eq/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,,
+Br,Bromide,mg/L,UNKNOWN,chem_discrete,Anions,expression(Br^'-'),1,1,,,0,1000000
+CO3,Carbonate,mg/L,UNKNOWN,chem_discrete,Anions,expression(CO[3]^'-2'),2,1,,,0,1000000
+HCO3,Bicarbonate,mg/L,UNKNOWN,chem_discrete,Anions,expression(HCO[3]^'-'),3,1,,,0,1000000
+NO2,Nitrite,mg/L,UNKNOWN,chem_discrete,Anions,expression(NO[2]^'-'),1,1,NO2,,0,1000000
+NO2_N,Nitrite-N,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),1,1,N,,0,1000000
+NO3_NO2,Nitrate and nitrite,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,NO3,,0,1000000
+NO3_NO2_N,Nitrate-N and nitrite-N,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,N,,0,1000000
+Si,Silicon,mg/L,UNKNOWN,chem_discrete,Anions,expression(Si^'-4'),4,1,,,0,1000000
+TDS,Total Dissolved Solids,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,0,1000000
+TN,Total Nitrogen,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,N,,0,1000000
+TC,Total Carbon,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,C,,0,1000000
+TOC,Total Organic Carbon,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,C,,0,1000000
+TP,Total Phosphorus,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,P,,0,1000000
+TPC,Total Particulate Carbon,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,C,,0,1000000
+TPN,Total Particulate Nitrogen,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,N,,0,1000000
+TPP,Total Particulate Phosphorus,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,P,also known as particulate phosphorus,0,1000000
+TSS,Total Suspended Solids,mg/L,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,0,1000000
+VSS,Volatile Suspended Sediment,mg/L,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,0,1000000
+abs250,UV Absorbance at 250nm,unitless,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,,
+abs280,UV Absorbance at 280nm,unitless,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,,
+abs254,UV Absorbance at 254nm,unitless,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,,
+PAR,Photosynthetically Active Radiation,uM/m^2/s,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,0,
+DO,Dissolved Oxygen,mg/L,UNKNOWN,gas,Other,expression(UNKNOWN),,0,O,,-0.5,40
+DO_sat,Dissolved Oxygen Percent Saturation,%,UNKNOWN,gas,Other,expression(UNKNOWN),,0,O,,0,200
+CHL,Chlorophyll,mg/L,UNKNOWN,bio,Other,expression(UNKNOWN),,0,,,0,
+turbid,Turbidity,FNU,UNKNOWN,phys,Other,expression(UNKNOWN),,0,,,0,
+FDOM,Fluorescent Dissolved Organic Matter,QSU,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,0,
+CO2,Carbon Dioxide,ppm,UNKNOWN,gas_PENDING,Other,expression(UNKNOWN),,0,,,0,100000
+CO2_C,Carbon Dioxide-C,mg/L,UNKNOWN,gas_PENDING,Other,expression(UNKNOWN),,0,,,,
+CH4,Methane,ppm,UNKNOWN,gas_PENDING,Other,expression(UNKNOWN),,0,,,0,10000
+CH4_C,Methane-C,mg/L,UNKNOWN,gas_PENDING,Other,expression(UNKNOWN),,0,,,,
+N2O,Nitrous Oxide,ppm,UNKNOWN,gas_PENDING,Other,expression(UNKNOWN),,0,,,0,
+ionError,Ion Error,%,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,,
+AnCaR,Anion-Cation Ratio,unitless,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,,
+perimeter,Perimeter,m,UNKNOWN,spatial,Other,expression(UNKNOWN),,0,,,0,
+TIP,Total Inorganic Phosphorus,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,P,,0,1000000
+TIC,Total Inorganic Carbon,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,C,,0,1000000
+DOP,Dissolved Organic Phosphorus,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,P,,0,1000000
+H,Hydrogen,mg/L,UNKNOWN,chem_discrete,Cations,expression(H^'+'),1,1,,,0,1000000
+POC,Particulate Organic Carbon,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,1,C,,0,1000000
+acidity,Acidity,ueq/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,0,1000000
+TIN,Total Inorganic Nitrogen,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),1,1,N,,0,1000000
+d18O,Delta 18 Oxygen ,ppt,UNKNOWN,phys,Other,expression(UNKNOWN),,0,O,parts per thousand,,
+deuterium,Deuterium,unitless,UNKNOWN,phys,Other,expression(UNKNOWN),,0,H,ALso called H-2 or delta h2,,
+Ecoli,Escherichia coli,#/mL,UNKNOWN,bio,Other,expression(UNKNOWN),,0,,Ecoli is generally measured in CFU/ml and PNC/ml but they are roughly comparable so we can use #/ml,0,
+Li,Lithium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),1,1,Li,,0,1000000
+SRP,Soluble Reactive Phosphorus,mg/L,UNKNOWN,chem_mix,Anions,expression(UNKNOWN),3,1,PO4,,0,1000000
+PON,Particulate Organic Nitrogen,mg/L,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,1,N,,0,1000000
+salinity,Salinity,ppt,UNKNOWN,chem_mix,Other,expression(UNKNOWN),,0,,,0,1000000
+phaeopig,Phaeopigment,mg/L,Acetone TurnerDesigns 10AU Fluorometer,bio,Other,expression(UNKNOWN),,0,,,0,1000000
+B,Boron,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Anions,expression(B^'-'),1,1,B,,0,1000000
+Cd,Cadmium,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Cations,expression(Cd^'+2'),2,1,Cd,,0,1000000
+Cd111,Cadmium-111,mg/L,UNKNOWN,chem_discrete,Cations,expression(Cd^'+2'),2,1,Cd,,0,1000000
+Cr,Chromium,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Other,expression(UNKNOWN),,1,Cr,"Many ion forms, not sure which to use over mean?",0,1000000
+Cu,Copper,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Other,expression(Cu^'+2'),2,1,Cu,,0,1000000
+Pb,Lead,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Other,expression(Pb^'+4'),4,1,Pb,,0,1000000
+Ni,Nickel,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Other,expression(Ni^'+2'),2,1,Ni,,0,1000000
+Ni60,Nickel-60,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Other,expression(Ni^'+2'),2,1,Ni,,0,1000000
+Zn,Zinc,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Other,expression(Zn^'+2'),2,1,Zn,,0,1000000
+Sr,Strontium,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Other,expression(Sr^'+2'),2,1,Sr,,0,1000000
+S,Sulfer,mg/L,Absorption/Emission Spectrophotometer,chem_discrete,Other,expression(UNKNOWN),6,1,S,,0,1000000
+Be,Beryllium,mg/L,UNKNOWN,chem_discrete,Cations,expression(Be^'+2'),2,1,Be,,0,1000000
+Ti,Titanium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),2.5,1,Ti,,0,1000000
+Ti49,Titanium-49,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),2.5,1,Ti,,0,1000000
+V,Vanadium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,V,Not sure what valence to use,0,1000000
+Co,Cobalt,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),2.5,1,Co,Check valence,0,1000000
+As,Arsenic,mg/L,UNKNOWN,chem_discrete,Cations,expression(As^'+3'),3,1,As,Check valence,0,1000000
+Se,Selenium,mg/L,UNKNOWN,chem_discrete,Anions,expression(Se^'-2'),2,1,Se,,0,1000000
+Se78,Selenium-78,mg/L,UNKNOWN,chem_discrete,Anions,expression(Se^'-2'),2,1,Se,,0,1000000
+Y,Yttrium,mg/L,UNKNOWN,chem_discrete,Cations,expression(Y^'+3'),3,1,Y,,0,1000000
+Mo,Molybdenum,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Mo,Not sure what valence to use,0,1000000
+Ag,Silver,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Ag,Not sure what valence to use,0,1000000
+Sn,Tin,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),3,1,Sn,"Tin looks like it has both 2+ and 4+, using 3 as mean",0,1000000
+Sn118,Tin-118,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),3,1,Sn,"Tin looks like it has both 2+ and 4+, using 3 as mean",0,1000000
+Sb,Antimony,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),4,1,Sb,"Antimony looks like it has both 3+ and 5+, using 4 as mean",0,1000000
+Ba,Barium,mg/L,UNKNOWN,chem_discrete,Cations,expression(Ba^'+2'),2,1,Ba,,0,1000000
+La,Lanthanum,mg/L,UNKNOWN,chem_discrete,Cations,expression(La^'+3'),3,1,La,,0,1000000
+Ce,Cerium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Ce,Not sure what valence to use,0,1000000
+Pr,Praseodymium,mg/L,UNKNOWN,chem_discrete,Cations,expression(Pr^'+3'),3,1,Pr,Check valence,0,1000000
+Nd145,Neodymium-145,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Nd,Not sure what valence to use,0,1000000
+Nd,Neodymium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Nd,Not sure what valence to use,0,1000000
+Sm147,Samarium-147,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Sm,Not sure what valence to use,0,1000000
+Sm,Samarium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Sm,Not sure what valence to use,0,1000000
+Eu,Europium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Eu,Not sure what valence to use,0,1000000
+Gd157,Gadolinium-157,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Gd,Not sure what valence to use,0,1000000
+Gd,Gadolinium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Gd,Not sure what valence to use,0,1000000
+Tb,Terbium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Tb,Not sure what valence to use,0,1000000
+Dy,Dysprosium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Dy,Not sure what valence to use,0,1000000
+Ho,Holmium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Ho,Not sure what valence to use,0,1000000
+Er,Erbium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Er,Not sure what valence to use,0,1000000
+Tm,Thulium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Tm,Not sure what valence to use,0,1000000
+Yb,Ytterbium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Yb,Not sure what valence to use,0,1000000
+Lu,Lutetium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Lu,Not sure what valence to use,0,1000000
+U,Uranium ,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,U,Not sure what valence to use,0,1000000
+Tl,Thallium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Tl,Not sure what valence to use,0,1000000
+Cs,Caesium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Cs,Not sure what valence to use,0,1000000
+Ge,Germanium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Ge,Not sure what valence to use,0,1000000
+Rb,Rubidium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Rb,Not sure what valence to use,0,1000000
+Th,Thorium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Th,Not sure what valence to use,0,1000000
+Zr,Zirconium,mg/L,UNKNOWN,chem_discrete,Cations,expression(UNKNOWN),,1,Zr,Not sure what valence to use,0,1000000
+Bi,Bismuth,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Bi,,0,1000000
+Os,Osmium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Os,,0,1000000
+Ru,Ruthenium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Ru,,0,1000000
+Ga,Gallium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Ga,,0,1000000
+Nb,Niobium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Nb,,0,1000000
+Sc,Scandium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Sc,,0,1000000
+Te,Tellurium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Te,,0,1000000
+Ta,Tantalum,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Ta,,0,1000000
+Pt,Platinum,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Pt,,0,1000000
+Hg,Mercury,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Hg,,0,1000000
+I,Iodine,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,I,,0,1000000
+Au,Gold,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Au,,0,1000000
+Hf,Hafnium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Hf,,0,1000000
+Ir,Iridium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Ir,,0,1000000
+Pd,Palladium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Pd,,0,1000000
+Rh,Rhodium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Rh,,0,1000000
+W,Tungsten,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,W,,0,1000000
+Re,Rhenium,mg/L,UNKNOWN,chem_discrete,Other,expression(UNKNOWN),,1,Re,,0,1000000
+pheophy,Sestonic Phaeophytin,mg/L,Acetone TurnerDesigns 10AU Fluorometer,bio,Other,expression(UNKNOWN),,0,,Not sure what valence to use,0,1000000
+TCHL,Sestonic Total Chlorophyll,mg/L,Acetone TurnerDesigns 10AU Fluorometer,bio,Other,expression(UNKNOWN),,0,,Not sure what valence to use,0,1000000
+BPC,Benthic Particulate Carbon,mg/cm2,"Epilithic - Whole Rock, PE2400 CHN Combustion Method        ",chem_mix,Other,expression(mg/cm^'2'),,0,,,0,
+BPN,Benthic Particulate Nitrogen,mg/cm2,"Epilithic - Whole Rock, PE2400 CHN Combustion Method        ",chem_mix,Other,expression(mg/cm^'2'),,0,,,0,
+BPP,Benthic Particulate Phosphorus,mg/cm2,"Epilithic - Whole Rock, PE2400 CHN Combustion Method        ",chem_mix,Other,expression(mg/cm^'2'),,0,,,0,
+ECHL_A,Epilithic Chlorophyll a,mg/cm2,"Epilithic - Whole Rock, PE2400 CHN Combustion Method        ",bio,Other,expression(mg/cm^'2'),,0,,,0,
+E_pheophy,Epilithic Phaeophytin,mg/cm2,"Epilithic - Whole Rock, PE2400 CHN Combustion Method        ",bio,Other,expression(mg/cm^'2'),,0,,,0,
+T_ECHL,Epilithic Total Chlorophyll,mg/cm2,"Epilithic - Whole Rock, Acetone TurnerDesigns 10AU Fluorometer        ",bio,Other,expression(mg/cm^'2'),,0,,,0,
+cc_cumulative_precip,Watershed Annual Precipitation,mm,UNKNOWN,ws_char,PRISM Precipitation,,,0,,,,
+cc_precip_sd_year,Annual Standard Deviation,mm,UNKNOWN,ws_char,PRISM Precipitation,,,0,,,,
+cc_precip_sd_space,Watershed Standard Deviation,mm,UNKNOWN,ws_char,PRISM Precipitation,,,0,,,,
+cc_precip_sd,Daily Standard Deviation,mm,UNKNOWN,ws_char,PRISM Precipitation,,,0,,,,
+cc_precip_median,Daily Median,mm,UNKNOWN,ws_char,PRISM Precipitation,,,0,,,,
+cc_temp_mean,Watershed Mean Temperature,C,UNKNOWN,ws_char,PRISM Temperature,,,0,,,,
+cc_temp_sd_year,Annual Standard Deviation,C,UNKNOWN,ws_char,PRISM Temperature,,,0,,,,
+cc_temp_sd_space,Watershed Standard Deviation,C,UNKNOWN,ws_char,PRISM Temperature,,,0,,,,
+cc_temp_mean_sd,Daily Standard Deviation,C,UNKNOWN,ws_char,PRISM Temperature,,,0,,,,
+cc_temp_mean_median,Daily Median,C,UNKNOWN,ws_char,PRISM Temperature,,,0,,,,
+vb_bare_cover_median,Watershed Median Bare Cover,%,UNKNOWN,ws_char,MODIS Land Cover,,,0,,,,
+vb_bare_cover_sd,Watershed Standard Deviation Bare Cover,%,UNKNOWN,ws_char,MODIS Land Cover,,,0,,,,
+vb_tree_cover_median,Watershed Median Tree Cover,%,UNKNOWN,ws_char,MODIS Land Cover,,,0,,,,
+vb_tree_cover_sd,Watershed Standard Deviation Tree Cover,%,UNKNOWN,ws_char,MODIS Land Cover,,,0,,,,
+vb_veg_cover_median,Watershed Median Non-Tree Vegetation,%,UNKNOWN,ws_char,MODIS Land Cover,,,0,,,,
+vb_veg_cover_sd,Watershed Standard Deviation Non-Tree Vegetation,%,UNKNOWN,ws_char,MODIS Land Cover,,,0,,,,
+vd_sos_mean,Start of Growing Season Watershed Mean,DOY,UNKNOWN,ws_char,Phenology,,,0,,,,
+vd_sos_sd,Start of Growing Season Standard Deviation,DOY,UNKNOWN,ws_char,Phenology,,,0,,,,
+vd_eos_mean,End of Growing Season Watershed Mean,DOY,UNKNOWN,ws_char,Phenology,,,0,,,,
+vd_eos_sd,End of Growing Season Standard Deviation,DOY,UNKNOWN,ws_char,Phenology,,,0,,,,
+vd_los_mean,Length of Growing Season Watershed Mean,DOY,UNKNOWN,ws_char,Phenology,,,0,,,,
+vd_los_sd,Length of Growing Season Watershed Standard Deviation,DOY,UNKNOWN,ws_char,Phenology,,,0,,,,
+vd_mos_mean,Max Day in Growing Season Watershed Mean,DOY,UNKNOWN,ws_char,Phenology,,,0,,,,
+vd_mos_sd,Max Day in Growing Season Watershed Standard Deviation,DOY,UNKNOWN,ws_char,Phenology,,,0,,,,
+vb_lai_max,Annual Maximum LAI,m2/m2,UNKNOWN,ws_char,Leaf Area Index,,,0,,,,
+vb_lai_mean,Annual Mean LAI,m2/m2,UNKNOWN,ws_char,Leaf Area Index,,,0,,,,
+vb_lai_min,Annual Minimum LAI,m2/m2,UNKNOWN,ws_char,Leaf Area Index,,,0,,,,
+vb_lai_sd_year,Annual Standard Deviation LAI,m2/m2,UNKNOWN,ws_char,Leaf Area Index,,,0,,,,
+vb_lai_sd_space,Watershed Standard Deviation LAI,m2/m2,UNKNOWN,ws_char,Leaf Area Index,,,0,,,,
+vb_lai_median,Daily Median,m2/m2,UNKNOWN,ws_char,Leaf Area Index,,,0,,,,
+vb_lai_sd,Daily Standard Deviation,m2/m2,UNKNOWN,ws_char,Leaf Area Index,,,0,,,,
+vb_fpar_max,Annual Maximum FPAR,%,UNKNOWN,ws_char,Fraction of Absorbed Photosynthetically Active Radiation,,,0,,,,
+vb_fpar_mean,Annual Mean FPAR,%,UNKNOWN,ws_char,Fraction of Absorbed Photosynthetically Active Radiation,,,0,,,,
+vb_fpar_min,Annual Minimum FPAR,%,UNKNOWN,ws_char,Fraction of Absorbed Photosynthetically Active Radiation,,,0,,,,
+vb_fpar_sd_year,Annual Standard Deviation FPAR,%,UNKNOWN,ws_char,Fraction of Absorbed Photosynthetically Active Radiation,,,0,,,,
+vb_fpar_sd_space,Watershed Standard Deviation FPAR,%,UNKNOWN,ws_char,Fraction of Absorbed Photosynthetically Active Radiation,,,0,,,,
+vb_fpar_median,Daily Median,%,UNKNOWN,ws_char,Fraction of Absorbed Photosynthetically Active Radiation,,,0,,,,
+vb_fpar_sd,Daily Standard Deviation,%,UNKNOWN,ws_char,Fraction of Absorbed Photosynthetically Active Radiation,,,0,,,,
+va_gpp_sum,Annual GPP,kg*C/m^2,UNKNOWN,ws_char,Gross Primary Production,,,0,,,,
+va_gpp_sd_year,Annual Standard Deviation GPP,kg*C/m^2,UNKNOWN,ws_char,Gross Primary Production,,,0,,,,
+va_gpp_sd_space,Watershed Standard Deviation GPP,kg*C/m^2,UNKNOWN,ws_char,Gross Primary Production,,,0,,,,
+va_gpp_median,Daily Median,kg*C/m^2,UNKNOWN,ws_char,Gross Primary Production,,,0,,,,
+va_gpp_sd,Daily Standard Deviation,kg*C/m^2,UNKNOWN,ws_char,Gross Primary Production,,,0,,,,
+va_npp_median,Annual NPP,kg*C/m^2,UNKNOWN,ws_char,Net Primary Production,,,0,,,,
+va_npp_sd,Watershed Standard Deviation NPP,kg*C/m^2,UNKNOWN,ws_char,Net Primary Production,,,0,,,,
+te_slope_mean,Mean Slope,%,UNKNOWN,ws_char,Terrain,,,0,,,,
+te_slope_sd,Slope Standard Deviation,%,UNKNOWN,ws_char,Terrain,,,0,,,,
+area,Area,ha,UNKNOWN,ws_char,Terrain,,,0,,,,
+te_elev_mean       ,Mean Elevation,m,UNKNOWN,ws_char,Terrain,,,0,,,,
+te_elev_sd,Elevation Standard Deviation,m,UNKNOWN,ws_char,Terrain,,,0,,,,
+te_elev_min,Minimum Elevation,m,UNKNOWN,ws_char,Terrain,,,0,,,,
+te_elev_max,Maximum Elevation,m,UNKNOWN,ws_char,Terrain,,,0,,,,
+te_aspect_mean,Mean Aspect,degrees,UNKNOWN,ws_char,Terrain,,,0,,,,
+te_aspect_sd,Aspect Standard Deviation,degrees,UNKNOWN,ws_char,Terrain,,,0,,,,
+hd_bfi_mean,Mean Baseflow Index,%,UNKNOWN,ws_char,Hydrology,,,0,,,,
+hd_bfi_sd,Baseflow Index Standard Deviation,%,UNKNOWN,ws_char,Hydrology,,,0,,,,
+pd_geo_Al2O3_mean,Lithological aluminum oxide Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_Al2O3_sd,Lithological aluminum oxide Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_CaO_mean,Lithological calcium oxide Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_CaO_sd,Lithological calcium oxide Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_CompressStrength_mean,Lithological uniaxial compressive strength Mean,MPa,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_CompressStrength_sd,Lithological uniaxial compressive strength Standard Deviation,MPa,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_Fe2O3_mean,Lithological ferric oxide Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_Fe2O3_sd        ,Lithological ferric oxide Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_HydaulicCond_mean,Lithological hydraulic conductivity Mean,um/s,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_HydaulicCond_sd,Lithological hydraulic conductivity Standard Deviation,um/s,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_K2O_mean,Lithological potassium oxide Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_K2O_sd,Lithological potassium oxide Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_MgO_mean,Lithological magnesium oxide Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_MgO_sd,Lithological magnesium oxide Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_N_mean,Lithological nitrogen Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_N_sd,Lithological nitrogen Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_Na2O_mean,Lithological sodium oxide Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_Na2O_sd,Lithological sodium oxide Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_P2O5_mean,Lithological phosphorus pentoxide Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_P2O5_sd,Lithological phosphorus pentoxide Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_S_mean,Lithological sulfur Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_S_sd,Lithological sulfur Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_SiO2_mean,Lithological silicon dioxide Mean,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+pd_geo_SiO2_sd,Lithological silicon dioxide Standard Deviation,%,UNKNOWN,ws_char,Geochemistry,,,0,,,,
+ch_annual_Ca_flux_mean,Mean Annual Calcium Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_Ca_flux_sd_space,Annual Calcium Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_Cl_flux_mean,Mean Annual Chlorine Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_Cl_flux_sd_space,Annual Chlorine Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_H_flux_mean,Mean Annual Hydrogen ion Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_H_flux_sd_space,Annual Hydrogen ion Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_K_flux_mean,Mean Annual Potassium Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_K_flux_sd_space,Annual Potassium Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_Mg_flux_mean,Mean Annual Magnesium Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_Mg_flux_sd_space,Annual Magnesium Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_Na_flux_mean,Mean Annual Sodium Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_Na_flux_sd_space,Annual Sodium Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_NH4_flux_mean,Mean Annual Ammonium Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_NH4_flux_sd_space,Annual Ammonium Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_NO3_flux_mean,Mean Annual nitrate flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_NO3_flux_sd_space,Annual Nitrate Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_SO4_flux_mean,Mean Annual Sulfate Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_SO4_flux_sd_space,Annual Sulfate Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_S_N_flux_mean,Mean Annual Nitrogen+Sulfur Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_S_N_flux_sd_space,Annual Nitrogen+Sulfur Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_N_flux_mean,Mean Annual Inorganic Nitrogen Flux,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+ch_annual_N_flux_sd_space,Annual Inorganic Nitrogen Flux Standard Deviation,kg/ha,UNKNOWN,ws_char,NADP,,,0,,,,
+vb_ndvi_median,Daily Median NDVI,unitless,UNKNOWN,ws_char,NDVI,,,0,,,,
+vb_ndvi_sd,Daily NDVI Standard Deviation,unitless,UNKNOWN,ws_char,NDVI,,,0,,,,
+vb_ndvi_max,Annual Maximum NDVI,unitless,UNKNOWN,ws_char,NDVI,,,0,,,,
+vb_ndvi_min,Annual NDVI Minimum,unitless,UNKNOWN,ws_char,NDVI,,,0,,,,
+vb_ndvi_mean,Annual NDVI Mean,unitless,UNKNOWN,ws_char,NDVI,,,0,,,,
+vb_ndvi_sd_year,Annual NDVI Standard Deviation,unitless,UNKNOWN,ws_char,NDVI,,,0,,,,
+vb_ndvi_sd_space,Annual Mean spatial Standard Deviation,unitless,UNKNOWN,ws_char,NDVI,,,0,,,,
+lg_nlcd_1992_water,Open Water (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_ice_snow,Perennial Ice/Snow (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_res_low,Low intensity Residential (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_res_hi,High Intensity Residential (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_commercial,Commercial/Industrial/Transportation (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_barren,Bare Rock/Sand/Clay (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_mines,Quarries/Strip Minds/Gravel Pits (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_barren_tran,Transitional Barren (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_forest_dec,Deciduous Forest (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_forest_evr,Evergreen Forest (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_forest_mix,Mixed Forest (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_shrub,Shrubland (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_orchards,Orchards/Vineyards/Other (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_grass,Grasswland/Herbaceous (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_pasture,Pasture/Hay (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_row_crop,Row Crops (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_small_grains,Small Grains (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_fallow,Fallow (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_urban_grass,Urban/Recreational Grasses (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_wetland_wood,Woody Wetland (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_1992_wetland_herb,Emergent Herbaceous Wetland (1992),%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_barren,Barren Land,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_crop,Cultivated Crops,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_dev_hi,"Developed, High Intensity",%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_dev_low,"Developed, Low Intensity",%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_dev_med,"Developed, Medium Intensity",%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_dev_open,"Developed, Open Space",%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_forest_dec,Deciduous Forest,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_forest_evr,Evergreen Forest,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_forest_mix,Mixed Forest,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_grass,Grassland/Herbaceous ,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_ice_snow,Perennial Ice/Snow,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_pasture,Pasture/Hay,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_shrub,Shrub/Scrub,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_water,Open Water,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_wetland_herb,Emergent Herbaceous Wetland,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_wetland_wood,Woody Wetland,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_shrub_dwr,Dwarf Scrub,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_sedge,Sedge/Herbaceous,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_lncd_lichens,Lichens,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+lg_nlcd_moss,Moss,%,UNKNOWN,ws_char,NLCD,,,0,,,,
+pf_soil_org,Soil Organic Matter,%,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_sand,Soil Sand Content,%,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_silt,Soil Silt Content,%,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_clay,Soil Clay Content,%,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_awc,Mean Soil Available Water Content,cm/cm,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_water_0.1bar,Water Content at 1/10 bar,%,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_water_0.33bar,Water Content at 1/3 bar,%,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_water_15bar,Water Content at 15 bar,%,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_water_0bar,Water Content at 0 bar,%,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_cat_exchange_7,Mean Cation-exchange capacity,meq,UNKNOWN,ws_char,Soil,,,0,,,,
+pf_soil_ph,Mean pH,unitless,UNKNOWN,ws_char,Soil,,,0,,,,
+pi_soil_thickness,Mean Soil Thinkness,m,UNKNOWN,ws_char,Soil,,,0,,,,
+vj_tcw_sd,Tasseled Cap Wetness Standard Deviation,unitless,UNKNOWN,ws_char,Tasseled Cap Wetness,,,0,,,,
+vj_tcw_median,Tasseled Cap Wetness Median,unitless,UNKNOWN,ws_char,Tasseled Cap Wetness,,,0,,,,
+vj_tcw_max,Tasseled Cap Wetness Annual Maximum,unitless,UNKNOWN,ws_char,Tasseled Cap Wetness,,,0,,,,
+vj_tcw_min,Tasseled Cap Wetness Annual Minimum,unitless,UNKNOWN,ws_char,Tasseled Cap Wetness,,,0,,,,
+vj_tcw_mean,Tasseled Cap Wetness Mean Annual,unitless,UNKNOWN,ws_char,Tasseled Cap Wetness,,,0,,,,
+vj_tcw_sd_year,Tasseled Cap Wetness Annual Standard Deviation,unitless,UNKNOWN,ws_char,Tasseled Cap Wetness,,,0,,,,
+ck_et_ref_sd,Daily Reference Evapotranspiration (grass) Standard Deviation,mm,UNKNOWN,ws_char,GRIDMET,,,0,,,,
+ck_et_ref_median,Daily Reference Evapotranspiration (grass),mm,UNKNOWN,ws_char,GRIDMET,,,0,,,,
+ck_et_ref_mean,Mean Annual Reference Evapotranspiration (grass),mm,UNKNOWN,ws_char,GRIDMET,,,0,,,,
+ck_et_ref_sd_year,Annual Reference Evapotranspiration (grass) Standard Deviation,mm,UNKNOWN,ws_char,GRIDMET,,,0,,,,
+ck_et_ref_sd_space,Watershed Reference Evapotranspiration (grass) Standard Deviation,mm,UNKNOWN,ws_char,GRIDMET,,,0,,,,
+cl_snow_depth_ann_max,Annual Max Snow Depth,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_snow_depth_ann_mean,Annual Mean Snow Depth,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_snow_depth_ann_min,Annual Minimum Snow Depth,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_snow_depth_sd_space,Annual Snow Depth Standard Deviation,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_snow_depth_cd_year,Watershed Snow Depth Standard Deviation,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_swe_ann_max,Annual Max Snow Water Equivalent,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_swe_ann_mean,Annual Mean Snow Water Equivalent,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_swe_ann_min,Annual Minimum Snow Water Equivalent,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_swe_sd_space,Annual Snow Water Equivalent Standard Deviation,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_swe_sd_year,Watershed Snow Water Equivalent Standard Deviation,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_snow_depth_mean,Daily Mean Snow Depth,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_snow_depth_sd,Daily Snow Depth Standard Deviation,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_swe_mean,Daily Mean Snow Water Equivalent,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+cl_swe_sd,Daily Snow Water Equivalent Standard Deviation,mm,UNKNOWN,ws_char,Snow,,,0,,,,
+pm_sub_surf_porosity_mean,Mean Subsurface Porosity,,UNKNOWN,ws_char,Other,,,0,,,,
+pm_sub_surf_porosity_sd,Subsurface Porosity Standard Deviation,,UNKNOWN,ws_char,Other,,,0,,,,
+pm_sub_surf_permeability_mean,Mean Subsurface Permeability (log10),,UNKNOWN,ws_char,Other,,,0,,,,
+pm_sub_surf_permeability_sd,Mean Subsurface Permeability Standard Deviation,,UNKNOWN,ws_char,Other,,,0,,,,
+pm_sub_surf_permeability_perm_mean,Mean Subsurface Permeability with Permafrost (log10),,UNKNOWN,ws_char,Other,,,0,,,,
+pm_sub_surf_permeability_perm_sd,Mean Subsurface Permeability with Permafrost Standard Deviation,,UNKNOWN,ws_char,Other,,,0,,,,
+geol_class_MT,Geologic Class Metamorphic Rocks,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_PA,Geologic Class Acid Plutonic Rocks,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_SU,Geologic Class Unconcolidated Sediments,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_ND,Geologic Class No Data,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_SS,Geologic Class Siliciclasstic Sedimentary Rock,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_SM,Geologic Class Mixed Sedimentary Rocks,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_SC,Geologic Class Carbonate Sedimentary Rocks,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_PY,Geologic Class Pyroclastics,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_EV,Geologic Class Evaporites,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_PI,Geologic Class Intermediate Plutonic Rock,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_PB,Geologic Class Basic Plutonic Rocks,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_VA,Geologic Class Acid Volcanic Rocks,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_VI,Geologic Class Intermediate Volcanic Rock,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_VB,Geologic Class Basic Volvanic Rocks,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_IG,Geologic Class Ice and Glaciers,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+geol_class_WB,Geologic Class Water Bodies,%,UNKNOWN,ws_char,Lithology,,,0,,,,
+MH_Al,Moss: Hygrohypnum: Aluminum,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_B,Moss: Hygrohypnum: Boron,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_Ca,Moss: Hygrohypnum: Calcium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_C,Moss: Hygrohypnum: Carbon,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_Cu,Moss: Hygrohypnum: Copper,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_Fe,Moss: Hygrohypnum: Iron,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_Mg,Moss: Hygrohypnum: Magnesium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_Mn,Moss: Hygrohypnum: Manganese,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_N,Moss: Hygrohypnum: Nitrogen,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_P,Moss: Hygrohypnum: Phosphorus,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_K,Moss: Hygrohypnum: Potassium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_Na,Moss: Hygrohypnum: Sodium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_S,Moss: Hygrohypnum: Sulfur,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MH_Zn,Moss: Hygrohypnum: Zinc,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_Al,Moss: Schistidium: Aluminum,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_B,Moss: Schistidium: Boron,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_Ca,Moss: Schistidium: Calcium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_C,Moss: Schistidium: Carbon,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_Cu,Moss: Schistidium: Copper,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_Fe,Moss: Schistidium: Iron,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_Mg,Moss: Schistidium: Magnesium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_Mn,Moss: Schistidium: Manganese,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_N,Moss: Schistidium: Nitrogen,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_P,Moss: Schistidium: Phosphorus,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_K,Moss: Schistidium: Potassium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_Na,Moss: Schistidium: Sodium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_S,Moss: Schistidium: Sulfur,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MS_Zn,Moss: Schistidium: Zinc,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MF_N,Moss: Fontinalis: Nitrogen,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MF_P,Moss: Fontinalis: Phosphorus,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_Al,Moss: Lemanea: Aluminum,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_B,Moss: Lemanea: Boron,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_Ca,Moss: Lemanea: Calcium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_C,Moss: Lemanea: Carbon,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_Cu,Moss: Lemanea: Copper,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_Fe,Moss: Lemanea: Iron,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_Mg,Moss: Lemanea: Magnesium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_Mn,Moss: Lemanea: Manganese,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_N,Moss: Lemanea: Nitrogen,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_P,Moss: Lemanea: Phosphorus,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_K,Moss: Lemanea: Potassium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_Na,Moss: Lemanea: Sodium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_S,Moss: Lemanea: Sulfur,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+ML_Zn,Moss: Lemanea: Zinc,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_Al,Moss: Liverwort: Aluminum,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_B,Moss: Liverwort: Boron,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_Ca,Moss: Liverwort: Calcium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_C,Moss: Liverwort: Carbon,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_Cu,Moss: Liverwort: Copper,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_Fe,Moss: Liverwort: Iron,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_Mg,Moss: Liverwort: Magnesium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_Mn,Moss: Liverwort: Manganese,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_N,Moss: Liverwort: Nitrogen,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_P,Moss: Liverwort: Phosphorus,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_K,Moss: Liverwort: Potassium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_Na,Moss: Liverwort: Sodium,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_S,Moss: Liverwort: Sulfur,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MLW_Zn,Moss: Liverwort: Zinc,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
+MF_C,Moss: Fontinalis: Carbon,%,Dry weight before and after 550C muffle,bio,Other,expression(UNKNOWN),,0,,From Arctic LTER,0,
