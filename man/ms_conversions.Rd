@@ -25,7 +25,7 @@ variables are in the same unit.}
 variable names without their sample-regimen prefixes (e.g. 'DIC', not 'GN_DIC'),
 and values are the units those variables should be converted to.
 Omit variables that don't need to be converted. Or a single unit if all 
-variables are in the same unit.}
+variables will be converted to the same unit.}
 
 \item{convert_molecules}{character vector. A vector of variables that will be 
 converted from or to the atomic mass of a molecule's main constituent 
@@ -39,10 +39,55 @@ Convert macrosheds data from it's native format into units of g/l, mol/l, and
 eq/l. Along with metric base unit conversions and conversions from molecules 
 in the form of NO3 as N (NO3_N) to NO3 (NO3) and vice versa
 }
+\details{
+convert_molecules is used to convert to and from a variable reported
+   as the atomic weight of the main constituent in a molecule. Macrosheds
+   native format is a molecule reported as the atomic weight of the main 
+   constituent. Examples include NO3 as N (NO3_N), SO4 as S (SO4_S), SiO2 as Si
+   (SiO2_as Si). If you wanted to convert from the native macrosheds format of
+   NO3_N to NO3, you would list the variable as it currently exists in the 
+   \code{data.frame}, so in this case NO3_N. The function will then convert
+   NO3 as N (NO3_N) to just NO3, along with other conversion listed in the convert_units_to
+   argument.
+}
 \examples{
+### Load in macrosheds data 
+d <- load_product(macrosheds_root = 'data/macrosheds_v1', 
+                  prodname = 'stream_chemistry',
+                  sort_result = FALSE,
+                  domains = 'hbef',
+                  filter_vars = c('NO3_N', 'Na', 'Mg', 'SO4_S'))
+
+### Convert all variable from the macrosheds native untis of mg/l to ug/l
 converted_data <- ms_conversions(d = d,
                                  convert_units_from = 'mg/l',
                                  convert_units_to = 'ug/l')
+                                 
+### Convert variables reported as their atomic mass to the mass of the whole molecule
+converted_data <- ms_conversions(d = d,
+                                 convert_units_from = 'mg/l',
+                                 convert_units_to = 'mg/l',
+                                 convert_molecules = c('NO3_N', 'SO4_S'))
+
+### Convert from mg/l to mmol/l
+converted_data <- ms_conversions(d = d,
+                                 convert_units_from = 'mg/l',
+                                 convert_units_to = 'mmol/l')
+### Convert from mg/l to meq/l
+converted_data <- ms_conversions(d = d,
+                                 convert_units_from = 'mg/l',
+                                 convert_units_to = 'meq/l')
+
+### Convert variables to different units
+converted_data <- ms_conversions(d = d,
+                                 convert_units_from = c('NO3_N' = 'mg/l', 
+                                                        'Na' = 'mg/l', 
+                                                        'Mg' = 'mg/l', 
+                                                        'SO4_S' = 'mg/l'),
+                                 convert_units_to = c('NO3_N' = 'meq/l',
+                                                      'Na' = 'ug/l',
+                                                      'Mg' = 'umol/l',
+                                                      'SO4_S' = 'g/l'))
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}
