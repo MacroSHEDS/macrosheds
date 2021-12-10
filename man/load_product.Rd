@@ -34,7 +34,7 @@ returns a \code{tibble} containing all the all data belonging to the
    selected data product and variables in the \code{macrosheds_root} directory
 }
 \description{
-Load an entire macrosheds product (e.g stream_chemistry, discharge, etc.) from a 
+Loads an entire macrosheds product (e.g stream_chemistry, discharge, etc.) from a 
 downloaded macrosheds dataset see \code{download_ms_code_data()} for data download
 }
 \examples{
