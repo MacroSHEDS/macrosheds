@@ -22,7 +22,7 @@ Macrosheds stream chemical flux is scaled to watershed area (native unit: kg/ha/
 This function converts stream chemistry flux to kg/d.
 }
 \details{
-Macrosheds reports all chemical flux on a per are basis (kg/ha/d) to
+Macrosheds reports all chemical flux on a per area basis (kg/ha/d) to
    facilitate comparison of watersheds of different sizes. Sometimes un-scaled 
    fluxes are of interest, this function will convert the units of a native 
    macrosheds stream chemical flux table from kg/ha/d to kg/d. To download
