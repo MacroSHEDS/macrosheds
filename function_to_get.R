@@ -5,9 +5,9 @@ ms_compute_precip_flux
 ms_linear_interpolate (ms_interpolate)
     d, method = c('linear', 'seadec', 'wrtds', etc)
 delineate_watershed_apriori (ms_delineate_watershed)
-    a priori (if no spec supplied)
-    by spec (if any spec supplied)
-    confirm = TRUE
+    implicitly a priori if no spec supplied
+    use any supplied specs
+    if all specs are given, a confirm = FALSE option will just return the delineated shed. this is equivalent to delineate_by_specification
 synchronize_timestep
 scale_flux_by_area
 get_nrcs_soils
