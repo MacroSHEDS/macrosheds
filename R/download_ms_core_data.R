@@ -1,6 +1,6 @@
 #' Download macrosheds core datasets
 #'
-#' Download the macrosheds core datesets of stream chemistry, stream 
+#' Download the macrosheds core datasets of stream chemistry, stream 
 #' discharge, stream chemical flux, precipitation, precipitation chemistry, and
 #' precipitation chemical flux. Not all products are available at all sites but 
 #' all products available for the selected domains will be downloaded.
