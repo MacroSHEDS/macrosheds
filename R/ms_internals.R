@@ -295,10 +295,7 @@ populate_implicit_NAs <- function(d,
     #   val_fill. Any other columns will be populated with NAs.
     
     #returns d, complete with new rows, sorted by site_code, then var, then datetime
-    
-    if(! interval %in% c('15 min', '1 day')){
-        stop('interval must be "15 min" or "1 day", unless we have decided otherwise')
-    }
+
     
     complete_d <- d %>%
         mutate(fill_marker = 1) %>%
@@ -355,7 +352,7 @@ populate_implicit_NAs <- function(d,
     return(complete_d)
 }
 
-ms_linear_interpolate <- function(d, interval){
+ms_linear_interpolate <- function(d, interval, max_samples_to_impute){
     
     #d: a ms tibble with no ms_interp column (this will be created)
     #interval: the sampling interval (either '15 min' or '1 day'). an
@@ -384,67 +381,31 @@ ms_linear_interpolate <- function(d, interval){
                    'with more than one variable'))
     }
     
-    if(! interval %in% c('15 min', '1 day')){
-        stop('interval must be "15 min" or "1 day", unless we have decided otherwise')
-    }
-    
-    var <- drop_var_prefix(d$var[1])
-    max_samples_to_impute <- ifelse(test = var %in% c('precipitation', 'discharge'),
-                                    yes = 3, #is Q-ish
-                                    no = 15) #is chemistry/etc
-    
-    if(interval == '15 min'){
-        max_samples_to_impute <- max_samples_to_impute * 96
-    }
-    
-    # ts_delta_t <- ifelse(interval == '1 day', #we might want this if we use na_seadec
-    #                      1/365, #"sampling period" is 1 year; interval is 1/365 of that
-    #                      1/96) #"sampling period" is 1 day; interval is 1/(24 * 4)
+    var <- macrosheds::ms_drop_var_prefix(d$var[1])
     
     d <- arrange(d, datetime)
     ms_interp_column <- is.na(d$val)
     
     d_interp <- d %>%
         mutate(
-            
             #carry ms_status to any rows that have just been populated (probably
             #redundant now, but can't hurt)
             ms_status <- imputeTS::na_locf(ms_status,
                                            na_remaining = 'rev'),
-            
-            # val = if(sum(! is.na(val)) > 2){
-            #
-            #     #linear interp NA vals after seasonal decomposition
-            #     imputeTS::na_seadec(x = as.numeric(ts(val,
-            #                                start = ,
-            #                                end = ,
-            #                                deltat = ts_delta_t)),
-            #                         maxgap = max_samples_to_impute)
-            #
-            # } else if(sum(! is.na(val)) > 1){
             val = if(sum(! is.na(val)) > 1){
-                
                 #linear interp NA vals
                 imputeTS::na_interpolation(val,
                                            maxgap = max_samples_to_impute)
-                
                 #unless not enough data in group; then do nothing
-            } else val
+            } else val,
+            val_err = if(sum(! is.na(val_err)) > 1){
+                #linear interp NA vals
+                imputeTS::na_interpolation(val_err,
+                                           maxgap = max_samples_to_impute)
+                #unless not enough data in group; then do nothing
+            } else val_err
         ) %>%
-        mutate(
-            err = errors(val), #extract error from data vals
-            err = case_when(
-                err == 0 ~ NA_real_, #change new uncerts (0s by default) to NA
-                TRUE ~ err),
-            val = if(sum(! is.na(err)) > 0){
-                set_errors(val, #and then carry error to interped rows
-                           imputeTS::na_locf(err,
-                                             na_remaining = 'rev'))
-            } else {
-                set_errors(val, #unless not enough error to interp
-                           0)
-            }) %>%
-        select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp'))) %>%
+        select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
         arrange(site_code, var, datetime)
     
     ms_interp_column <- ms_interp_column & ! is.na(d_interp$val)
@@ -454,3 +415,83 @@ ms_linear_interpolate <- function(d, interval){
     
     return(d_interp)
 }
+
+numeric_any <- function(num_vec){
+    return(as.numeric(any(as.logical(num_vec))))
+}
+
+# EGRET stuff 
+get_days_since_1850 <- function(dates){
+    return_dates <- as.numeric(as_date(dates)-lubridate::ymd('1850-01-01'))
+    return(return_dates)
+}
+get_DecYear <- function(dates){
+    
+    year <- year(dates)
+    
+    get_days <- function(year){
+        if((year %% 4) == 0) {
+            if((year %% 100) == 0) {
+                if((year %% 400) == 0) {
+                    day_years <- 366
+                } else {
+                    day_years <- 365
+                }
+            } else {
+                day_years <- 366
+            }
+        } else {
+            day_years <- 365
+        }
+    }
+    
+    days_in_year <- map_dbl(year, get_days)
+    
+    DecYear <- (yday(dates)/days_in_year)+year(dates)
+    
+    return(DecYear)
+}
+get_MonthSeq <- function(dates){
+    
+    years <- year(dates)-1850
+    
+    MonthSeq <- years*12
+    
+    MonthSeq <- MonthSeq + month(dates)
+    
+    return(MonthSeq)
+}
+get_start_end <- function(d){
+    start_date <- min(d$datetime)
+    start_year <- year(start_date)
+    start_wy <- ifelse(month(start_date) %in% c(10, 11, 12), start_year+1, start_year)
+    filter_start_date <- lubridate::ymd(paste0(start_wy, '-10-01'))
+    
+    end_date <- max(d$datetime)
+    end_year <- year(end_date)
+    end_wy <- ifelse(month(end_date) %in% c(10, 11, 12), end_year+1, end_year)
+    filter_end_date <- lubridate::ymd(paste0(end_wy, '-10-01'))
+    
+    fin_dates <- c(filter_start_date, filter_end_date)
+    return(fin_dates)
+    
+}
+drop_var_prefix <- function(x){
+    
+    unprefixed <- substr(x, 4, nchar(x))
+    
+    return(unprefixed)
+}
+# From EGRET
+decimalDate <- function(rawData){
+    
+    dateTime <- as.POSIXlt(rawData)
+    year <- dateTime$year + 1900
+    
+    startYear <- as.POSIXct(paste0(year,"-01-01 00:00"))
+    endYear <- as.POSIXct(paste0(year+1,"-01-01 00:00"))
+    
+    DecYear <- year + as.numeric(difftime(dateTime, startYear, units = "secs"))/as.numeric(difftime(endYear, startYear, units = "secs"))
+    return(DecYear)
+}
+# End EGRET stuff

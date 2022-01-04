@@ -1,6 +1,6 @@
 #' Extract macrosheds variable prefixes
 #'
-#' Extract prefixes on macrosheds variable 
+#' Extract prefixes on macrosheds variables
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
 #' @author Mike Vlah
@@ -10,7 +10,7 @@
 #' @details Macrosheds variables all have a two letter prefix on the front of the 
 #'    variable to denote the smapling type. The first space is either a I for 'installed'
 #'    or a G for 'grab.' Denoting if this variable records continously or is a grab 
-#'    samples. The second position is either a S for 'sensor' or N for 'not a sensor'.
+#'    sample. The second position is either a S for 'sensor' or N for 'not a sensor'.
 #'    Non-sensor variables are generally analyzied in a labratory. 
 #' @export
 #' @examples
@@ -18,7 +18,7 @@
 #' macrosheds_prefixs <- extract_var_prefix(x = macrosheds_vars)
 
 
-extract_var_prefix <- function(x){
+ms_extract_var_prefix <- function(x){
     
     prefix <- substr(x, 1, 2)
     

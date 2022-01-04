@@ -1,0 +1,520 @@
+domain,pretty_domain,network,pretty_network,stream,site_code,full_name,site_type,latitude,longitude,CRS,ws_area_ha,in_workflow,notes,local_time_zone,includes_snow
+hbef,Hubbard Brook,lter,LTER,Stream 1,w1,Watershed 1,stream_gauge,43.952034,-71.726501,4326,14.06186773,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,Stream 2,w2,Watershed 2,stream_gauge,43.953358,-71.724174,4326,17.8911433,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,Stream 3,w3,Watershed 3,stream_gauge,43.954875,-71.722816,4326,40.16532249,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,Stream 4,w4,Watershed 4,stream_gauge,43.950176,-71.725792,4326,38.75100001,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,Stream 5,w5,Watershed 5,stream_gauge,43.948845,-71.731918,4326,20.74150659,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,Stream 6,w6,Watershed 6,stream_gauge,43.94994,-71.735641,4326,14.93492464,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,Stream 7,w7,Watershed 7,stream_gauge,43.927509,-71.767075,4326,76.44700354,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,Stream 8,w8,Watershed 8,stream_gauge,43.929436,-71.759521,4326,60.92313064,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,Stream 9,w9,Watershed 9,stream_gauge,43.926014,-71.747195,4326,70.12464535,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,Hubbard Brook,HBK,Hubbard Brook Mainstem,stream_sampling_point,43.939763,-71.703585,4326,,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,,ML70,Mirror Lake Outlet,stream_sampling_point,43.940567,-71.690937,4326,,1,,America/New_York,
+hbef,Hubbard Brook,lter,LTER,,RG1,Rain Gauge 1,rain_gauge,43.95212079,-71.72483773,4326,,1,converted shapefile from lter using st_transform,America/New_York,1
+hbef,Hubbard Brook,lter,LTER,,RG11,Rain Gauge 11,rain_gauge,43.95022663,-71.73461244,4326,,1,converted shapefile from lter using st_transform,America/New_York,1
+hbef,Hubbard Brook,lter,LTER,,RG23,Rain Gauge 23,rain_gauge,43.92720113,-71.7469262,4326,,1,converted shapefile from lter using st_transform,America/New_York,1
+hbef,Hubbard Brook,lter,LTER,,RG22,Rain Gauge 22,rain_gauge,43.94402186,-71.70122926,4326,,1,converted shapefile from lter using st_transform,America/New_York,1
+hbef,Hubbard Brook,lter,LTER,,N,?,rain_gauge,44,-72,4326,,1,still need real coords for these,America/New_York,1
+hbef,Hubbard Brook,lter,LTER,,S,?,rain_gauge,44,-72,4326,,1,still need real coords for these,America/New_York,1
+hbef,Hubbard Brook,lter,LTER,,SP,?,rain_gauge,44,-72,4326,,1,still need real coords for these,America/New_York,1
+hjandrews,H. J. Andrews,lter,LTER,Lookout Creek,GSLOOK,?,stream_gauge,44.2101255,-122.2571458,4326,6219.830992,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Stream 1,GSWS01,?,stream_gauge,44.2073394,-122.2580274,4326,97.97811622,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Stream 2,GSWS02,?,stream_gauge,44.2120146,-122.2448757,4326,59.05467399,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Stream 3,GSWS03,?,stream_gauge,44.21943957,-122.243,4326,92.82065136,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Stream 6,GSWS06,?,stream_gauge,44.26150813,-122.1807065,4326,11.99133927,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Stream 7,GSWS07,?,stream_gauge,44.26463683,-122.1752649,4326,12.40325379,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Stream 8,GSWS08,?,stream_gauge,44.26629426,-122.1707925,4326,16.01007527,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Stream 9,GSWS09,?,stream_gauge,44.20118982,-122.2588014,4326,7.153500294,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,stream 10,GSWS10,?,stream_gauge,44.21705699,-122.2610555,4326,11.43201115,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Mack Creek,GSMACK,Mack Creek,stream_gauge,44.21944,-122.1674,4326,577.8695805,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,,RD1507,1507 Road Storage RG,rain_gauge,44.205599,-122.166083,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,L523RG,Hi-15 Unit L523 Storage RG,rain_gauge,44.265333,-122.18207,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,BLUERD,Blue Ridge Standard RG,rain_gauge,44.234765,-122.230991,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,CARPMT,Carpenter Mountain Storage RG,rain_gauge,44.27809,-122.139942,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,CENMET,Central Met Station Recording RG1,rain_gauge,44.243103,-122.14149,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,EARTHF,Earthflow Standard RG,rain_gauge,44.232446,-122.145719,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,FORKS_,Forks Standard RG,rain_gauge,44.22249,-122.240035,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,FRISEL,Frissell Ridge Storage RG,rain_gauge,44.227168,-122.10624,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,WS3GRD,WS#3 G Road Standard RG,rain_gauge,44.216648,-122.231448,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,GSMACK,Mack Creek Gaging Station Standard RG,rain_gauge,44.21928,-122.167472,4326,579.0612119,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,WS3JRD,WS#3 J Road Standard RG,rain_gauge,44.211035,-122.233762,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,MCRAEB,McRae Bridge Standard RG,rain_gauge,44.232959,-122.209223,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,MIDWAY,Midway Standard RG,rain_gauge,44.251137,-122.185031,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,WS3MRD,WS#3 M Road Standard RG,rain_gauge,44.220074,-122.236531,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,MIRKWD,Mirkwood Standard RG,rain_gauge,44.231315,-122.201972,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,MACKWE,Mack West Standard RG,rain_gauge,44.2118,-122.171177,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,RS13RG,Reference Stand #13 Open Storage RG,rain_gauge,44.343931,-122.123217,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,H15PND,Hi-15 Pond Standard RG,rain_gauge,44.262967,-122.171242,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,RS03RG,Primary Met Station Recording RG1,rain_gauge,44.211848,-122.255839,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,RS05RG,Reference Stand #5 Standard RG,rain_gauge,44.222173,-122.202758,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,RS18RG,Reference Stand #18 Standard RG,rain_gauge,44.246321,-122.158768,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,H15RCK,Hi-15 Rockpile Standard RG,rain_gauge,44.263781,-122.183702,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,H15RDG,Hi-15 Ridge Standard RG,rain_gauge,44.272046,-122.172201,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,RDSEND,Roads End Storage RG,rain_gauge,44.2051,-122.137927,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,ROSSRG,Ross' House in Blue River Standard RG,rain_gauge,44.156838,-122.344103,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,WS1SDL,WS#1 Saddle Standard RG,rain_gauge,44.201943,-122.240765,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,SPOTFI,Spotfire Unit Storage RG,rain_gauge,44.20017,-122.247569,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,SLTRWD,Shelterwood Standard RG,rain_gauge,44.230525,-122.167795,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,TRAILS,Trails End Standard RG,rain_gauge,44.220693,-122.115278,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,UNIT3B,Unit 3B Standard RG,rain_gauge,44.231306,-122.223428,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,UNIT3H,Unit 3H Standard RG,rain_gauge,44.259673,-122.170752,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,UPLMET,Upper Lookout Met Station Recording RG1,rain_gauge,44.207352,-122.11996,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,VANMET,Vanilla Leaf Met Station Recording RG,rain_gauge,44.271625,-122.149519,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,VARMET,Vanilla Leaf Met Meadow Recording RG,rain_gauge,44.273329,-122.149663,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,WS10RG,Top of WS#10 Storage RG,rain_gauge,44.219956,-122.25684,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,,WS09RG,Top of WS#9 Storage RG,rain_gauge,44.203214,-122.254851,4326,,1,,America/Los_Angeles,1
+hjandrews,H. J. Andrews,lter,LTER,Lookout Creek,TSLOOK,Lookout Creek upper thermograph site,stream_sampling_point,44.22478329,-122.1216289,4326,483.0181931,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Mack Creek,TSMACK,Mack Creek old-growth thermograph site,stream_sampling_point,44.21664907,-122.1654737,4326,512.9535528,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,McRae Creek,TSMCRA,McRae Creek upper thermograph site,stream_sampling_point,44.25638612,-122.167573,4326,598.0343286,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,Quartz Creek,TSQRTZ,Quartz Creek (Blue River tributary) thermograph site,stream_sampling_point,44.198319,-122.301997,4326,,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,,TSLOMA,Lookout and Mack Creek confluence thermograph site,stream_sampling_point,44.22756413,-122.1680202,4326,2599.457504,1,,America/Los_Angeles,
+hjandrews,H. J. Andrews,lter,LTER,,TSLOMC,Lookout and McRae Creek confluence thermograph site,stream_sampling_point,44.23298992,-122.2086344,4326,5066.891636,1,,America/Los_Angeles,
+neon,NEON,neon,NEON,Flint River,FLNT,Flint River,stream_gauge,31.18542,-84.4374,4326,1499616.581,1,,America/New_York,
+neon,NEON,neon,NEON,Lower Tombigbee River at Choctaw Refuge,TOMB,Lower Tombigbee River at Choctaw Refuge,stream_gauge,31.8521,-88.16107,4326,4712891.96,1,,America/Chicago,
+neon,NEON,neon,NEON,Black Warrior River near Dead Lake,BLWA,Black Warrior River near Dead Lake,stream_gauge,32.54153,-87.79815,4326,1617767.5,1,,America/Chicago,
+neon,NEON,neon,NEON,West St Louis Creek,WLOU,West St Louis Creek,stream_gauge,39.89137,-105.9154,4326,489.8413738,1,,America/Denver,
+neon,NEON,neon,NEON,McDiffett Creek,MCDI,McDiffett Creek,stream_gauge,38.94428,-96.44197,4326,2256.109283,1,,America/Chicago,
+neon,NEON,neon,NEON,Lewis Run,LEWI,Lewis Run,stream_gauge,39.09564,-77.98322,4326,1189.839089,1,,America/New_York,
+neon,NEON,neon,NEON,Blue River,BLUE,Blue River,stream_gauge,34.44422,-96.6242,4326,32220.40332,1,,America/Chicago,
+neon,NEON,neon,NEON,Teakettle 2 Creek,TECR,Teakettle 2 Creek,stream_gauge,36.95528,-119.02699,4326,297.369131,1,,America/Los_Angeles,
+neon,NEON,neon,NEON,Lower Hop Brook,HOPB,Lower Hop Brook,stream_gauge,42.47179,-72.32963,4326,1186.257508,1,,America/New_York,
+neon,NEON,neon,NEON,Martha Creek,MART,Martha Creek,stream_gauge,45.79125,-121.93196,4326,633.2454885,1,,America/Los_Angeles,
+neon,NEON,neon,NEON,Upper Big Creek,BIGC,Upper Big Creek,stream_gauge,37.058,-119.256,4326,1089.666098,1,,America/Los_Angeles,
+neon,NEON,neon,NEON,Red Butte Creek,REDB,Red Butte Creek,stream_gauge,40.78374,-111.79765,4326,1669.403645,1,,America/Denver,
+neon,NEON,neon,NEON,Sycamore Creek,SYCA,Sycamore Creek,stream_gauge,33.74906,-111.5069,4326,28056.48719,1,,America/Phoenix,
+neon,NEON,neon,NEON,Como Creek,COMO,Como Creek,stream_gauge,40.03496,-105.54487,4326,356.2476394,1,,America/Denver,
+neon,NEON,neon,NEON,Blacktail Deer Creek,BLDE,Blacktail Deer Creek,stream_gauge,44.95011,-110.58715,4326,3775.580375,1,,America/Denver,
+neon,NEON,neon,NEON,Pringle Creek,PRIN,Pringle Creek,stream_gauge,33.37859,-97.78226,4326,4893.217271,1,,America/Chicago,
+neon,NEON,neon,NEON,McRae Creek,MCRA,McRae Creek,stream_gauge,44.2596,-122.16555,4326,392.4152165,1,,America/Los_Angeles,
+neon,NEON,neon,NEON,"Caribou Creek, Caribou-Poker Creeks Research Watershed",CARI,"Caribou Creek, Caribou-Poker Creeks Research Watershed",stream_gauge,65.15306,-147.50246,4326,3084.393428,1,,America/Anchorage,
+neon,NEON,neon,NEON,Oksrukuyik Creek,OKSR,Oksrukuyik Creek,stream_gauge,68.66975,-149.14302,4326,5740.190897,1,,America/Anchorage,
+neon,NEON,neon,NEON,Arikaree River,ARIK,Arikaree River,stream_gauge,39.75825,-102.4471,4326,262978.4204,1,,America/Denver,
+neon,NEON,neon,NEON,Rio Guilarte,GUIL,Rio Guilarte,stream_gauge,18.1741,-66.79851,4326,958.3377164,1,,America/Puerto_Rico,
+neon,NEON,neon,NEON,Rio Cupeyes,CUPE,Rio Cupeyes,stream_gauge,18.11352,-66.98676,4326,427.1650534,1,,America/Puerto_Rico,
+neon,NEON,neon,NEON,Posey Creek,POSE,Posey Creek,stream_gauge,38.89332,-78.14678,4326,202.5686703,1,,America/New_York,
+neon,NEON,neon,NEON,Kings Creek,KING,Kings Creek,stream_gauge,39.10506,-96.60336,4326,1303.017289,1,,America/Chicago,
+neon,NEON,neon,NEON,Mayfield Creek,MAYF,Mayfield Creek,stream_gauge,32.95966,-87.40813,4326,1436.956189,1,,America/Chicago,
+neon,NEON,neon,NEON,Walker Branch,WALK,Walker Branch,stream_gauge,35.95947,-84.28041,4326,108.980639,1,,America/New_York,
+neon,NEON,neon,NEON,LeConte Creek,LECO,LeConte Creek,stream_gauge,35.69043,-83.50379,4326,912.0293243,1,,America/New_York,
+konza,Konza,lter,LTER,N04D,N04D,?,stream_gauge,39.0874,-96.5844,4326,121.4462513,1,,America/Chicago,
+konza,Konza,lter,LTER,N20B,N20B,?,stream_gauge,39.08858,-96.57654,4326,74.62733771,1,,America/Chicago,
+konza,Konza,lter,LTER,N01B,N01B,?,stream_gauge,39.08668,-96.577,4326,119.0623852,1,,America/Chicago,
+konza,Konza,lter,LTER,N02B,N02B,?,stream_gauge,39.0898,-96.5886,4326,85.73425839,1,,America/Chicago,
+konza,Konza,lter,LTER,HIKN,HIKN,Hiking Trail,stream_sampling_point,39.10713,-96.60664,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,HOKN,HOKN,Hokanson,stream_sampling_point,39.10376,-96.59542,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,NFKC,NFKC,North Fork Kings Creek,stream_sampling_point,39.10155,-96.59239,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,SFKC,SFKC,South Fork Kings Creek,stream_sampling_point,39.10128,-96.59239,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,K2AL-1,K2AL-1,?,stream_sampling_point,39.10093,-96.57538,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,KZFL,KZFL,Konza Falls,stream_sampling_point,39.08763,-96.58482,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,STCK,STCK,Stone Creek,stream_sampling_point,39.10564,-96.6061,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,SHAN,SHAN,Shane,stream_sampling_point,39.11439,-96.55757,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,K2AL-2,K2AL-2,?,stream_sampling_point,39.10065,-96.57412,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,TUBE,TUBE,Four Tubes,stream_sampling_point,39.09873,-96.58944,4326,,1,,America/Chicago,
+konza,Konza,lter,LTER,,HQ02,?,rain_gauge,39.1023,-96.6095,4326,,1,,America/Chicago,1
+konza,Konza,lter,LTER,,N02B,?,rain_gauge,39.0877,-96.5954,4326,85.80696433,1,,America/Chicago,1
+konza,Konza,lter,LTER,,R01A,?,rain_gauge,39.0692,-96.6107,4326,,1,,America/Chicago,1
+konza,Konza,lter,LTER,,004B,?,rain_gauge,39.0776,-96.5954,4326,,1,,America/Chicago,1
+konza,Konza,lter,LTER,,N4DU,?,rain_gauge,39.0778,-96.5898,4326,,1,,America/Chicago,1
+konza,Konza,lter,LTER,,002C,?,rain_gauge,39.0678,-96.5792,4326,,1,,America/Chicago,1
+konza,Konza,lter,LTER,,020B,?,rain_gauge,39.0756,-96.5758,4326,,1,,America/Chicago,1
+konza,Konza,lter,LTER,,K01B,?,rain_gauge,39.0862,-96.5631,4326,,1,,America/Chicago,1
+konza,Konza,lter,LTER,,N01B,?,rain_gauge,39.0849,-96.571,4326,119.1633181,1,,America/Chicago,1
+konza,Konza,lter,LTER,,N4DF,?,rain_gauge,39.0876,-96.5843,4326,,1,,America/Chicago,1
+konza,Konza,lter,LTER,Kings Creek,HIKX,Hiking Trail,stream_sampling_point,39.107,-96.6068,4326,,1,,America/Chicago,
+baltimore,Baltimore,lter,LTER,,WXCMNC,Carrie Murray Nature Center,rain_gauge,39.30724722,-76.69507222,4326,,1,,America/New_York,0
+baltimore,Baltimore,lter,LTER,,WXCPGC,Carroll Park Golf Course,rain_gauge,39.27359167,-76.64858611,4326,,1,,America/New_York,0
+baltimore,Baltimore,lter,LTER,,WXDRNC,Dead Run Near Cantonsville,rain_gauge,39.29588611,-76.74402778,4326,,1,,America/New_York,0
+baltimore,Baltimore,lter,LTER,,WXGFGL,Glyndon Elementary School,rain_gauge,39.46822222,-76.8105,4326,,1,,America/New_York,0
+baltimore,Baltimore,lter,LTER,,WXGFND,Gwynns Falls Near Delight,rain_gauge,39.44389167,-76.78266944,4326,,1,,America/New_York,0
+baltimore,Baltimore,lter,LTER,,WXMCDO,McDonogh School,rain_gauge,39.39633611,-76.77140833,4326,,1,,America/New_York,0
+baltimore,Baltimore,lter,LTER,,WXORDG,Oregon Ridge Park,rain_gauge,39.49656944,-76.68900556,4326,,1,,America/New_York,0
+baltimore,Baltimore,lter,LTER,,WXUMBC,UMBC Campus,rain_gauge,39.2543,-76.70233889,4326,,1,,America/New_York,0
+baltimore,Baltimore,lter,LTER,Gwynns Falls,GFCP,Gwynns Falls at Carroll Park,stream_gauge,39.2715,-76.649,4326,16302.59553,1,Collocated with USGS gauge 01589352,America/New_York,
+baltimore,Baltimore,lter,LTER,Gwynns Falls,GFGB,Gwynns Falls at Gwynnbrook Avenue,stream_gauge,39.443,-76.783,4326,1051.840747,1,Collocated with USGS gauge 01589197,America/New_York,
+baltimore,Baltimore,lter,LTER,Gwynns Falls,GFGL,Gwynns Falls at Glyndon,stream_gauge,39.4718,-76.817,4326,85.36608696,1,Collocated with USGS gauge 01589180,America/New_York,
+baltimore,Baltimore,lter,LTER,Gwynns Falls,GFVN,Gwynns Falls at Villa Nova,stream_gauge,39.3458,-76.733,4326,8287.462258,1,Collocated with USGS gauge 01589300,America/New_York,
+baltimore,Baltimore,lter,LTER,Pond Branch,POBR,Pond Branch forested reference site,stream_gauge,39.4803,-76.688,4326,35.76396528,1,Collocated with USGS gauge 01583570,America/New_York,
+baltimore,Baltimore,lter,LTER,Dead Run,DRKR,Dead Run at Krome Avenue,stream_gauge,39.3112,-76.717,4326,1410.114469,1,Collocated with USGS gauge 01589330,America/New_York,
+baltimore,Baltimore,lter,LTER,Baisman Run,BARN,Baisman Run at Ivy Hill Road,stream_gauge,39.4794,-76.678,4326,382.0365264,1,Collocated with USGS gauge 01583580,America/New_York,
+baltimore,Baltimore,lter,LTER,,RGHT,Rognel Heights,stream_sampling_point,39.2547,-76.69,4326,,1,point does not look to be on a flow line,America/New_York,
+baltimore,Baltimore,lter,LTER,,MCDN,McDonogh agricultural site,stream_gauge,39.4004,-76.77,4326,5.60930172,1,Collocated with USGS gauge 01589238.,America/New_York,
+baltimore,Baltimore,lter,LTER,Maidens Choice,MAWI,Maidens Choice at Wilkens Avenue,stream_gauge,39.2755,-76.666,4326,1204.123401,1,"Was collocated with USGS gauge 01589351, but sampling and gauging only overlap for a short time",America/New_York,
+baltimore,Baltimore,lter,LTER,Red Run,RR1,"Red Run at Painters Mill Bridge Road, Suburban",stream_sampling_point,39.404756,-76.779566,4326,,1,Cant find collocated USGS gauge,America/New_York,
+baltimore,Baltimore,lter,LTER,Red Run,RR2,"Red Run at Painters Mill Bridge Road, Suburban",stream_sampling_point,39.4113889,-76.8130556,4326,,1,Cant find collocated USGS gauge,America/New_York,
+baltimore,Baltimore,lter,LTER,Scotts Level Branch,SL1,"Scotts Level Branch at Gwynns Falls, Suburban",stream_sampling_point,39.360495,-76.745558,4326,,1,Collocated with USGS gauge 01589290 (possibly),America/New_York,
+baltimore,Baltimore,lter,LTER,Scotts Level Branch,SL2,"Scotts Level Branch at McDonogh Road,Suburban",stream_sampling_point,39.373866,-76.791005,4326,,1,Cant find collocated USGS gauge,America/New_York,
+baltimore,Baltimore,lter,LTER,Horsehead Branch,HH,"Horsehead Branch at McDonogh Road, Suburban",stream_sampling_point,39.389581,-76.779703,4326,,1,Cant find collocated USGS gauge,America/New_York,
+baltimore,Baltimore,lter,LTER,Holly Branch,HLB,"Holly Branch at Gwynnbrook Avenue, Suburban",stream_sampling_point,39.1027778,-76.791111,4326,,1,Cant find collocated USGS gauge,America/New_York,
+baltimore,Baltimore,lter,LTER,Gwynns Falls,GF5,"Gwynns Falls at McDonogh Road, Suburban",stream_sampling_point,39.39121,-76.765326,4326,,1,Cant find collocated USGS gauge,America/New_York,
+baltimore,Baltimore,lter,LTER,Jennifer Branch,JBHH,Jennifer Branch at Hartford Hills,stream_sampling_point,39.3993,-76.52,4326,,1,,America/New_York,
+baltimore,Baltimore,lter,LTER,Jennifer Branch,JBNW,Jennifer Branch at Northwind,stream_sampling_point,,,4326,,1,Cant find location,America/New_York,
+baltimore,Baltimore,lter,LTER,Jennifer Branch,JBON,Jennifer Branch at Ontario,stream_sampling_point,,,4326,,1,Cant find location,America/New_York,
+niwot,Niwot,lter,LTER,Soddie stream,SODDIE,Soddie stream,stream_sampling_point,40.047778,-105.570833,4326,,1,,America/Denver,
+niwot,Niwot,lter,LTER,Albion,ALBION,Albion Camp,stream_gauge,40.04287468,-105.592296,4326,718.7620556,1,,America/Denver,
+niwot,Niwot,lter,LTER,Green Lake 1,GREEN1,Green Lake 1 Outlet,stream_sampling_point,40.049746,-105.605309,4326,,1,,America/Denver,
+niwot,Niwot,lter,LTER,Green Lake 4,GREEN4,Green Lake 4 Outlet,stream_gauge,40.055742,-105.617065,4326,223.586457,1,,America/Denver,
+niwot,Niwot,lter,LTER,Green Lake 5,GREEN5,Green Lake 5 Outlet,stream_gauge,40.05367068,-105.6279131,4326,141.7896099,1,,America/Denver,
+niwot,Niwot,lter,LTER,Lake Albion Inlet,ALBION_INLET,Lake Albion Inlet,stream_sampling_point,40.047178,-105.607123,4326,,1,,America/Denver,
+niwot,Niwot,lter,LTER,,MARTINELLI,Martinelli Basin,stream_gauge,40.05060202,-105.595805,4326,3.931912138,1,,America/Denver,
+niwot,Niwot,lter,LTER,,NAVAJO,Navajo meadow,stream_gauge,40.05195303,-105.6367,4326,47.34872483,1,,America/Denver,
+niwot,Niwot,lter,LTER,Saddle Stream 007,SADDLE_007,Saddle Stream 007,stream_sampling_point,40.05485646,-105.5901358,4326,,1,,America/Denver,
+niwot,Niwot,lter,LTER,Saddle Stream,SADDLE,Saddle Stream,stream_gauge,40.04903177,-105.5923174,4326,14.12910944,1,,America/Denver,
+niwot,Niwot,lter,LTER,,FLUME,Watershed Flume,stream_sampling_point,40.01368597,-105.5578493,4326,,1,,America/Denver,
+niwot,Niwot,lter,LTER,,ROCK_GLACIER,Green Lake 5 Rock Glacier,stream_sampling_point,40.05213501,-105.6289841,4326,,1,,America/Denver,
+niwot,Niwot,lter,LTER,,saddle,Saddle Climate Station,rain_gauge,40.05492794,-105.5893007,4326,,1,,America/Denver,1
+niwot,Niwot,lter,LTER,,C1,C1 Climate Station,rain_gauge,40.03616695,-105.5435152,4326,,1,,America/Denver,1
+niwot,Niwot,lter,LTER,,D1,D1 Climate Station,rain_gauge,40.059693,-105.617012,4326,,1,,America/Denver,1
+santa_barbara,Santa Barbara,lter,LTER,Arroyo Burro,AB00,"Arroyo Burro, Arroyo Burro at Cliff Drive",stream_gauge,34.40505027,-119.74021,4326,2306.696176,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Atascadero Creek,AT07,"Atascadero Creek, Atascadero at Puente",stream_gauge,34.43226,-119.78414,4326,1426.431894,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Bell Canyon Creek,BC02,Bell Canyon Creek at Winchester Canyon Road culvert,stream_gauge,34.43854,-119.90563,4326,1472.527899,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Devereaux Creek,DV01,Devereaux Creek at Devereaux Slough inflow,stream_gauge,34.41761,-119.87406,4326,832.9490294,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,"Gaviota, Gaviota",GV01,"Gaviota, Gaviota at Hwy 101 South Rest Stop Exit",stream_gauge,34.4855,-120.22917,4326,4968.839031,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Arroyo Burro,HO00,"Hondo, Arroyo Hondo at Upstream Side of 101 Bridge",stream_gauge,34.4752858,-120.14122,4326,1113.247973,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Mission Creek,MC00,Mission at Montecito St,stream_gauge,34.41307303,-119.69499,4326,3063.988537,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Mission Creek,MC06,Mission at Rocky Nook. Site established by the USGS,stream_gauge,34.44072,-119.71244,4326,1674.736572,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,San Onofre Creek,ON02,San Onofre Creek at Highway 101 North culvert,stream_gauge,34.472,-120.28885,4326,400.7200492,1,2005 have a runoff ratio of > 3,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Refugio Creek,RG01,Refugio at Hwy 101 Bridge,stream_gauge,34.46573164,-120.06932,4326,2073.250628,1,2017 has a runoff ratio of > 2,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Rattlesnake Creek,RS02,Rattlesnake at Las Canoas Bridge,stream_gauge,34.45761111,-119.69222,4326,553.46777,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,San Pedro Creek,SP02,"San Pedro Creek at Stow Canyon Park, Goleta",stream_gauge,34.44861,-119.84028,4326,800.116093,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Franklin Creek,FK00,"Franklin Creek, Carpinteria Ave",stream_gauge,34.40164787,-119.52145,4326,224.023219,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Tecolotito Creek,TE03,"Tecolotito Creek, Hollister Road",stream_gauge,34.43055,-119.85762,4326,113.9835424,1,The only full year of data appears to have issues (runoff ratio > 4),America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Santa Monica Creek,SM04,Santa Monica at Scoop,stream_gauge,34.41898512,-119.52701,4326,929.3662511,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Carpinteria Creek,CP00,"Carpinteria Creek, 8th St Foot Bridge",stream_gauge,34.3935,-119.5124,4326,3872.088884,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Tecolote Creek,TO02,"Tecolote Creek, at Vereda Galeria, Goleta",stream_sampling_point,34.440614,-119.917915,4326,,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Santa Monica Creek,SM01,"Santa Monica Creek, Via Real",stream_gauge,34.40479765,-119.52869,4326,959.9223485,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,Rincon Creek,RN01,"Rincon Creek, Hwy 101 Culvert, North",stream_gauge,34.3773,-119.47794,4326,3812.794203,1,,America/Los_Angeles,
+santa_barbara,Santa Barbara,lter,LTER,,KTYD227,,rain_gauge,34.422301,-119.691716,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,Montecito325,Montecito,rain_gauge,34.429444,-119.640555,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,GB201,Gobernador at Veddar's Ranch,rain_gauge,34.4245,-119.47089,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,BaronRanch262,Baron Ranch,rain_gauge,34.48333333,-120.1291667,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,ColdSprings210,Cold Springs Basin,rain_gauge,34.45,-119.6166667,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,DosPueblos226,Dos Pueblos Ranch,rain_gauge,34.44666667,-119.9516667,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,DoultonTunnel231,Doulton Tunnel,rain_gauge,34.45694444,-119.5638889,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,EdisonTrail252,Edison Trail,rain_gauge,34.44277778,-119.5077778,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,ElDeseo255,El Deseo,rain_gauge,34.49166667,-119.6958333,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,Nojoqui236,Nojoqui Falls Park,rain_gauge,34.53388889,-120.1777778,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,StanwoodFS228,Stanwood Fire Station,rain_gauge,34.45,-119.6833333,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,TroutClub242,Trout Club,rain_gauge,34.48972222,-119.8,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,GaviotaSP301,Gaviota State Park,rain_gauge,34.47245,-120.22944,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,RefugioPass429,Refugio Pass,rain_gauge,34.53,-120.0922,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,TecoloteCanyon280,Tecolote Canyon,rain_gauge,34.520823,-119.9088,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,GlenAnnieCanyon309,Glen Annie Canyon,rain_gauge,34.475,-119.8833,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,GoletaFireStation440,Goleta Fire Station,rain_gauge,34.443055,-119.85361,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,GoletaWaterDistrict334,Goleta Water District,rain_gauge,34.436944,-119.7855,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,BotanicGarden321,Botanic Garden,rain_gauge,34.45388,-119.70694,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,RanchoSJ389,Rancho San Julian,rain_gauge,34.531666,-120.33777,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,BuelltonFS233,Buellton Fire Station,rain_gauge,34.61333,-120.19667,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,EL202,El Capitan at Upper Bill Wallace Trail,rain_gauge,34.496117,-120.00785,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,Carpinteria208,Carpinteria Fire Station,rain_gauge,34.4,-119.5166667,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,CaterWTP229,Cater Water Treatment Plant,rain_gauge,34.45416667,-119.7302778,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,GoletaRdYard211,Santa Barbara County Road Yard,rain_gauge,34.45,-119.7666667,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,SanMarcosPass212,San Marcos Pass USFS Stn,rain_gauge,34.51111111,-119.8238889,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,SBCaltrans335,Santa Barbara Caltrans Office,rain_gauge,34.438611,-119.755,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,CarpinteriaUSFS383,Carpinteria US Forest Service Office,rain_gauge,34.40194,-119.49138,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,SBEngBldg234,Santa Barbara Co. FCD Eng. Bldg.,rain_gauge,34.41666667,-119.7,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,UCSB200,UCSB-200,rain_gauge,34.415,-119.8461111,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,CP201,Carpinteria at Veddar's Ranch,rain_gauge,34.42374,-119.48104,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,EL201,El Capitan at State Beach,rain_gauge,34.462283,-120.024883,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,GV202,Gaviota at Las Cruces School,rain_gauge,34.50765,-120.22861,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,RG201,Refugio at State Park,rain_gauge,34.461853,-120.076261,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,RG202,Lower Aguacitos Ranch,rain_gauge,34.49122,-120.07483,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,RG203,Refugio at Upper Aguacitos Ranch,rain_gauge,34.50856,-120.07947,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,RG204,Refugio at Rancho La Scherpa,rain_gauge,34.5303,-120.05636,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,HO201,Arroyo Hondo at East Avocado Orchard,rain_gauge,34.47651,-120.14064,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,HO202,Arroyo Hondo at Upper Outlaw Trail,rain_gauge,34.49059,-120.13678,4326,,1,,America/Los_Angeles,0
+santa_barbara,Santa Barbara,lter,LTER,,GV201,Gaviota at Hwy 101 N rest stop,rain_gauge,34.48011,-120.22917,4326,,1,,America/Los_Angeles,0
+bonanza,Bonanza Creek,lter,LTER,,C2,,stream_gauge,65.159188,-147.607454,4326,357.8829797,1,"alt site name:  C-2, C2-1100, C2 Flume",America/Anchorage,
+bonanza,Bonanza Creek,lter,LTER,,C3,,stream_gauge,65.144853,-147.574368,4326,480.6041249,1,alt site name:  C-3,America/Anchorage,
+bonanza,Bonanza Creek,lter,LTER,,CB,,stream_sampling_point,65.15,-147.56,4326,,1,,America/Anchorage,
+bonanza,Bonanza Creek,lter,LTER,,C4,Little Poker Creek,stream_gauge,65.162726,-147.50057,4326,929.9301795,1,"alt site name: C-4, C4 CTRL, Little Poker Creek, C4",America/Anchorage,
+bonanza,Bonanza Creek,lter,LTER,,P6,,stream_sampling_point,65.184791,-147.388939,4326,,1,,America/Anchorage,
+bonanza,Bonanza Creek,lter,LTER,Poker Creek,PJ,,stream_sampling_point,65.15154566,-147.4841681,4326,,1,"alt site name: P-J, Poker Creek, Poker Main",America/Anchorage,
+bonanza,Bonanza Creek,lter,LTER,Caribou Creek,CJ,,stream_sampling_point,65.15147902,-147.4856181,4326,,1,"alt site name:  C-J, Caribou Main, CM, Caribou Creek",America/Anchorage,
+bonanza,Bonanza Creek,lter,LTER,,PC,,stream_sampling_point,65.1510123,-147.482385,4326,,1,,America/Anchorage,
+bonanza,Bonanza Creek,lter,LTER,,boston_creek,,stream_sampling_point,65.23,-147.12,4326,,1,alt site name: Boston Creek,America/Anchorage,
+bonanza,Bonanza Creek,lter,LTER,,CPEAK,Caribou Peak,rain_gauge,65.19275149,-147.4990579,4326,,1,"alt site name: Caribou Peak, IWAES",America/Anchorage,0
+bonanza,Bonanza Creek,lter,LTER,,HR1A,Helmer's Ridge,rain_gauge,65.17091866,-147.5435743,4326,,1,"alt site name:Helmer's Ridge, Helmer's, Helmers, HELM, 400, HR1, CPCRWY1",America/Anchorage,0
+bonanza,Bonanza Creek,lter,LTER,,CRREL,,rain_gauge,65.15425986,-147.4903787,4326,,1,"alt site name: CRREL, CRREL-Mets, CRREL AT, CRAT, CRRELAT",America/Anchorage,0
+bonanza,Bonanza Creek,lter,LTER,,CARSNOW,,rain_gauge,65.15065772,-147.5606703,4326,,1,,America/Anchorage,0
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Bohner Stream,bohner_b5,Bohner B5,stream_gauge,-77.696302,162.558285,4326,105.085427,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Adams Stream,adams_weir,Adams Stream at Weir,stream_gauge,-78.13166809,163.75,4326,9.876850154,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Aiken Creek,aiken_f5,Aiken Creek at F5,stream_gauge,-77.602516,163.2719421,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Andersen Creek,anderson_h1,Andersen Creek at H1,stream_gauge,-77.622772,162.9063568,4326,160.0911324,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Canada Stream,canada_f1,Canada Stream at F1,stream_gauge,-77.613655,163.0547333,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Commonwealth Stream,common_c1,Commonwealth Stream at C1,stream_gauge,-77.563332,163.3808289,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Crescent Stream,crescent_f8,Crescent Stream at F8,stream_gauge,-77.619064,163.1844635,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Delta Stream,delta_f10,Delta Stream at F10,stream_gauge,-77.624619,163.1084442,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Green Creek,green_f9,Green Creek at F9,stream_gauge,-77.62409973,163.0597534,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Harnish Creek,harnish_f11,Harnish Creek at F11,stream_gauge,-77.62124634,163.269516,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Harnish Creek,harnish_f7,Harnish Creek at F7,stream_gauge,-77.60832977,163.2327728,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Lost Seal Stream,lostseal_f3,Lost Seal Stream at F3,stream_gauge,-77.595268,163.2444,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Onyx River,onyx_vnda,Onyx River at Lake Vanda,stream_gauge,-77.52343,161.6966248,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Onyx River,onyx_lwright,Onyx River at Lower Wright,stream_gauge,-77.444534,162.6535339,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Von Guerard Stream,vguerard_f6,Von Guerard Stream at F6,stream_gauge,-77.60820007,163.2539978,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,House Stream,house_h2,House Stream at H2,stream_gauge,-77.64298248,162.7413177,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Huey Creek,huey_f2,Huey Creek at F2,stream_gauge,-77.60489655,163.1274109,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Santa Fe Stream,santafe_b2,Santa Fe Stream at B2,stream_gauge,-77.72305298,162.2666626,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Priscu Stream,priscu_b1,Priscu Stream at B1,stream_gauge,-77.69999695,162.534729,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Lawson Creek,lawson_b3,Lawson Creek at B3,stream_gauge,-77.72277832,162.2680511,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Andersen Creek,andrsn_h1,Andersen Creek at H1,stream_sampling_point,-77.622772,162.906357,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Andrews Creek,andrws_mouth,Andrews Creek at mouth,stream_sampling_point,-77.620834,163.044449,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Bartlette Creek,bartlt_mouth,Bartlette Creek at mouth,stream_sampling_point,-77.720833,162.416672,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Bohner Stream,bohnr_lower,Bohner stream at lower site,stream_sampling_point,-77.697334,162.56192,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Bohner Stream,bohnr_mouth,Bohner Stream at mouth,stream_sampling_point,-77.69722,162.541672,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Lyons Creek,lyons_b4,Lyons Creek at B4,stream_sampling_point,-77.727776,162.274994,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Mariah Creek,mariah_mouth,Mariah Creek at mouth,stream_sampling_point,-77.623611,163.047226,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Mason Creek,mason_mouth,Mason Creek at Mouth,stream_sampling_point,-77.729164,162.274994,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,McKay Creek,mckay_mouth,McKay Creek at mouth,stream_sampling_point,-77.644722,162.747223,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,McKnight Creek,mcknight_mouth,McKnight Creek at mouth,stream_sampling_point,-77.599724,163.264725,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Red River,red_bfalls,Red River at Blood Falls,stream_sampling_point,-77.723335,162.268051,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Sharp Creek,sharp_mouth,Sharp Creek at mouth,stream_sampling_point,-77.722221,162.247223,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Vincent Creek,vincent_mouth,Vincent Creek at mouth,stream_sampling_point,-77.720276,162.425003,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Von Guerard Stream,vguerard_upper,Von Guerard stream at upper site,stream_sampling_point,-77.634384,163.306305,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Wharton Creek,wharton_mouth,Wharton Creek at mouth,stream_sampling_point,-77.645836,162.747223,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Bowles Creek,bowles_mouth,Bowles Creek at mouth,stream_sampling_point,-77.622223,163.050003,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Lyons Creek Tributary,lyons_trib,Lyons tributary at confluence,stream_sampling_point,-77.720001,162.270004,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Garwood River,garwood_flats,Garwood River at flats,stream_sampling_point,-78.020836,164.016663,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Garwood River,garwood_colleen,Garwood Stream at Lake Colleen,stream_sampling_point,-78.027779,163.913895,4326,,1,,Antarctica/McMurdo,
+mcmurdo,McMurdo Dry Valleys,lter,LTER,Garwood River,garwood_blwconf,Garwood River below confluence,stream_sampling_point,-78.019447,164.066666,4326,,1,,Antarctica/McMurdo,
+plum,Plum Island Ecosystem,lter,LTER,,mbl_marshview,"meteorological station at MBL, Marshview Farm, Newbury, MA",rain_gauge,42.756971,-70.891366,4326,,1,,America/New_York,1
+plum,Plum Island Ecosystem,lter,LTER,,governors_academy,"meteorological station at Governor's Academy, Byfield, MA",rain_gauge,42.751484,-70.902407,4326,,1,,America/New_York,1
+plum,Plum Island Ecosystem,lter,LTER,Fish Brook,fish_brook,"Fish Brook, Boxford, MA",stream_sampling_point,42.65831,-71.004821,4326,,1,,America/New_York,
+plum,Plum Island Ecosystem,lter,LTER,Cart Creek,cart_creek,"Cart Creek (forest landuse), Newbury, MA",stream_gauge,42.7692,-70.9165,4326,473.0538513,1,,America/New_York,
+plum,Plum Island Ecosystem,lter,LTER,Saw Mill Brook,saw_mill_brook,"Saw Mill Brook (urban landuse), Burlington, MA",stream_gauge,42.52360153,-71.18499756,4326,343.2885287,1,,America/New_York,
+plum,Plum Island Ecosystem,lter,LTER,Bear Meadow Brook,bear_meadow,"Cedar Swamp (wetland landuse), Bear Meadow Brook, Reading, MA",stream_gauge,42.5495,-71.0909,4326,318.7610141,1,watershed is not being delineated correctly,America/New_York,
+plum,Plum Island Ecosystem,lter,LTER,Ispwich River,upper_ipswich,Ipswich River at N. Reading site,stream_gauge,42.5625662,-71.1093305,4326,4576.276496,1,,America/New_York,
+plum,Plum Island Ecosystem,lter,LTER,Ispwich River,ipswich_dam,Ipswich River Sylvania Dam,stream_sampling_point,42.67754364,-70.83768463,4326,,1,Plum lter associates chemistry at this point with USGS gauge 01102000 but it is upstream from sampling point,America/New_York,
+plum,Plum Island Ecosystem,lter,LTER,Parker River,parker_dam,Parker River Central St Dam,stream_sampling_point,42.75000763,-70.92921448,4326,,1,Plum lter associates chemistry at this point with USGS gauge 01101000 but it is upstream from sampling point,America/New_York,
+plum,Plum Island Ecosystem,lter,LTER,Mill River,mill_river,"Mill River, Newbury, MA",stream_sampling_point,42.73936081,-70.90019226,4326,,1,,America/New_York,
+plum,Plum Island Ecosystem,lter,LTER,Egypt River,egypt_river,"Egypt River, Rt 133, Ipswich, MA",stream_sampling_point,42.69816208,-70.86828613,4326,,1,,America/New_York,
+plum,Plum Island Ecosystem,lter,LTER,Little River,little_river,"Little River, Newbury, MA",stream_sampling_point,42.80039978,-70.88327789,4326,,1,,America/New_York,
+arctic,Arctic,lter,LTER,,TLKMAIN,Toolik Field Station,rain_gauge,68.6282,-149.596,4326,,1,,America/Anchorage,0
+arctic,Arctic,lter,LTER,Birthday Creek,Dimple_Inlet_Main,"Dimple Inlet: Birthday Creek, North Slope of Alaska, Anaktuvuk River Fire Impacted Site",stream_sampling_point,68.9505,-150.198,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Birthday Creek,Dimple_Outlet_Main,"Dimple Outlet: Birthday Creek, North Slope of Alaska, Anaktuvuk River Fire Impacted Site",stream_sampling_point,68.9574,-150.2,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,,I-Minus_2_IMP,"I Minus 2 IMP: North Slope of Alaska, Thermokarst Impacted Stream",stream_sampling_point,68.5483,-149.522,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,,I-Minus_2_REF,"I Minus 2 REF: North Slope of Alaska, Thermokarst Reference Stream",stream_sampling_point,68.548,-149.521,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,,I-Minus_2_TK_High,"I Minus 2 TK High: North Slope of Alaska, Thermokarst Watertrack",stream_sampling_point,68.5443,-149.522,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,,I-Minus_2_TK_High Side,"I Minus 2 High Side: North Slope of Alaska, Thermokarst Watertrack",stream_sampling_point,68.5443,-149.521,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,,I-Minus_2_TK_Low,"I Minus 2 TK Low: North Slope of Alaska, Thermokarst Watertrack",stream_sampling_point,68.5479,-149.522,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Imnavait Creek,Imnavait_Creek_A,"Imnavait Creek A: Imnavait Creek, North Slope of Alaska",stream_sampling_point,68.6166,-149.318,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Imnavait Creek,Imnavait_Creek_AA,"Imnavait Creek AA: Imnavait Creek, North Slope of Alaska",stream_sampling_point,68.6177,-149.318,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Imnavait Creek,Imnavait_Creek_B,"Imnavait Creek B: Imnavait Creek, North Slope of Alaska",stream_sampling_point,68.6206,-149.319,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Imnavait Creek,Imnavait_Creek_C,"Imnavait Creek C: Imnavait Creek, North Slope of Alaska",stream_sampling_point,68.6229,-149.321,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Imnavait Creek,Imnavait_Creek_D,"Imnavait Creek D: Imnavait Creek, North Slope of Alaska",stream_sampling_point,68.6253,-149.325,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Imnavait Creek,Imnavait_Creek_E,"Imnavait Creek E: Imnavait Creek, North Slope of Alaska",stream_sampling_point,68.642,-149.343,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_-0.1,,stream_sampling_point,68.639236,-149.393711,4326,11489.09987,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_-0.177,"Kuparuk -0.177k: Kuparuk River, North Slope of Alaska, reference reach, upstream of the fertilized reach",stream_sampling_point,68.6381,-149.392,4326,11236.84577,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_-0.3,"Kuparuk -0.3k: Kuparuk River, North Slope of Alaska, reference reach, upstream of the fertilized reach",stream_sampling_point,68.6384,-149.389,4326,11213.83587,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_-0.47,"Kuparuk -0.47k: Kuparuk River, North Slope of Alaska, reference reach, upstream of the fertilized reach",stream_sampling_point,68.6374,-149.387,4326,11145.00267,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_-0.7,"Kuparuk -0.7k: Kuparuk River, North Slope of Alaska, reference reach, upstream of the fertilized reach",stream_sampling_point,68.6369,-149.384,4326,11103.68379,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_0,Kuparuk 0.0k: Kuparuk 0.0k,stream_sampling_point,68.6393,-149.3936,4326,11489.09987,1,"Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River. mike adjusted this point's location from 68.6391,-149.394 to 68.6393,-149.3936 on 20210708",America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_0.3,"Kuparuk 0.3k: Kuparuk River, North Slope of Alaska, re-fertilized reach, formerly the recovery reach after historic fertilization",stream_sampling_point,68.6407,-149.401,4326,4.736107917,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_0.56,"Kuparuk 0.56k: Kuparuk River, North Slope of Alaska, re-fertilized reach, formerly the recovery reach after historic fertilization",stream_gauge,68.6415,-149.4012,4326,11402.69182,1,"Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River. mike adjusted this point's location from 68.6421,-149.404 to 68.6415-149.4012 on 20210719",America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_0.74,"Kuparuk 0.74k: Kuparuk River, North Slope of Alaska, re-fertilized reach, formerly the recovery reach after historic fertilization",stream_sampling_point,68.644001,-149.402332,4326,0.2972949367,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_1,"Kuparuk 1.0k: Kuparuk River, North Slope of Alaska, re-fertilized reach, formerly the recovery reach after historic fertilization",stream_sampling_point,68.6447,-149.405,4326,4.146935337,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_1.39,"Kuparuk 1.39k: Kuparuk River, North Slope of Alaska, re-fertilized reach, formerly the recovery reach after historic fertilization",stream_sampling_point,68.6463,-149.41,4326,2.370760051,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_1.5,,stream_sampling_point,68.64756,-149.411706,4326,13984.0237,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_1.8,"Kuparuk 1.8k: Kuparuk River, North Slope of Alaska, fertilized reach",stream_sampling_point,68.6478,-149.416,4326,0.5935038143,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_2,"Kuparuk 2.0k: Kuparuk River, North Slope of Alaska, fertilized reach",stream_sampling_point,68.6495,-149.416,4326,14053.37726,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_2.5,"Kuparuk 2.5k: Kuparuk River, North Slope of Alaska, fertilized reach",stream_sampling_point,68.6523,-149.415,4326,14002.90867,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_3,"Kuparuk 3.0k: Kuparuk River, North Slope of Alaska, fertilized reach",stream_sampling_point,68.6537,-149.421,4326,4.733932267,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_4,"Kuparuk 4.0k: Kuparuk River, North Slope of Alaska, fertilized reach",stream_sampling_point,68.6588,-149.424,4326,14081.41534,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Kuparuk River,Kuparuk_River_4.1,,stream_sampling_point,68.659528,-149.425365,4326,14100.59854,1,Kuparuk River is gauged at location on the river (1.2 until 1993 whenit was moved to 0.74)  but we as associating Q at this site with all sampling points on the Kuparuk River,America/Anchorage,
+arctic,Arctic,lter,LTER,Hershey Creek,Hershey_Creek,"Kuparuk Trib: Hershey Creek: Tributary of the Kuparuk River, North Slope of Alaska",stream_sampling_point,68.6445,-149.412,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,North River,North_River_Main,"North River Main: North River, North Slope of Alaska, Anaktuvuk River Fire Impacted Site",stream_sampling_point,69.0553,-150.399,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_-0.1,Oksrukuyik -0.1k: Oksrukuyik -0.1k,stream_sampling_point,68.6715,-149.128,4326,6968.576737,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_-0.3,"Oksrukuyik -0.3k: Oksrukuyik Creek, North Slope of Alaska, reference reach, upstream of the formerly fertilized reach",stream_sampling_point,68.6714,-149.131,4326,6814.014504,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_-0.7,"Oksrukuyik -0.7k: Oksrukuyik Creek, North Slope of Alaska, reference reach, upstream of the formerly fertilized reach",stream_sampling_point,68.671,-149.138,4326,6737.014684,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_-1.2,"Oksrukuyik -1.2k: Oksrukuyik Creek, North Slope of Alaska, reference reach, upstream of the formerly fertilized reach",stream_sampling_point,68.6693,-149.146,4326,5714.309186,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_0.23,,stream_sampling_point,68.674104,-149.122683,4326,7382.156249,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_0.48,,stream_sampling_point,68.674851,-149.122057,4326,7383.631301,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_1.06,,stream_sampling_point,68.6782,-149.117129,4326,7482.738519,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_1.37,"Oksrukuyik 1.37k: Oksrukuyik Creek, North Slope of Alaska, recovery reach, formerly fertilized reach",stream_sampling_point,68.6798,-149.114,4326,7523.44116,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_1.7,,stream_sampling_point,68.682117,-149.112195,4326,7551.461662,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_2.5,,stream_sampling_point,68.68599701,-149.098999,4326,8229.725621,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Oksrukuyik Creek,Oksrukuyik_Creek_2.7,"Oksrukuyik 2.7k: Oksrukuyik Creek, North Slope of Alaska, recovery reach, formerly fertilized reach",stream_gauge,68.686,-149.099,4326,8229.725621,1,Oksrukuyik Creek is gauged at one point referred to as Oksrukuyik_Creek_2.49 but we as associating Q at this site with all sampling points on the Oksrukuyik Creek,America/Anchorage,
+arctic,Arctic,lter,LTER,Wolf Creek,Wolf_Creek,Wolf Creek: Oksrukuyik Creek Tributary,stream_sampling_point,68.6703,-149.127,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Roche Moutonnee Creek,Roche_Moutonnee_Creek_Main,"Roche Moutonnee Creek Main: Roche Moutonnee Creek, Brooks Range, Alaska, upstream of Dalton Highway crossing",stream_gauge,68.3737,-149.309,4326,8438.009225,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,South River,South_River_Main,"South River Main: South River, North Slope of Alaska, Anaktuvuk River Fire and Thermokarst Impacted Site",stream_sampling_point,68.9975,-150.308,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Toolik River,Toolik_Inlet_Main,"Toolik Inlet Main: Toolik Inlet, North Slope of Alaska, about 50 meters upstream of foot bridge",stream_gauge,68.6256,-149.595,4326,4440.732618,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Toolik River,Toolik_River_IMP,"Toolik River IMP: North Slope of Alaska, Thermokarst Impacted Stream",stream_sampling_point,68.6955,-149.208,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Toolik River,Toolik_River_REF,"Toolik River REF: North Slope of Alaska, Thermokarst Reference Stream",stream_sampling_point,68.6957,-149.205,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Toolik River,Toolik_River_TK_Above,Toolik River TK Above: Toolik River TK Above,stream_sampling_point,68.6907,-149.208,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Toolik River,Toolik_River_TK_Low,Toolik River TK Low: Toolik River TK Low,stream_sampling_point,68.6938,-149.204,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Toolik River,Toolik_River_TK_Mid,Toolik River TK Mid: Toolik River TK Mid,stream_sampling_point,68.6922,-149.207,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,Trevor Creek,Trevor_Creek_Main,"Trevor Creek Main: Trevor Creek, Brooks Range, Alaska, upstream of Dalton Highway crossing",stream_gauge,68.2824995,-149.3700461,4326,4280.218867,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,,VTK_IMP_Main,"VTK IMP Main: Impacted Valley of the Thermokarst, North Slope of Alaska, Anaktuvuk River Fire and Thermokarst Impacted Site",stream_sampling_point,68.961,-150.701,4326,,1,,America/Anchorage,
+arctic,Arctic,lter,LTER,,VTK_REF_Main,"VTK REF Main: Impacted Valley of the Thermokarst, North Slope of Alaska, Anaktuvuk River Fire and Thermokarst Impacted Site",stream_sampling_point,68.9354,-150.678,4326,,1,,America/Anchorage,
+boulder,Boulder Creek,czo,CZO,Gordon Gulch,GGL,Gordon Gulch: Lower,stream_gauge,40.012989,-105.4585063,4326,272.4132544,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,Gordon Gulch,GGU,Gordon Gulch: Upper,stream_gauge,40.0174256,-105.4751912,4326,91.36666661,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,Boulder Creek,BC_SW_6,Sugarloaf,stream_sampling_point,40.014639,-105.322861,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,Boulder Creek,BC_SW_2,Creek Path,stream_sampling_point,40.003806,-105.358397,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,Boulder Creek,BC_SW_4,Orodell,stream_gauge,40.006425,-105.330453,4326,26397.26655,1,discharge is collected by state of colorado gauge BOCOROCO,America/Denver,
+boulder,Boulder Creek,czo,CZO,Boulder Creek,BC_SW_12,Magnolia,stream_sampling_point,39.990144,-105.422908,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,Boulder Creek,BC_SW_14,Rockyknob,stream_sampling_point,39.98245,-105.445781,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,Boulder Creek,BC_SW_17,Ridge Road,stream_sampling_point,39.972231,-105.466014,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,Boulder Creek,BC_SW_18,Barker,stream_sampling_point,39.967183,-105.479797,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,Boulder Creek,BC_SW_20,Nederland,stream_gauge,39.961639,-105.505789,4326,9512.972419,1,discharge is collected by state of colorado gauge BOCMIDCO,America/Denver,
+boulder,Boulder Creek,czo,CZO,Betasso,BT_SW_0,Betasso,stream_sampling_point,40.007136,-105.334322,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,,BT_Met,Betasso Meteorological Station,rain_gauge,40.0145,-105.3373,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,,GGL_NF_Met,Gordon Gulch North-Facing Meteorological Met Station,rain_gauge,40.0113,-105.4714,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,,GGL_SF_Met,Gordon Gulch South-Facing Meteorological Tower,rain_gauge,40.014,-105.4676,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,,GGU_SPW1,Gordon Gulch Upper Spring 1,stream_sampling_point,40.019453,-105.476139,4326,,1,,America/Denver,
+boulder,Boulder Creek,czo,CZO,,GGU_SPW2,Gordon Gulch Upper Spring 2,stream_sampling_point,40.019453,-105.474922,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,RedondoMeadow,Redondo Meadow,stream_gauge,35.8546,-106.5941,4326,593.2610803,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,HistoryGrove,History Grove,stream_gauge,35.8759,-106.5125,4326,75.61086285,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,Jaramillo Creek,UpperJaramillo,Upper Jaramillo Creek,stream_gauge,35.9092,-106.5304,4326,741.4501886,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,Jaramillo Creek,LowerJaramillo,Lower Jaramillo Creek,stream_gauge,35.8929,-106.4958,4326,2732.249853,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,La Jara Creek,UpperLaJara,Upper La Jara Creek,stream_gauge,35.87033,-106.527,4326,351.1491352,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,La Jara Creek,LowerLaJara,Lower La Jara Creek,stream_gauge,35.8667,-106.5235,4326,373.2841523,1,mike changed long from -106.525 to -106.5235 on 20210726,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,Redondo Creek,LowerRedondo,Lower Redondo Creek,stream_gauge,35.8663,-106.5978,4326,1302.288021,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MC_ FLUME,Mixed Conifer ZOB,stream_gauge,35.88083,-106.53575,4326,37.18715988,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,Marshall Gulch,MarshallGulch,Marshall Gulch Schist catchment,stream_gauge,32.427351,-110.757857,4326,159.7935813,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,Bigelow,Bigelow Zero Order Basin,stream_gauge,32.4152,-110.7243,4326,3.970906645,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,OracleRidge,Oracle Ridge,stream_gauge,32.4494,-110.7399,4326,88.06027385,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,Redondo Creek,UpperRedondo,Upper Redondo Creek,stream_gauge,35.8929,-106.577,4326,422.9376479,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,FLUME_MCZOB,MC ZOB Flume,stream_gauge,35.88083,-106.536,4326,37.18715988,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,B2_Rain1,B2 desert site rain gage 1 (GR1),rain_gauge,32.55696,-110.841,4326,,1,,America/Denver,0
+catalina_jemez,Catalina-Jemez,czo,CZO,,B2_Rain2,B2 desert site rain gage 2 (GR2),rain_gauge,32.55537,-110.84,4326,,1,,America/Denver,0
+catalina_jemez,Catalina-Jemez,czo,CZO,,OR_PC1,Oracle Ridge Precipitation Collector,rain_gauge,32.44983,-110.74,4326,,1,,America/Denver,0
+catalina_jemez,Catalina-Jemez,czo,CZO,,OR_PC2,Oracle Ridge Precipitation Collector,rain_gauge,32.45005,-110.748,4326,,1,,America/Denver,0
+catalina_jemez,Catalina-Jemez,czo,CZO,,OR_PC3,Oracle Ridge Precipitation Collector,rain_gauge,32.44906,-110.751,4326,,1,,America/Denver,0
+catalina_jemez,Catalina-Jemez,czo,CZO,,B2D_PG,B2D Rain Collector at Granite Site,rain_gauge,32.5559,-110.841,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,B2D_PS,B2D Rain Collector at Schist Site,rain_gauge,32.55995,-110.839,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,B2D_PR,B2D Rain Collector,rain_gauge,32.55441,-110.85,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MG_PC1,Marshall Gulch; Schist,rain_gauge,32.42626,-110.761,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MG_PC2,Marshall Gulch; Fern Valley,rain_gauge,32.43098,-110.77,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MG_PC3,Marshall Gulch; Granite,rain_gauge,32.42956,-110.769,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,Burn_Met_Low,Burned ZOB lower met station,rain_gauge,35.851455,-106.44972,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,Burn_Met_Up,Burned ZOB upper met station,rain_gauge,35.847847,-106.44991,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MCZOB_met,mixed conifer ZOB Met,rain_gauge,35.882333,-106.5344169,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MG_Outlet,Marchall Gluch; Outlet,rain_gauge,32.428081,-110.759152,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MG_BurntMeadow,Marchall Gluch; Burnt Meadow,rain_gauge,32.4305,-110.765791,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MG_DoubleRock,Marchall Gluch; Double Rock,rain_gauge,32.428286,-110.763945,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MG_Schist_Winter,Marchall Gluch; Schist Winter,rain_gauge,32.426226,-110.761255,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MG_Weir,Marchall Gluch; Weir,rain_gauge,32.42725,-110.757598,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MG_Lemmon,Marchall Gluch; Mt. Lemmon,rain_gauge,32.441554,-110.790975,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,MC_flux_tower,Mixed Conifer Flux Tower,rain_gauge,35.8892,-106.5322,4326,,1,,America/Denver,
+catalina_jemez,Catalina-Jemez,czo,CZO,,Ponderosa_flux_tower,Ponderosa Pine flux tower,rain_gauge,35.8641,-106.5965,4326,,1,,America/Denver,
+calhoun,Calhoun,czo,CZO,,reasearch_area_1,,rain_gauge,34.6071,-81.7238,4326,,1,,US/Eastern,0
+calhoun,Calhoun,czo,CZO,,Tyger_River_hwy49,Tyger River at Hwy 49,stream_sampling_point,34.66616,-81.7393,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Isaacs_Creek_Bombing_Rang,Isaacs Creek at Bombing Range Rd,stream_sampling_point,34.65018,-81.7376,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Enoree_River_Jones_Ford,Enoree River at Jones Ford Rd,stream_sampling_point,34.57408,-81.7884,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Johns_Creek,Johns Creek,stream_sampling_point,34.57891,-81.7744,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Sparks_Creek,Sparks Creek,stream_sampling_point,34.61245,-81.7222,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Sparks_Creek_Seep,Sparks Creek Seep,stream_sampling_point,34.61245,-81.7225,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Upper_Padgetts_Creek,Upper Padgett's Creek,stream_sampling_point,34.59463,-81.7161,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Padgetts_Creek_Old_Buncombe,Padgett's Creek at Old Buncombe Hwy,stream_sampling_point,34.59049,-81.6907,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Padgetts_Creek_Sardis_Rd,Padgett's Creek at Sardis Rd,stream_sampling_point,34.58052,-81.6619,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Ref4_Drain,Ref 4 Drain,stream_sampling_point,34.5976,-81.6669,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Tyger_River_Sardis_Rd,Tyger River at Sardis Rd,stream_sampling_point,34.61535,-81.6665,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Ref4_Below_Bowl,Ref 4 Below Bowl,stream_sampling_point,34.59963,-81.6741,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,weir_1,Weir 1,stream_sampling_point,34.59971,-81.6838,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,weir_3,Weir 3,stream_gauge,34.6098,-81.6952,4326,4.739898059,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,weir_4,Weir 4,stream_gauge,34.61222,-81.6943,4326,6.53204726,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,Holcombes_Branch,Holcombe's Branch,stream_sampling_point,34.61308,-81.6966,4326,,1,,US/Eastern,
+calhoun,Calhoun,czo,CZO,,weir_2,Weir 2,stream_gauge,34.61411,-81.6933,4326,7.314085992,1,,US/Eastern,
+luquillo,Luquillo,lter,LTER,,Q1,Quebrada uno-Bisley,stream_gauge,18.315717,-65.74538,4326,6.873983725,1,,Etc/GMT-4,
+luquillo,Luquillo,lter,LTER,,Q2,Quebrada dos-Bisley,stream_gauge,18.314637,-65.74629,4326,6.347784356,1,,Etc/GMT-4,
+luquillo,Luquillo,lter,LTER,,Q3,Quebrada tres-Bisley,stream_gauge,18.314091,-65.747312,4326,32.74620927,1,,Etc/GMT-4,
+luquillo,Luquillo,lter,LTER,,QG,Quebrada Guaba,stream_gauge,18.283889,-65.788889,4326,144.5979297,1,usgs 50074950,Etc/GMT-4,
+luquillo,Luquillo,lter,LTER,,QS,Quebrada Sonadora,stream_gauge,18.322596,-65.8184,4326,265.5861115,1,"usgs 50063440, czo site lists the ws area as 261.59 ha",Etc/GMT-4,
+luquillo,Luquillo,lter,LTER,,MG,Rio Mameyes,stream_sampling_point,18.3561,-65.7685,4326,,1,,Etc/GMT-4,
+luquillo,Luquillo,lter,LTER,,RI,Rio Icacos,stream_gauge,18.275091,-65.785529,4326,337.3551659,1,usgs 50075000,Etc/GMT-4,
+luquillo,Luquillo,lter,LTER,,MPR,Puente Roto Mameyes,stream_gauge,18.326951,-65.750292,4326,1790.562143,1,usgs 50065500,Etc/GMT-4,
+luquillo,Luquillo,lter,LTER,,El_Verde,,rain_gauge,18.3212,-65.8199,4326,,1,,Etc/GMT-4,0
+luquillo,Luquillo,lter,LTER,,Bisley_Tower,,rain_gauge,18.3144,-65.7449,4326,,1,,Etc/GMT-4,0
+fernow,Fernow,usfs,USFS,,WS-5,WS-5,stream_gauge,39.05255287,-79.68547248,4326,35.75038577,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,WS-4,WS-4,stream_gauge,39.0539284,-79.68695226,4326,37.79036045,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,WS-2,WS-2,stream_gauge,39.05388001,-79.68258456,4326,14.83305298,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,WS-3,WS-3,stream_gauge,39.05419862,-79.68599584,4326,33.76124232,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,WS-10,WS-10,stream_gauge,39.05423944,-79.68020154,4326,15.62748249,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,WS-1,WS-1,stream_gauge,39.06015145,-79.67107828,4326,29.73089818,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,WS-13,WS-13,stream_gauge,39.06286133,-79.67897357,4326,13.78638058,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,WS-7,WS-7,stream_gauge,39.06401443,-79.6800685,4326,27.34851658,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,WS-6,WS-6,stream_gauge,39.06614987,-79.6766586,4326,21.32436314,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,WS-14,WS-14,stream_gauge,39.06055104,-79.66967705,4326,131.902218,1,,US/Eastern,
+fernow,Fernow,usfs,USFS,,C,C,rain_gauge,39.053048,-79.685435,4326,,1,,US/Eastern,1
+fernow,Fernow,usfs,USFS,,D,D,rain_gauge,39.058067,-79.69194,4326,,1,,US/Eastern,1
+east_river,East River,doe,DOE,,KCOMKRET2,Weather Underground Weather Station near Crested Butte,rain_gauge,38.9150314,-106.95892,4326,,1,,America/Denver,
+east_river,East River,doe,DOE,East River,PH,Pumphouse,stream_gauge,38.92230642,-106.9511305,4326,8488.096946,1,,America/Denver,
+east_river,East River,doe,DOE,East River,EBC,East Below Copper,stream_gauge,38.954166,-106.989556,4326,6986.394858,1,,America/Denver,
+east_river,East River,doe,DOE,Copper Creek,Copper,Copper Creek,stream_gauge,38.95713925,-106.9881744,4326,2364.903463,1,,America/Denver,
+east_river,East River,doe,DOE,Benthette Brook,Benthette,Benthette Brook,stream_gauge,38.96055013,-106.9927244,4326,17.67275348,1,,America/Denver,
+east_river,East River,doe,DOE,Avery Creek,Avery,Avery Creek,stream_gauge,38.97521672,-106.9973282,4326,59.71239591,1,,America/Denver,
+east_river,East River,doe,DOE,Marmot Creek,Marmot,Marmot Creek,stream_gauge,38.979313,-106.997681,4326,37.70495603,1,This doesn't look like its on a flow line,America/Denver,
+east_river,East River,doe,DOE,Gothic Creek,Gothic,Gothic Creek,stream_gauge,38.97845224,-107.0045576,4326,89.59580989,1,,America/Denver,
+east_river,East River,doe,DOE,Rock Creek,Rock,Rock Creek,stream_gauge,38.98157352,-107.005869,4326,356.7157508,1,,America/Denver,
+east_river,East River,doe,DOE,Bradley Creek,Bradley,Bradley Creek,stream_gauge,38.98540925,-107.0048454,4326,381.983691,1,,America/Denver,
+east_river,East River,doe,DOE,Rustlers Creek,Rustlers,Rustlers Creek,stream_gauge,38.989692,-107.007654,4326,1477.250569,1,,America/Denver,
+east_river,East River,doe,DOE,East River,EAQ,East River above Quigley,stream_gauge,38.99596936,-107.0184873,4326,524.7190194,1,,America/Denver,
+east_river,East River,doe,DOE,Quigley Creek,Quigley,Quigley Creek,stream_gauge,38.99343,-107.014,4326,254.8227923,1,,America/Denver,
+east_river,East River,doe,DOE,Washington Gulch,WG,Washington Gulch,stream_gauge,38.922042,-107.004914,4326,1719.516591,1,,America/Denver,
+east_river,East River,doe,DOE,Slate River,NL,Nicholson Lake,stream_gauge,38.896931,-107.011353,4326,7726.481232,1,,America/Denver,
+east_river,East River,doe,DOE,Oh-Be-Joyfull Creek,OBJ,,stream_sampling_point,38.910356,-107.032353,4326,2905.954707,1,,America/Denver,
+east_river,East River,doe,DOE,,billy_barr_spring,,stream_sampling_point,38.96360556,-106.9924722,4326,,1,,America/Denver,
+east_river,East River,doe,DOE,Coal Creek,coal_11,,stream_sampling_point,38.86368333,-107.0336,4326,,1,possibly coloacted with USGS gauge 09111000,America/Denver,
+east_river,East River,doe,DOE,,east_above_quigley,,stream_sampling_point,38.99518558,-107.0145513,4326,,1,,America/Denver,
+east_river,East River,doe,DOE,,tuttle_spring,,stream_sampling_point,38.94548333,-106.9901972,4326,,1,,America/Denver,
+usgs,USGS,usgs,USGS,Black Earth Creek,black_earth_creek,"BLACK EARTH CREEK NR BREWERY RD AT CROSS PLAINS,WI",stream_gauge,43.109722,-89.640833,4326,3283.684281,1,USGS 05406457,America/Chicago,
+krew,KREW,usfs,USFS,Providence Creek,P300,Providence Creek P300,stream_gauge,37.052,-119.203263,4326,460.820096,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,Providence Creek,P301,Providence Creek P301,stream_gauge,37.05945,-119.203626,4326,99.11994044,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,Providence Creek,P303,Providence Creek P303,stream_gauge,37.05404,-119.196253,4326,132.2747098,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,Providence Creek,P304,Providence Creek P304,stream_gauge,37.05066,-119.195268,4326,48.71395085,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,Duff Creek,D102,Duff Creek D102,stream_gauge,37.0377,-119.202923,4326,120.7155701,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,Bull Creek,B200,Bull Creek B200,stream_gauge,36.97719,-119.081964,4326,473.786201,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,Bull Creek,B201,Bull Creek B201,stream_gauge,36.97813,-119.079194,4326,52.96014101,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,Bull Creek,B203,Bull Creek B203,stream_gauge,36.97586,-119.073332,4326,138.3086063,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,Bull Creek,B204,Bull Creek B204,stream_gauge,36.9748,-119.073078,4326,166.8583801,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,Teakettle Creek,T003,Teakettle Creek T001,stream_gauge,36.95894,-119.026558,4326,227.6518918,1,,America/Los_Angeles,
+krew,KREW,usfs,USFS,,lower_bull,Lower Bull Creek,rain_gauge,36.97811442,-119.0745545,4326,,1,,America/Los_Angeles,1
+krew,KREW,usfs,USFS,,lower_providence,Lower Providence Creek,rain_gauge,37.05813646,-119.2030537,4326,,1,,America/Los_Angeles,1
+krew,KREW,usfs,USFS,,upper_bull,Upper Bull Creek,rain_gauge,36.9669458,-119.0565785,4326,,1,,America/Los_Angeles,1
+krew,KREW,usfs,USFS,,upper_providence,Upper Providence Creek,rain_gauge,37.06112296,-119.1832266,4326,,1,,America/Los_Angeles,1
+suef,SUEF,usfs,USFS,,CCRC__,Coyote Creek Watersheds Rain Collector,rain_gauge,43.017397,-122.715978,4326,,1,"No precip data, only precip chem",America/Los_Angeles,
+suef,SUEF,usfs,USFS,,FCRC__,Fox Creek Watersheds Rain Collector,rain_gauge,45.433628,-122.043271,4326,,1,"No precip data, only precip chem",America/Los_Angeles,
+suef,SUEF,usfs,USFS,,GSCC01,Coyote Creek Watershed 1 Gauging Station,stream_gauge,43.0174,-122.716,4326,79.04015329,1,,America/Los_Angeles,
+suef,SUEF,usfs,USFS,,GSCC02,Coyote Creek Watershed 2 Gauging Station,stream_gauge,43.01395,-122.717,4326,76.87409985,1,,America/Los_Angeles,
+suef,SUEF,usfs,USFS,,GSCC03,Coyote Creek Watershed 3 Gauging Station,stream_gauge,43.01378,-122.712,4326,47.10336137,1,,America/Los_Angeles,
+suef,SUEF,usfs,USFS,,GSCC04,Coyote Creek Watershed 4 Gauging Station,stream_gauge,43.01379,-122.711,4326,44.27468074,1,,America/Los_Angeles,
+suef,SUEF,usfs,USFS,,GSFC01,Fox Creek Watershed 1 Gauging Station,stream_sampling_point,45.43363,-122.043,4326,,1,,America/Los_Angeles,
+suef,SUEF,usfs,USFS,,GSFC02,Fox Creek Watershed 2 Gauging Station,stream_sampling_point,45.43413,-122.043,4326,,1,,America/Los_Angeles,
+suef,SUEF,usfs,USFS,,GSFC03,Fox Creek Watershed 3 Gauging Station,stream_sampling_point,45.43454,-122.043,4326,,1,,America/Los_Angeles,
+santee,Santee,usfs,USFS,,WS77,Weir 77,stream_gauge,33.141649,-79.779912,4326,150.8364844,1,,US/Eastern,
+santee,Santee,usfs,USFS,Turkey Creek,WS78,Weir 78,stream_gauge,33.13118153,-79.78408093,4326,5244.373779,1,,US/Eastern,
+santee,Santee,usfs,USFS,,WS79,Weir 79,stream_gauge,33.14122348,-79.79083526,4326,475.6623144,1,,US/Eastern,
+santee,Santee,usfs,USFS,,WS80,Weir 80,stream_gauge,33.14430296,-79.79044336,4326,159.7951239,1,,US/Eastern,
+santee,Santee,usfs,USFS,,Met5,Met 5 weather station,rain_gauge,33.140537,-79.771937,4326,,1,,US/Eastern,0
+santee,Santee,usfs,USFS,,SEFHQ,Headquarters weather station,rain_gauge,33.13653364,-79.81454116,4326,,1,,US/Eastern,0
+santee,Santee,usfs,USFS,,Lotti,Lotti road gauge,rain_gauge,33.1367087,-79.77691941,4326,,1,,US/Eastern,0
+santee,Santee,usfs,USFS,,SEFHQ_pluvio,Pluvio type gauge at SEFHQ,rain_gauge,33.136503,-79.81452,4326,,1,,US/Eastern,1
+santee,Santee,usfs,USFS,,Met25,Met 25 feild station,rain_gauge,33.14880471,-79.78833151,4326,,1,,US/Eastern,0
+santee,Santee,usfs,USFS,,TC_Met,Turkey Creek Met Station,rain_gauge,33.12443308,-79.71355263,4326,,1,,US/Eastern,0
+krycklan,Krycklan,krycklan,Krycklan,,Site1,Risbäcken,stream_gauge,64.24850547,19.80805064,4326,47.56947214,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site2,Västrabäcken,stream_gauge,64.25142548,19.7778044,4326,11.7982393,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site4,Kallkälsmyren,stream_gauge,64.25945115,19.77374833,4326,17.63532148,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site5,Stortjärn outlet,stream_gauge,64.26026108,19.76033857,4326,64.89315152,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site6,Stortjärnbäcken,stream_gauge,64.25097366,19.77314317,4326,108.9815611,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site7,Kallkälsbäcken,stream_gauge,64.2513012,19.77790006,4326,46.39876911,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site9,Nyängesbäcken,stream_gauge,64.23752785,19.79156217,4326,285.9595417,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site10,Stormyrbäcken,stream_gauge,64.25699943,19.78664302,4326,333.1958907,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site12,Nymyrbäcken,stream_gauge,64.24118748,19.81431857,4326,539.9629638,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site13,Långbäcken,stream_gauge,64.23285699,19.78710742,4326,408.9155826,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site14,Åhedbäcken,stream_gauge,64.22615432,19.77076828,4326,1400.009644,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site15,Övre Krycklan,stream_gauge,64.24858486,19.8382111,4326,1898.520171,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Site16,Krycklan,stream_gauge,64.198508,19.869488,4326,6740.342931,1,,Etc/GMT+2,
+krycklan,Krycklan,krycklan,Krycklan,,Svartberget,Svartberget,rain_gauge,64.243727,19.767454,4326,,1,,Etc/GMT+2,1
+walker_branch,Walker Branch,doe,DOE,,east_fork,Walker Branch East Fork,stream_gauge,35.958918,-84.278736,4326,61.36288784,1,,US/Eastern,
+walker_branch,Walker Branch,doe,DOE,,west_fork,Walker Branch West Fork,stream_gauge,35.959094,-84.279934,4326,38.36241502,1,,US/Eastern,
+walker_branch,Walker Branch,doe,DOE,,combined_gauges,Combined rain gauges,rain_gauge,35.961723,-84.28647,4326,,1,"Percipitation is reported as a mean of all gauges, both tipping buckets and weighing buckets",US/Eastern,
+shale_hills,Shale Hills,czo,CZO,,GRO,Garner Run Outlet,stream_gauge,40.6925,-77.9277,4326,136.5613424,1,,US/Eastern,
+shale_hills,Shale Hills,czo,CZO,,SCAL,"Shaver's Creek, above Lake Perez",stream_gauge,40.673619,-77.902569,4326,1545.700041,1,,US/Eastern,
+shale_hills,Shale Hills,czo,CZO,,SCBL,"Shaver's Creek, below Lake Perez",stream_sampling_point,40.656772,-77.918722,4326,,1,,US/Eastern,
+shale_hills,Shale Hills,czo,CZO,,SCO,Shaver's Creek Outlet,stream_gauge,40.610686,-78.006689,4326,12332.58014,1,,US/Eastern,
+shale_hills,Shale Hills,czo,CZO,,SH_weir,"Shale Hills Critical Zone Observatory Stream, Weir",stream_gauge,40.666664,-77.902778,4326,6.934669612,1,,US/Eastern,
+shale_hills,Shale Hills,czo,CZO,,Shale_Hills_precip,Shale Hills Precipitation,rain_gauge,40.665742,-77.904036,4326,,1,"This appears to be a combination of gauges reported as one, the location is of one know gauge in the CZO",US/Eastern,
+bear,Bear Brook,bear,Bear Brook,West Bear Brook,WB,West Bear Brook,stream_gauge,44.859347,-68.105417,4326,10.06552768,1,,US/Eastern,0
+bear,Bear Brook,bear,Bear Brook,East Bear Brook,EB,East Bear Brook,stream_gauge,44.860754,-68.10617,4326,10.76524788,1,,US/Eastern,0
+bear,Bear Brook,bear,Bear Brook,,Summit_met,,rain_gauge,44.864393,-68.110125,4326,,1,"location not avaiable in metadata, estimated from aerial imagery and avaiable descriptions",US/Eastern,0
+bear,Bear Brook,bear,Bear Brook,East Bear Brook,EB_met,East Bear Brook,rain_gauge,44.860754,-68.10617,4326,,1,"location not avaiable in metadata, estimated from aerial imagery and avaiable descriptions",US/Eastern,0
+bear,Bear Brook,bear,Bear Brook,,Mid_met,,rain_gauge,44.862294,-68.107879,4326,,1,"location not avaiable in metadata, estimated from aerial imagery and avaiable descriptions",US/Eastern,0
