@@ -44,10 +44,10 @@ convert_molecules is used to convert to and from a variable reported
    as the atomic weight of the main constituent in a molecule. Macrosheds
    native format is a molecule reported as the atomic weight of the main 
    constituent. Examples include NO3 as N (NO3_N), SO4 as S (SO4_S), SiO2 as Si
-   (SiO2_as Si). If you wanted to convert from the native macrosheds format of
+   (SiO2_Si). If you wanted to convert from the native macrosheds format of
    NO3_N to NO3, you would list the variable as it currently exists in the 
    \code{data.frame}, so in this case NO3_N. The function will then convert
-   NO3 as N (NO3_N) to just NO3, along with other conversion listed in the convert_units_to
+   NO3 as N (NO3_N) to NO3, along with other conversion listed in the convert_units_to
    argument.
 }
 \examples{

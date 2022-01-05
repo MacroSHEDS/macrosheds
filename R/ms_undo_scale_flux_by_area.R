@@ -7,7 +7,7 @@
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param d \code{data.frame} Macrosheds stream chemical flux \code{data.frame}
-#'    in the macrosheds native format and units (kg/ha/d).
+#'    in the macrosheds native format and units (kg/ha/d)
 #' @param site_data character or \code{data.frame}. Optional, either the 
 #'    file path to the marocheds site_data file or the \code{data.frame} itself.
 #'    If not supplied the file will be downloded from the web. 
@@ -27,14 +27,16 @@
 #'
 #' d <- undo_scale_flux_by_area(d)
 
-undo_scale_flux_by_area <- function(d, site_data){
+ms_undo_scale_flux_by_area <- function(d, site_data){
     
     if(missing(site_data)){
-        site_data <- download_ms_site_data()
+        site_data <- ms_download_site_data()
     } else{
-        if(class(site_data) =='character'){
-            site_data <- read_csv(site_data)
-        }
+            site_data <- try(read_csv(site_data), silent = TRUE)
+            site_data_name <- names(site_data)
+            if(inherits(site_data, 'try-error') || (!site_data_name %in% c('site_code', 'ws_area_ha'))){
+                stop('please enter a correct path to site_data file or omit argument')
+            }
     }
     
     sites <- unique(d$site_code)

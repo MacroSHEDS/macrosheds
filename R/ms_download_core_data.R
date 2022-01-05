@@ -8,14 +8,15 @@
 #' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
-#' @param macrosheds_root directory where macrosheds data files will be downloaded 
+#' @param macrosheds_root character.  Directory where macrosheds data files will be downloaded to
 #' @param networks character vector. macrosheds networks that will be downloaded. 
 #'    Either a single network, vector of networks, or 'all'. see \code{download_ms_site_data()} 
 #'    for networks available for download.
 #' @param domains character vector. macrosheds domains that will be downloaded. 
 #'    Either a single domain, vector of domains, or 'all'. see \code{download_ms_site_data()} 
 #'    for domains available for download.
-#' @return downloads all core data for selected domains to the designated 
+#' @param quiet logical. If TRUE, no download messages will be printed in console
+#' @return Downloads all core data for selected domains to the designated 
 #'    directory listed in \code{macrosheds_root}. Data follows the structure: domain/product/site_code.feather. 
 #'    Where domain is the domain selected, product is one or more of the data 
 #'    product available at a domain (eg. stream_chemistry__ms001, discharge__ms002), 
@@ -28,12 +29,14 @@
 #'    can take up to ~5 GB, so beware of downloading too much data.
 #' @export
 #' @examples
-#' download_ms_core_data(macrosheds_root = 'data/ms_test',
+#' dir.create('data/macrosheds')
+#' download_ms_core_data(macrosheds_root = 'data/macrosheds',
 #'                       domains = c('niwot', 'hjandrews'))
 
-download_ms_core_data <- function(macrosheds_root,
+ms_download_core_data <- function(macrosheds_root,
+                                  networks,
                                   domains,
-                                  networks) {
+                                  quiet = FALSE) {
     
     dom_missing <- missing(domains)
     net_missing <- missing(networks)
@@ -57,7 +60,7 @@ download_ms_core_data <- function(macrosheds_root,
                                             'mcmurdo', 'luquillo', 'konza', 'hjandrews', 'hbef', 'bonanza',
                                             'baltimore', 'arctic', 'east_river', 'shale_hills',
                                             'catalina_jemez', 'calhoun', 'boulder'),
-                                 fig_code = c(30829432, 30829456, 30829453, 30829441, 30829432,
+                                 fig_code = c(30829555, 30829456, 30829453, 30829441, 30829432,
                                               30829426, 30829408, 30829393, 30829387, 30829375,
                                               30829372, 30829369, 30829333, 30829318, 30829240,
                                               30828991, 30828985, 30828979, 30828922, 30827524,
@@ -103,28 +106,50 @@ download_ms_core_data <- function(macrosheds_root,
         
         fig_call <- paste0(figshare_base, '/', rel_code)
         
-        download_status <- try(download.file(url = fig_call,
-                                             destfile = temp_file_dom),
-                               silent = TRUE)
-        
-        if(inherits(download_status, 'try-error')){
-            print(paste0(rel_dom, ' failed to download.'))
-            next
+        if(quiet){
+            download_status <- try(download.file(url = fig_call,
+                                                 destfile = temp_file_dom,
+                                                 quiet = TRUE),
+                                   silent = TRUE)
+            
+            if(inherits(download_status, 'try-error')){
+                print(paste0(rel_dom, ' failed to download.'))
+                next
+            }
+        } else{
+            download_status <- sm(try(download.file(url = fig_call,
+                                                 destfile = temp_file_dom),
+                                   silent = TRUE))
+            
+            if(inherits(download_status, 'try-error')){
+                next
+            }
         }
+        
         
         unzip_status <- try(unzip(zipfile = temp_file_dom,
                                   exdir = macrosheds_root),
                             silent = TRUE)
         
-        if(inherits(unzip_status, 'try-error')){
-            print(paste0(rel_dom, ' failed to unzip.'))
-            next
+        if(quiet){
+            if(inherits(unzip_status, 'try-error')){
+                next
+            }
+        } else{
+            if(inherits(unzip_status, 'try-error')){
+                print(paste0(rel_dom, ' failed to unzip.'))
+                next
+            }
+            
+            print(paste0(rel_dom, ' successfully downloaded and unziped.'))
         }
-        
-        print(paste0(rel_dom, ' successfully downloaded and unziped.'))
     }
     
-    return('Download complete')
+    if(quiet){
+        return()
+    } else{
+        return('Download complete')
+    }
 }
 
 

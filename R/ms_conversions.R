@@ -27,10 +27,10 @@
 #'    as the atomic weight of the main constituent in a molecule. Macrosheds
 #'    native format is a molecule reported as the atomic weight of the main 
 #'    constituent. Examples include NO3 as N (NO3_N), SO4 as S (SO4_S), SiO2 as Si
-#'    (SiO2_as Si). If you wanted to convert from the native macrosheds format of
+#'    (SiO2_Si). If you wanted to convert from the native macrosheds format of
 #'    NO3_N to NO3, you would list the variable as it currently exists in the 
 #'    \code{data.frame}, so in this case NO3_N. The function will then convert
-#'    NO3 as N (NO3_N) to just NO3, along with other conversion listed in the convert_units_to
+#'    NO3 as N (NO3_N) to NO3, along with other conversion listed in the convert_units_to
 #'    argument.
 #' @export
 #' @examples
@@ -77,9 +77,6 @@ ms_conversions <- function(d,
                            convert_units_to,
                            convert_molecules){
     
-    # d <- read_feather('data/ms_test/hbef/stream_chemistry__ms006/w6.feather') %>% filter(var == 'GN_NO3_N')
-    # convert_molecules <- 'NO3'
-    # convert_units_to = 'ug/l'
     # TEMPORARY (will replace when vars is on figshare)
     ms_vars <<- suppressMessages(read_csv('variables.csv'))
     
@@ -96,7 +93,12 @@ ms_conversions <- function(d,
         stop('convert_units_from and convert_units_to must have the same length')
     }
     
-    vars <- drop_var_prefix(d$var)
+    vars <- ms_drop_var_prefix(d$var)
+    
+    if(any(!vars %in% ms_vars$variable_code)){
+        not_a_ms_var <- unique(vars[!vars %in% ms_vars$variable_code])
+        stop(paste0(paste(not_a_ms_var, collapse = ', '), ' is not a macrosheds variable, only macrosheds variables can be converted'))
+    }
     
     vars_convertable <- ms_vars %>%
         filter(variable_code %in% !!vars) %>%
@@ -104,17 +106,20 @@ ms_conversions <- function(d,
         tolower()
     
     if(length(convert_units_from) == 1 && length(convert_units_to) == 1){
-        if(!all(vars_convertable == convert_units_from)) {
-            stop('all varibles in dataframe do not match convert_units_from, ensure all varibles are in the same unit or specify each varible in datafrae individually, see details for more information')
+        if(! all(vars_convertable == 'mg/l')){
+            stop('all variables must be convertible, you cannot convert non concentration variables')
         }
     } else{
+        if(! all(vars %in% names(convert_units_from)) || ! all(vars %in% names(convert_units_to))){
+            stop('all varibles in dataframe do not match convert_units_from or convert_units_to, ensure all varibles are in the same unit or specify each varible in dataframe individually, see details for more information')
+        }
             cu_shared_names <- base::intersect(names(convert_units_from),
                                                names(convert_units_to))
             
             if(length(cu_shared_names) != length(convert_units_to)){
                 stop('names of convert_units_from and convert_units_to must match')
             }
-        }
+    }
     
     whole_molecule <- c('NO3', 'SO4', 'PO4', 'SiO2', 'SiO3', 'NH4', 'NH3',
                         'NO3_NO2')
@@ -134,8 +139,6 @@ ms_conversions <- function(d,
     } else{
         convert_molecules <- NULL
     }
-    # convert_molecules <- convert_molecules[! convert_molecules %in% keep_molecular]
-    # convert_molecules <- convert_molecules[convert_molecules %in% unique(vars)]
     
     molecular_conversion_map <- list(
         NH4 = 'N',
@@ -147,7 +150,7 @@ ms_conversions <- function(d,
         PO4 = 'P',
         NO3_NO2 = 'N')
     
-    #handle molecular conversions, like NO3 -> NO3_N
+    # handle molecular conversions, like NO3 -> NO3_N
     if(cm && length(whole_to_element) > 0){
         convert_molecules_element <-  whole_molecule[whole_to_element]
         for(v in 1:length(convert_molecules_element)){
@@ -168,7 +171,7 @@ ms_conversions <- function(d,
         }
     }
     
-    #handle molecular conversions, like NO3_N -> NO3
+    # handle molecular conversions, like NO3_N -> NO3
     if(cm && length(element_to_whole) > 0){
         convert_molecules_element <-  element_molecule[element_to_whole]
         for(v in 1:length(convert_molecules_element)){

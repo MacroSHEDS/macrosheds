@@ -1,0 +1,297 @@
+#' Run the WRTDS model through EGRET for macrosheds data
+#'
+#' ms_run_egret prepairs data for the egret package and runs the Weighted Regretion
+#' on Time, Discharge, and Season (WRTDS) model 
+#'
+#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
+#' @author Mike Vlah
+#' @author Wes Slaughter
+#' @param stream_chemistry \code{date.frame}. A macrosheds \code{data.frame} 
+#'     containg only one stream chemistry variable and one site_code; WRTDS can 
+#'     only be run for one chemistry vatiable and one site at a time. See 
+#'     \code{download_ms_core_data()} to download data
+#' @param discharge \code{date.frame}. A macrosheds \code{data.frame} containing 
+#'     discharge data for a given site. See  \code{download_ms_core_data()} to 
+#'     download data
+#' @param prep_data logical. Should data be thined/altered to folow EGRET reomendations. 
+#'     See details for more information 
+#' @param run_egret logical. If FALSE, the EGRET model will not be run and a EGRET
+#'     eList will be returned. This argument is intended for those who want to change
+#'     default parameters to the EGRET model but need data in the eList format
+#' @param Kalman logical. Should EGRET run the Kalman filter on WRTDS results. See
+#'     ?EGRET::WRTDSKalman() for more information 
+#' @param quiet logical. Should warnings be printed to console 
+#' @return returns a \code{list} in the EGRET format with modle resutls 
+#' @details WRTDS is a model to predict stream chemistry at a daily time step 
+#'     based on the season, discharge, and time since last grab sample. This model is 
+#'     usfule for calculating flux when sampling is sparce (greater than a weekly 
+#'     sampling frequency). For more informaiton on the WRTDS and EGRET package 
+#'     see https://github.com/USGS-R/EGRET
+#' @export
+
+ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE, 
+                         run_egret = TRUE, kalman = FALSE, quiet = FALSE){
+    
+    # Checks 
+    if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(stream_chemistry))){
+        stop('stream_chemistry must be a macrosheds file with the columns site_code, 
+             datetime, var, and, val')
+    }
+    
+    if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(discharge))){
+        stop('discharge must be a macrosheds file with the columns site_code, 
+             datetime, var, and, val')
+    }
+    
+    if(! length(unique(macrosheds::ms_drop_var_prefix(stream_chemistry$var))) == 1){
+        stop('Only one chemistry variable can be run at a time.')
+    }
+    
+    if((! length(unique(stream_chemistry$site_code)) == 1) || (! length(unique(discharge$site_code)) == 1)){
+        stop('Only one site can be run in EGRET at a time')
+    }
+    
+    if(! unique(stream_chemistry$site_code) == unique(discharge$site_code)){
+        stop('stream_chemistry and discharge must contain the same site_code')
+    }
+    
+    # Get var and site info
+    site_data <- macrosheds::ms_download_site_data()
+    ms_vars <- macrosheds::ms_download_variables()
+    
+    site_code <- unique(stream_chemistry$site_code)
+    
+    #### Prep Files ####
+    
+    if(prep_data){
+        
+        # EGRET does not like NAs
+        stream_chemistry <- stream_chemistry %>%
+            filter(!is.na(val))
+        discharge <- discharge %>%
+            filter(!is.na(val))
+        
+        # Egret can't accept 0s in the column for min val (either hack egret or do this or
+        # look for detection limits)
+        min_chem <- stream_chemistry %>%
+            filter(val > 0) %>%
+            pull(val) %>%
+            min()
+        
+        if(!min_chem == Inf){
+            stream_chemistry <- stream_chemistry %>%
+                mutate(val = ifelse(val == 0, !!min_chem, val))
+        }
+        
+        # Filter so there is only Q going into the model that also has chem
+        stream_chemistry <- stream_chemistry %>%
+            mutate(year = year(datetime),
+                   month = month(datetime)) %>%
+            mutate(waterYear = ifelse(month %in% c(10, 11, 12), year+1, year))
+        
+        # Get years with at least 6 chemistry samples (bi-monthly sampling is a 
+        # reasonable requirement?)
+        years_with_data <- stream_chemistry %>%
+            group_by(waterYear) %>%
+            summarise(n = n()) %>%
+            filter(n >= 6) %>%
+            pull(waterYear)
+        
+        # Filter Q and chem to overlap in a water-year
+        chem_dates <- get_start_end(stream_chemistry)
+        q_dates <- get_start_end(discharge)
+        
+        start_date <- if(chem_dates[1] > q_dates[1]) { chem_dates[1] } else{ q_dates[1] }
+        end_date <- if(chem_dates[2] < q_dates[2]) { chem_dates[2] } else{ q_dates[2] }
+        
+        discharge <- discharge %>%
+            filter(datetime >= !!start_date,
+                   datetime <= !!end_date)
+        stream_chemistry <- stream_chemistry %>%
+            filter(datetime >= !!start_date,
+                   datetime <= !!end_date)
+        
+        # Filter discharge to only include water years with chemistry sampling 
+        discharge <- discharge %>%
+            mutate(year = year(datetime),
+                   month = month(datetime)) %>%
+            mutate(waterYear = ifelse(month %in% c(10, 11, 12), year+1, year)) %>%
+            filter(waterYear %in% !!years_with_data)
+        
+        # Remove times when there is a chem sample and no Q reported
+        samples_to_remove <- left_join(stream_chemistry, discharge, by = 'datetime') %>%
+            filter(is.na(val.y)) %>%
+            pull(datetime)
+        
+        stream_chemistry <- stream_chemistry %>%
+            filter(!datetime %in% samples_to_remove)
+    }
+    
+    # Set up EGRET Sample file 
+    Sample_file <- tibble(Name = site_code,
+                          Date = as.Date(stream_chemistry$datetime),
+                          ConcLow = stream_chemistry$val,
+                          ConcHigh = stream_chemistry$val,
+                          Uncen = 1,
+                          ConcAve = stream_chemistry$val,
+                          Julian = as.numeric(julian(lubridate::ymd(stream_chemistry$datetime),origin=as.Date("1850-01-01"))),
+                          Month = month(stream_chemistry$datetime),
+                          Day = yday(stream_chemistry$datetime),
+                          DecYear = decimalDate(stream_chemistry$datetime),
+                          MonthSeq = get_MonthSeq(stream_chemistry$datetime)) %>%
+        mutate(SinDY = sin(2*pi*DecYear),
+               CosDY = cos(2*pi*DecYear))  %>%
+        mutate(waterYear = ifelse(Month %in% c(10, 11, 12), year(Date) + 1, year(Date))) %>%
+        select(Name, Date, ConcLow, ConcHigh, Uncen, ConcAve, Julian, Month, Day,
+               DecYear, MonthSeq, waterYear, SinDY, CosDY)
+    
+    # Set up EGRET Daily file 
+    Daily_file <- tibble(Name = site_code,
+                         Date = as.Date(discharge$datetime),
+                         Q = discharge$val/1000,
+                         Julian = as.numeric(julian(lubridate::ymd(discharge$datetime),origin=as.Date("1850-01-01"))),
+                         Month = month(discharge$datetime),
+                         Day = yday(discharge$datetime),
+                         DecYear = decimalDate(discharge$datetime),
+                         MonthSeq = get_MonthSeq(discharge$datetime),
+                         Qualifier = discharge$ms_status) 
+    
+    if(prep_data){
+        # Egret can't handle 0 in Q, setting 0 to the minimum Q ever reported seem reasonable 
+        min_flow <- min(Daily_file$Q[Daily_file$Q > 0], na.rm = TRUE)
+        
+        no_flow_days <- Daily_file %>%
+            filter(Q == 0) %>%
+            pull(Date)
+        
+        Daily_file <- Daily_file %>%
+            mutate(Q = ifelse(Q <= 0, !!min_flow, Q))
+        
+    }
+    
+    Daily_file <- Daily_file %>%
+        mutate(Q7 = zoo::rollmean(Q, 7, fill = NA, align = 'right'),
+               Q30 = zoo::rollmean(Q, 30, fill = NA, align = 'right'),
+               LogQ = log(Q)) 
+    
+    Daily_file <- tibble::rowid_to_column(Daily_file, 'i') %>%
+        select(Name, Date, Q, Julian, Month, Day, DecYear, MonthSeq, Qualifier,
+               i, LogQ, Q7, Q30)
+
+    # Set up INFO table 
+    var <- macrosheds::ms_drop_var_prefix(unique(stream_chemistry$var))
+    var_unit <- ms_vars %>%
+        filter(variable_code == !!var) %>%
+        pull(unit)
+    site_lat <- site_data %>%
+        filter(site_code == !!site_code) %>%
+        pull('latitude')
+    site_lon <- site_data %>%
+        filter(site_code == !!site_code) %>%
+        pull('longitude')
+    site_ws_area <- site_data %>%
+        filter(site_code == !!site_code,
+               site_type == 'stream_gauge') %>%
+        pull('ws_area_ha') 
+    site_ws_area <- site_ws_area * 100
+    
+    new_point <- sf::st_sfc(sf::st_point(c(site_lon, site_lat)), crs = 4326) %>%
+        sf::st_transform(., crs = 4267)
+    
+    INFO_file <- tibble(agency_cd = 'macrosheds',
+                        site_no = site_code,
+                        station_nm = site_code, 
+                        site_tp_code = 'ST',
+                        lat_va = site_lat,
+                        long_va = site_lon,
+                        dec_lat_va = site_lat,
+                        dec_long_va = site_lon,
+                        coord_meth_cd = NA,
+                        coord_acy_cd = NA,
+                        coord_datum_cd = NA,
+                        dec_coord_datum_cd = NA,
+                        district_cd = NA,
+                        state_cd = NA,
+                        county_cd = NA,
+                        country_cd = NA,
+                        land_net_ds = NA,
+                        map_nm = NA,
+                        map_scale_fc = NA,
+                        alt_va = NA,
+                        alt_meth_cd = NA,
+                        alt_acy_va = NA,
+                        alt_datum_cd = NA,
+                        huc_cd = NA,
+                        basin_cd = NA,
+                        topo_cd = NA,
+                        instruments_cd = NA,
+                        construction_dt = NA,
+                        inventory_dt = NA,
+                        drain_area_va = site_ws_area*2.59,
+                        contrib_drain_area_va = NA,
+                        tz_cd = 'UTC',
+                        local_time_fg = 'Y',
+                        reliability_cd = NA,
+                        gw_file_cd = NA,
+                        nat_aqfr_cd = NA,
+                        aqfr_cd = NA,
+                        aqfr_type_cd = NA,
+                        well_depth_va = NA,
+                        hole_depth_va = NA,
+                        depth_src_cd = NA,
+                        project_no = NA,
+                        shortName = site_code,
+                        drainSqKm = site_ws_area,
+                        staAbbrev = site_code,
+                        param.nm = var,
+                        param.units = var_unit,
+                        paramShortName = var,
+                        paramNumber = NA,
+                        constitAbbrev = var,
+                        paStart = 10,
+                        paLong = 12)
+    
+    eList <- EGRET::mergeReport(INFO_file, Daily_file, Sample_file,
+                                verbose = !quiet)
+    
+    if(! run_egret){
+        return(eList)
+    }
+    
+    eList <- try(EGRET::modelEstimation(eList, verbose = !quiet))
+    
+    if(inherits(eList, 'try-error')){
+        stop('EGRET failed while running WRTDS. See https://github.com/USGS-R/EGRET for reasons all data is not compatible with the WRTDS model.')
+    }
+    
+    if(kalman){
+        eList <- EGRET::WRTDSKalman(eList, verbose = !quiet)
+        
+        if(prep_data){
+            # Set flux and Q to 0 and conc to NA on no flow days
+            eList$Daily <- eList$Daily %>%
+                mutate(Q = ifelse(Date %in% !!no_flow_days, 0, Q),
+                       LogQ = ifelse(Date %in% !!no_flow_days, 0, LogQ),
+                       Q7 = ifelse(Date %in% !!no_flow_days, 0, Q7),
+                       Q30 = ifelse(Date %in% !!no_flow_days, 0, Q30),
+                       ConcDay = ifelse(Date %in% !!no_flow_days, NA, ConcDay),
+                       FluxDay = ifelse(Date %in% !!no_flow_days, 0, FluxDay),
+                       FNConc = ifelse(Date %in% !!no_flow_days, NA, FNConc),
+                       FNFlux = ifelse(Date %in% !!no_flow_days, 0, FNFlux),
+                       GenFlux = ifelse(Date %in% !!no_flow_days, 0, GenFlux),
+                       GenConc = ifelse(Date %in% !!no_flow_days, 0, GenConc))
+        }
+    } else if(prep_data){
+            # Set flux and Q to 0 and conc to NA on no flow days
+            eList$Daily <- eList$Daily %>%
+                mutate(Q = ifelse(Date %in% !!no_flow_days, 0, Q),
+                       LogQ = ifelse(Date %in% !!no_flow_days, 0, LogQ),
+                       Q7 = ifelse(Date %in% !!no_flow_days, 0, Q7),
+                       Q30 = ifelse(Date %in% !!no_flow_days, 0, Q30),
+                       ConcDay = ifelse(Date %in% !!no_flow_days, NA, ConcDay),
+                       FluxDay = ifelse(Date %in% !!no_flow_days, 0, FluxDay),
+                       FNConc = ifelse(Date %in% !!no_flow_days, NA, FNConc),
+                       FNFlux = ifelse(Date %in% !!no_flow_days, 0, FNFlux))
+    }
+    return(eList)
+}
