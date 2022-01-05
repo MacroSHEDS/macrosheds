@@ -7,7 +7,7 @@ site_data <- macrosheds::ms_download_site_data()
 
 #### download_ms_core_data()
 macrosheds::ms_download_core_data(macrosheds_root = 'data/ms_test/',
-                                  domains = c('hbef', 'hjandrews'),
+                                  domains = c('hjandrews'),
                                   quiet = F
                                   # networks = 'czo'
                                   )

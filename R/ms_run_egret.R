@@ -15,6 +15,9 @@
 #'     download data
 #' @param prep_data logical. Should data be thined/altered to folow EGRET reomendations. 
 #'     See details for more information 
+#' @param run_egret logical. If FALSE, the EGRET model will not be run and a EGRET
+#'     eList will be returned. This argument is intended for those who want to change
+#'     default parameters to the EGRET model but need data in the eList format
 #' @param Kalman logical. Should EGRET run the Kalman filter on WRTDS results. See
 #'     ?EGRET::WRTDSKalman() for more information 
 #' @param quiet logical. Should warnings be printed to console 
@@ -26,17 +29,17 @@
 #'     see https://github.com/USGS-R/EGRET
 #' @export
 
-ms_run_egret <- function(stream_chemistry, discharge, prep_data, kalman = FALSE,
-                         quiet = FALSE){
+ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE, 
+                         run_egret = TRUE, kalman = FALSE, quiet = FALSE){
     
     # Checks 
-    if(! any(names(stream_chemistry) %in% c('site_code', 'var', 'val', 'datetime'))){
+    if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(stream_chemistry))){
         stop('stream_chemistry must be a macrosheds file with the columns site_code, 
              datetime, var, and, val')
     }
     
-    if(! any(names(discharge) %in% c('site_code', 'var', 'val', 'datetime'))){
-        stop('stream_chemistry must be a macrosheds file with the columns site_code, 
+    if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(discharge))){
+        stop('discharge must be a macrosheds file with the columns site_code, 
              datetime, var, and, val')
     }
     
@@ -250,6 +253,11 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data, kalman = FALSE,
     
     eList <- EGRET::mergeReport(INFO_file, Daily_file, Sample_file,
                                 verbose = !quiet)
+    
+    if(! run_egret){
+        return(eList)
+    }
+    
     eList <- try(EGRET::modelEstimation(eList, verbose = !quiet))
     
     if(inherits(eList, 'try-error')){

@@ -8,6 +8,6 @@ delineate_watershed_apriori (ms_delineate_watershed)
     implicitly a priori if no spec supplied
     use any supplied specs
     if all specs are given, a confirm = FALSE option will just return the delineated shed. this is equivalent to delineate_by_specification
-synchronize_timestep
+
 scale_flux_by_area
 get_nrcs_soils
