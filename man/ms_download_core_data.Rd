@@ -7,7 +7,7 @@
 ms_download_core_data(macrosheds_root, networks, domains, quiet = FALSE)
 }
 \arguments{
-\item{macrosheds_root}{character.  Directory where macrosheds data files will be downloaded to}
+\item{macrosheds_root}{character.  Directory where macrosheds data files will be downloaded.}
 
 \item{networks}{character vector. macrosheds networks that will be downloaded. 
 Either a single network, vector of networks, or 'all'. see \code{download_ms_site_data()} 

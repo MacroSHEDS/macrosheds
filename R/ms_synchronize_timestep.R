@@ -2,22 +2,22 @@
 #'
 #' ms_synchronize_timestep both summarizes macrosheds to weekly, monthly, and 
 #' annual time scales and interpolates macrosheds data to a finer time step such 
-#' as sub daily 
+#' as sub daily.
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param d \code{date.frame}. A macrosheds \code{dataframe} downloaded using 
-#'     \code{download_ms_core_data()}
+#'     \code{download_ms_core_data()}.
 #' @param desired_interval character. Input that can be parsed by the "by"
-#'     parameter to base::seq.POSIXt, e.g. "5 mins", "1 day", "1 month" 
+#'     parameter to base::seq.POSIXt, e.g. "5 mins", "1 day", "1 month".
 #' @param impute_limit numeric. The maximum number of consecutive points to
 #'     inter/extrapolate. it's passed to imputeTS::na_interpolate.
 #' @param summary_fun One of "mean" or "sum". The function that will be used to 
-#'     summarize data if desired_interval is larger than the input data in d
-#' @param quiet logical. Should warnings be printed to console 
+#'     summarize data if desired_interval is larger than the input data in d.
+#' @param quiet logical. Should warnings be printed to console.
 #' @return returns a \code{tibble} with data in the new desired_interval with a 
-#'     ms_interp column indicating if a value was interpolated 
+#'     ms_interp column indicating if a value was interpolated.
 #' @details ms_synchronize_timestep is used to convert data into a finer
 #'     temporal resolution, such as taking a weekly grab sample and interpolating 
 #'     the values to have daily data, or to aggregate data into large intervals 
