@@ -498,6 +498,7 @@ decimalDate <- function(rawData){
 }
 # End EGRET stuff
 
+
 # Precip interpolation stuff 
 read_combine_shapefiles <- function(network, domain, prodname_ms){
     
@@ -2114,4 +2115,311 @@ approxjoin_datetime <- function(x,
                      starts_with('ms_interp_'))
     
     return(joined)
+}
+
+# ms_read_csv internals
+gsub_v <- function(pattern, replacement_vec, x){
+    
+    #just like the first three arguments to gsub, except that
+    #   replacement is now a vector of replacements.
+    #return a vector of the same length as replacement_vec, where
+    #   each element in replacement_vec has been used once
+    
+    subbed <- sapply(replacement_vec,
+                     function(v) gsub(pattern = pattern,
+                                      replacement = v,
+                                      x = x),
+                     USE.NAMES = FALSE)
+    
+    return(subbed)
+}
+
+resolve_datetime <- function(d,
+                             datetime_colnames,
+                             datetime_formats,
+                             datetime_tz,
+                             optional){
+    
+    #d: a data.frame or tibble with at least one date or time column
+    #   (all date and/or time columns must contain character strings,
+    #   not parsed date/time/datetime objects).
+    #datetime_colnames: character vector; column names that contain
+    #   relevant datetime information.
+    #datetime_formats: character vector; datetime parsing tokens
+    #   (like '%A, %Y-%m-%d %I:%M:%S %p' or '%j') corresponding to the
+    #   elements of datetime_colnames.
+    #datetime_tz: character; time zone of the returned datetime column.
+    #optional: character vector; see dt_format_to_regex.
+    
+    #return value: d, but with a "datetime" column containing POSIXct datetimes
+    #   and without the input datetime columns
+    
+    dt_tb <- tibble(basecol = rep(NA, nrow(d)))
+    for(i in 1:length(datetime_colnames)){
+        dt_comps <- str_match_all(string = datetime_formats[i],
+                                  pattern = '%([a-zA-Z])')[[1]][,2]
+        dt_regex <- dt_format_to_regex(datetime_formats[i],
+                                       optional = optional)
+        
+        # for loop handling with number-of-character issues
+        for(match in grepl("m|e|d|H|I|M|S", dt_comps)) {
+            if(match){
+                for (dt_entry in 1:nrow(d[datetime_colnames[i]])) {
+                    if(! is.na(d[datetime_colnames[i]][dt_entry,])){
+                        if(numbers_only(d[datetime_colnames[i]][dt_entry,])){
+                            if(nchar(d[datetime_colnames[i]][dt_entry,]) == 1) {
+                                d[datetime_colnames[i]][dt_entry,] <- paste0(0, d[datetime_colnames[i]][dt_entry,])
+                            } else if(nchar(d[datetime_colnames[i]][dt_entry,]) ==3){
+                                d[datetime_colnames[i]][dt_entry,] <- paste0(0, d[datetime_colnames[i]][dt_entry,])
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        dt_tb <- d %>%
+            select(one_of(datetime_colnames[i])) %>%
+            tidyr::extract(col = !!datetime_colnames[i],
+                           into = dt_comps,
+                           regex = dt_regex,
+                           remove = TRUE,
+                           convert = FALSE) %>%
+            bind_cols(dt_tb)
+    }
+    
+    dt_tb$basecol = NULL
+    
+    #fill in defaults if applicable:
+    #(12 for hour, 00 for minute and second, PM for AM/PM)
+    dt_tb <- dt_tb %>%
+        mutate(
+            # across(any_of(c('H', 'I')), ~ifelse(nchar(.x) < 2, paste0(0, .x), .x)),
+            across(any_of(c('H', 'I')), ~ifelse(is.na(.x), '12', .x)),
+            # across(any_of(c('M', 'S')), ~ifelse(nchar(.x) < 2, paste0(0, .x), .x)),
+            across(any_of(c('M', 'S')), ~ifelse(is.na(.x), '00', .x)),
+            across(any_of('p'), ~ifelse(is.na(.x), 'PM', .x)))
+    
+    #resolve datetime structure into POSIXct
+    datetime_formats_split <- stringr::str_extract_all(datetime_formats,
+                                                       '%[a-zA-Z]') %>%
+        unlist()
+    
+    dt_col_order <- match(paste0('%',
+                                 colnames(dt_tb)),
+                          datetime_formats_split)
+    
+    if('H' %in% colnames(dt_tb)){
+        dt_tb$H[dt_tb$H == ''] <- '00'
+    }
+    if('M' %in% colnames(dt_tb)){
+        dt_tb$M[dt_tb$M == ''] <- '00'
+    }
+    if('S' %in% colnames(dt_tb)){
+        dt_tb$S[dt_tb$S == ''] <- '00'
+    }
+    if('I' %in% colnames(dt_tb)){
+        dt_tb$I[dt_tb$I == ''] <- '00'
+    }
+    if('P' %in% colnames(dt_tb)){
+        dt_tb$P[dt_tb$P == ''] <- 'AM'
+    }
+    dt_tb <- dt_tb %>%
+        tidyr::unite(col = 'datetime',
+                     everything(),
+                     sep = ' ',
+                     remove = TRUE) %>%
+        mutate(datetime = as_datetime(datetime,
+                                      format = paste(datetime_formats_split[dt_col_order],
+                                                     collapse = ' '),
+                                      tz = datetime_tz) %>%
+                   with_tz(tz = 'UTC'))
+    d <- d %>%
+        bind_cols(dt_tb) %>%
+        select(-one_of(datetime_colnames), datetime) %>% #in case 'datetime' is in datetime_colnames
+        relocate(datetime)
+    
+    return(d)
+}
+
+
+identify_sampling <- function(df,
+                              is_sensor,
+                              date_col = 'datetime',
+                              network,
+                              domain,
+                              prodname_ms,
+                              sampling_type){
+    
+    #TODO: for hbef, identify_sampling is writing sites names as 1 not w1
+    
+    #is_sensor: named logical vector. see documention for
+    #   ms_read_raw_csv, but note that an unnamed logical vector of length one
+    #   cannot be used here. also note that the original variable/flag column names
+    #   from the raw file are converted to canonical macrosheds names by
+    #   ms_read_raw_csv before it passes is_sensor to identify_sampling.
+    
+    #checks
+    if(any(! is.logical(is_sensor))){
+        stop('all values in is_sensor must be logical.')
+    }
+    
+    svh_names <- names(is_sensor)
+    if(is.null(svh_names) || any(is.na(svh_names))){
+        stop('all elements of is_sensor must be named.')
+    }
+    
+    #parse is_sensor into a character vector of sample regimen codes
+    is_sensor <- ifelse(is_sensor, 'S', 'N')
+    
+    #set up directory system to store sample regimen metadata
+    sampling_dir <- glue('data/{n}/{d}',
+                         n = network,
+                         d = domain)
+    
+    sampling_file <- glue('data/{n}/{d}/sampling_type.json',
+                          n = network,
+                          d = domain)
+    
+    master <- try(jsonlite::fromJSON(readr::read_file(sampling_file)),
+                  silent = TRUE)
+    
+    if('try-error' %in% class(master)){
+        dir.create(sampling_dir, recursive = TRUE)
+        file.create(sampling_file)
+        master <- list()
+    }
+    
+    #determine and record sample regimen for each variable
+    col_names <- colnames(df)
+    
+    data_cols <- grep(pattern = '__[|]dat',
+                      col_names,
+                      value = TRUE)
+    
+    flg_cols <- grep(pattern = '__[|]flg',
+                     col_names,
+                     value = TRUE)
+    
+    site_codes <- unique(df$site_code)
+    
+    for(p in 1:length(data_cols)){
+        
+        # var_name <- str_split_fixed(data_cols[p], '__', 2)[1]
+        
+        # df_var <- df %>%
+        #     select(datetime, !!var_name := .data[[data_cols[p]]], site_code)
+        
+        all_sites <- tibble()
+        for(i in 1:length(site_codes)){
+            
+            # df_site <- df_var %>%
+            df_site <- df %>%
+                filter(site_code == !!site_codes[i]) %>%
+                arrange(datetime)
+            # ! is.na(.data[[date_col]]), #NAs here are indicative of bugs we want to fix, so let's let them through
+            # ! is.na(.data[[var_name]])) #NAs here are indicative of bugs we want to fix, so let's let them through
+            
+            dates <- df_site[[date_col]]
+            dif <- diff(dates)
+            unit <- attr(dif, 'units')
+            
+            conver_mins <- case_when(
+                unit %in% c('seconds', 'secs') ~ 0.01666667,
+                unit %in% c('minutes', 'mins') ~ 1,
+                unit == 'hours' ~ 60,
+                unit == 'days' ~ 1440,
+                TRUE ~ NA_real_)
+            
+            if(is.na(conver_mins)) stop('Weird time unit encountered. address this.')
+            
+            dif_mins <- as.numeric(dif) * conver_mins
+            dif_mins <- round(dif_mins)
+            
+            mode_mins <- Mode(dif_mins)
+            mean_mins <- mean(dif_mins, na.rm = T)
+            prop_mode_min <- length(dif_mins[dif_mins == mode_mins])/length(dif_mins)
+            
+            # remove gaps larger than 90 days (for seasonal sampling)
+            dif_mins <- dif_mins[dif_mins < 129600]
+            
+            if(length(dif_mins) == 0){
+                # This is grab
+                g_a <- tibble('site_code' = site_codes[i],
+                              'type' = 'G',
+                              'starts' = min(dates, na.rm = TRUE),
+                              'interval' = mode_mins)
+            } else{
+                if(prop_mode_min >= 0.3 && mode_mins <= 1440){
+                    # This is installed
+                    g_a <- tibble('site_code' = site_codes[i],
+                                  'type' = 'I',
+                                  'starts' = min(dates, na.rm = TRUE),
+                                  'interval' = mode_mins)
+                } else{
+                    if(mean_mins <= 1440){
+                        # This is installed (non standard interval like HBEF)
+                        g_a <- tibble('site_code' = site_codes[i],
+                                      'type' = 'I',
+                                      'starts' = min(dates, na.rm = TRUE),
+                                      'interval' = mean_mins)
+                    } else{
+                        # This is grab
+                        g_a <- tibble('site_code' = site_codes[i],
+                                      'type' = 'G',
+                                      'starts' = min(dates, na.rm = TRUE),
+                                      'interval' = mean_mins)
+                    }
+                }
+            }
+            
+            if(! is.null(sampling_type)){
+                g_a <- g_a %>%
+                    mutate(type = sampling_type)
+            }
+            
+            var_name_base <- str_split(string = data_cols[p],
+                                       pattern = '__\\|')[[1]][1]
+            
+            g_a <- g_a %>%
+                mutate(
+                    type = paste0(type,
+                                  !!is_sensor[var_name_base]),
+                    var = as.character(glue('{ty}_{vb}',
+                                            ty = type,
+                                            vb = var_name_base)))
+            
+            master[[prodname_ms]][[var_name_base]][[site_codes[i]]] <-
+                list('startdt' = g_a$starts,
+                     'type' = g_a$type,
+                     'interval' = g_a$interval)
+            
+            g_a <- g_a %>%
+                mutate(interval = as.character(interval))
+            
+            all_sites <- bind_rows(all_sites, g_a)
+        }
+        
+        #include new prefixes in df column names
+        prefixed_varname <- all_sites$var[1]
+        
+        dat_colname <- paste0(drop_var_prefix(prefixed_varname),
+                              '__|dat')
+        flg_colname <- paste0(drop_var_prefix(prefixed_varname),
+                              '__|flg')
+        
+        data_col_ind <- match(dat_colname,
+                              colnames(df))
+        flag_col_ind <- match(flg_colname,
+                              colnames(df))
+        
+        colnames(df)[data_col_ind] <- paste0(prefixed_varname,
+                                             '__|dat')
+        colnames(df)[flag_col_ind] <- paste0(prefixed_varname,
+                                             '__|flg')
+    }
+    
+    readr::write_file(jsonlite::toJSON(master), sampling_file)
+    
+    return(df)
 }
