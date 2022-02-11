@@ -283,3 +283,48 @@ sites <- tibble(site_code = c('MA_AE03', 'MI_KR01'),
                 Longitude = c(-72.45403, -85.51467))
 
 ms_identify_usgs_gauges(sites = sites, lat = 'Latitude', long = 'Longitude')
+
+
+#### ms_calc_inst_flux ####
+chemistry <- macrosheds::ms_load_product('data/ms_test/',
+                                         'precip_chemistry',
+                                         site_codes = c('w1', 'w3', 'w6'),
+                                         filter_vars = c('NO3_N', 'Cl', 'Na'),
+                                         warn = F)
+
+q <- macrosheds::ms_load_product('data/ms_test/',
+                                 'precipitation',
+                                 site_codes = c('w1', 'w3', 'w6'),
+                                 warn = F)
+
+look <- macrosheds::ms_calc_inst_flux(chemistry, q, q_type = 'precipitation')
+
+flux <- macrosheds::ms_load_product('data/ms_test/',
+                                    'precip_flux_inst_scaled',
+                                    site_codes = c('w1', 'w3', 'w6'),
+                                    filter_vars = c('NO3_N', 'Cl', 'Na'),
+                                    warn = F)
+
+
+
+chemistry <- macrosheds::ms_load_product('data/ms_test/',
+                                         'stream_chemistry',
+                                         site_codes = c('w1', 'w3', 'w6'),
+                                         filter_vars = c('NO3_N', 'Cl', 'Na'),
+                                         warn = F)
+
+q <- macrosheds::ms_load_product('data/ms_test/',
+                                 'discharge',
+                                 site_codes = c('w1', 'w3', 'w6'),
+                                 warn = F)
+
+look <- ms_calc_inst_flux(chemistry, q, q_type = 'discharge')
+
+
+flux <- macrosheds::ms_load_product('data/ms_test/',
+                                         'stream_flux_inst_scaled',
+                                         site_codes = c('w1', 'w3', 'w6'),
+                                         filter_vars = c('NO3_N', 'Cl', 'Na'),
+                                         warn = F)
+
+test=ms_undo_scale_flux_by_area(flux)

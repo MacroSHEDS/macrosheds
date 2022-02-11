@@ -2007,7 +2007,7 @@ approxjoin_datetime <- function(x,
     
     if('val' %in% colnames(x)){ #crude catch for nonstandard ms tibbles (fine for now)
         x <- x %>%
-            mutate(err = errors(val),
+            mutate(err = errors::errors(val),
                    val = errors::drop_errors(val)) %>%
             rename_with(.fn = ~paste0(., '_x'),
                         .cols = everything()) %>%
@@ -2016,7 +2016,7 @@ approxjoin_datetime <- function(x,
             data.table::as.data.table()
         
         y <- y %>%
-            mutate(err = errors(val),
+            mutate(err = errors::errors(val),
                    val = errors::drop_errors(val)) %>%
             rename_with(.fn = ~paste0(., '_y'),
                         .cols = everything()) %>%
@@ -2077,10 +2077,10 @@ approxjoin_datetime <- function(x,
     #drop and rename columns (data.table makes weird name modifications)
     if(keep_datetimes_from == 'x'){
         joined[, c('datetime_y', 'datetime_y.1', 'datetime_y_orig', 'datetime_match_diff') := NULL]
-        setnames(joined, 'datetime_x', 'datetime')
+        data.table::setnames(joined, 'datetime_x', 'datetime')
     } else {
         joined[, c('datetime_x', 'datetime_y.1', 'datetime_y', 'datetime_match_diff') := NULL]
-        setnames(joined, 'datetime_y_orig', 'datetime')
+        data.table::setnames(joined, 'datetime_y_orig', 'datetime')
     }
     
     #restore error objects, var column, original column names (with suffixes).
@@ -2422,4 +2422,42 @@ identify_sampling <- function(df,
     readr::write_file(jsonlite::toJSON(master), sampling_file)
     
     return(df)
+}
+
+Mode <- function(x, na.rm = TRUE){
+    
+    if(na.rm){
+        x <- na.omit(x)
+    }
+    
+    ux <- unique(x)
+    mode_out <- ux[which.max(tabulate(match(x, ux)))]
+    return(mode_out)
+    
+}
+
+numeric_any_v <- function(...){ #attack of the ellipses
+    
+    #...: numeric vectors of equal length. should be just 0s and 1s, but
+    #   integers other than 1 are also considered TRUE by as.logical()
+    
+    #the vectorized version of numeric_any. good for stuff like:
+    #    mutate(ms_status = numeric_any(c(ms_status_x, ms_status_flow)))
+    
+    #returns a single vector of the same length as arguments
+    
+    #this func could be useful in global situations
+    numeric_any_positional <- function(...) numeric_any(c(...))
+    
+    numeric_any_elementwise <- function(...){
+        Map(function(...) numeric_any_positional(...), ...)
+    }
+    
+    out <- do.call(numeric_any_elementwise,
+                   args = list(...)) %>%
+        unlist()
+    
+    if(is.null(out)) out <- numeric()
+    
+    return(out)
 }
