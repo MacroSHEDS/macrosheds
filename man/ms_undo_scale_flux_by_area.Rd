@@ -8,14 +8,14 @@ ms_undo_scale_flux_by_area(d, site_data)
 }
 \arguments{
 \item{d}{\code{data.frame} Macrosheds stream chemical flux \code{data.frame}
-in the macrosheds native format and units (kg/ha/d)}
+in the macrosheds native format and units (kg/ha/d).}
 
 \item{site_data}{character or \code{data.frame}. Optional, either the 
 file path to the marocheds site_data file or the \code{data.frame} itself.
-If not supplied the file will be downloded from the web.}
+If not supplied the file will be downloaded from the web.}
 }
 \value{
-returns a \code{data.frame} with stream chemical flux in kg/d
+returns a \code{data.frame} with stream chemical flux in kg/d.
 }
 \description{
 Macrosheds stream chemical flux is scaled to watershed area (native unit: kg/ha/d).
@@ -26,7 +26,7 @@ Macrosheds reports all chemical flux on a per area basis (kg/ha/d) to
    facilitate comparison of watersheds of different sizes. Sometimes un-scaled 
    fluxes are of interest, this function will convert the units of a native 
    macrosheds stream chemical flux table from kg/ha/d to kg/d. To download
-   macrosheds data, see \code{download_ms_code_data()}
+   macrosheds data, see \code{download_ms_code_data()}.
 }
 \examples{
 d <- load_product(macrosheds_root = 'data/macrosheds_v1', 

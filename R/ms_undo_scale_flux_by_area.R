@@ -7,16 +7,16 @@
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param d \code{data.frame} Macrosheds stream chemical flux \code{data.frame}
-#'    in the macrosheds native format and units (kg/ha/d)
+#'    in the macrosheds native format and units (kg/ha/d).
 #' @param site_data character or \code{data.frame}. Optional, either the 
 #'    file path to the marocheds site_data file or the \code{data.frame} itself.
-#'    If not supplied the file will be downloded from the web. 
-#' @return returns a \code{data.frame} with stream chemical flux in kg/d
+#'    If not supplied the file will be downloaded from the web. 
+#' @return returns a \code{data.frame} with stream chemical flux in kg/d.
 #' @details Macrosheds reports all chemical flux on a per area basis (kg/ha/d) to
 #'    facilitate comparison of watersheds of different sizes. Sometimes un-scaled 
 #'    fluxes are of interest, this function will convert the units of a native 
 #'    macrosheds stream chemical flux table from kg/ha/d to kg/d. To download
-#'    macrosheds data, see \code{download_ms_code_data()}
+#'    macrosheds data, see \code{download_ms_code_data()}.
 #' @export
 #' @examples
 #' d <- load_product(macrosheds_root = 'data/macrosheds_v1', 

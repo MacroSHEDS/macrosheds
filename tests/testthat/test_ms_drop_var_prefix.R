@@ -12,9 +12,9 @@ test_that('var is of length 1', {
 })
 
 test_that('var is correct nchar', {
-    expect_equal(nchar(ms_drop_var_prefix('GN_NO3_N')), 2)
+    expect_equal(nchar(ms_drop_var_prefix('GN_NO3_N')), 5)
 })
 
 test_that("underscore didn't get removed", {
-    expect_no_match(ms_drop_var_prefix('GN_NO3_N'), '_')
+    expect_equal(ms_drop_var_prefix('GN_NO3_N'), 'NO3_N')
 })

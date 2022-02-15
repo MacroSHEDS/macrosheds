@@ -8,7 +8,7 @@
 #' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
-#' @param macrosheds_root character.  Directory where macrosheds data files will be downloaded to
+#' @param macrosheds_root character.  Directory where macrosheds data files will be downloaded.
 #' @param networks character vector. macrosheds networks that will be downloaded. 
 #'    Either a single network, vector of networks, or 'all'. see \code{download_ms_site_data()} 
 #'    for networks available for download.

@@ -1,0 +1,559 @@
+#' Interpolate precipitation gauge data to whole basins
+#'
+#' Interpolate daily precipitations volume, chemistry, and precipitation chemistry flux 
+#' to basins in a study area.
+#'
+#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
+#' @author Mike Vlah
+#' @author Wes Slaughter
+#' @param precip \code{data.frame} or path to a folder containing \code{data.frame} 
+#'    files of precipitation gauge data in macrosheds format.
+#' @param ws_boundary \code{sf} object or path to a folder containing \code{sf} 
+#'    files of watershed boundaries in macrosheds format.
+#' @param precip_gauge \code{sf} object or path to a folder containing \code{sf} 
+#'    files of precipitation gauge locations in macrosheds format.
+#' @param pchem \code{data.frame} or path to a folder containing \code{data.frame} 
+#'    files of precipitation chemistry data in macrosheds format.
+#' @param out_path character. Directory to where precipitation data will be saved.
+#' @param parallel logical. Default TRUE, should interpolation run in parallel.
+#' @param maxcores numeric. Default Inf, the maximum number of cores used in parallel processing, 
+#'    ignored if parallel is FALSE.
+#' @param elevation_agnostic Logical. Should elevation data be used in interpolating 
+#'    precipitation data. See details for more information
+#' @param verbose Logical. Should information be printed to console.
+#' @return Saves precipitation, precipitation chemistry, and flux (if both precip 
+#'    and pchem are supplied) to the out_path.
+#' @details ms_precip_interp, using inverse weighted interpolation, calculates mean 
+#'    watershed precipitation. ms_precip_interp will interpolate only precipitation volume if no
+#'    pchem is supplied. The function will also only interpolate precipitation chemistry 
+#'    if no precip data is supplied. If both precip and pchem are supplied, then 
+#'    precipitation volume, chemical concentrations, and precipitation chemical fluxes
+#'    will also be calculated. 
+#'    
+#'    When elevation_agnostic is TRUE, a liner regression between precipitation gauge
+#'    elevation and precipitation volume will be developed for every time step. Then 
+#'    precipitation will be interpolated across the basin using inverse weighted 
+#'    interpolation with gauge location and the linear regression will be used to
+#'    fill raster cells based on their elevation. Finally a mean between the inverse 
+#'    weighted interpolation and elevation relationship will be used for each time step.
+#'    When FALSE, only inverse weighted interpolation is used.
+#' @importFrom data.table ':='
+#' @export
+
+ms_precip_interp <- function(precip,
+                             ws_boundary,
+                             precip_gauge,
+                             pchem,
+                             parallel = TRUE,
+                             maxcores = Inf,
+                             out_path,
+                             elevation_agnostic = TRUE,
+                             verbose = TRUE){
+
+    precip_only <- missing(pchem)
+    pchem_only <- missing(precip)
+    ms_vars <- macrosheds::ms_download_variables()
+        
+    #### Load in data is file path supplied ####
+    # load watershed boundaries
+    if(! inherits(ws_boundary, 'sf') && inherits(ws_boundary, 'character')){
+        wb_path <- list.files(ws_boundary, full.names = TRUE)
+        wb <- try(map_dfr(wb_path, sf::st_read))
+        
+        if(inherits(wb, 'try-error')){
+            stop('ws_boundary file failed to load, check file path is correct')
+        }
+    } else{
+        wb <- ws_boundary
+    }
+    
+    # Load in precipitation gauge locations
+    if(! inherits(precip_gauge, 'sf') && inherits(precip_gauge, 'character')){
+        rg_path <- list.files(precip_gauge, full.names = TRUE)
+        rg <- try(map_dfr(rg_path, sf::st_read))
+        
+        if(inherits(rg, 'try-error')){
+            stop('precip_gauge file failed to load, check file path is correct')
+        }
+    } else{
+        rg <- precip_gauge
+    }
+    
+    # Load in precipitation data 
+    if(! inherits(precip, c('data.frame', 'tbl', 'tibble', 'tbl_df'))){
+        precip_path <- list.files(precip, full.names = TRUE)
+        precip <- try(map_dfr(precip_path, read_feather))
+        
+        if(inherits(precip, 'try-error')){
+            stop('precip file failed to load, check file path is correct')
+        }
+    } else{
+        precip <- precip
+    }
+    
+    # Load in precip chemistry
+    if(missing(pchem)){
+        if(verbose){
+            print('Only interpolating precipitation')
+        }
+    } else{
+        if(! inherits(precip, c('data.frame', 'tbl', 'tibble', 'tbl_df'))){
+            pchem_path <- list.files(pchem, full.names = TRUE)
+            pchem <- try(map_dfr(pchem_path, read_feather))
+            
+            if(inherits(pchem, 'try-error')){
+                stop('pchem file failed to load, check file path is correct')
+            }
+        } else{
+            pchem <- pchem
+        }
+    }
+    
+    
+    #### Checks ####
+    if(!inherits(rg, 'sf')){
+        stop('precip_gauge file must be an sf object.')
+    }
+    if(!inherits(wb, 'sf')){
+        stop('ws_boundary file must be an sf object.')
+    }
+    if(!missing(precip) && !all(c('datetime', 'val', 'var', 'site_code', 'val_err') %in% names(precip))){
+        stop('precip file must be in macrosheds format with the column names datetime, site_code, val, val_err, and var at minimum')
+    }
+    if(!missing(pchem) && !all(c('datetime', 'val', 'var', 'site_code', 'val_err') %in% names(pchem))){
+        stop('precip_chem file must be in macrosheds format with the column names datetime, site_code, val, val_err, and var at minimum')
+    }
+    if(! length(unique(rg$site_code)) == length(rg$site_code)){
+        stop('the precip_gauge file contain duplicate entries for the same gauge')
+    }
+    
+    if(! all(rg$site_code %in% unique(precip$site_code))){
+        missing_gauge <- rg$site_code[! rg$site_code %in% unique(precip$site_code)]
+        stop(paste0('a precip gauge location exists in the precip gauge file for the gauge(s): ', 
+                          paste0(missing_gauge, collapse = ', '),
+                          ' but no corresponding data exists in the precip file,',
+                          ' either add data to the precip file for these gauges or',
+                          ' remove the gauge from the precip_gauge file'))
+    }
+    if(! all(unique(precip$site_code) %in% rg$site_code)){
+        missing_gauge <- unique(precip$site_code)[!unique(precip$site_code) %in% rg$site_code]
+        stop(paste0('data exists in the precip file for the gauge(s): ', paste0(missing_gauge, collapse = ', '),
+                     ' but have no corresponding location in the precip_gauge file,',
+                     ' either add these gauge(s) to the precip_gauge file or remove corresponding data from the preicp file'))
+    }
+    
+    # get precip var name
+    precip_var_name <- unique(precip$var)
+    if(! length(precip_var_name) == 1){
+        stop('precipitation tables contain multiple variables, only one precipitation variables is accepted')
+    }
+    
+    # Apply val_err as errors 
+    if(!missing(precip)){
+        errors::errors(precip$val) <- precip$val_err
+        precip <- precip %>%
+            select(-val_err)
+    }
+    
+    if(!missing(pchem)){
+        errors::errors(pchem$val) <- pchem$val_err
+        pchem <- pchem %>%
+            select(-val_err)
+    }
+    
+    #### Set up spatial ####
+    
+    #project based on average latlong of watershed boundaries
+    bbox <- as.list(sf::st_bbox(wb))
+    projstring <- choose_projection(lat = mean(bbox$ymin, bbox$ymax),
+                                    long = mean(bbox$xmin, bbox$xmax))
+    wb <- sf::st_transform(wb, projstring)
+    rg <- sf::st_transform(rg, projstring)
+    
+    # get a DEM that encompasses all watersheds and gauges and buffer because
+    # gauges on the edge of bbox can error in extracting elevation 
+    wb_rg_bbox <- sf::st_as_sf(sf::st_as_sfc(sf::st_bbox(bind_rows(wb, rg)))) %>%
+        sf::st_buffer(50)
+    
+    if('area' %in% names(wb)){
+        wb <- wb %>%
+            mutate(area = as.numeric(sf::st_area(geometry)/10000))
+    }
+    
+    # Maybe change this 
+    dem_res <- ifelse(any(wb$area < 5), 9, 8)
+    
+    dem <- expo_backoff(
+        expr = {
+            elevatr::get_elev_raster(locations = wb_rg_bbox,
+                                     z = dem_res,
+                                     clip = 'bbox',
+                                     expand = 0.005,
+                                     verbose = verbose,
+                                     override_size_check = TRUE)
+        },
+        max_attempts = 5
+    )
+    
+    #add elev column to rain gauges
+    rg$elevation <- terra::extract(dem, rg)
+    
+    #this avoids a lot of slow summarizing
+    if(! pchem_only){
+        
+        status_cols <- precip %>%
+            select(datetime, ms_status, ms_interp) %>%
+            group_by(datetime) %>%
+            summarize(
+                ms_status = numeric_any(ms_status),
+                ms_interp = numeric_any(ms_interp))
+        
+        day_durations_byproduct <- datetimes_to_durations(
+            datetime_vec = precip$datetime,
+            variable_prefix_vec = ms_extract_var_prefix(precip$var),
+            unit = 'days',
+            installed_maxgap = 2,
+            grab_maxgap = 30)
+        
+        precip$val[is.na(day_durations_byproduct)] <- NA
+        
+        precip <- precip %>%
+            select(-ms_status, -ms_interp, -var) %>%
+            tidyr::pivot_wider(names_from = site_code,
+                               values_from = val) %>%
+            left_join(status_cols, #they get lumped anyway
+                      by = 'datetime') %>%
+            arrange(datetime)
+        
+        day_durations <- datetimes_to_durations(
+            datetime_vec = precip$datetime,
+            unit = 'days')
+    }
+    
+    
+    if(! precip_only){
+        
+        #determine which variables can be flux converted (prefix handling clunky here)
+        flux_vars <- ms_vars$variable_code[as.logical(ms_vars$flux_convertible)]
+        pchem_vars <- unique(pchem$var)
+        pchem_vars_fluxable0 <- base::intersect(ms_drop_var_prefix(pchem_vars),
+                                                flux_vars)
+        pchem_vars_fluxable <- pchem_vars[ms_drop_var_prefix(pchem_vars) %in%
+                                              pchem_vars_fluxable0]
+        
+        #this avoids a lot of slow summarizing
+        status_cols <- pchem %>%
+            select(datetime, ms_status, ms_interp) %>%
+            group_by(datetime) %>%
+            summarize(
+                ms_status = numeric_any(ms_status),
+                ms_interp = numeric_any(ms_interp))
+        
+        #clean pchem one variable at a time, matrixify it, insert it into list
+        nvars <- length(pchem_vars)
+        pchem_setlist <- as.list(rep(NA, nvars))
+        for(i in 1:nvars){
+            
+            v <- pchem_vars[i]
+            
+            #clean data and arrange for matrixification
+            pchem_setlist[[i]] <- pchem %>%
+                filter(var == v) %>%
+                select(-var, -ms_status, -ms_interp) %>%
+                tidyr::pivot_wider(names_from = site_code,
+                                   values_from = val) %>%
+                left_join(status_cols,
+                          by = 'datetime') %>%
+                arrange(datetime)
+        }
+    } #end conditional pchem+pflux block (1)
+    
+    #make sure old quickref data aren't still sitting around
+    unlink(glue::glue('{ms}/precip_idw_quickref',
+                      ms = out_path),
+           recursive = TRUE)
+    
+    #send vars into interpolator with precip, one at a time. if var is flux-
+    #convertible, interpolate precip, pchem, and pflux. otherwise, just precip
+    #and pchem. combine and write outputs by site
+    
+    for(i in 1:nrow(wb)){
+        
+        wbi <- slice(wb, i)
+        site_code <- wbi$site_code
+        wbi_area_ha <- as.numeric(sf::st_area(wbi)) / 10000
+        
+        idw_log_wb(verbose = verbose,
+                   site_code = site_code,
+                   i = i,
+                   nw = nrow(wb))
+        
+        nthreads <- parallel::detectCores()
+        
+        if( (!maxcores == Inf) && maxcores > nthreads) {
+            stop('maxcores exceeds cores on machine, either use a lower number of cores or use defualt Inf.')
+        }
+        
+        ## IDW INTERPOLATE PRECIP FOR ALL TIMESTEPS. STORE CELL VALUES
+        ## SO THEY CAN BE USED FOR PFLUX INTERP
+        
+        # Conditional switch between running in parallel and series 
+        `%parcond%` <- ifelse(parallel, `%dopar%`, `%do%`)
+        
+        if(! pchem_only){
+            
+            ntimesteps_precip <- nrow(precip)
+            nsuperchunks <- ceiling(ntimesteps_precip / 25000 * 2)
+            nchunks_precip <- nthreads * nsuperchunks
+            
+            precip_superchunklist <- chunk_df(d = precip,
+                                              nchunks = nsuperchunks,
+                                              create_index_column = TRUE)
+            
+            ws_mean_precip <- tibble()
+            for(s in 1:length(precip_superchunklist)){
+                # ws_mean_precip <- foreach::foreach(
+                #     s = 1:length(precip_superchunklist),
+                #     .combine = idw_parallel_combine,
+                #     .init = 'first iter') %:% {
+                
+                precip_superchunk <- precip_superchunklist[[s]]
+                
+                precip_chunklist <- chunk_df(d = precip_superchunk,
+                                             nchunks = nthreads,
+                                             create_index_column = FALSE)
+                
+                idw_log_var(verbose = verbose,
+                            site_code = site_code,
+                            v = 'precipitation',
+                            j = paste('chunk', s),
+                            ntimesteps = nrow(precip_superchunk),
+                            nvars = nsuperchunks)
+                
+                clst <- ms_parallelize(maxcores = nthreads)
+                # doFuture::registerDoFuture()
+                # ncores <- min(parallel::detectCores(), maxcores)
+                # clst <- parallel::makeCluster(nthreads, type='FORK')
+                # future::plan(future::multicore, workers = 48)
+                # future::plan(future::multisession, workers = 48)
+                
+                # parallel::stopCluster(clst)
+                # fe_junk <- foreach:::.foreachGlobals
+                # rm(list = ls(name = fe_junk),
+                #    pos = fe_junk)
+                
+                ws_mean_precip_chunk <- foreach::foreach(
+                    j = 1:min(nthreads, nrow(precip_superchunk)),
+                    .combine = idw_parallel_combine,
+                    .init = 'first iter') %parcond% {
+                        
+                        pchunk <- precip_chunklist[[j]]
+                        
+                        # idw_log_var(verbose = verbose,
+                        #             site_code = site_code,
+                        #             v = 'precipitation',
+                        #             j = paste('chunk', j + (nthreads * (s - 1))),
+                        #             ntimesteps = nrow(pchunk),
+                        #             nvars = nchunks_precip)
+                        
+                        foreach_return <- shortcut_idw(
+                            encompassing_dem = dem,
+                            wshd_bnd = wbi,
+                            data_locations = rg,
+                            data_values = pchunk,
+                            durations_between_samples = day_durations[pchunk$ind],
+                            stream_site_code = site_code,
+                            output_varname = 'SPECIAL CASE PRECIP',
+                            save_precip_quickref = ! precip_only,
+                            elev_agnostic = elevation_agnostic,
+                            p_var = precip_var_name,
+                            verbose = verbose,
+                            macrosheds_root = out_path)
+                        
+                        foreach_return
+                    }
+                
+                ms_unparallelize(clst)
+                
+                rm(precip_chunklist); gc()
+                
+                ws_mean_precip <- bind_rows(ws_mean_precip, ws_mean_precip_chunk)
+            }
+            
+            rm(precip_superchunklist); gc()
+            
+            if(any(is.na(ws_mean_precip$datetime))){
+                stop('NA datetime found in ws_mean_precip')
+            }
+            
+            # #restore original varnames by site and dt
+            # ws_mean_precip <- ws_mean_precip %>%
+            #     arrange(datetime) %>%
+            #     select(-var) %>% #just a placeholder
+            #     left_join(precip_varnames,
+            #               by = c('datetime', 'site_code'))
+            
+            ws_mean_precip <- ws_mean_precip %>%
+                dplyr::rename_all(dplyr::recode, concentration = 'val') %>%
+                # rename(val = concentration) %>%
+                arrange(datetime)
+            
+            # ws_mean_precip <- apply_detection_limit_t(
+            #     X = ws_mean_precip,
+            #     network = network,
+            #     domain = domain,
+            #     prodname_ms = precursor_prodnames[grepl('^precipitation',
+            #                                             precursor_prodnames)])
+            
+            write_ms_file(ws_mean_precip,
+                          macrosheds_root = out_path,
+                          prodname_ms = 'precipitation__ms900',
+                          site_code = site_code,
+                          shapefile = FALSE)
+            
+            rm(ws_mean_precip); gc()
+        }
+        
+        ## NOW IDW INTERPOLATE PCHEM (IF PRECIP CHEMISTRY DATA EXIST)
+        ## AND PFLUX (FOR VARIABLES THAT ARE FLUXABLE).
+        
+        if(! precip_only){
+            
+            ws_mean_chemflux <- tibble()
+            for(j in 1:nvars){
+                
+                v <- pchem_vars[j]
+                jd <- pchem_setlist[[j]]
+                ntimesteps_chemflux <- nrow(jd)
+                
+                if(v %in% pchem_vars_fluxable && ! pchem_only){
+                    is_fluxable <- TRUE
+                } else {
+                    is_fluxable <- FALSE
+                }
+                
+                idw_log_var(verbose = verbose,
+                            site_code = site_code,
+                            v = v,
+                            j = paste('var', j),
+                            nvars = nvars,
+                            ntimesteps = ntimesteps_chemflux,
+                            is_fluxable = is_fluxable)
+                
+                nsuperchunks <- ceiling(ntimesteps_chemflux / 5000 * 2)
+                nchunks_chemflux <- nthreads * nsuperchunks
+                
+                chemflux_superchunklist <- chunk_df(d = jd,
+                                                    nchunks = nsuperchunks)
+                nsuperchunks <- length(chemflux_superchunklist)
+                
+                ws_mean_chemflux_var <- tibble()
+                for(s in 1:nsuperchunks){
+                    
+                    chemflux_superchunk <- chemflux_superchunklist[[s]]
+                    
+                    chemflux_chunklist <- chunk_df(d = chemflux_superchunk,
+                                                   nchunks = nthreads)
+                    
+                    idw_log_var(verbose = verbose,
+                                site_code = site_code,
+                                v = v,
+                                j = paste('chunk', s),
+                                ntimesteps = nrow(chemflux_superchunk),
+                                nvars = nsuperchunks)
+                    
+                    clst <- ms_parallelize(maxcores = nthreads)
+                    
+                    foreach_out <- foreach::foreach(
+                        l = 1:length(chemflux_chunklist),
+                        # l = 1:min(nthreads, nrow(chemflux_superchunk)),
+                        .combine = idw_parallel_combine,
+                        .init = 'first iter') %parcond% {
+                            
+                            if(is_fluxable){
+                                
+                                foreach_chunk <- shortcut_idw_concflux_v2(
+                                    encompassing_dem = dem,
+                                    wshd_bnd = wbi,
+                                    ws_area = wbi_area_ha,
+                                    data_locations = rg,
+                                    precip_values = precip,
+                                    chem_values = chemflux_chunklist[[l]],
+                                    stream_site_code = site_code,
+                                    output_varname = v,
+                                    out_path = out_path,
+                                    verbose = verbose)
+                                
+                            } else {
+                                
+                                foreach_chunk <- shortcut_idw(
+                                    encompassing_dem = dem,
+                                    wshd_bnd = wbi,
+                                    data_locations = rg,
+                                    data_values = chemflux_chunklist[[l]],
+                                    stream_site_code = site_code,
+                                    output_varname = v,
+                                    elev_agnostic = elevation_agnostic,
+                                    macrosheds_root = out_path,
+                                    verbose = verbose)
+                            }
+                            
+                            foreach_chunk
+                        }
+                    
+                    ms_unparallelize(clst)
+                    
+                    
+                    rm(chemflux_chunklist); gc()
+                    
+                    ws_mean_chemflux_var <- bind_rows(ws_mean_chemflux_var,
+                                                      foreach_out)
+                }
+                
+                rm(chemflux_superchunklist); gc()
+                
+                ws_mean_chemflux <- bind_rows(ws_mean_chemflux,
+                                              ws_mean_chemflux_var)
+            }
+            
+            if(any(is.na(ws_mean_chemflux$datetime))){
+                stop('NA datetime found in ws_mean_chemflux')
+            }
+            
+
+            if(! pchem_only){
+                
+                ws_mean_pflux <- ws_mean_chemflux %>%
+                    select(-concentration) %>%
+                    rename(val = flux) %>%
+                    arrange(var, datetime)
+                
+                write_ms_file(ws_mean_pflux,
+                              macrosheds_root = out_path,
+                              prodname_ms = 'precip_flux_inst__ms902',
+                              site_code = site_code,
+                              shapefile = FALSE)
+                
+                rm(ws_mean_pflux)
+            }
+            
+            ws_mean_pchem <- ws_mean_chemflux %>%
+                select(-any_of('flux')) %>%
+                rename(val = concentration) %>%
+                arrange(var, datetime)
+            
+            write_ms_file(ws_mean_pchem,
+                          macrosheds_root = out_path,
+                          prodname_ms = 'precip_chemistry__ms901',
+                          site_code = site_code,
+                          shapefile = FALSE)
+            
+            rm(ws_mean_pchem); gc()
+        } #end conditional pchem+pflux block (2)
+    }
+    
+    unlink(glue::glue('{ms}/precip_idw_quickref',
+                      ms = out_path),
+           recursive = TRUE)
+}
+

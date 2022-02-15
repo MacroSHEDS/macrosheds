@@ -7,42 +7,53 @@
 ms_run_egret(
   stream_chemistry,
   discharge,
-  prep_data,
-  Kalman = FALSE,
+  prep_data = TRUE,
+  run_egret = TRUE,
+  kalman = FALSE,
   quiet = FALSE
 )
 }
 \arguments{
 \item{stream_chemistry}{\code{date.frame}. A macrosheds \code{data.frame} 
 containg only one stream chemistry variable and one site_code; WRTDS can 
-only be run for one chemistry vatiable and one site at a time. See 
-\code{download_ms_core_data()} to download data}
+only be run for one chemistry variable and one site at a time. See 
+\code{download_ms_core_data()} to download data.}
 
 \item{discharge}{\code{date.frame}. A macrosheds \code{data.frame} containing 
 discharge data for a given site. See  \code{download_ms_core_data()} to 
-download data}
+download data.}
 
-\item{prep_data}{logical. Should data be thined/altered to folow EGRET reomendations. 
-See details for more information}
+\item{prep_data}{logical. Should data be thinned/altered to follow EGRET recommendations. 
+See details for more information.}
+
+\item{run_egret}{logical. If FALSE, the EGRET model will not be run and a EGRET
+eList will be returned. This argument is intended for those who want to change
+default parameters in the EGRET model but need data in the eList format.}
+
+\item{quiet}{logical. Should warnings be printed to console.}
 
 \item{Kalman}{logical. Should EGRET run the Kalman filter on WRTDS results. See
-?EGRET::WRTDSKalman() for more information}
-
-\item{quiet}{logical. Should warnings be printed to console}
+?EGRET::WRTDSKalman() for more information.}
 }
 \value{
-returns a \code{list} in the EGRET format with modle resutls
+returns a \code{list} in the EGRET format with model results.
 }
 \description{
-ms_run_egret prepairs data for the egret package and runs the Weighted Regretion
-on Time, Discharge, and Season (WRTDS) model
+ms_run_egret prepares data for the EGRET package and runs the Weighted Regression
+on Time, Discharge, and Season (WRTDS) model.
 }
 \details{
 WRTDS is a model to predict stream chemistry at a daily time step 
     based on the season, discharge, and time since last grab sample. This model is 
-    usfule for calculating flux when sampling is sparce (greater than a weekly 
-    sampling frequency). For more informaiton on the WRTDS and EGRET package 
-    see https://github.com/USGS-R/EGRET
+    useful for calculating flux when sampling is sparse (greater than a weekly 
+    sampling frequency). For more information on the WRTDS and EGRET package 
+    see https://github.com/USGS-R/EGRET.
+    
+    prep_data will remove NAs from the dataset, set all 0 values in stream 
+    chemistry dataset to the minimum value in the dataset (this is required because EGRET will
+    fail if there are 0 values in a dataset), filter for areas of overlapping 
+    chemistry and discharge, filter years with at least 6 chemistry samples,
+    and remove times when there is chemistry but no discharge data reported.
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}
