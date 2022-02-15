@@ -2,21 +2,21 @@
 #'
 #' Load a macrosheds spatial product (ws_boundary, precip_gauge_locations, 
 #' or stream_gauge_locations) from a downloaded macrosheds dataset see 
-#' \code{download_ms_code_data()} for data download
+#' \code{download_ms_code_data()} for data download.
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param macrosheds_root character. The path to the macrosheds dataset's parent
-#'    directory, e.g. '~/stuff/macrosheds_dataset_v0.3'
+#'    directory, e.g. '~/stuff/macrosheds_dataset_v0.3'.
 #' @param spatial_product character. read and combine files associated with 
 #'    this spatial prodname across selected networks and domains. Available spatial_product 
-#'    are: ws_boundary, precip_gauge_locations, or stream_gauge_locations
-#' @param networks character vector. networks to load, optional
-#' @param domains character vector. Domains to load, optional
-#' @param site_codes character vector. site_codes to load, optional
+#'    are: ws_boundary, precip_gauge_locations, or stream_gauge_locations.
+#' @param networks character vector. networks to load, optional.
+#' @param domains character vector. Domains to load, optional.
+#' @param site_codes character vector. site_codes to load, optional.
 #' @return returns a \code{sf} object containing all the all data belonging to the 
-#'    selected spatial product in the \code{macrosheds_root} directory
+#'    selected spatial product in the \code{macrosheds_root} directory.
 #' @export
 #' @examples
 #' macrosheds_data <- load_spatial_products(macrosheds_root = 'data/macrosheds_v1', 
@@ -85,7 +85,8 @@ ms_load_spatial_products <- function(macrosheds_root,
     if(!missing(site_codes)){
         sites <- str_match(string = prodpaths,
                            pattern = '([^/]+)(?=\\.shp$)')[,1]
-        prodpaths_sites <- prodpaths[grep(paste0(site_codes, collapse = '|'), sites)]
+        # prodpaths_sites <- prodpaths[grep(paste0(site_codes, collapse = '|'), sites)]
+        prodpaths_sites <- prodpaths[sites %in% site_codes]
     } else{
         prodpaths_sites <- NULL
     }

@@ -1,7 +1,7 @@
-#' Download macrosheds varibles data table 
+#' Download macrosheds variables data table 
 #'
 #' Download the macrosheds variables table with information on variables codes,
-#' units, and more 
+#' units, and more.
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
 #' @author Mike Vlah

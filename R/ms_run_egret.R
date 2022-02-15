@@ -1,32 +1,38 @@
 #' Run the WRTDS model through EGRET for macrosheds data
 #'
-#' ms_run_egret prepairs data for the egret package and runs the Weighted Regretion
-#' on Time, Discharge, and Season (WRTDS) model 
+#' ms_run_egret prepares data for the EGRET package and runs the Weighted Regression
+#' on Time, Discharge, and Season (WRTDS) model.
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param stream_chemistry \code{date.frame}. A macrosheds \code{data.frame} 
 #'     containg only one stream chemistry variable and one site_code; WRTDS can 
-#'     only be run for one chemistry vatiable and one site at a time. See 
-#'     \code{download_ms_core_data()} to download data
+#'     only be run for one chemistry variable and one site at a time. See 
+#'     \code{download_ms_core_data()} to download data.
 #' @param discharge \code{date.frame}. A macrosheds \code{data.frame} containing 
 #'     discharge data for a given site. See  \code{download_ms_core_data()} to 
-#'     download data
-#' @param prep_data logical. Should data be thined/altered to folow EGRET reomendations. 
-#'     See details for more information 
+#'     download data.
+#' @param prep_data logical. Should data be thinned/altered to follow EGRET recommendations. 
+#'     See details for more information.
 #' @param run_egret logical. If FALSE, the EGRET model will not be run and a EGRET
 #'     eList will be returned. This argument is intended for those who want to change
-#'     default parameters to the EGRET model but need data in the eList format
+#'     default parameters in the EGRET model but need data in the eList format.
 #' @param Kalman logical. Should EGRET run the Kalman filter on WRTDS results. See
-#'     ?EGRET::WRTDSKalman() for more information 
-#' @param quiet logical. Should warnings be printed to console 
-#' @return returns a \code{list} in the EGRET format with modle resutls 
+#'     ?EGRET::WRTDSKalman() for more information.
+#' @param quiet logical. Should warnings be printed to console.
+#' @return returns a \code{list} in the EGRET format with model results.
 #' @details WRTDS is a model to predict stream chemistry at a daily time step 
 #'     based on the season, discharge, and time since last grab sample. This model is 
-#'     usfule for calculating flux when sampling is sparce (greater than a weekly 
-#'     sampling frequency). For more informaiton on the WRTDS and EGRET package 
-#'     see https://github.com/USGS-R/EGRET
+#'     useful for calculating flux when sampling is sparse (greater than a weekly 
+#'     sampling frequency). For more information on the WRTDS and EGRET package 
+#'     see https://github.com/USGS-R/EGRET.
+#'     
+#'     prep_data will remove NAs from the dataset, set all 0 values in stream 
+#'     chemistry dataset to the minimum value in the dataset (this is required because EGRET will
+#'     fail if there are 0 values in a dataset), filter for areas of overlapping 
+#'     chemistry and discharge, filter years with at least 6 chemistry samples,
+#'     and remove times when there is chemistry but no discharge data reported. 
 #' @export
 
 ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE, 
@@ -85,8 +91,8 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
         
         # Filter so there is only Q going into the model that also has chem
         stream_chemistry <- stream_chemistry %>%
-            mutate(year = year(datetime),
-                   month = month(datetime)) %>%
+            mutate(year = lubridate::year(datetime),
+                   month = lubridate::month(datetime)) %>%
             mutate(waterYear = ifelse(month %in% c(10, 11, 12), year+1, year))
         
         # Get years with at least 6 chemistry samples (bi-monthly sampling is a 
@@ -113,8 +119,8 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
         
         # Filter discharge to only include water years with chemistry sampling 
         discharge <- discharge %>%
-            mutate(year = year(datetime),
-                   month = month(datetime)) %>%
+            mutate(year = lubridate::year(datetime),
+                   month = lubridate::month(datetime)) %>%
             mutate(waterYear = ifelse(month %in% c(10, 11, 12), year+1, year)) %>%
             filter(waterYear %in% !!years_with_data)
         
@@ -135,13 +141,13 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
                           Uncen = 1,
                           ConcAve = stream_chemistry$val,
                           Julian = as.numeric(julian(lubridate::ymd(stream_chemistry$datetime),origin=as.Date("1850-01-01"))),
-                          Month = month(stream_chemistry$datetime),
-                          Day = yday(stream_chemistry$datetime),
+                          Month = lubridate::month(stream_chemistry$datetime),
+                          Day = lubridate::yday(stream_chemistry$datetime),
                           DecYear = decimalDate(stream_chemistry$datetime),
                           MonthSeq = get_MonthSeq(stream_chemistry$datetime)) %>%
         mutate(SinDY = sin(2*pi*DecYear),
                CosDY = cos(2*pi*DecYear))  %>%
-        mutate(waterYear = ifelse(Month %in% c(10, 11, 12), year(Date) + 1, year(Date))) %>%
+        mutate(waterYear = ifelse(Month %in% c(10, 11, 12), lubridate::year(Date) + 1, lubridate::year(Date))) %>%
         select(Name, Date, ConcLow, ConcHigh, Uncen, ConcAve, Julian, Month, Day,
                DecYear, MonthSeq, waterYear, SinDY, CosDY)
     
@@ -150,8 +156,8 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
                          Date = as.Date(discharge$datetime),
                          Q = discharge$val/1000,
                          Julian = as.numeric(julian(lubridate::ymd(discharge$datetime),origin=as.Date("1850-01-01"))),
-                         Month = month(discharge$datetime),
-                         Day = yday(discharge$datetime),
+                         Month = lubridate::month(discharge$datetime),
+                         Day = lubridate::yday(discharge$datetime),
                          DecYear = decimalDate(discharge$datetime),
                          MonthSeq = get_MonthSeq(discharge$datetime),
                          Qualifier = discharge$ms_status) 

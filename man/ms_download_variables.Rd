@@ -2,7 +2,7 @@
 % Please edit documentation in R/ms_download_variables.R
 \name{ms_download_variables}
 \alias{ms_download_variables}
-\title{Download macrosheds varibles data table}
+\title{Download macrosheds variables data table}
 \usage{
 ms_download_variables()
 }
@@ -12,7 +12,7 @@ returns a \code{data.frame} of variables, codes,
 }
 \description{
 Download the macrosheds variables table with information on variables codes,
-units, and more
+units, and more.
 }
 \examples{
 macrosheds_sites <- download_ms_variables()

@@ -17,7 +17,7 @@ ms_load_product(
 }
 \arguments{
 \item{macrosheds_root}{character. The path to the macrosheds dataset's parent
-directory, e.g. '~/stuff/macrosheds_dataset_v0.3'}
+directory, e.g. '~/stuff/macrosheds_dataset_v0.3'.}
 
 \item{prodname}{character. read and combine files associated with this prodname. 
 Available prodnames are:
@@ -26,13 +26,13 @@ precip_chemistry, precip_flux_inst.}
 
 \item{filter_vars}{character vector. for products like stream_chemistry that include
 multiple variables, this filters to just the ones specified (ignores
-variable prefixes). To see a catalog of variables, visit macrosheds.org}
+variable prefixes). To see a catalog of variables, visit macrosheds.org.}
 
-\item{networks}{character vector. Networks to load, optional}
+\item{networks}{character vector. Networks to load, optional.}
 
-\item{domains}{character vector. Domains to load, optional}
+\item{domains}{character vector. Domains to load, optional.}
 
-\item{site_codes}{character vector. Sites to load, optional}
+\item{site_codes}{character vector. Sites to load, optional.}
 
 \item{sort_result}{logical. If TRUE, output will be sorted by site_code, var,
 datetime. this may take a few additional minutes for some products in
@@ -47,7 +47,7 @@ returns a \code{tibble} containing all the all data belonging to the
 }
 \description{
 Loads and filters macrosheds products (e.g stream_chemistry, discharge, etc.) from a 
-downloaded macrosheds dataset see \code{download_ms_code_data()} for data download
+downloaded macrosheds dataset see \code{download_ms_code_data()} for data download.
 }
 \examples{
 macrosheds_data <- load_product(macrosheds_root = 'data/macrosheds_v1', 

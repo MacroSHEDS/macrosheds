@@ -37,7 +37,7 @@ returns a \code{tibble} containing concentration data converted to new units
 \description{
 Convert macrosheds data from it's native format into units of g/l, mol/l, and 
 eq/l. Along with metric base unit conversions and conversions from molecules 
-in the form of NO3 as N (NO3_N) to NO3 (NO3) and vice versa
+in the form of NO3 as N (NO3_N) to NO3 (NO3) and vice versa.
 }
 \details{
 convert_molecules is used to convert to and from a variable reported

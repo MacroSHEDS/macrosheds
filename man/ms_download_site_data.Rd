@@ -8,12 +8,12 @@ ms_download_site_data()
 }
 \value{
 returns a \code{data.frame} of all sites in the macrosheds systems 
-   with their coresponding network, domain, latitude, longitude, area, and 
-   aditional information
+   with their corresponding network, domain, latitude, longitude, area, and 
+   additional information.
 }
 \description{
 Download the macrosheds site data table with information on networks, domains,
- location of stream gauges, and more
+ location of stream gauges, and more.
 }
 \examples{
 macrosheds_sites <- download_ms_site_data()

@@ -7,20 +7,20 @@
 ms_extract_var_prefix(x)
 }
 \arguments{
-\item{x}{character string. Macrosheds variable with a prefix}
+\item{x}{character string. Macrosheds variable with a prefix.}
 }
 \value{
-returns the two character prefix on macrosheds variables
+returns the two character prefix on macrosheds variables.
 }
 \description{
-Extract prefixes on macrosheds variables
+Extract prefixes on macrosheds variables.
 }
 \details{
 Macrosheds variables all have a two letter prefix on the front of the 
-   variable to denote the smapling type. The first space is either a I for 'installed'
-   or a G for 'grab.' Denoting if this variable records continously or is a grab 
+   variable to denote the sampling type. The first space is either a I for 'installed'
+   or a G for 'grab.' Denoting if this variable records continuously or is a grab 
    sample. The second position is either a S for 'sensor' or N for 'not a sensor'.
-   Non-sensor variables are generally analyzied in a labratory.
+   Non-sensor variables are generally analyzed in a laboratory.
 }
 \examples{
 macrosheds_vars <- c('GN_NO3_N', 'GN_Mg', 'IS_discharge')
