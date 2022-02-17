@@ -26,9 +26,9 @@ returns a \code{data.frame} with a the column usgs_site.
 Identify if there any USGS gauges in a radius of a latitude and longitude location
 }
 \details{
-The function will search for a USGS gauge within the radius supplied 
-   for every site in the sites file. The dataRetrieval package is used to locate USGS gauges.
-   If no USGS gauge is found, then the usgs_site column will be NA for that site.
+The function will search for a USGS gauge within the radius supplied
+for every site in the sites file. The dataRetrieval package is used to locate USGS gauges.
+If no USGS gauge is found, then the usgs_site column will be NA for that site.
 }
 \examples{
 # With lat long 

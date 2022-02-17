@@ -9,8 +9,9 @@
 #' @return returns a \code{data.frame} of variables, codes,
 #'     and units in macrosheds
 #' @export
+#' @seealso [ms_download_site_data()], [ms_download_core_data()]
 #' @examples
-#' macrosheds_sites <- download_ms_variables()
+#' macrosheds_sites <- ms_downloadvariables()
 
 ms_download_variables <- function(){
     

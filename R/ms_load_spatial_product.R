@@ -1,29 +1,36 @@
-#' Load in macrosheds spatial data products
+#' Read MacroSheds spatial data products from disk into R.
 #'
 #' Load a macrosheds spatial product (ws_boundary, precip_gauge_locations, 
-#' or stream_gauge_locations) from a downloaded macrosheds dataset see 
-#' \code{download_ms_code_data()} for data download.
+#' or stream_gauge_locations) from a downloaded MacroSheds dataset. See 
+#' [ms_load_product()] for time-series data.
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param macrosheds_root character. The path to the macrosheds dataset's parent
-#'    directory, e.g. '~/stuff/macrosheds_dataset_v0.3'.
-#' @param spatial_product character. read and combine files associated with 
-#'    this spatial prodname across selected networks and domains. Available spatial_product 
-#'    are: ws_boundary, precip_gauge_locations, or stream_gauge_locations.
-#' @param networks character vector. networks to load, optional.
-#' @param domains character vector. Domains to load, optional.
-#' @param site_codes character vector. site_codes to load, optional.
-#' @return returns a \code{sf} object containing all the all data belonging to the 
+#'    directory, established with [ms_download_core_data()].
+#' @param spatial_product character. Either "ws_boundary" for watershed boundary,
+#'    "stream_gauge_locations", or "precip_gauge_locations". Files associated with this
+#'    product will be combined across specified networks/domains.
+#' @param networks character vector. MacroSheds networks to load; optional. To see a catalog of 
+#'    networks, visit macrosheds.org or see PLACEHOLDER0.
+#' @param domains character vector. MacroSheds domains to load; optional. To see a catalog of 
+#'    networks, visit macrosheds.org or see PLACEHOLDER0.
+#' @param site_codes character vector. MacroSheds networks to load; optional. To see a catalog of 
+#'    networks, visit macrosheds.org or see PLACEHOLDER0.
+#' @return returns an \code{sf} object containing all data belonging to the 
 #'    selected spatial product in the \code{macrosheds_root} directory.
 #' @export
 #' @examples
-#' macrosheds_data <- load_spatial_products(macrosheds_root = 'data/macrosheds_v1', 
-#'                                          spatial_product = 'ws_boundary'
-#'                                          domains = 'hbef')
+#' ms_root = 'data/macrosheds'
+#' dir.create(ms_root, recursive = TRUE)
+#' ms_downloadcore_data(macrosheds_root = ms_root,
+#'                       domains = c('niwot', 'hjandrews', 'hbef'))
+#' macrosheds_data <- load_spatial_product(macrosheds_root = ms_root, 
+#'                                         spatial_product = 'ws_boundary'
+#'                                         domains = 'hbef')
 
-ms_load_spatial_products <- function(macrosheds_root,
+ms_load_spatial_product <- function(macrosheds_root,
                                      spatial_product,
                                      networks,
                                      domains,

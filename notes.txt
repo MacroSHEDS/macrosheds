@@ -1,0 +1,8 @@
+important messages should go through even if quiet=TRUE
+    definitely errors
+    don't convert informative error messages to generic ones
+PLACEHOLDER0 for referencing documentation after we have it complete
+[func()] notation
+nice to include a see also
+remind about get_response_ funcs
+col_types = cols()

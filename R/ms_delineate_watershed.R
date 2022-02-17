@@ -40,7 +40,7 @@
 #' @author Spencer Rhea
 #' @author Wes Slaughter
 #' @param d \code{date.frame}. A macrosheds \code{dataframe} downloaded using 
-#'     \code{download_ms_core_data()}
+#'     \code{ms_downloadcore_data()}
 #' @param desired_interval character. Input that can be parsed by the "by"
 #'     parameter to base::seq.POSIXt, e.g. "5 mins", "1 day", "1 month" 
 #' @param impute_limit numeric. The maximum number of consecutive points to

@@ -1,4 +1,4 @@
-#' summarize macrosheds data to specified time intervals
+#' Aggregate or interpolate MacroSheds data to specified time intervals
 #'
 #' ms_synchronize_timestep both summarizes macrosheds to weekly, monthly, and 
 #' annual time scales and interpolates macrosheds data to a finer time step such 
@@ -8,7 +8,7 @@
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param d \code{date.frame}. A macrosheds \code{dataframe} downloaded using 
-#'     \code{download_ms_core_data()}.
+#'     \code{ms_downloadcore_data()}.
 #' @param desired_interval character. Input that can be parsed by the "by"
 #'     parameter to base::seq.POSIXt, e.g. "5 mins", "1 day", "1 month".
 #' @param impute_limit numeric. The maximum number of consecutive points to

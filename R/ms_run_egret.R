@@ -9,9 +9,9 @@
 #' @param stream_chemistry \code{date.frame}. A macrosheds \code{data.frame} 
 #'     containg only one stream chemistry variable and one site_code; WRTDS can 
 #'     only be run for one chemistry variable and one site at a time. See 
-#'     \code{download_ms_core_data()} to download data.
+#'     \code{ms_downloadcore_data()} to download data.
 #' @param discharge \code{date.frame}. A macrosheds \code{data.frame} containing 
-#'     discharge data for a given site. See  \code{download_ms_core_data()} to 
+#'     discharge data for a given site. See  \code{ms_downloadcore_data()} to 
 #'     download data.
 #' @param prep_data logical. Should data be thinned/altered to follow EGRET recommendations. 
 #'     See details for more information.

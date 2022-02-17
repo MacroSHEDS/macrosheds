@@ -2461,3 +2461,32 @@ numeric_any_v <- function(...){ #attack of the ellipses
     
     return(out)
 }
+
+get_response_1char <- function(msg,
+                               possible_chars,
+                               subsequent_prompt = FALSE){
+
+    #msg: character. a message that will be used to prompt the user
+    #possible_chars: character vector of acceptable single-character responses
+    #subsequent prompt: not to be set directly. This is handled by
+    #   get_response_mchar during recursion.
+
+    if(subsequent_prompt){
+        cat(paste('Please choose one of:',
+                  paste(possible_chars,
+                        collapse = ', '),
+                  '\n> '))
+    } else {
+        cat(msg)
+    }
+
+    ch <- as.character(readLines(con = stdin(), 1))
+
+    if(length(ch) == 1 && ch %in% possible_chars){
+        return(ch)
+    } else {
+        get_response_1char(msg = msg,
+                           possible_chars = possible_chars,
+                           subsequent_prompt = TRUE)
+    }
+}

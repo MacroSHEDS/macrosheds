@@ -14,16 +14,16 @@ ms_run_egret(
 )
 }
 \arguments{
-\item{stream_chemistry}{\code{date.frame}. A macrosheds \code{data.frame} 
-containg only one stream chemistry variable and one site_code; WRTDS can 
-only be run for one chemistry variable and one site at a time. See 
-\code{download_ms_core_data()} to download data.}
+\item{stream_chemistry}{\code{date.frame}. A macrosheds \code{data.frame}
+containg only one stream chemistry variable and one site_code; WRTDS can
+only be run for one chemistry variable and one site at a time. See
+\code{ms_downloadcore_data()} to download data.}
 
-\item{discharge}{\code{date.frame}. A macrosheds \code{data.frame} containing 
-discharge data for a given site. See  \code{download_ms_core_data()} to 
+\item{discharge}{\code{date.frame}. A macrosheds \code{data.frame} containing
+discharge data for a given site. See  \code{ms_downloadcore_data()} to
 download data.}
 
-\item{prep_data}{logical. Should data be thinned/altered to follow EGRET recommendations. 
+\item{prep_data}{logical. Should data be thinned/altered to follow EGRET recommendations.
 See details for more information.}
 
 \item{run_egret}{logical. If FALSE, the EGRET model will not be run and a EGRET
@@ -43,17 +43,16 @@ ms_run_egret prepares data for the EGRET package and runs the Weighted Regressio
 on Time, Discharge, and Season (WRTDS) model.
 }
 \details{
-WRTDS is a model to predict stream chemistry at a daily time step 
-    based on the season, discharge, and time since last grab sample. This model is 
-    useful for calculating flux when sampling is sparse (greater than a weekly 
-    sampling frequency). For more information on the WRTDS and EGRET package 
-    see https://github.com/USGS-R/EGRET.
-    
-    prep_data will remove NAs from the dataset, set all 0 values in stream 
-    chemistry dataset to the minimum value in the dataset (this is required because EGRET will
-    fail if there are 0 values in a dataset), filter for areas of overlapping 
-    chemistry and discharge, filter years with at least 6 chemistry samples,
-    and remove times when there is chemistry but no discharge data reported.
+WRTDS is a model to predict stream chemistry at a daily time step
+based on the season, discharge, and time since last grab sample. This model is
+useful for calculating flux when sampling is sparse (greater than a weekly
+sampling frequency). For more information on the WRTDS and EGRET package
+see https://github.com/USGS-R/EGRET.\preformatted{prep_data will remove NAs from the dataset, set all 0 values in stream 
+chemistry dataset to the minimum value in the dataset (this is required because EGRET will
+fail if there are 0 values in a dataset), filter for areas of overlapping 
+chemistry and discharge, filter years with at least 6 chemistry samples,
+and remove times when there is chemistry but no discharge data reported. 
+}
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}

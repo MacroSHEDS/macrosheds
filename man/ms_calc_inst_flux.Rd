@@ -7,37 +7,37 @@
 ms_calc_inst_flux(chemistry, q, q_type, verbose = TRUE)
 }
 \arguments{
-\item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or 
+\item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or
 stream chemistry data in macrosheds format and in units of mg/l.}
 
 \item{q}{\code{data.frame}. A \code{data.frame} of precipitation or stream
 discharge in macrosheds format and in units of mm or L/s respectively.}
 
-\item{verbose}{logical. Default true, should function print information to 
+\item{verbose}{logical. Default true, should function print information to
 console.}
 
 \item{data_type}{character. Either precipitation or discharge.}
 }
 \value{
-returns a \code{tibble} of stream instantaneous flux for every timestep 
-   where discharge/precipitation and chemistry are reported in units of kg/ha/timestep.
+returns a \code{tibble} of stream instantaneous flux for every timestep
+where discharge/precipitation and chemistry are reported in units of kg/ha/timestep.
 }
 \description{
-Calculates stream discharge and precipitation fluxes of chemicals from Q (discharge 
+Calculates stream discharge and precipitation fluxes of chemicals from Q (discharge
 or precipitation) and chemistry data
 }
 \details{
 Chemical flux is calculated by multiplying chemical concentration by flow
-   of water (flux = concentration * flow). The output units depend on the time 
-   interval the input data is collected at. If data is collected at 15 minutes 
-   the out put will be in kg/ha/15 minutes and if collected daily units will 
-   be in kg/day. 
-   
-   Before imputing data into \code{ms_calc_inst_flux()}, insure all both q and
-   chemistry data is in the same time step. See \code{ms_synchronize_timestep} to 
-   take data of different intervals and interpolate or summarize data to different 
-   sampling intervals. Also insure chemistry units are in mg/l, see \code{ms_conversions}
-   for unit conversions.
+of water (flux = concentration * flow). The output units depend on the time
+interval the input data is collected at. If data is collected at 15 minutes
+the out put will be in kg/ha/15 minutes and if collected daily units will
+be in kg/day.
+
+Before imputing data into \code{ms_calc_inst_flux()}, insure all both q and
+chemistry data is in the same time step. See \code{ms_synchronize_timestep} to
+take data of different intervals and interpolate or summarize data to different
+sampling intervals. Also insure chemistry units are in mg/l, see \code{ms_conversions}
+for unit conversions.
 }
 \examples{
 

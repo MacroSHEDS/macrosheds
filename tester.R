@@ -2,11 +2,14 @@ library(tidyverse)
 library(feather)
 library(macrosheds)
 library(lubridate)
+library(glue)
 
-#### download_ms_site_data() ####
+options(timeout = 1200)
+
+#### ms_downloadsite_data() ####
 site_data <- macrosheds::ms_download_site_data()
 
-#### download_ms_core_data() ####
+#### ms_downloadcore_data() ####
 macrosheds::ms_download_core_data(macrosheds_root = 'data/ms_test/',
                                   domains = c('hjandrews'),
                                   quiet = F
@@ -16,7 +19,7 @@ macrosheds::ms_download_core_data(macrosheds_root = 'data/ms_test/',
 #### load_product() ####
 all_chem <- macrosheds::ms_load_product(macrosheds_root = 'data/ms_test/', 
                                      prodname = 'discharge',
-                                     domains = c('hbef'),
+                                     domains = c('hjandrews'),
                                      # site_codes = c('w1'),
                                      # filter_vars = c('PO4_P', 'NO3_N', 'DOC', 'temp'),
                                      warn = F) %>%
@@ -24,41 +27,41 @@ all_chem <- macrosheds::ms_load_product(macrosheds_root = 'data/ms_test/',
     unique()
     
 
-unique(all_chem$site_code)
-unique(all_chem$var)
-
-all_chem %>%
-    filter(var == 'GN_DOC') %>%
-    ggplot(aes(datetime, val, col = site_code)) +
-    geom_point()
+# unique(all_chem$site_code)
+# unique(all_chem$var)
+# 
+# all_chem %>%
+#     filter(var == 'GN_DOC') %>%
+#     ggplot(aes(datetime, val, col = site_code)) +
+#     geom_point()
 
 #### read_combine_shapefiles() ####
 
-ws_all <- ms_load_spatial_products('data/ms_test', 'ws_boundary')
+ws_all <- ms_load_spatial_product('data/ms_test', 'ws_boundary')
 mapview::mapview(ws_all)
 
-ws_hbef <- ms_load_spatial_products(macrosheds_root = 'data/ms_test', 
+ws_hbef <- ms_load_spatial_product(macrosheds_root = 'data/ms_test', 
                                     spatial_product = 'ws_boundary', 
                                     site_codes = c('w1', 'w2', 'w3'))
 mapview::mapview(ws_sites)
 
-ws_domains <- ms_load_spatial_products(macrosheds_root = 'data/ms_test', 
+ws_domains <- ms_load_spatial_product(macrosheds_root = 'data/ms_test', 
                                     spatial_product = 'ws_boundary', 
                                     domains = c('hbef', 'hjandrews'))
 mapview::mapview(ws_domains)
 
-ws_domains_sites <- ms_load_spatial_products(macrosheds_root = 'data/ms_test', 
+ws_domains_sites <- ms_load_spatial_product(macrosheds_root = 'data/ms_test', 
                                     spatial_product = 'ws_boundary', 
                                     domains = c('hbef', 'hjandrews'),
                                     site_codes = c('ARIK', 'COMO'))
 mapview::mapview(ws_domains_sites)
 
-ws_networks <- ms_load_spatial_products(macrosheds_root = 'data/ms_test', 
+ws_networks <- ms_load_spatial_product(macrosheds_root = 'data/ms_test', 
                                         spatial_product = 'ws_boundary', 
                                         networks = c('usfs'))
 mapview::mapview(ws_networks)
 
-ws_networks_doms <- ms_load_spatial_products(macrosheds_root = 'data/ms_test', 
+ws_networks_doms <- ms_load_spatial_product(macrosheds_root = 'data/ms_test', 
                                         spatial_product = 'ws_boundary', 
                                         networks = c('usfs'),
                                         domains = 'hjandrews')
