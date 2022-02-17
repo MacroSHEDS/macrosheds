@@ -6,3 +6,5 @@ PLACEHOLDER0 for referencing documentation after we have it complete
 nice to include a see also
 remind about get_response_ funcs
 col_types = cols()
+using slurp plan for future?
+    gotta test on windows

@@ -52,7 +52,7 @@ pchem <- tibble(C1 = runif(100, min = 0, max = 25),
 #### NEED TO SOLVE NO VAL_ERR COLUMN 
 test_that('precipitation is interpolated without error', {
     
-    ms_precip_interp(precip = precip,
+    ms_calc_watershed_precip(precip = precip,
                      ws_boundary = ws_boundary,
                      precip_gauge = precip_gauge,
                      out_path = temp_dir,
@@ -72,7 +72,7 @@ test_that('precipitation is interpolated without error', {
 
 test_that('both precipitation and pchem are interpolated without error', {
     
-    ms_precip_interp(precip = precip,
+    ms_calc_watershed_precip(precip = precip,
                      ws_boundary = ws_boundary,
                      precip_gauge = precip_gauge,
                      pchem = pchem,
@@ -96,7 +96,7 @@ fake_ws <- tibble(D1 = c(-102, 85))
 fake_pg <- tibble(this_is_a_watershed = c(22,44,55,66,22,11))
 test_that('error is throne if non-spatial tables are provided to ws_boundary or precip_gauge', {
     
-    expect_error(ms_precip_interp(precip = precip,
+    expect_error(ms_calc_watershed_precip(precip = precip,
                                   ws_boundary = fake_ws,
                                   precip_gauge = precip_gauge,
                                   out_path = temp_dir,
@@ -104,7 +104,7 @@ test_that('error is throne if non-spatial tables are provided to ws_boundary or 
                                   verbose = T),
                  'ws_boundary file must be an sf object.')
     
-    expect_error(ms_precip_interp(precip = precip,
+    expect_error(ms_calc_watershed_precip(precip = precip,
                                   ws_boundary = ws_boundary,
                                   precip_gauge = fake_pg,
                                   out_path = temp_dir,
@@ -116,7 +116,7 @@ test_that('error is throne if non-spatial tables are provided to ws_boundary or 
 
 test_that('error is throne if too many cores are supplied', {
     
-    expect_error(ms_precip_interp(precip = precip,
+    expect_error(ms_calc_watershed_precip(precip = precip,
                                   ws_boundary = ws_boundary,
                                   precip_gauge = precip_gauge,
                                   out_path = temp_dir,
@@ -133,7 +133,7 @@ pchem_fake <- tibble(d1 = c(0,1,2),
 
 test_that('only macrosheds sheds format is accepted', {
     
-    expect_error(ms_precip_interp(precip = precip_fake,
+    expect_error(ms_calc_watershed_precip(precip = precip_fake,
                                   ws_boundary = ws_boundary,
                                   precip_gauge = precip_gauge,
                                   out_path = temp_dir,
@@ -141,7 +141,7 @@ test_that('only macrosheds sheds format is accepted', {
                                   verbose = T),
                  'precip file must be in macrosheds format with the column names datetime, site_code, val, val_err, and var at minimum')
     
-    expect_error(ms_precip_interp(precip = precip,
+    expect_error(ms_calc_watershed_precip(precip = precip,
                                   pchem = pchem_fake,
                                   ws_boundary = ws_boundary,
                                   precip_gauge = precip_gauge,

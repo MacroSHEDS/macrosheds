@@ -24,7 +24,7 @@
 
 ms_extract_var_prefix <- function(x){
     
-    if(any(is.na(stringr::str_match(x, '[IG][SN]_.+')))){
+    if(any(is.na(stringr::str_match(x, '[IGa-z][SNa-z]_.+')))){
         stop('x is not prefixed.')
     }
     

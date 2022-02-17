@@ -169,7 +169,7 @@ egret_results <- macrosheds::ms_run_egret(stream_chemistry = site_chem,
 
 EGRET::plotDiffContours(egret_results, year0=1990, year1=2017)
 
-#### ms_precip_interp ####
+#### ms_calc_watershed_precip ####
 pchem_path <- list.files('../data_processing/data/czo/boulder/munged/precip_chemistry__3639/', full.names = TRUE)
 pchem <- map_dfr(pchem_path, read_feather)
 precip_path1 <- list.files('../data_processing/data/czo/boulder/munged/precipitation__2435/', full.names = TRUE)
@@ -184,7 +184,7 @@ precip_gauge <- map_dfr(pgauge_path, sf::st_read)
 
 fake_tib <- tibble()
 
-ms_precip_interp(precip = precip,
+ms_calc_watershed_precip(precip = precip,
                  ws_boundary = ws_boundary,
                  precip_gauge = '../data_processing/data/czo/boulder/derived/precip_gauge_locations__ms002/',
                  pchem = pchem,

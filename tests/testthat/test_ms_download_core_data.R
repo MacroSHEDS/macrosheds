@@ -3,9 +3,11 @@ library(lubridate)
 library(testthat)
 
 temp_root <- tempdir()
+skip_for_now <- TRUE
 
 test_that('a domain is downloaded successfully', {
     
+    if(skip_for_now) skip('skipping (switch skip_for_now to FALSE to turn this test on)')
     expect_output(macrosheds::ms_download_core_data(macrosheds_root = temp_root,
                                                    domains = c('hbef')),
                   'hbef successfully downloaded and unziped')
@@ -15,6 +17,7 @@ test_that('a domain is downloaded successfully', {
 
 test_that('a network is downloaded successfully', {
     
+    if(skip_for_now) skip('skipping (switch skip_for_now to FALSE to turn this test on)')
     expect_output(macrosheds::ms_download_core_data(macrosheds_root = temp_root,
                                                     networks = c('czo')),
                   'shale_hills successfully downloaded and unziped')
@@ -28,6 +31,7 @@ test_that('a network is downloaded successfully', {
 
 test_that('if warn removes outputs', {
     
+    if(skip_for_now) skip('skipping (switch skip_for_now to FALSE to turn this test on)')
     expect_visible(macrosheds::ms_download_core_data(macrosheds_root = temp_root,
                                                     domains = c('walker_branch'),
                                                     quiet = TRUE))

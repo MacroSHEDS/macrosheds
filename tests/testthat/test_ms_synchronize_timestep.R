@@ -78,3 +78,15 @@ test_that('interpoltion works', {
                                               impute_limit = 10)),
                  729)
 })
+
+test_that('sub-daily interpoltion works', {
+    expect_s3_class(ms_synchronize_timestep(d = test_d, 
+                                            desired_interval = '15 min',
+                                            impute_limit = 96),
+                    'data.frame')
+    
+    expect_equal(nrow(ms_synchronize_timestep(d = test_d, 
+                                              desired_interval = '15 min',
+                                              impute_limit = 96)),
+                 70081)
+})
