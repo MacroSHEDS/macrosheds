@@ -21,6 +21,7 @@
 #'     ms_interp column indicating if a value was interpolated.
 #' @details just need some info about uncertainty here
 #' @export
+#' @examples
 #' ### Load some MacroSheds data:
 #' ms_root = 'data/macrosheds'
 #' ms_download_core_data(macrosheds_root = ms_root,

@@ -49,7 +49,7 @@ pchem <- tibble(C1 = runif(100, min = 0, max = 25),
     arrange(site_code, datetime) 
 
 
-#### NEED TO SOLVE NO VAL_ERR COLUMN 
+#### NEED TO SOLVE NO VAL_ERR COLUMN
 test_that('precipitation is interpolated without error', {
     
     ms_calc_watershed_precip(precip = precip,
@@ -69,6 +69,26 @@ test_that('precipitation is interpolated without error', {
                  c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))
     
 })
+
+# test_that('pchem is interpolated without error', {
+#     
+#     ms_calc_watershed_precip(pchem = pchem,
+#                      ws_boundary = ws_boundary,
+#                      precip_gauge = precip_gauge,
+#                      out_path = temp_dir,
+#                      parallel = T,
+#                      verbose = T)
+#     
+#     fin <- list.files(paste0(temp_dir, '/precip_chemistry__ms901'), full.names = TRUE)
+#     fin_prod <- feather::read_feather(fin)
+#     
+#     expect_s3_class(fin_prod,
+#                     c('tbl_df', 'tbl', 'data.frame'))
+#     
+#     expect_equal(names(fin_prod), 
+#                  c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))
+#     
+# })
 
 test_that('both precipitation and pchem are interpolated without error', {
     
@@ -111,19 +131,6 @@ test_that('error is throne if non-spatial tables are provided to ws_boundary or 
                                   parallel = T,
                                   verbose = T),
                  'precip_gauge file must be an sf object.')
-})
-
-
-test_that('error is throne if too many cores are supplied', {
-    
-    expect_error(ms_calc_watershed_precip(precip = precip,
-                                  ws_boundary = ws_boundary,
-                                  precip_gauge = precip_gauge,
-                                  out_path = temp_dir,
-                                  parallel = T,
-                                  maxcores = 100,
-                                  verbose = T),
-                 'maxcores exceeds cores on machine, either use a lower number of cores or use defualt Inf.')
 })
 
 precip_fake <- tibble(d1 = c(0,1,2),
