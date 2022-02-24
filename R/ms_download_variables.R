@@ -3,7 +3,7 @@
 #' Download the macrosheds variables table with information on variables codes,
 #' units, and more.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
+#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @return returns a \code{data.frame} of variables, codes,

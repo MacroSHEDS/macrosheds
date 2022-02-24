@@ -4,7 +4,7 @@
 #' as possible to heterogeneous data formats and contents. 
 #'
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
+#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' 

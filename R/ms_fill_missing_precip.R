@@ -2,10 +2,10 @@
 #'
 #' Fill precipitation gauges based on relationship to surrounding gauges.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
+#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
-#' @param precip \code{date.frame}. A \code{data.frame} or path to \code{data.frame} 
+#' @param precip \code{data.frame}. A \code{data.frame} or path to \code{data.frame} 
 #'    in macrosheds format of precipitation gauge data 
 #' @param precip_gauge a sf object or path to a sf object of precipitation gauge 
 #'    locations

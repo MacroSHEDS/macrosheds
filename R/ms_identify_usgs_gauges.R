@@ -1,8 +1,8 @@
 #' Identify USGS gauges near a point
 #'
-#' Identify if there any USGS gauges in a radius of a latitude and longitude location
+#' Search for USGS gauges within a radius of a location specified by latitude and longitude
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
+#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param sites Either a \code{sf} object of sites of interest or a \code{data.frame}

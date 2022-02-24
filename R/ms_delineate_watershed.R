@@ -39,7 +39,7 @@
 #' @author Mike Vlah, \email{vlahm13@gmail.com}
 #' @author Spencer Rhea
 #' @author Wes Slaughter
-#' @param d \code{date.frame}. A macrosheds \code{dataframe} downloaded using 
+#' @param d \code{data.frame}. A macrosheds \code{dataframe} downloaded using 
 #'     \code{ms_downloadcore_data()}
 #' @param desired_interval character. Input that can be parsed by the "by"
 #'     parameter to base::seq.POSIXt, e.g. "5 mins", "1 day", "1 month" 
