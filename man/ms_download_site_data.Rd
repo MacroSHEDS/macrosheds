@@ -2,17 +2,17 @@
 % Please edit documentation in R/ms_download_site_data.R
 \name{ms_download_site_data}
 \alias{ms_download_site_data}
-\title{Download macrosheds site metadata table}
+\title{Download MacroSheds site metadata table}
 \usage{
 ms_download_site_data()
 }
 \value{
-returns a \code{tibble} of metadata for all macrosheds sites,
+returns a \code{tibble} of metadata for all MacroSheds sites,
 including network, domain, location, area, and additional information.
 For definitions, see PLACEHOLDER0.
 }
 \description{
-Download the macrosheds site data table, including information on networks, domains,
+Download the MacroSheds site data table, including information on networks, domains,
 stream gauge locations, and more.
 }
 \examples{

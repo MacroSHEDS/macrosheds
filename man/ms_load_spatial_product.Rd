@@ -47,6 +47,9 @@ macrosheds_data <- load_spatial_product(macrosheds_root = ms_root,
                                         spatial_product = 'ws_boundary'
                                         domains = 'hbef')
 }
+\seealso{
+\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_product]{ms_load_product()}}
+}
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}
 

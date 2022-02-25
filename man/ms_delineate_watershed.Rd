@@ -7,7 +7,7 @@
 ms_delineate_watershed(lat, long, crs, write_dir, write_name, verbose = TRUE)
 }
 \arguments{
-\item{d}{\code{date.frame}. A macrosheds \code{dataframe} downloaded using
+\item{d}{\code{data.frame}. A macrosheds \code{dataframe} downloaded using
 \code{ms_downloadcore_data()}}
 
 \item{desired_interval}{character. Input that can be parsed by the "by"

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ms_load_product.R
 \name{ms_load_product}
 \alias{ms_load_product}
-\title{Read macrosheds data products from disk into R}
+\title{Read MacroSheds data products from disk into R}
 \usage{
 ms_load_product(
   macrosheds_root,
@@ -16,7 +16,7 @@ ms_load_product(
 )
 }
 \arguments{
-\item{macrosheds_root}{character. The path to the macrosheds dataset's parent
+\item{macrosheds_root}{character. The path to the MacroSheds dataset's parent
 directory, established with \code{\link[=ms_download_core_data]{ms_download_core_data()}}.}
 
 \item{prodname}{character. A MacroSheds product name. Files associated with this

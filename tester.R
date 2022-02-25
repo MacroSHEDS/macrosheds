@@ -288,7 +288,7 @@ sites <- tibble(site_code = c('MA_AE03', 'MI_KR01'),
 ms_identify_usgs_gauges(sites = sites, lat = 'Latitude', long = 'Longitude')
 
 
-#### ms_calc_inst_flux ####
+#### ms_calc_flux ####
 chemistry <- macrosheds::ms_load_product('data/ms_test/',
                                          'precip_chemistry',
                                          site_codes = c('w1', 'w3', 'w6'),
@@ -300,7 +300,7 @@ q <- macrosheds::ms_load_product('data/ms_test/',
                                  site_codes = c('w1', 'w3', 'w6'),
                                  warn = F)
 
-look <- macrosheds::ms_calc_inst_flux(chemistry, q, q_type = 'precipitation')
+look <- macrosheds::ms_calc_flux(chemistry, q, q_type = 'precipitation')
 
 flux <- macrosheds::ms_load_product('data/ms_test/',
                                     'precip_flux_inst_scaled',
@@ -321,7 +321,7 @@ q <- macrosheds::ms_load_product('data/ms_test/',
                                  site_codes = c('w1', 'w3', 'w6'),
                                  warn = F)
 
-look <- ms_calc_inst_flux(chemistry, q, q_type = 'discharge')
+look <- ms_calc_flux(chemistry, q, q_type = 'discharge')
 
 
 flux <- macrosheds::ms_load_product('data/ms_test/',

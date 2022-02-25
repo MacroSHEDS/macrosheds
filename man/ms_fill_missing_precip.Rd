@@ -14,7 +14,7 @@ ms_fill_missing_precip(
 )
 }
 \arguments{
-\item{precip}{\code{date.frame}. A \code{data.frame} or path to \code{data.frame}
+\item{precip}{\code{data.frame}. A \code{data.frame} or path to \code{data.frame}
 in macrosheds format of precipitation gauge data}
 
 \item{precip_gauge}{a sf object or path to a sf object of precipitation gauge

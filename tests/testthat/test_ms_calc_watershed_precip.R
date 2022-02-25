@@ -1,5 +1,7 @@
 library(macrosheds)
 library(testthat)
+library(feather)
+library(sf)
 
 #### data for test
 temp_dir <- 'data/test_precip_function'
@@ -70,25 +72,26 @@ test_that('precipitation is interpolated without error', {
     
 })
 
-# test_that('pchem is interpolated without error', {
-#     
-#     ms_calc_watershed_precip(pchem = pchem,
-#                      ws_boundary = ws_boundary,
-#                      precip_gauge = precip_gauge,
-#                      out_path = temp_dir,
-#                      parallel = T,
-#                      verbose = T)
-#     
-#     fin <- list.files(paste0(temp_dir, '/precip_chemistry__ms901'), full.names = TRUE)
-#     fin_prod <- feather::read_feather(fin)
-#     
-#     expect_s3_class(fin_prod,
-#                     c('tbl_df', 'tbl', 'data.frame'))
-#     
-#     expect_equal(names(fin_prod), 
-#                  c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))
-#     
-# })
+# options(error=recover)
+test_that('pchem is interpolated without error', {
+
+    ms_calc_watershed_precip(pchem = pchem,
+                     ws_boundary = ws_boundary,
+                     precip_gauge = precip_gauge,
+                     out_path = temp_dir,
+                     parallel = T,
+                     verbose = T)
+
+    fin <- list.files(paste0(temp_dir, '/precip_chemistry__ms901'), full.names = TRUE)
+    fin_prod <- feather::read_feather(fin)
+
+    expect_s3_class(fin_prod,
+                    c('tbl_df', 'tbl', 'data.frame'))
+
+    expect_equal(names(fin_prod),
+                 c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))
+
+})
 
 test_that('both precipitation and pchem are interpolated without error', {
     
@@ -109,6 +112,40 @@ test_that('both precipitation and pchem are interpolated without error', {
     expect_equal(names(fin_prod), 
                  c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))
     
+})
+
+dir.create(file.path(temp_dir, 'precip_'))
+dir.create(file.path(temp_dir, 'pchem_'))
+dir.create(file.path(temp_dir, 'ws_bound_', 'wb1'), recursive = TRUE)
+dir.create(file.path(temp_dir, 'pgauge_', 'wb1'), recursive = TRUE)
+
+write_feather(precip, file.path(temp_dir, 'precip_', 'precip.feather'))
+write_feather(pchem, file.path(temp_dir, 'pchem_', 'pchem.feather'))
+st_write(ws_boundary, file.path(temp_dir, 'ws_bound_', 'wb1'),
+         driver = 'ESRI Shapefile', delete_dsn = TRUE)
+st_write(precip_gauge, file.path(temp_dir, 'pgauge_', 'wb1'),
+         driver = 'ESRI Shapefile', delete_dsn = TRUE)
+
+# options(error=recover)
+
+test_that('precip, pchem, precip_gauge, and ws_boundary can be passed as paths', {
+    
+    ms_calc_watershed_precip(precip = file.path(temp_dir, 'precip_'),
+                     ws_boundary = file.path(temp_dir, 'ws_bound_'),
+                     precip_gauge = file.path(temp_dir, 'pgauge_'),
+                     pchem = file.path(temp_dir, 'pchem_'),
+                     out_path = temp_dir,
+                     parallel = T,
+                     verbose = T)
+    
+    fin <- list.files(paste0(temp_dir, '/precipitation__ms900'), full.names = TRUE)
+    fin_prod <- feather::read_feather(fin)
+    
+    expect_s3_class(fin_prod,
+                    c('tbl_df', 'tbl', 'data.frame'))
+    
+    expect_equal(names(fin_prod), 
+                 c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))
 })
 
 
