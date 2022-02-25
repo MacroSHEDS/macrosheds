@@ -20,6 +20,7 @@
 #'    precipitation flux with [ms_calc_watershed_precip()], you can use this function
 #'    to convert from kg/d to kd/ha/d. To download MacroSheds data, see [ms_download_core_data()].
 #' @export
+#' @seealso [ms_undo_scale_flux_by_area()]
 #' @examples
 #' ### Load some MacroSheds data:
 #' ms_root = 'data/macrosheds'

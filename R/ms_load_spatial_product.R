@@ -21,6 +21,7 @@
 #' @return returns an \code{sf} object containing all data belonging to the 
 #'    selected spatial product in the \code{macrosheds_root} directory.
 #' @export
+#' @seealso [ms_download_core_data()], [ms_load_product()]
 #' @examples
 #' ms_root = 'data/macrosheds'
 #' dir.create(ms_root, recursive = TRUE)

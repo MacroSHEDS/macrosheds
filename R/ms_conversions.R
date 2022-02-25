@@ -35,7 +35,7 @@
 #'    for more.
 #'    
 #'    Default units for all variables can be seen via [ms_download_variables()].
-#' 
+#' @seealso [ms_load_product()], [ms_drop_variable_prefix()], [ms_download_variables()]
 #' @export
 #' @examples
 #' ### Load some MacroSheds data:

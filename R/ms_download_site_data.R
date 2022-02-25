@@ -1,12 +1,12 @@
-#' Download macrosheds site metadata table 
+#' Download MacroSheds site metadata table 
 #'
-#' Download the macrosheds site data table, including information on networks, domains,
+#' Download the MacroSheds site data table, including information on networks, domains,
 #' stream gauge locations, and more.
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
-#' @return returns a \code{tibble} of metadata for all macrosheds sites,
+#' @return returns a \code{tibble} of metadata for all MacroSheds sites,
 #'    including network, domain, location, area, and additional information.
 #'    For definitions, see PLACEHOLDER0.
 #' @export

@@ -5,18 +5,18 @@
 #' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
-#' @param sites Either a \code{sf} object of sites of interest or a \code{data.frame}
+#' @param sites Either an \code{sf} object with locations of interest or a \code{data.frame}
 #'    containing latitude and longitude information.
 #' @param lat Character. If sites is not a \code{sf} object, the name of the column
-#'    containing the latitude locations in WGS84. Default NULL.
+#'    containing latitudes in WGS84. Default NULL.
 #' @param long Character. If sites is not a \code{sf} object, the name of the column
-#'    containing the longitude locations in WGS84. Default NULL.
-#' @param radius Numeric. The radius in meters that a USGS gauge will be search
-#'    for from a point in the sites file. Default 500.
-#' @return returns a \code{data.frame} with a the column usgs_site.
-#' @details The function will search for a USGS gauge within the radius supplied 
-#'    for every site in the sites file. The dataRetrieval package is used to locate USGS gauges.
-#'    If no USGS gauge is found, then the usgs_site column will be NA for that site. 
+#'    containing longitudes in WGS84. Default NULL.
+#' @param radius Numeric. The radius in meters within which to search for USGS gauges; Default 500.
+#' @return returns a \code{data.frame} with the column \code{usgs_site}.
+#' @details
+#' This function will search for a USGS gauge within the radius supplied 
+#' for every site in the sites file. The \code{dataRetrieval} package is used to locate USGS gauges.
+#' If no USGS gauge is found, then the \code{usgs_site} column will be NA for that site. 
 #' @export
 #' @examples
 #' # With lat long 
@@ -24,6 +24,7 @@
 #'                 Latitude = c(42.04856, 42.28575),
 #'                 Longitude = c(-72.45403, -85.51467))
 #' ms_identify_usgs_gauges(sites = sites, lat = 'Latitude', long = 'Longitude')
+#' 
 #' # With sf
 #' site_sf <- sites %>%
 #'     sf::st_as_sf(coords = c('long', 'lat'), crs = 4326) %>%
@@ -33,10 +34,10 @@
 ms_identify_usgs_gauges <- function(sites, lat = NULL, long = NULL, radius = 500) {
     
     if((is.null(lat) && !is.null(long)) || (!is.null(lat) && is.null(long))) {
-        stop('Both lat and long must be provided or a sf objust must be the input to site')
+        stop('Both lat and long must be provided or the argument to sites must be an sf object.')
     }
     if(radius >= 100000) {
-        stop('radius must be less than 100000 m')
+        stop('Radius must be less than 100000 m')
     }
     
     if(is.null(lat) && is.null(long)){

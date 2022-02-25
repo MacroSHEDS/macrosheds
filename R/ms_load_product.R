@@ -1,4 +1,4 @@
-#' Read macrosheds data products from disk into R
+#' Read MacroSheds data products from disk into R
 #'
 #' Loads and optionally filters MacroSheds time-series products (e.g stream_chemistry, discharge, etc.) from a 
 #' downloaded MacroSheds dataset. For watershed boundaries and gauge locations, see [ms_load_spatial_product()].
@@ -6,7 +6,7 @@
 #' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
-#' @param macrosheds_root character. The path to the macrosheds dataset's parent
+#' @param macrosheds_root character. The path to the MacroSheds dataset's parent
 #'    directory, established with [ms_download_core_data()].
 #' @param prodname character. A MacroSheds product name. Files associated with this
 #'    product name will be read and combined. Available prodnames are:

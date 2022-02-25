@@ -20,6 +20,7 @@
 #'    MacroSheds chemical flux dataset from kg/ha/d to kg/d. To download
 #'    MacroSheds data, see [ms_download_core_data()].
 #' @export
+#' @seealso [ms_scale_flux_by_area()]
 #' @examples
 #' ### Load some MacroSheds data:
 #' ms_root = 'data/macrosheds'
