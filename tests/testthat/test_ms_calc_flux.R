@@ -42,7 +42,7 @@ stream_chem <- tibble(datetime = seq.POSIXt(as.POSIXct('2000-01-01 00:00:00', fo
                         val_err = 0.01)
 
 test_that('tibble is returned with correct columns', {
-    expect_s3_class(ms_calc_inst_flux(chemistry = stream_chem, q = discharge, q_type = 'discharge'),
+    expect_s3_class(ms_calc_flux(chemistry = stream_chem, q = discharge, q_type = 'discharge'),
                     'data.frame')
     
 
@@ -58,7 +58,7 @@ stream_chem_date <- tibble(datetime = seq.Date(ymd('2000-01-01'),
                       val_err = 0.01)
 
 test_that('function can handle data formats as well as POSIXct', {
-    expect_s3_class(ms_calc_inst_flux(chemistry = stream_chem_date, q = discharge, q_type = 'discharge'),
+    expect_s3_class(ms_calc_flux(chemistry = stream_chem_date, q = discharge, q_type = 'discharge'),
                     'data.frame')
     
     
@@ -85,10 +85,10 @@ discharge_fake <- tibble(datetime = seq.POSIXt(as.POSIXct('2000-01-01 00:00:00',
                     val_err = 0.01)
 
 test_that('Only macrosheds format is accepted', {
-    expect_error(ms_calc_inst_flux(chemistry = stream_chem_fake, q = discharge, q_type = 'discharge',
+    expect_error(ms_calc_flux(chemistry = stream_chem_fake, q = discharge, q_type = 'discharge',
                                       verbose = F))
     
-    expect_error(ms_calc_inst_flux(chemistry = stream_chem, q = discharge_fake, q_type = 'discharge',
+    expect_error(ms_calc_flux(chemistry = stream_chem, q = discharge_fake, q_type = 'discharge',
                                    verbose = F))
     
     
@@ -117,7 +117,7 @@ stream_chem_2 <- tibble(datetime = seq.POSIXt(as.POSIXct('2000-01-01 00:00:00', 
 stream_chem_2 <- rbind(stream_chem, stream_chem_2)
 
 test_that('All sites are returned', {
-    output <- ms_calc_inst_flux(chemistry = stream_chem_2, q = discharge_2, q_type = 'discharge',
+    output <- ms_calc_flux(chemistry = stream_chem_2, q = discharge_2, q_type = 'discharge',
                                 verbose = F)
     
     expect_equal(unique(output$site_code), c('w1', 'w2'))

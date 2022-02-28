@@ -1,60 +1,62 @@
 #' Calculates chemical fluxes
 #' 
 #' Calculates stream discharge and precipitation fluxes of chemicals from Q (discharge 
-#' or precipitation) and chemistry data 
+#' or precipitation) and chemistry data.
 #'
-#' @author Spencer Rhea, spencerrhea41@gmail.com
+#' @author Spencer Rhea, spencerrhea41@@gmail.com
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or 
-#'    stream chemistry data in macrosheds format and in units of mg/l.
+#'    stream chemistry data in MacroSheds format and in units of mg/L.
 #' @param q \code{data.frame}. A \code{data.frame} of precipitation or stream
-#'    discharge in macrosheds format and in units of mm or L/s respectively.
-#' @param data_type character. Either precipitation or discharge. 
-#' @param verbose logical. Default true, should function print information to 
-#'    console. 
-#' @return returns a \code{tibble} of stream instantaneous flux for every timestep 
-#'    where discharge/precipitation and chemistry are reported in units of kg/ha/timestep. 
-#' @details Chemical flux is calculated by multiplying chemical concentration by flow
-#'    of water (flux = concentration * flow). The output units depend on the time 
-#'    interval the input data is collected at. If data is collected at 15 minutes 
-#'    the out put will be in kg/ha/15 minutes and if collected daily units will 
-#'    be in kg/day. 
-#'    
-#'    Before imputing data into \code{ms_calc_inst_flux()}, insure all both q and
-#'    chemistry data is in the same time step. See \code{ms_synchronize_timestep} to 
-#'    take data of different intervals and interpolate or summarize data to different 
-#'    sampling intervals. Also insure chemistry units are in mg/l, see \code{ms_conversions}
-#'    for unit conversions. 
+#'    discharge in MacroSheds format and in units of mm or L/s, respectively.
+#' @param q_type character. Either 'precipitation' or 'discharge'. 
+#' @param verbose logical. Default TRUE; prints more information to console.
+#' @return returns a \code{tibble} of stream or precipitation chemical flux for every timestep 
+#'    where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep. 
+#' @details
+#' Chemical flux is calculated by multiplying chemical concentration by flow
+#' of water (flux = concentration * flow). The output units depend on \code{data.type} and the time 
+#' interval at which input data are collected. If \code{q_type} is 'discharge', output units are kg/T, where T
+#' is the sample interval. Consider: kg/T = mg/L \* L/s \* T / 1e6.
+#' If \code{q_type} is 'precipitation', output is in kg/ha/T (kg/ha/T = mg/L \* mm/T / 100).
+#' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
+#' [ms_undo_scale_flux_by_area()].
+#' 
+#' Before running [ms_calc_flux()], ensure both \code{q} and
+#' \code{chemistry} have the same time interval. See [ms_synchronize_timestep()].
+#' Also ensure chemistry units are mg/L. See [ms_conversions()].
+#' @seealso [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
 #' @export
 #' @examples
-#' 
-#' ms_download_core_data(macrosheds_root = 'data/ms_test',
+#' #' ### Load some MacroSheds data:
+#' ms_root = 'data/macrosheds'
+#' ms_download_core_data(macrosheds_root = ms_root,
 #'                       domains = 'hbef')
-#' chemistry <- macrosheds::ms_load_product('data/ms_test/',
-#'                                          'stream_chemistry',
-#'                                          site_codes = c('w1', 'w3', 'w6'),
-#'                                          filter_vars = c('NO3_N', 'Cl', 'Na'),
-#'                                          warn = F)
+#' chemistry <- ms_load_product(macrosheds_root = ms_root, 
+#'                              prodname = 'stream_chemistry', 
+#'                              site_codes = c('w1', 'w3', 'w6'),
+#'                              filter_vars = c('NO3_N', 'Cl', 'Na'))
 #' 
-#' q <- macrosheds::ms_load_product('data/ms_test/',
-#'                                  'discharge',
-#'                                  site_codes = c('w1', 'w3', 'w6'),
-#'                                  warn = F)
+#' q <- ms_load_product(macrosheds_root = ms_root,
+#'                      prodname = 'discharge',
+#'                      site_codes = c('w1', 'w3', 'w6'))
 #' 
-#' flux <- ms_calc_inst_flux(chemistry = chemistry, q = q, q_type = 'discharge')
+#' flux <- ms_calc_flux(chemistry = chemistry,
+#'                      q = q,
+#'                      q_type = 'discharge')
 
-ms_calc_inst_flux <- function(chemistry, q, q_type, verbose = TRUE) {
+ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE) {
     
     #### Checks
     if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(chemistry))){
-        stop('the chemistry file must be either a preicpitation or stream chamistry dataset in macrosheds format (column names of site_code, val, var, datetime, ms_interp, ms_status at minimum) ')
+        stop('The argument to chemistry must contain precipitation chemistry or stream chemistry data in MacroSheds format (column names of site_code, val, var, datetime, ms_interp, ms_status at minimum).')
     }
     if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(q))){
-        stop('the chemistry file must be either a preicpitation or stream discharge dataset in macrosheds format (column names of site_code, val, var, datetime, ms_interp, ms_status at minimum) ')
+        stop('The argument to q must contain precipitation or stream discharge data in MacroSheds format (column names of site_code, val, var, datetime, ms_interp, ms_status at minimum).')
     }
     if(! grepl('(precipitation|discharge)', q_type)){
-        stop('q_type must be discharge or precipitation')
+        stop('q_type must be "discharge" or "precipitation"')
     }
     if(! 'POSIXct' %in% class(q$datetime)){
         q$datetime <- as.POSIXct(q$datetime)
@@ -81,11 +83,11 @@ ms_calc_inst_flux <- function(chemistry, q, q_type, verbose = TRUE) {
     if(is.na(flow_is_highres)) { flow_is_highres <- FALSE }
     
     if(is.na(interval)) {
-        stop(paste0('data is not in a standard time step, data must be in the timesteps',
-                    ' of: daily, hourly, 30 minute, 15 minute, 10, minute, 5 minute, or 1 minute.',
-                    ' See macrosheds::ms_synchronize_timestep() to standardize your data.'))
+        stop(paste0('interval of samples must be one',
+                    ' of: daily, hourly, 30 minute, 15 minute, 10 minute, 5 minute, or 1 minute.',
+                    ' See macrosheds::ms_synchronize_timestep() to standardize your intervals.'))
     } else if(verbose) {
-        print(paste0('q data is reported at a ', interval, ' timestep'))
+        print(paste0('q dataset has a ', interval, ' interval'))
     }
     
     # add errors if they don't exist 
@@ -179,7 +181,7 @@ ms_calc_inst_flux <- function(chemistry, q, q_type, verbose = TRUE) {
                 chem_split[[i]] <- chem_split[[i]] %>%
                     mutate(site_code = site_code_x,
                            var = var_x,
-                           # kg/interval/ha = mg/L *  mm/x * ha/100
+                           # kg/interval/ha = mg/L *  mm/interval * ha/100
                            val = val_x * val_y / errors::as.errors(100),
                            ms_status = numeric_any_v(ms_status_x, ms_status_y),
                            ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%

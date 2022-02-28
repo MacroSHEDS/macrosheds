@@ -2,7 +2,7 @@
 % Please edit documentation in R/ms_load_product.R
 \name{ms_load_product}
 \alias{ms_load_product}
-\title{Load in macrosheds data products}
+\title{Read MacroSheds data products from disk into R}
 \usage{
 ms_load_product(
   macrosheds_root,
@@ -16,44 +16,50 @@ ms_load_product(
 )
 }
 \arguments{
-\item{macrosheds_root}{character. The path to the macrosheds dataset's parent
-directory, e.g. '~/stuff/macrosheds_dataset_v0.3'.}
+\item{macrosheds_root}{character. The path to the MacroSheds dataset's parent
+directory, established with \code{\link[=ms_download_core_data]{ms_download_core_data()}}.}
 
-\item{prodname}{character. read and combine files associated with this prodname. 
-Available prodnames are:
+\item{prodname}{character. A MacroSheds product name. Files associated with this
+product name will be read and combined. Available prodnames are:
 discharge, stream_chemistry, stream_flux_inst, precipitation,
 precip_chemistry, precip_flux_inst.}
 
 \item{filter_vars}{character vector. for products like stream_chemistry that include
 multiple variables, this filters to just the ones specified (ignores
-variable prefixes). To see a catalog of variables, visit macrosheds.org.}
+variable prefixes). To see a catalog of variables, visit macrosheds.org or see PLACEHOLDER0.}
 
-\item{networks}{character vector. Networks to load, optional.}
+\item{networks}{character vector. MacroSheds networks to load; optional. To see a catalog of
+networks, visit macrosheds.org or see PLACEHOLDER0.}
 
-\item{domains}{character vector. Domains to load, optional.}
+\item{domains}{character vector. MacroSheds domains to load; optional. To see a catalog of
+domains, visit macrosheds.org or see PLACEHOLDER0.}
 
-\item{site_codes}{character vector. Sites to load, optional.}
+\item{site_codes}{character vector. MacroSheds sites to load, optional. To see a catalog of
+site_codes, visit macrosheds.org or see PLACEHOLDER0.}
 
 \item{sort_result}{logical. If TRUE, output will be sorted by site_code, var,
-datetime. this may take a few additional minutes for some products in
-the entire dataset.}
+datetime. this may add considerable loading time for large datasets.}
 
-\item{warn}{logical. If TRUE, function will give a prompt with the estimated 
-file size before loading in data.}
+\item{warn}{logical. If TRUE, function will not load more than 100MB without permission.}
 }
 \value{
-returns a \code{tibble} containing all the all data belonging to the 
-   selected product and variables in the \code{macrosheds_root} directory
+Returns a \code{tibble} in MacroSheds format. See PLACEHOLDER0 for definitions.
 }
 \description{
-Loads and filters macrosheds products (e.g stream_chemistry, discharge, etc.) from a 
-downloaded macrosheds dataset see \code{download_ms_code_data()} for data download.
+Loads and optionally filters MacroSheds time-series products (e.g stream_chemistry, discharge, etc.) from a
+downloaded MacroSheds dataset. For watershed boundaries and gauge locations, see \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}.
 }
 \examples{
-macrosheds_data <- load_product(macrosheds_root = 'data/macrosheds_v1', 
-                                prodname = 'stream_chemistry', 
-                                sort_result = FALSE, 
-                                filter_vars = 'NO3_N')
+ms_root = 'data/macrosheds'
+dir.create(ms_root, recursive = TRUE)
+ms_downloadcore_data(macrosheds_root = ms_root,
+                      domains = c('niwot', 'hjandrews'))
+macrosheds_data <- ms_load_product(macrosheds_root = ms_root, 
+                                   prodname = 'stream_chemistry', 
+                                   filter_vars = 'NO3_N')
+}
+\seealso{
+\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_read_csv]{ms_read_csv()}}
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}

@@ -14,15 +14,15 @@ ms_fill_missing_precip(
 )
 }
 \arguments{
-\item{precip}{\code{date.frame}. A \code{data.frame} or path to \code{data.frame} 
+\item{precip}{\code{data.frame}. A \code{data.frame} or path to \code{data.frame}
 in macrosheds format of precipitation gauge data}
 
-\item{precip_gauge}{a sf object or path to a sf object of precipitation gauge 
+\item{precip_gauge}{a sf object or path to a sf object of precipitation gauge
 locations}
 
 \item{fill_method}{One of strongest_cor, closest_gauge, or distance_weight. See details}
 
-\item{distance_threshold}{When distance_weight is selected, the distance in km 
+\item{distance_threshold}{When distance_weight is selected, the distance in km
 other gauges will be used to fill each gauge of interest}
 
 \item{out_path}{Optional. path to save filled precipitation data}
@@ -36,14 +36,16 @@ returns a \code{tibble} with filled precipitation data.
 Fill precipitation gauges based on relationship to surrounding gauges.
 }
 \details{
-ms_fill_missing_precip uses other gauges in a network to fill gaps in 
-   gauges when they are not reported data. Three different methods can be chosen.
-   1) strongest_cor uses the gauge with the strongest correlation to the gauge with 
-   missing data, and then uses a linear regression between the two gauges to fill
-   in times of missing data. 2) closest_gauge uses a linear regression between
-   the nearest gauge to the gauge with missing data. 3) distance_weight uses all
-   gauges withing the selected distance_threshold and inverse distance weighting to
-   fill the missing values.
+ms_fill_missing_precip uses other gauges in a network to fill gaps in
+gauges when they are not reported data. Three different methods can be chosen.
+\enumerate{
+\item strongest_cor uses the gauge with the strongest correlation to the gauge with
+missing data, and then uses a linear regression between the two gauges to fill
+in times of missing data. 2) closest_gauge uses a linear regression between
+the nearest gauge to the gauge with missing data. 3) distance_weight uses all
+gauges withing the selected distance_threshold and inverse distance weighting to
+fill the missing values.
+}
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}

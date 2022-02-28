@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 data/
+catalog.R
+notes.txt

@@ -3,14 +3,15 @@
 #' Download the macrosheds variables table with information on variables codes,
 #' units, and more.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
+#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @return returns a \code{data.frame} of variables, codes,
 #'     and units in macrosheds
 #' @export
+#' @seealso [ms_download_site_data()], [ms_download_core_data()]
 #' @examples
-#' macrosheds_sites <- download_ms_variables()
+#' macrosheds_sites <- ms_downloadvariables()
 
 ms_download_variables <- function(){
     

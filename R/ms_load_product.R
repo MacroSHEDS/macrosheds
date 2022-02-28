@@ -1,36 +1,40 @@
-#' Load in macrosheds data products
+#' Read MacroSheds data products from disk into R
 #'
-#' Loads and filters macrosheds products (e.g stream_chemistry, discharge, etc.) from a 
-#' downloaded macrosheds dataset see \code{download_ms_code_data()} for data download.
+#' Loads and optionally filters MacroSheds time-series products (e.g stream_chemistry, discharge, etc.) from a 
+#' downloaded MacroSheds dataset. For watershed boundaries and gauge locations, see [ms_load_spatial_product()].
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
+#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
-#' @param macrosheds_root character. The path to the macrosheds dataset's parent
-#'    directory, e.g. '~/stuff/macrosheds_dataset_v0.3'.
-#' @param prodname character. read and combine files associated with this prodname. 
-#'    Available prodnames are:
+#' @param macrosheds_root character. The path to the MacroSheds dataset's parent
+#'    directory, established with [ms_download_core_data()].
+#' @param prodname character. A MacroSheds product name. Files associated with this
+#'    product name will be read and combined. Available prodnames are:
 #'    discharge, stream_chemistry, stream_flux_inst, precipitation,
 #'    precip_chemistry, precip_flux_inst.
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
-#'    variable prefixes). To see a catalog of variables, visit macrosheds.org.
-#' @param networks character vector. Networks to load, optional.
-#' @param domains character vector. Domains to load, optional.
-#' @param site_codes character vector. Sites to load, optional.
+#'    variable prefixes). To see a catalog of variables, visit macrosheds.org or see PLACEHOLDER0.
+#' @param networks character vector. MacroSheds networks to load; optional. To see a catalog of 
+#'    networks, visit macrosheds.org or see PLACEHOLDER0.
+#' @param domains character vector. MacroSheds domains to load; optional. To see a catalog of
+#'    domains, visit macrosheds.org or see PLACEHOLDER0.
+#' @param site_codes character vector. MacroSheds sites to load, optional. To see a catalog of
+#'    site_codes, visit macrosheds.org or see PLACEHOLDER0.
 #' @param sort_result logical. If TRUE, output will be sorted by site_code, var,
-#'    datetime. this may take a few additional minutes for some products in
-#'    the entire dataset.
-#' @param warn logical. If TRUE, function will give a prompt with the estimated 
-#'     file size before loading in data.
-#' @return returns a \code{tibble} containing all the all data belonging to the 
-#'    selected product and variables in the \code{macrosheds_root} directory
+#'    datetime. this may add considerable loading time for large datasets.
+#' @param warn logical. If TRUE, function will not load more than 100MB without permission.
+#' @return Returns a \code{tibble} in MacroSheds format. See PLACEHOLDER0 for definitions.
 #' @export
+#' @seealso [ms_download_core_data()], [ms_load_spatial_product()], [ms_read_csv()]
 #' @examples
-#' macrosheds_data <- load_product(macrosheds_root = 'data/macrosheds_v1', 
-#'                                 prodname = 'stream_chemistry', 
-#'                                 sort_result = FALSE, 
-#'                                 filter_vars = 'NO3_N')
+#' ms_root = 'data/macrosheds'
+#' dir.create(ms_root, recursive = TRUE)
+#' ms_downloadcore_data(macrosheds_root = ms_root,
+#'                       domains = c('niwot', 'hjandrews'))
+#' macrosheds_data <- ms_load_product(macrosheds_root = ms_root, 
+#'                                    prodname = 'stream_chemistry', 
+#'                                    filter_vars = 'NO3_N')
 
 ms_load_product <- function(macrosheds_root, 
                             prodname,
@@ -124,35 +128,41 @@ ms_load_product <- function(macrosheds_root,
     file_sizes <- file.info(rel_files)$size
     file_sizes <- round(sum(file_sizes, na.rm = TRUE)/1000000, 1)
     
-    if(warn){
+    if(warn && file_sizes > 100){
         
-        continue <- readline(paste0('These files could take up to ', file_sizes, 'MB. Do you want to load these files (Y/N)? '))
-        if(!continue %in% c('y', 'Y', 'n', 'N')){
-            continue <- readline('Please enter Y or N ')
-        }
+        resp <- get_response_1char(msg = paste0('This dataset will occupy about ',
+                                                file_sizes,
+                                                ' MB in memory. Do you want to continue? (y/n) > '),
+                                   possible_chars = c('y', 'n'))
         
-        if(continue == 'N' || continue == ' n'){
-            stop('If you are worried about the size of these files, try refining the amount files you are reading in by supplying the domain or filter_vars')
+        if(resp == 'n'){
+            message('You can reduce dataset size by specifying network, domain, site_code, or filter_vars.')
+            return(invisible())
         }
     }
     
     # Read in files 
     d <- purrr::map_dfr(rel_files, feather::read_feather)
+    
+    if(nrow(d) == 0){
+        stop(paste('No results. Check macrosheds_root and verify that desired networks/domains/sites have been',
+                   'downloaded (see ms_download_core_data.)'))
+    }
         
     if(!is.null(filter_vars)) {
+        
+        fv_in_d <- filter_vars %in% ms_drop_var_prefix(d$var)
+        if(! any(fv_in_d)){
+            stop(paste('None of filter_vars is present in this dataset'))
+        }
+        if(! all(fv_in_d)){
+            warning(paste('These variables are not available in this dataset:',
+                          filter_vars[! fv_in_d]))
+        }
+        filter_vars <- filter_vars[fv_in_d]
+        
         d <- dplyr::filter(d,
                            ms_drop_var_prefix(var) %in% filter_vars)
-    }
-    
-    # If no results are returned generate message 
-    if(nrow(d) == 0){
-        if(missing(filter_vars)){
-            stop('No results. Make sure macrosheds_root is correct.')
-        } else {
-            stop(paste('No results. Make sure macrosheds_root or filter parameters is correct and',
-                       'filter_vars includes variable codes from the catalog',
-                       'on macrosheds.org'))
-        }
     }
     
     if(sort_result){

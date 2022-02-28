@@ -7,28 +7,27 @@
 ms_identify_usgs_gauges(sites, lat = NULL, long = NULL, radius = 500)
 }
 \arguments{
-\item{sites}{Either a \code{sf} object of sites of interest or a \code{data.frame}
+\item{sites}{Either an \code{sf} object with locations of interest or a \code{data.frame}
 containing latitude and longitude information.}
 
 \item{lat}{Character. If sites is not a \code{sf} object, the name of the column
-containing the latitude locations in WGS84. Default NULL.}
+containing latitudes in WGS84. Default NULL.}
 
 \item{long}{Character. If sites is not a \code{sf} object, the name of the column
-containing the longitude locations in WGS84. Default NULL.}
+containing longitudes in WGS84. Default NULL.}
 
-\item{radius}{Numeric. The radius in meters that a USGS gauge will be search
-for from a point in the sites file. Default 500.}
+\item{radius}{Numeric. The radius in meters within which to search for USGS gauges; Default 500.}
 }
 \value{
-returns a \code{data.frame} with a the column usgs_site.
+returns a \code{data.frame} with the column \code{usgs_site}.
 }
 \description{
-Identify if there any USGS gauges in a radius of a latitude and longitude location
+Search for USGS gauges within a radius of a location specified by latitude and longitude
 }
 \details{
-The function will search for a USGS gauge within the radius supplied 
-   for every site in the sites file. The dataRetrieval package is used to locate USGS gauges.
-   If no USGS gauge is found, then the usgs_site column will be NA for that site.
+This function will search for a USGS gauge within the radius supplied
+for every site in the sites file. The \code{dataRetrieval} package is used to locate USGS gauges.
+If no USGS gauge is found, then the \code{usgs_site} column will be NA for that site.
 }
 \examples{
 # With lat long 
@@ -36,6 +35,7 @@ sites <- tibble(site_code = c('MA_AE03', 'MI_KR01'),
                 Latitude = c(42.04856, 42.28575),
                 Longitude = c(-72.45403, -85.51467))
 ms_identify_usgs_gauges(sites = sites, lat = 'Latitude', long = 'Longitude')
+
 # With sf
 site_sf <- sites \%>\%
     sf::st_as_sf(coords = c('long', 'lat'), crs = 4326) \%>\%

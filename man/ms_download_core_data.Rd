@@ -7,42 +7,46 @@
 ms_download_core_data(macrosheds_root, networks, domains, quiet = FALSE)
 }
 \arguments{
-\item{macrosheds_root}{character.  Directory where macrosheds data files will be downloaded.}
+\item{macrosheds_root}{character. Directory where macrosheds data files will be downloaded.
+If this directory does not exist, it will be created.}
 
-\item{networks}{character vector. macrosheds networks that will be downloaded. 
-Either a single network, vector of networks, or 'all'. see \code{download_ms_site_data()} 
+\item{networks}{character vector. macrosheds networks that will be downloaded.
+Either a single network, vector of networks, or 'all'. See \code{ms_downloadsite_data()}
 for networks available for download.}
 
-\item{domains}{character vector. macrosheds domains that will be downloaded. 
-Either a single domain, vector of domains, or 'all'. see \code{download_ms_site_data()} 
+\item{domains}{character vector. macrosheds domains that will be downloaded.
+Either a single domain, vector of domains, or 'all'. See \code{ms_downloadsite_data()}
 for domains available for download.}
 
-\item{quiet}{logical. If TRUE, no download messages will be printed in console}
+\item{quiet}{logical. If TRUE, some messages will be suppressed.}
 }
 \value{
-Downloads all core data for selected domains to the designated 
-   directory listed in \code{macrosheds_root}. Data follows the structure: domain/product/site_code.feather. 
-   Where domain is the domain selected, product is one or more of the data 
-   product available at a domain (eg. stream_chemistry__ms001, discharge__ms002), 
-   and site_code is the code for an individual site. See \code{download_ms_site_data()} 
-   for more information on sites.
+Downloads all core data for selected domains to the
+directory specified by \code{macrosheds_root}. Site datasets are arranged according to the following
+structure: domain/prodname/site_code.feather. For definitions of these terms as used by
+MacroSheds, see PLACEHOLDER0.
 }
 \description{
-Download the macrosheds core datasets of stream chemistry, stream 
-discharge, stream chemical flux, precipitation, precipitation chemistry, and
-precipitation chemical flux. Not all products are available at all sites but 
+Download the macrosheds core datasets of stream chemistry, stream
+discharge, stream chemical flux, precipitation, precipitation chemistry,
+precipitation chemical flux, ws_boundary, stream_gauge_locations, and
+precip_gauge_locations. Not all products are available at all sites, but
 all products available for the selected domains will be downloaded.
 }
 \details{
-Only \code{networks} or \code{domains} must be supplied. If 'all' is 
-   supplied to either argument, all domains will be downloaded regardless of 
-   what is supplied to the other argument. Downloading all macrosheds core data
-   can take up to ~5 GB, so beware of downloading too much data.
+Either \code{networks} or \code{domains} must be supplied. If 'all' is
+supplied to either argument, all domains will be downloaded regardless of
+what is supplied to the other argument. The full (core) dataset is approximately 500 MiB when
+compressed and may take minutes to hours to download, depending on connection speed. When uncompressed,
+the dataset is approximately 4 GiB, so be mindful of disk space.
 }
 \examples{
-dir.create('data/macrosheds')
-download_ms_core_data(macrosheds_root = 'data/macrosheds',
+dir.create('data/macrosheds', recursive = TRUE)
+ms_download_core_data(macrosheds_root = 'data/macrosheds',
                       domains = c('niwot', 'hjandrews'))
+}
+\seealso{
+\code{\link[=ms_download_site_data]{ms_download_site_data()}}, \code{\link[=ms_download_variables]{ms_download_variables()}}, \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}

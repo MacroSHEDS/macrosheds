@@ -1,5 +1,5 @@
 # list of function that we will want to include 
-calc_inst_flux (ms_compute_stream_flux)
+calc_flux (ms_compute_stream_flux)
     d_discharge, d_chemistry, method = c('inst', 'vwc', 'vwf', etc)
 ms_linear_interpolate (ms_interpolate)
     d, method = c('linear', 'seadec', 'wrtds', etc)
