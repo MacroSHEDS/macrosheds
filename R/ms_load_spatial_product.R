@@ -32,10 +32,10 @@
 #'                                         domains = 'hbef')
 
 ms_load_spatial_product <- function(macrosheds_root,
-                                     spatial_product,
-                                     networks,
-                                     domains,
-                                     site_codes){
+                                    spatial_product,
+                                    networks,
+                                    domains,
+                                    site_codes){
     
     # Checks 
     if(missing(macrosheds_root)) {
