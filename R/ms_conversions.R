@@ -1,7 +1,7 @@
 #' Convert MacroSheds concentration units and molecular representations
 #'
 #' MacroSheds concentration data are represented in either mass, moles, or equivalents
-#' per liter (mg/L, mol/L, or Eq/L, respectively). Use this function to convert among
+#' per liter (mg/L, mol/L, or uEq/L, respectively, but note that one variable, "ANC" is represented by default in Eq/L). Use this function to convert among
 #' these units. You may also use this function to convert SI prefixes, e.g. mg/L to kg/L,
 #' or to convert between molecular and atomic representations for some elements and compounds.
 #' For example, nitrate (NO3) can be converted to nitrate-N and vice versa.
