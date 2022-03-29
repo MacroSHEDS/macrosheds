@@ -15,14 +15,8 @@
 
 ms_download_variables <- function(){
     
-    ms_sites <- read.csv('variables.csv')
+    ms_vars <- read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/34382849',
+                        col_types = cols())
     
-    # site_temp_loc <- tempfile()
-    # download.file(url = 'https://cuahsi.shinyapps.io/macrosheds/_w_4c1747f9/session/85b334ad66b1ff337cfe315dc6315fb5/download/DL_SUBMIT_SITE?w=4c1747f9',
-    #               destfile = site_temp_loc,
-    #               quiet = TRUE)
-    # 
-    # ms_sites <- read.csv(site_temp_loc)
-    
-    return(ms_sites)
+    return(ms_vars)
 }

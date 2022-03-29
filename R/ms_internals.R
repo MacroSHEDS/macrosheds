@@ -17,7 +17,7 @@ list_all_product_dirs <- function(macrosheds_root, prodname){
                                full.names = TRUE,
                                recursive = TRUE)
     
-    prodname_dirs <- grep(pattern = paste0(prodname, '__'),
+    prodname_dirs <- grep(pattern = paste0(prodname),
                           x = prodname_dirs,
                           value = TRUE)
     

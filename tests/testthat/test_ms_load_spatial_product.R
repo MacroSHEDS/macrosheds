@@ -3,6 +3,8 @@ library(testthat)
 
 #testthat changes the working directory to r_package/tests/testthat
 wd <- '../../data/ms_test'
+#but, if you're testing these piecemeal, use:
+#wd <- '.'
 
 dir.create(wd, showWarnings = FALSE)
 macrosheds::ms_download_core_data(macrosheds_root = wd,
