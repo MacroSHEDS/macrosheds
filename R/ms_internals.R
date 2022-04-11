@@ -213,7 +213,7 @@ convert_unit <- function(x, input_unit, output_unit){
         new_bottom <- as.vector(str_split_fixed(new_fraction[2], "", n = Inf))
     }
     
-    old_top_unit <- str_split_fixed(old_top, "", 2)[1]
+    old_top_unit <- tolower(str_split_fixed(old_top, "", 2)[1])
     
     if(old_top_unit %in% c('g', 'e', 'q', 'l') || old_fraction[1] == 'mol') {
         old_top_conver <- 1
@@ -221,7 +221,7 @@ convert_unit <- function(x, input_unit, output_unit){
         old_top_conver <- as.numeric(filter(units, prefix == old_top_unit)[,2])
     }
     
-    old_bottom_unit <- str_split_fixed(old_bottom, "", 2)[1]
+    old_bottom_unit <- tolower(str_split_fixed(old_bottom, "", 2)[1])
     
     if(old_bottom_unit %in% c('g', 'e', 'q', 'l') || old_fraction[2] == 'mol') {
         old_bottom_conver <- 1
@@ -229,7 +229,7 @@ convert_unit <- function(x, input_unit, output_unit){
         old_bottom_conver <- as.numeric(filter(units, prefix == old_bottom_unit)[,2])
     }
     
-    new_top_unit <- str_split_fixed(new_top, "", 2)[1]
+    new_top_unit <- tolower(str_split_fixed(new_top, "", 2)[1])
     
     if(new_top_unit %in% c('g', 'e', 'q', 'l') || new_fraction[1] == 'mol') {
         new_top_conver <- 1
@@ -237,7 +237,7 @@ convert_unit <- function(x, input_unit, output_unit){
         new_top_conver <- as.numeric(filter(units, prefix == new_top_unit)[,2])
     }
     
-    new_bottom_unit <- str_split_fixed(new_bottom, "", 2)[1]
+    new_bottom_unit <- tolower(str_split_fixed(new_bottom, "", 2)[1])
     
     if(new_bottom_unit %in% c('g', 'e', 'q', 'l') || new_fraction[2] == 'mol') {
         new_bottom_conver <- 1

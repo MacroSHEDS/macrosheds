@@ -1,6 +1,6 @@
 #' Calculates chemical fluxes
 #' 
-#' Calculates stream discharge and precipitation fluxes of chemicals from Q (discharge 
+#' Calculates solute fluxes from Q (discharge 
 #' or precipitation) and chemistry data.
 #'
 #' @author Spencer Rhea, spencerrhea41@@gmail.com
