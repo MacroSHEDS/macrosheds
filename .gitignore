@@ -3,5 +3,6 @@
 .RData
 .Ruserdata
 data/
+example/
 catalog.R
 notes.txt
