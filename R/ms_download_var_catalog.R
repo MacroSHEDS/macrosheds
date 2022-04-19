@@ -16,18 +16,18 @@
 #' @examples
 #' macrosheds_var_catalog <- ms_download_var_catalog()
 
-ms_download_var_catalog <- function(fp = NULL){
+ms_catalog <- function(fp = NULL){
 
-    ms_catalog <- read_csv('https://figshare.com/articles/dataset/variable_catalog/19585810/files/34791658',
+    ms_cat <- read_csv('https://figshare.com/articles/dataset/variable_catalog/19585810/files/34791658',
                         col_types = cols())
-    ms_catalog <- ms_catalog %>%
+    ms_cat <- ms_cat %>%
         select(-chem_category)
 
     # allow local download if file path supplied
     if(!is.null(fp)) {
       tryCatch(
         expr = {
-          write.csv(ms_catalog, fp)
+          write.csv(ms_cat, fp)
         },
         error = function(e) {
           print(paste("file failed to write to:", fp))
@@ -36,5 +36,5 @@ ms_download_var_catalog <- function(fp = NULL){
     }
 
     warning('NEON data present in catalog but not yet available in public version of dataset')
-    return(ms_catalog)
+    return(ms_cat)
 }

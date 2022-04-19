@@ -47,7 +47,7 @@
 #'                      q = q,
 #'                      q_type = 'discharge')
 
-ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE) {
+ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
 
     #### Checks
     if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(chemistry))){
@@ -115,7 +115,7 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE) {
     # calc VWC
     sites <- unique(chemistry$site_code)
 
-    all_sites_flux <- tibble()
+    all_sites_vwc <- tibble()
     for(s in 1:length(sites)) {
 
         site <- sites[s]
@@ -165,46 +165,52 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE) {
                                                    y = site_q,
                                                    rollmax = join_distance,
                                                    keep_datetimes_from = 'x')
+          if(agg == "monthly") {
+            agg_step <- c("year", "month")
+            threshold <- 3
+          } else if(agg == "yearly") {
+            agg_step <- c("year")
+            threshold <- 12
+          } else {
+            stop("user input aggregation type not recognized. accepted VWC aggregation time frames are 'monthly' and yearly'")
+          }
 
-            if(q_type == 'discharge'){
-                chem_split[[i]] <- chem_split[[i]] %>%
-                    mutate(site_code = site_code_x,
-                           var = var_x,
-                           # kg/interval = mg/L *  L/s  * q_interval / 1e6
-                           val = val_x * val_y * errors::as.errors(q_interval) / errors::as.errors(1e6),
-                           ms_status = numeric_any_v(ms_status_x, ms_status_y),
-                           ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
-                    select(-starts_with(c('site_code_', 'var_', 'val_',
-                                          'ms_status_', 'ms_interp_'))) %>%
-                    filter(! is.na(val)) %>% #should be redundant
-                    arrange(datetime)
-            } else {
-                chem_split[[i]] <- chem_split[[i]] %>%
-                    mutate(site_code = site_code_x,
-                           var = var_x,
-                           # kg/interval/ha = mg/L *  mm/interval * ha/100
-                           val = val_x * val_y / errors::as.errors(100),
-                           ms_status = numeric_any_v(ms_status_x, ms_status_y),
-                           ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
-                    select(-starts_with(c('site_code_', 'var_', 'val_',
-                                          'ms_status_', 'ms_interp_'))) %>%
-                    filter(! is.na(val)) %>% #should be redundant
-                    arrange(datetime)
-            }
+          chem_split[[i]] <- chem_split[[i]] %>%
+            filter_at(vars(val_x, val_y),
+                      all_vars(!is.na(.))) %>%
+            mutate(month = month(datetime),
+                   year = year(datetime)) %>%
+            group_by_at(agg_step) %>%
+            summarize(site_code = site_code_x,
+                      var = var_x,
+                      val = mean(val_x * val_y)/mean(val_y),
+                      n = n(),
+                      ms_status = numeric_any_v(ms_status_x, ms_status_y),
+                      ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
+            select(-starts_with(c('site_code_', 'var_', 'val_',
+                                  'ms_status_', 'ms_interp_'))) %>%
+            distinct() %>%
+            arrange_at(agg_step)
+
+          sub_pars <- sum(chem_split[[i]]$n < threshold)
+
+          if(sub_pars > 0) {
+            warning(paste(sub_pars, agg, "VWCs calculated with less than", threshold, "contributing samples"))
+          }
         }
 
-        flux <- chem_split %>%
+        vwc <- chem_split %>%
             purrr::reduce(bind_rows) %>%
-            arrange(site_code, var, datetime)
+            arrange_at(c("site_code", "var", agg_step))
 
-        all_sites_flux <- rbind(all_sites_flux, flux)
+        all_sites_vwc <- rbind(all_sites_vwc, vwc)
 
     }
 
-    if(nrow(all_sites_flux) == 0) { return(NULL) }
+    if(nrow(all_sites_vwc) == 0) { return(NULL) }
 
-    all_sites_flux$val_err <- errors::errors(all_sites_flux$val)
-    all_sites_flux$val <- errors::drop_errors(all_sites_flux$val)
+    all_sites_vwc$val_err <- errors::errors(all_sites_vwc$val)
+    all_sites_vwc$val <- errors::drop_errors(all_sites_vwc$val)
 
-    return(all_sites_flux)
+    return(all_sites_vwc)
 }

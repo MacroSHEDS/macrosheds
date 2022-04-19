@@ -104,13 +104,15 @@ target_summary <- target_sites %>%
 head(target_summary)
 ```
 
-From our filter of the site metadata, we have found three domains which have site data that meets our requirements. By summarising the data, we've found that two of these sites are on the east coast (Fernow, HBEF) and one is on the West Coast (HJ Andrews). Our objective is to compare two sites, one east and one west, and between Fernow and HBEF our summary data shows that HBEF has a greater number of overall observations, so we will choose HBEF. 
+From our filter of the site metadata, we have found three domains which have site data that meets our requirements. By summarising the data, we've found that two of these sites are on the east coast (Fernow, HBEF) and one is on the West Coast (HJ Andrews). Our objective is to compare two sites, one east and one west. Between Fernow and HBEF our summary data shows that HBEF has a greater number of overall observations, so we will choose HBEF. 
+
 
 
 #### ms\_download\_variables
 
+Now, we should choose the best site from HBEF and the best site from HJ Andrews -- in this case, which of each domain has the most complete Nitrate record.
 
-To get data for our target variable, Nitrate, let's make sure it's in the MacroSheds variable catalog, and see exactly what it is called. For this, we will use `ms_download_variables`, which also does not need arguments. 
+To get information on our target variable, Nitrate, we can use `ms_download_var_catalog`. This function will load in a dataframe describing what sites record what variables, for how long, the average observations per day, and more.
 
 ```{r ms-vars}
 ms_vars <- ms_download_var_catalog()
@@ -118,17 +120,18 @@ head(ms_vars)
 ```
 
 
-This is a pretty long list, let's do a siple text search to see what variables start with "Nitr"
+This is a pretty long list, let's do a siple text search to see what variables start with "Nitrate"
 
 ```{r ms-vars-filter}
 ms_NO3 <- ms_vars[grep("^Nitrate", ms_vars$variable_name),]
 ms_NO3 <- ms_NO3[order(-ms_NO3$observations),]
 
-unique(ms_NO3$site_code)[1:20]
+ms_NO3 <- ms_NO3 %>%
+  filter(domain %in% my_domains)
 
 ```
 
-There's a ton of results here, but I can see Nitrate, and it's variable code 'NO3'. 
+There's a ton of results here, but I can see Nitrate, and it's variable code 'NO3_N'. 
 
 
 # Retrieve discharge data for target sites
