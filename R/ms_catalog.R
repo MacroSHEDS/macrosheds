@@ -21,7 +21,7 @@ ms_catalog <- function(fp = NULL){
     ms_cat <- read_csv('https://figshare.com/articles/dataset/variable_catalog/19585810/files/34791658',
                         col_types = cols())
     ms_cat <- ms_cat %>%
-        select(-chem_category)
+      select(-chem_category)
 
     # allow local download if file path supplied
     if(!is.null(fp)) {
