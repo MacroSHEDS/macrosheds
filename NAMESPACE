@@ -2,6 +2,7 @@
 
 export(ms_calc_flux)
 export(ms_calc_watershed_precip)
+export(ms_catalog)
 export(ms_conversions)
 export(ms_download_core_data)
 export(ms_download_site_data)

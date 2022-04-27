@@ -68,7 +68,11 @@ or try again by interactively providing different specifications. See details.
 }
 \details{
 Output files are unprojected (WGS 84), though processing is done
+<<<<<<< HEAD
 on projected data. A projection is chosen automatically by \code{\link[macrosheds:::choose_projection]{macrosheds::::choose_projection()}},
+=======
+on projected data. A projection is chosen automatically by \code{\link[=choose_projection]{choose_projection()}},
+>>>>>>> 43d097da872114e008e3cf37e874dddc04a25dc8
 based on pour point location. Note that this has nothing to do with the crs parameter,
 which only allows you to specify the coordinate reference system of your input
 coordinates. Also note that for watersheds that span several latitudes or longitudes,

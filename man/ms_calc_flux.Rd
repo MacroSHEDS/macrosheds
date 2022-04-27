@@ -4,7 +4,7 @@
 \alias{ms_calc_flux}
 \title{Calculates chemical fluxes}
 \usage{
-ms_calc_flux(chemistry, q, q_type, verbose = TRUE)
+ms_calc_flux(chemistry, q, q_type, site_info = NULL, verbose = TRUE)
 }
 \arguments{
 \item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or
