@@ -1,18 +1,18 @@
-#' Download MacroSheds site metadata table 
+#' Download macrosheds site data table 
 #'
-#' Download the MacroSheds site data table, including information on networks, domains,
-#' stream gauge locations, and more.
+#' Download the macrosheds site data table with information on networks, domains,
+#'  location of stream gauges, and more.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
-#' @return returns a \code{tibble} of metadata for all MacroSheds sites,
-#'    including network, domain, location, area, and additional information.
-#'    For definitions, see PLACEHOLDER0.
+#' @return returns a \code{data.frame} of all sites in the macrosheds systems 
+#'    with their corresponding network, domain, latitude, longitude, area, and 
+#'    additional information.
 #' @export
-#' @seealso [ms_download_variables()], [ms_download_core_data()]
 #' @examples
-#' macrosheds_sites <- ms_downloadsite_data()
+#' macrosheds_sites <- download_ms_site_data()
+
 
 ms_download_site_data <- function(){
     
