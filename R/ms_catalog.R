@@ -1,20 +1,21 @@
-#' Query MacroSheds variable catalog
+#' Download the MacroSheds site-variable catalog
 #'
-#' downloads the MacroSheds variable catalog, which documents
-#' important metadata for all variables in MacroSheds -- such
-#' as sites, number of observations, first and last record of
-#' at each site, and more.
-#'
+#' downloads the MacroSheds catalog, which documents
+#' important metadata about what variables are recorded at what sites,
+#' and the number of observations, first and last record, and other
+#' important metadata for all site-variable pairs.
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
+#' @param  fp character. provide a valid filepath to download the catalog to.
 #' @return returns a \code{data.frame} of the variables in
-#'         the MacroSheds dataset and metadata about them.
+#'         the MacroSheds dataset, the sites that record them,
+#'         number of observations, and more.
 #' @export
 #' @seealso [ms_download_variables()], [ms_download_site_data()]
 #' @examples
-#' macrosheds_var_catalog <- ms_download_var_catalog()
+#' site_vars_catalog <- ms_catalog()
 
 ms_catalog <- function(fp = NULL){
 

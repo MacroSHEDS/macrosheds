@@ -49,7 +49,7 @@
 #'      used on the DEM
 #' @details
 #' Output files are unprojected (WGS 84), though processing is done
-#' on projected data. A projection is chosen automatically by [macrosheds:::choose_projection()],
+#' on projected data. A projection is chosen automatically by [macrosheds::choose_projection()],
 #' based on pour point location. Note that this has nothing to do with the crs parameter,
 #' which only allows you to specify the coordinate reference system of your input
 #' coordinates. Also note that for watersheds that span several latitudes or longitudes,
