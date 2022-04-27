@@ -4,7 +4,7 @@
 \alias{ms_download_site_data}
 \title{Download MacroSheds site metadata table}
 \usage{
-ms_download_site_data()
+ms_download_site_data(fp = NULL)
 }
 \value{
 returns a \code{tibble} of metadata for all MacroSheds sites,
@@ -16,7 +16,7 @@ Download the MacroSheds site data table, including information on networks, doma
 stream gauge locations, and more.
 }
 \examples{
-macrosheds_sites <- ms_downloadsite_data()
+macrosheds_sites <- ms_download_site_data()
 }
 \seealso{
 \code{\link[=ms_download_variables]{ms_download_variables()}}, \code{\link[=ms_download_core_data]{ms_download_core_data()}}

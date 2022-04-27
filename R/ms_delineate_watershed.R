@@ -19,7 +19,7 @@
 #' @param write_dir character string. The directory in which to write output shapefile.
 #' @param write_name character string. the basename of the shapefile components to
 #' be written. e.g. \code{write_name = 'foo'} would produce foo.shp, foo.shx, foo.prj, foo.dbf.
-all the spec_ params
+#' all the spec_ params
 #' @param confirm logical. Ignored unless all delineation parameters
 #' (the ones that start with "spec_") are supplied.
 #' If TRUE, you will be asked to visually confirm the delineation before it is
@@ -49,7 +49,7 @@ all the spec_ params
 #'      used on the DEM
 #' @details
 #' Output files are unprojected (WGS 84), though processing is done
-#' on projected data. A projection is chosen automatically by [macrosheds:::choose_projection()],
+#' on projected data. A projection is chosen automatically by [macrosheds::choose_projection()],
 #' based on pour point location. Note that this has nothing to do with the crs parameter,
 #' which only allows you to specify the coordinate reference system of your input
 #' coordinates. Also note that for watersheds that span several latitudes or longitudes,
@@ -126,7 +126,7 @@ ms_delineate_watershed <- function(lat,
     library(terra)
     library(mapview)
     library(whitebox)
-    library(elevatR)
+    library(elevatr)
     
     #moving shapefiles can be annoying, since they're actually represented by
     #   3-4 files
@@ -1430,5 +1430,3 @@ ms_delineate_watershed <- function(lat,
     
     return(deets)
 }
-
-ms_delineate_watershed(
