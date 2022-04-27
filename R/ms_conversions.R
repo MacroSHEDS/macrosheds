@@ -84,9 +84,8 @@ ms_conversions <- function(d,
                            convert_units_to,
                            convert_molecules){
     
-    # TEMPORARY (will replace when vars is on figshare)
-    ms_vars <<- suppressMessages(read_csv('variables.csv'))
-    
+    ms_vars <- read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/34382849',
+                    col_types = cols())
     
     #checks
     cm <- ! missing(convert_molecules)
@@ -106,6 +105,13 @@ ms_conversions <- function(d,
         not_a_ms_var <- unique(vars[!vars %in% ms_vars$variable_code])
         stop(paste0(paste(not_a_ms_var, collapse = ', '),
                     ' is not a MacroSheds variable. only MacroSheds variables can be converted'))
+    }
+
+    if(any(duplicated(names(convert_units_from)))){
+        stop('duplicated names in convert_units_from')
+    }
+    if(any(duplicated(names(convert_units_to)))){
+        stop('duplicated names in convert_units_to')
     }
     
     vars_convertable <- ms_vars %>%
@@ -128,6 +134,9 @@ ms_conversions <- function(d,
                 stop('names of convert_units_from and convert_units_to must match')
             }
     }
+
+    convert_units_from <- tolower(convert_units_from)
+    convert_units_to <- tolower(convert_units_to)
     
     whole_molecule <- c('NO3', 'SO4', 'PO4', 'SiO2', 'SiO3', 'NH4', 'NH3',
                         'NO3_NO2')
