@@ -22,7 +22,7 @@ returns a \code{tibble} of stream or precipitation chemical flux for every times
 where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep.
 }
 \description{
-Calculates stream discharge and precipitation fluxes of chemicals from Q (discharge
+Calculates solute fluxes from Q (discharge
 or precipitation) and chemistry data.
 }
 \details{

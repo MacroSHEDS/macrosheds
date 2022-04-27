@@ -1,6 +1,6 @@
 #' Calculates chemical fluxes
 #' 
-#' Calculates stream discharge and precipitation fluxes of chemicals from Q (discharge 
+#' Calculates solute fluxes from Q (discharge 
 #' or precipitation) and chemistry data.
 #'
 #' @author Spencer Rhea, spencerrhea41@@gmail.com
@@ -18,8 +18,8 @@
 #' Chemical flux is calculated by multiplying chemical concentration by flow
 #' of water (flux = concentration * flow). The output units depend on \code{data.type} and the time 
 #' interval at which input data are collected. If \code{q_type} is 'discharge', output units are kg/T, where T
-#' is the sample interval. Consider: kg/T = mg/L \* L/s \* T / 1e6.
-#' If \code{q_type} is 'precipitation', output is in kg/ha/T (kg/ha/T = mg/L \* mm/T / 100).
+#' is the sample interval. Consider: kg/T = mg/L * L/s * T / 1e6.
+#' If \code{q_type} is 'precipitation', output is in kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 #' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
 #' [ms_undo_scale_flux_by_area()].
 #' 
