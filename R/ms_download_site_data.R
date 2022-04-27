@@ -12,7 +12,7 @@
 #' @export
 #' @seealso [ms_download_variables()], [ms_download_core_data()]
 #' @examples
-#' macrosheds_sites <- ms_downloadsite_data()
+#' macrosheds_sites <- ms_download_site_data()
 
 ms_download_site_data <- function(fp = NULL){
     

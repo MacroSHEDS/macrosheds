@@ -8,7 +8,7 @@ Authors@R: c(person("Spencer", "Rhea", email = "spencerrhea41@gmail.com", role =
 Description: Macrosheds is a database of watershed ecosystems studies from around the world. 
 Depends: R (>= 3.6.1), tidyverse
 Imports:
-    tidyverse, feather, errors, sf, data.table, EGRET, foreach, glue, parallel, dataRetrieval, terra, mapview, elevatR, whitebox
+    tidyverse, feather, errors, sf, data.table, EGRET, foreach, glue, parallel, dataRetrieval, terra, mapview, whitebox
 Roxygen: list(markdown = TRUE)
 License: MIT
 Encoding: UTF-8
