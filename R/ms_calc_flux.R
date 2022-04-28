@@ -72,7 +72,7 @@ ms_calc_flux <- function(chemistry, q, q_type, site_info = NULL, verbose = TRUE)
         site_info <- try(ms_download_site_data())
         
         if(inherits(site_info, 'try-error')){
-            stop("When q_type == 'discharge', you must either have site_info defined as the macrosheds \n
+            stop("When q_type == 'discharge', you must either have site_info defined as the MacroSheds \n
                  site_data table or you must have an internet connection to download the table with ms_download_site_data()")
         }
     } else {

@@ -19,7 +19,7 @@ location of stream gauges, and more.
 macrosheds_sites <- ms_download_site_data()
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea, \email{spencerrhea41@@gmail.com}
 
 Mike Vlah
 

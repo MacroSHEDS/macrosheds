@@ -42,7 +42,7 @@ site_sf <- sites \%>\%
     sf::st_buffer(radius)
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea, \email{spencerrhea41@@gmail.com}
 
 Mike Vlah
 

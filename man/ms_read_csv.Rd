@@ -41,7 +41,7 @@ read in csv data that meets minimum criteria, built to be as robust
 as possible to heterogeneous data formats and contents.
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea, \email{spencerrhea41@@gmail.com}
 
 Mike Vlah
 
