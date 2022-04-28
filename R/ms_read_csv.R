@@ -8,26 +8,85 @@
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' 
-#' @param filepath
-#' @param preprocessed_tibble
-#' @param datetime_cols   
-#' @param datetime_tz   
-#' @param optionalize_nontoken_characters 
-#' @param site_code_col  
-#' @param alt_site_code    
-#' @param data_cols
-#' @param data_col_pattern
-#' @param alt_datacol_pattern
-#' @param is_sensor
-#' @param set_to_NA
-#' @param var_flagcol_pattern
-#' @param alt_varflagcol_pattern
-#' @param summary_flagcols
-#' @param sampling_type 
-#'                       
-#'                       
+#' @param filepath character. path to local CSV.
+#' @param preprocessed_tibble tibble. a tibble with all character columns. Supply this argument
+#'    if a dataset requires modification before it can be processed by ms_read_raw_csv.
+#'    This may be necessary if, e.g. time is stored in a format that can't be parsed by
+#'    standard datetime format strings. Either filepath or preprocessed_tibble must be
+#'    supplied, but not both.
+#' @param datetime_cols named character vector. names are column names that
+#     contain components of a datetime. values are format strings (e.g.
+#     '%Y-%m-%d', '%H') corresponding to the datetime components in those
+#     columns.
+#' @param datetime_tz character. specifying time zone. this specification must be
+#'    among those provided by OlsonNames()
+#' @param optionalize_nontoken_characters character vector. used when there might be
+#     variation in date/time formatting within a column. in regex speak,
+#     optionalizing a token string means, "match this string if it exists,
+#     but move on to the next token if it doesn't." All datetime parsing tokens
+#     (like "%H") are optionalized automatically when this function converts
+#     them to regex. But other tokens like ":" and "-" that might be used in
+#     datetime strings are not. Concretely, if you wanted to read either "%H:%M:%S"
+#     or "%H:%M" in the same column, you'd set optionalize_nontoken_characters = ':',
+#     and then the parser wouldn't require there to be two colons in order to
+#     match the string. Don't use this if you don't have to, because it reduces
+#     specificity. See "optional" argument to dt_format_to_regex for more details.
+#' @param site_code_col character. name of column containing site name information
+#' @param alt_site_code optional list. Names of list elements are desired site_codes
+#'    within MacroSheds. List elements are character vectors of alternative
+#'    names that might be encountered. Used when sites are misnamed or need
+#'    to be changed due to inconsistencies within and across datasets.
+#' @param data_cols vector. vector of names of columns containing data. If elements of this
+#'   vector are named, names are taken to be the column names as they exist
+#'   in the file, and values are used to replace those names. Data columns that
+#'   aren't referred to in this argument will be omitted from the output,
+#'   as will their associated flag columns (if any).
+#' @param data_col_pattern character. a string containing the wildcard "#V#",
+#'   which represents any number of characters. If data column names will be
+#'   used as-is, this wildcard is all you need. if data columns contain
+#'   recurring, superfluous characters, you can omit them with regex. for
+#'   example, if data columns are named outflow_x, outflow_y, outflow_...., use
+#'   data_col_pattern = 'outflow_#V#' and then you don't have to bother
+#'   typing the full names in your argument to data_cols.
+#' @param alt_datacol_pattern optional string with same mechanics as data_col_pattern.
+#'   use this if there might be a second way in which column names are generated, e.g.
+#'   output_x, output_y, output_....
+#' @param is_sensor logical. either a single logical value, which will be applied to all
+#'   variable columns OR a named logical vector with the same length and names as
+#'   data_cols. If the latter, names correspond to variable names in the file to be read.
+#'   TRUE means the corresponding variable(s) was/were
+#'   measured with a sensor (which may be susceptible to drift and/or fouling),
+#'   FALSE means the measurement(s) was/were not recorded by a sensor. This
+#'   category includes analytical measurement in a lab, visual recording, etc.
+#' @param set_to_NA character. For values such as 9999 that are proxies for NA values.
+#' @param var_flagcol_pattern character. optional string with same mechanics as the other
+#'   pattern parameters. this one is for columns containing flag
+#'   information that is specific to one variable. If there's only one
+#'   data column, omit this argument and use summary_flagcols for all
+#'   flag information.
+#' @param alt_varflagcol_pattern character. optional string with same mechanics as the other
+#'   pattern parameters. just in case there are two naming conventions for variable-specific
+#'   flag columns
+#' @param summary_flagcols vector. optional unnamed vector of column names for flag columns
+#'   that pertain to all variables
+#' @param sampling_type optional value to overwrite identify_sampling because
+#'      some . vector's function is misidentifying sampling type. This must b
+#'      single . vector 'G or I and is applied to all variables in product
+#'
+#' @return returns a tibble of ordered and renamed columns, omitting any columns
+#'   from the original file that do not contain data, flag/qaqc information,
+#'   datetime, or site_code. All-NA data columns and their corresponding
+#'   flag columns will also be omitted, as will rows where all data values
+#'   are NA. Rows with NA in the datetime or site_code column are dropped.
+#'   data columns are given type double. all other
+#'   columns are given type character. data and flag/qaqc columns are
+#'   given two-letter prefixes representing sample regimen
+#'   (I = installed vs. G = grab; S = sensor vs N = non-sensor).
+#'   Data and flag/qaqc columns are also given
+#'   suffixes (__|flg and __|dat) that allow them to be cast into long format
+#'   by ms_cast_and_reflag.
 
-ms_read_raw_csv <- function(filepath,
+ms_read_csv <- function(filepath,
                             preprocessed_tibble,
                             datetime_cols,
                             datetime_tz,
@@ -61,86 +120,9 @@ ms_read_raw_csv <- function(filepath,
     #site_code_col should eventually work like datetime_cols (in case site_code is
     #   separated into multiple components)
     
-    #filepath: string
-    #preprocessed_tibble: a tibble with all character columns. Supply this
-    #   argument if a dataset requires modification before it can be processed
-    #   by ms_read_raw_csv. This may be necessary if, e.g.
-    #   time is stored in a format that can't be parsed by standard datetime
-    #   format strings. Either filepath or preprocessed_tibble
-    #   must be supplied, but not both.
-    #datetime_cols: a named character vector. names are column names that
-    #   contain components of a datetime. values are format strings (e.g.
-    #   '%Y-%m-%d', '%H') corresponding to the datetime components in those
-    #   columns.
-    #datetime_tz: string specifying time zone. this specification must be
-    #   among those provided by OlsonNames()
-    #optionalize_nontoken_characters: character vector; used when there might be
-    #   variation in date/time formatting within a column. in regex speak,
-    #   optionalizing a token string means, "match this string if it exists,
-    #   but move on to the next token if it doesn't." All datetime parsing tokens
-    #   (like "%H") are optionalized automatically when this function converts
-    #   them to regex. But other tokens like ":" and "-" that might be used in
-    #   datetime strings are not. Concretely, if you wanted to read either "%H:%M:%S"
-    #   or "%H:%M" in the same column, you'd set optionalize_nontoken_characters = ':',
-    #   and then the parser wouldn't require there to be two colons in order to
-    #   match the string. Don't use this if you don't have to, because it reduces
-    #   specificity. See "optional" argument to dt_format_to_regex for more details.
-    #site_code_col: name of column containing site name information
-    #alt_site_code: optional list. Names of list elements are desired site_codes
-    #   within MacroSheds. List elements are character vectors of alternative
-    #   names that might be encountered. Used when sites are misnamed or need
-    #   to be changed due to inconsistencies within and across datasets.
-    #data_cols: vector of names of columns containing data. If elements of this
-    #   vector are named, names are taken to be the column names as they exist
-    #   in the file, and values are used to replace those names. Data columns that
-    #   aren't referred to in this argument will be omitted from the output,
-    #   as will their associated flag columns (if any).
-    #data_col_pattern: a string containing the wildcard "#V#",
-    #   which represents any number of characters. If data column names will be
-    #   used as-is, this wildcard is all you need. if data columns contain
-    #   recurring, superfluous characters, you can omit them with regex. for
-    #   example, if data columns are named outflow_x, outflow_y, outflow_...., use
-    #   data_col_pattern = 'outflow_#V#' and then you don't have to bother
-    #   typing the full names in your argument to data_cols.
-    #alt_datacol_pattern: optional string with same mechanics as
-    #   data_col_pattern. use this if there
-    #   might be a second way in which column names are generated, e.g.
-    #   output_x, output_y, output_....
-    #is_sensor: either a single logical value, which will be applied to all
-    #   variable columns OR a named logical vector with the same length and names as
-    #   data_cols. If the latter, names correspond to variable names in the file to be read.
-    #   TRUE means the corresponding variable(s) was/were
-    #   measured with a sensor (which may be susceptible to drift and/or fouling),
-    #   FALSE means the measurement(s) was/were not recorded by a sensor. This
-    #   category includes analytical measurement in a lab, visual recording, etc.
-    #set_to_NA: For values such as 9999 that are proxies for NA values.
-    #var_flagcol_pattern: optional string with same mechanics as the other
-    #   pattern parameters. this one is for columns containing flag
-    #   information that is specific to one variable. If there's only one
-    #   data column, omit this argument and use summary_flagcols for all
-    #   flag information.
-    #alt_varflagcol_pattern: optional string with same mechanics as the other
-    #   pattern parameters. just in case there are two naming conventions for
-    #   variable-specific flag columns
-    #summary_flagcols: optional unnamed vector of column names for flag columns
-    #   that pertain to all variables
-    #sampling_type: optional value to overwrite identify_sampling because in
-    #   some case this function is misidentifying sampling type. This must be a
-    #   single value of G or I and is applied to all variables in product
-    
-    #return value: a tibble of ordered and renamed columns, omitting any columns
-    #   from the original file that do not contain data, flag/qaqc information,
-    #   datetime, or site_code. All-NA data columns and their corresponding
-    #   flag columns will also be omitted, as will rows where all data values
-    #   are NA. Rows with NA in the datetime or site_code column are dropped.
-    #   data columns are given type double. all other
-    #   columns are given type character. data and flag/qaqc columns are
-    #   given two-letter prefixes representing sample regimen
-    #   (I = installed vs. G = grab; S = sensor vs N = non-sensor).
-    #   Data and flag/qaqc columns are also given
-    #   suffixes (__|flg and __|dat) that allow them to be cast into long format
-    #   by ms_cast_and_reflag.
-    
+
+
+
     #checks
     filepath_supplied <-  ! missing(filepath) && ! is.null(filepath)
     tibble_supplied <-  ! missing(preprocessed_tibble) && ! is.null(preprocessed_tibble)

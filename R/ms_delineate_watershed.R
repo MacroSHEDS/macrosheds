@@ -54,7 +54,7 @@
 #' which only allows you to specify the coordinate reference system of your input
 #' coordinates. Also note that for watersheds that span several latitudes or longitudes,
 #' calculated watershed areas might be inaccurate.
-#' 
+#'
 #' For the fully agnostic delineation procedure, here are the steps:
 #' 1. A reasonable projection is chosen via [choose_projection()].
 #' 2. A digital elevation model is retrieved via [elevatr::get_elev_raster()].
