@@ -69,7 +69,7 @@ ms_synchronize_timestep <- function(d,
         # average/sum values for duplicate timestamps
         if(n_dupes > 0){
             
-            msg <- glue('{n} duplicate datetimes found for site: {s}, var: {v}',
+            msg <- glue::glue('{n} duplicate datetimes found for site: {s}, var: {v}',
                         n = n_dupes,
                         s = sitevar_chunk$site_code[1],
                         v = sitevar_chunk$var[1])

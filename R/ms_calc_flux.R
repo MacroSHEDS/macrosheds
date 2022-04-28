@@ -16,10 +16,12 @@
 #'    where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep. 
 #' @details
 #' Chemical flux is calculated by multiplying chemical concentration by flow
-#' of water (flux = concentration * flow). The output units depend on \code{data.type} and the time 
-#' interval at which input data are collected. If \code{q_type} is 'discharge', output units are kg/T, where T
-#' is the sample interval. Consider: kg/T = mg/L * L/s * T / 1e6.
-#' If \code{q_type} is 'precipitation', output is in kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
+#' of water (flux = concentration * flow). The output units depend on the time 
+#' interval at which input data are collected. The resulting flux units will always be
+#' kg/ha/T, where T is the time interval of the input \code{tibble}. \code{q_type} is used
+#' to calculate flux differently because of the different units of discharge and precipitation.
+#' If \code{q_type} is 'discharge', flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
+#' If \code{q_type} is 'precipitation', is calculated as: kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 #' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
 #' [ms_undo_scale_flux_by_area()].
 #' 
@@ -67,11 +69,26 @@ ms_calc_flux <- function(chemistry, q, q_type, site_info = NULL, verbose = TRUE)
     }
 
     if(q_type == 'discharge' && is.null(site_info)) {
-        stop("q_type 'discharge' selected with no site information data provided")
+        site_info <- try(ms_download_site_data())
+        
+        if(inherits(site_info, 'try-error')){
+            stop("When q_type == 'discharge', you must either have site_info defined as the macrosheds \n
+                 site_data table or you must have an internet connection to download the table with ms_download_site_data()")
+        }
     } else {
         site_info$ws_area_ha <- errors::set_errors(site_info$ws_area_ha, 0)
     }
 
+    # Check both files have the same sites 
+    sites_chem <- unique(chemistry$site_code)
+    sites_q <- unique(q$site_code)
+    
+    if(! all(sites_chem %in% sites_q)){
+        stop('Both chemistry and q must have the same sites')
+    }
+    
+    sites <- sites_chem
+    
     # Check the intervals are the same in both chemistry and q
     q_interval <- Mode(diff(as.numeric(q$datetime)))
     
@@ -119,7 +136,6 @@ ms_calc_flux <- function(chemistry, q, q_type, site_info = NULL, verbose = TRUE)
     }
     
     # calc flux
-    sites <- unique(chemistry$site_code)
     
     all_sites_flux <- tibble()
     for(s in 1:length(sites)) {

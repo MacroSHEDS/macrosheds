@@ -83,7 +83,6 @@
 #'    specifications.
 #' 9. The delineated watershed is saved as a shapefile. Watershed area
 #'    and the successful set of specifications are returned.
-#' @export
 #' @seealso [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
 #' @examples
 #' area_and_specs <- ms_delineate_watershed(
@@ -93,6 +92,7 @@
 #'     write_dir = '/some/path',
 #'     write_name = 'example_site'
 #' )
+#' @export
 
 spec_buffer_radius_m = 1000
 spec_snap_distance_m = 150
@@ -1430,3 +1430,4 @@ ms_delineate_watershed <- function(lat,
     
     return(deets)
 }
+
