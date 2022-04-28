@@ -26,16 +26,16 @@ precip_chemistry, precip_flux_inst.}
 
 \item{filter_vars}{character vector. for products like stream_chemistry that include
 multiple variables, this filters to just the ones specified (ignores
-variable prefixes). To see a catalog of variables, visit macrosheds.org or see PLACEHOLDER0.}
+variable prefixes). To see a catalog of variables, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).}
 
 \item{networks}{character vector. MacroSheds networks to load; optional. To see a catalog of
-networks, visit macrosheds.org or see PLACEHOLDER0.}
+networks, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).}
 
 \item{domains}{character vector. MacroSheds domains to load; optional. To see a catalog of
-domains, visit macrosheds.org or see PLACEHOLDER0.}
+domains, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).}
 
 \item{site_codes}{character vector. MacroSheds sites to load, optional. To see a catalog of
-site_codes, visit macrosheds.org or see PLACEHOLDER0.}
+site_codes, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).}
 
 \item{sort_result}{logical. If TRUE, output will be sorted by site_code, var,
 datetime. this may add considerable loading time for large datasets.}
@@ -43,7 +43,7 @@ datetime. this may add considerable loading time for large datasets.}
 \item{warn}{logical. If TRUE, function will not load more than 100MB without permission.}
 }
 \value{
-Returns a \code{tibble} in MacroSheds format. See PLACEHOLDER0 for definitions.
+Returns a \code{tibble} in MacroSheds format. See [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740) for definitions.
 }
 \description{
 Loads and optionally filters MacroSheds time-series products (e.g stream_chemistry, discharge, etc.) from a
@@ -62,7 +62,7 @@ macrosheds_data <- ms_load_product(macrosheds_root = ms_root,
 \code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_read_csv]{ms_read_csv()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea, \email{spencerrhea41@@gmail.com}
 
 Mike Vlah
 

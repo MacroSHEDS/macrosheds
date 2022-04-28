@@ -1,12 +1,12 @@
-#' Download macrosheds site data table 
+#' Download MacroSheds site data table
 #'
-#' Download the macrosheds site data table with information on networks, domains,
+#' Download the MacroSheds site data table with information on networks, domains,
 #'  location of stream gauges, and more.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@gmail.com}
+#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
-#' @return returns a \code{data.frame} of all sites in the macrosheds systems 
+#' @return returns a \code{data.frame} of all sites in the MacroSheds systems
 #'    with their corresponding network, domain, latitude, longitude, area, and 
 #'    additional information.
 #' @export
