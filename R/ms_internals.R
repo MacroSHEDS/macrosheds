@@ -2490,3 +2490,133 @@ get_response_1char <- function(msg,
                            subsequent_prompt = TRUE)
     }
 }
+
+get_response_mchar <- function(msg,
+                               possible_resps,
+                               allow_alphanumeric_response = TRUE,
+                               subsequent_prompt = FALSE){
+    
+    #msg: character. a message that will be used to prompt the user
+    #possible_resps: character vector. If length 1, each character in the response
+    #   will be required to match a character in possible_resps, and the return
+    #   value will be a character vector of each single-character tokens in the
+    #   response. If
+    #   length > 1, the response will be required to match an element of
+    #   possible_resps exactly, and the response will be returned as-is.
+    #allow_alphanumeric_response: logical. If FALSE, the response may not
+    #   include both numerals and letters. Only applies when possible_resps
+    #   has length 1.
+    #subsequent prompt: not to be set directly. This is handled by
+    #   get_response_mchar during recursion.
+    
+    split_by_character <- ifelse(length(possible_resps) == 1, TRUE, FALSE)
+    
+    if(subsequent_prompt){
+        
+        if(split_by_character){
+            pr <- strsplit(possible_resps, split = '')[[1]]
+        } else {
+            pr <- possible_resps
+        }
+        
+        cat(paste('Your options are:',
+                  paste(pr,
+                        collapse = ', '),
+                  '\n> '))
+    } else {
+        cat(msg)
+    }
+    
+    chs <- as.character(readLines(con = stdin(), 1))
+    
+    if(! allow_alphanumeric_response &&
+       split_by_character &&
+       grepl('[0-9]', chs) &&
+       grepl('[a-zA-Z]', chs)){
+        
+        cat('Response may not include both letters and numbers.\n> ')
+        resp <- get_response_mchar(
+            msg = msg,
+            possible_resps = possible_resps,
+            allow_alphanumeric_response = allow_alphanumeric_response,
+            subsequent_prompt = FALSE)
+        
+        return(resp)
+    }
+    
+    if(length(chs)){
+        if(split_by_character){
+            
+            if(length(possible_resps) != 1){
+                stop('possible_resps must be length 1 if split_by_character is TRUE')
+            }
+            
+            chs <- strsplit(chs, split = '')[[1]]
+            possible_resps_split <- strsplit(possible_resps, split = '')[[1]]
+            
+            if(all(chs %in% possible_resps_split)){
+                return(chs)
+            }
+            
+        } else {
+            
+            if(length(possible_resps) < 2){
+                stop('possible_resps must have length > 1 if split_by_character is FALSE')
+            }
+            
+            if(any(possible_resps == chs)){
+                return(chs)
+            }
+        }
+    }
+    
+    resp <- get_response_mchar(
+        msg = msg,
+        possible_resps = possible_resps,
+        allow_alphanumeric_response = allow_alphanumeric_response,
+        subsequent_prompt = TRUE)
+    
+    return(resp)
+}
+
+get_response_int <- function(msg,
+                             min_val,
+                             max_val,
+                             subsequent_prompt = FALSE){
+    
+    #msg: character. a message that will be used to prompt the user
+    #min_val: int. minimum allowable value, inclusive
+    #max_val: int. maximum allowable value, inclusive
+    #subsequent prompt: not to be set directly. This is handled by
+    #   get_response_int during recursion.
+    
+    if(subsequent_prompt){
+        cat(glue('Please choose an integer in the range [{minv}, {maxv}].',
+                 minv = min_val,
+                 maxv = max_val))
+    } else {
+        cat(msg)
+    }
+    
+    nm <- as.numeric(as.character(readLines(con = stdin(), 1)))
+    
+    if(nm %% 1 == 0 && nm >= min_val && nm <= max_val){
+        return(nm)
+    } else {
+        get_response_int(msg = msg,
+                         min_val = min_val,
+                         max_val = max_val,
+                         subsequent_prompt = TRUE)
+    }
+}
+
+get_response_enter <- function(msg){
+    
+    #only returns if ENTER is pressed
+    
+    cat(msg)
+    
+    ch <- as.character(readLines(con = stdin(), 1))
+    
+    return(invisible(NULL))
+}

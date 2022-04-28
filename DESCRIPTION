@@ -2,13 +2,13 @@ Package: macrosheds
 Title: Tools for interfacing with the MacroSheds dataset
 Version: 0.0.0.1
 Date: 2021-11-1
-Authors@R: c(person("Spencer", "Rhea", email = "spencerrhea41@@gmail.com", role = c("aut", "cre")),
+Authors@R: c(person("Spencer", "Rhea", email = "spencerrhea41@gmail.com", role = c("aut", "cre")),
              person("Mike", "Vlah", email = "vlahm13@gmail.com", role = c("aut")),
              person("Wes", "Slaughter", email = "weston.slaughter@duke.edu", role = c("aut")))
 Description: Macrosheds is a database of watershed ecosystems studies from around the world. 
-Depends: R (>= 3.6.1), tidyverse
+Depends: R (>= 3.6.1), dplyr
 Imports:
-    tidyverse, feather, errors, sf, data.table, EGRET, foreach, glue, parallel, dataRetrieval, terra, mapview, elevatr, whitebox
+    stringr, purrr, readr, feather, errors, sf, data.table, EGRET, foreach, glue, parallel, dataRetrieval, terra, mapview, elevatr, whitebox
 Roxygen: list(markdown = TRUE)
 License: MIT
 Encoding: UTF-8
