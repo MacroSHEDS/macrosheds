@@ -82,12 +82,12 @@
 #'        used to condition the DEM.
 #' @details
 #' Output files are unprojected (WGS 84), though processing is done
-#' on projected data. A projection is chosen automatically by [macrosheds:::choose_projection()],
+#' on projected data. A projection is chosen automatically by [macrosheds::choose_projection()],
 #' based on pour point location. Note that this has nothing to do with the crs parameter,
 #' which only allows you to specify the coordinate reference system of your input
 #' coordinates. Also note that for watersheds that span several latitudes or longitudes,
 #' calculated watershed areas might be inaccurate.
-#' 
+#'
 #' For the fully agnostic delineation procedure, here are the steps:
 #' 1. A reasonable projection is chosen via [choose_projection()].
 #' 2. A digital elevation model is retrieved via [elevatr::get_elev_raster()].
@@ -116,7 +116,6 @@
 #'    specifications.
 #' 9. The delineated watershed is saved as a shapefile. Watershed area
 #'    and the successful set of specifications are returned.
-#' @export
 #' @seealso [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
 #' @examples
 #' area_and_specs <- ms_delineate_watershed(
@@ -126,6 +125,7 @@
 #'     write_dir = '/some/path',
 #'     write_name = 'example_site'
 #' )
+#' @export
 
 ms_delineate_watershed <- function(lat,
                                    long,
@@ -146,6 +146,16 @@ ms_delineate_watershed <- function(lat,
         spec_breach_method <- 'basic'
         warning('spec_breach_method = "lc" is currently unavailable. Setting spec_breach_method = "basic"')
     }
+    sm <- suppressMessages
+    sw <- suppressWarnings
+    library(tidyverse)
+    library(glue)
+    library(sf)
+    library(data.table)
+    library(terra)
+    library(mapview)
+    library(whitebox)
+    library(elevatr)
     
     #moving shapefiles can be annoying, since they're actually represented by
     #   3-4 files
@@ -1485,7 +1495,6 @@ ms_delineate_watershed <- function(lat,
                 watershed_area_ha = ws_area_ha,
                 deets = deets))
 }
-
 
 ms_delineate_watershed(lat = 44.21013,
                        long = -122.2571,
