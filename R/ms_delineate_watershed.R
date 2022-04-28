@@ -26,27 +26,27 @@ all the spec_ params
 #' written to \code{write_dir}.
 #' @param verbose logical. Determines the amount of informative messaging during run.
 #' @return 
-#' A list containing the following components:
+#' Writes a shapefile to \code{write_dir}. Also returns a list containing the following components:
 #' + watershed_area_ha: the area of the delineated watershed in hectares
 #'      (meters squared divided by 10,000)
-#' + buffer_radius_m: the width (meters) around the site location that was used when
-#'      requesting a DEM (digital elevation model)
-#' + snap_distance_m: the search radius (meters) around the pour point that was used
-#'      to choose a stream to snap the pour point to.
-#' + snap_method: either "standard", which snaps the pour point to the cell
-#'      within snap_distance_m with highest flow accumulation, or "jenson",
-#'      which snaps to the nearest flow line
-#' + dem_resolution: passed to elevatr::get_elev_raster (z parameter).
-#'      depends on supplied machine_status
-#' + flat_increment: see whitebox::wbt_breach_depressions or
-#'      whitebox::wbt_breach_depressions_least_cost
-#' + breach_method: string. Either 'basic', indicating that
-#'      whitebox::wbt_breach_depressions was used, or 'lc', indicating
-#'      whitebox::wbt_breach_depressions_least_cost (which less readily
-#'      alters the DEM)
-#' + burn_streams: TRUE or FALSE, indicating whether
-#'      whitebox::wbt_burn_streams_at_roads and whitebox::wbt_fill_burn were
-#'      used on the DEM
+#' + specs: a list of specifications of the successful delineation
+#'   + buffer_radius_m: the width (meters) around the site location that was used when
+#'        requesting a DEM (digital elevation model)
+#'   + snap_distance_m: the search radius (meters) around the pour point that was used
+#'        to choose a stream to snap the pour point to
+#'   + snap_method: either "standard", which snaps the pour point to the cell
+#'        within snap_distance_m with highest flow accumulation, or "jenson",
+#'        which snaps to the nearest flow line
+#'   + dem_resolution: passed to elevatr::get_elev_raster (z parameter).
+#'   + flat_increment: see whitebox::wbt_breach_depressions or
+#'        whitebox::wbt_breach_depressions_least_cost
+#'   + breach_method: string. Either 'basic', indicating that
+#'        whitebox::wbt_breach_depressions was used, or 'lc', indicating
+#'        whitebox::wbt_breach_depressions_least_cost (which less readily
+#'        alters the DEM)
+#'   + burn_streams: TRUE or FALSE, indicating whether
+#'        whitebox::wbt_burn_streams_at_roads and whitebox::wbt_fill_burn were
+#'        used on the DEM
 #' @details
 #' Output files are unprojected (WGS 84), though processing is done
 #' on projected data. A projection is chosen automatically by [macrosheds:::choose_projection()],
@@ -94,14 +94,6 @@ all the spec_ params
 #'     write_name = 'example_site'
 #' )
 
-spec_buffer_radius_m = 1000
-spec_snap_distance_m = 150
-spec_snap_method = 'standard'
-spec_dem_resolution = 10
-spec_flat_increment = NULL
-spec_breach_method = 'lc'
-spec_burn_streams = FALSE
-
 ms_delineate_watershed <- function(lat,
                                    long,
                                    crs = 4326,
@@ -116,17 +108,6 @@ ms_delineate_watershed <- function(lat,
                                    spec_breach_method = NULL,
                                    spec_burn_streams = NULL,
                                    confirm = TRUE){
-    
-    sm <- suppressMessages
-    sw <- suppressWarnings
-    library(tidyverse)
-    library(glue)
-    library(sf)
-    library(data.table)
-    library(terra)
-    library(mapview)
-    library(whitebox)
-    library(elevatR)
     
     #moving shapefiles can be annoying, since they're actually represented by
     #   3-4 files
@@ -210,7 +191,7 @@ ms_delineate_watershed <- function(lat,
         #return()
     }
     
-    #prompt users for stuff, provide single-character responses,
+    #prompt users for stuff, receive single-character responses,
     #   reprompt if they don't choose one of the expected responses
     get_response_1char <- function(msg,
                                    possible_chars,
@@ -241,7 +222,7 @@ ms_delineate_watershed <- function(lat,
         }
     }
     
-    #prompt users for stuff, provide multi-character responses,
+    #prompt users for stuff, receive multi-character responses,
     #   reprompt if they don't choose one of the expected responses
     get_response_mchar <- function(msg,
                                    possible_resps,
@@ -331,6 +312,51 @@ ms_delineate_watershed <- function(lat,
         return(resp)
     }
     
+    #prompt users for stuff, receive integer responses,
+    #   reprompt if they don't choose an integer in the accepted range
+    get_response_int <- function(msg,
+                                 min_val,
+                                 max_val,
+                                 subsequent_prompt = FALSE){
+        
+        #msg: character. a message that will be used to prompt the user
+        #min_val: int. minimum allowable value, inclusive
+        #max_val: int. maximum allowable value, inclusive
+        #subsequent prompt: not to be set directly. This is handled by
+        #   get_response_int during recursion.
+        
+        if(subsequent_prompt){
+            cat(glue('Please choose an integer in the range [{minv}, {maxv}].',
+                     minv = min_val,
+                     maxv = max_val))
+        } else {
+            cat(msg)
+        }
+        
+        nm <- as.numeric(as.character(readLines(con = stdin(), 1)))
+        
+        if(nm %% 1 == 0 && nm >= min_val && nm <= max_val){
+            return(nm)
+        } else {
+            get_response_int(msg = msg,
+                             min_val = min_val,
+                             max_val = max_val,
+                             subsequent_prompt = TRUE)
+        }
+    }
+    
+    #prompt users for stuff, receive any input and move on
+    get_response_enter <- function(){
+    
+        #only returns if ENTER is pressed
+        
+        cat(paste('Press [enter/return] to continue.'))
+        
+        ch <- as.character(readLines(con = stdin(), 1))
+        
+        return(invisible(NULL))
+    }
+    
     #chooose an appropriate projection, based on location
     choose_projection <- function(lat = NULL,
                                   long = NULL,
@@ -393,34 +419,6 @@ ms_delineate_watershed <- function(lat,
         # PROJ4 <- 2163
         
         return(PROJ4)
-    }
-    
-    #choose appropriate granularity of the elevation model,
-    #   based on the approximate size of the task (area potentially covered)
-    choose_dem_resolution <- function(dev_machine_status, buffer_radius){
-        
-        if(dev_machine_status == '1337'){
-            dem_resolution <- case_when(
-                buffer_radius <= 1e4 ~ 12,
-                buffer_radius == 1e5 ~ 11,
-                buffer_radius == 1e6 ~ 10,
-                buffer_radius == 1e7 ~ 8,
-                buffer_radius == 1e8 ~ 6,
-                buffer_radius == 1e9 ~ 4,
-                buffer_radius >= 1e10 ~ 2)
-        } else if(dev_machine_status == 'n00b'){
-            dem_resolution <- case_when(
-                buffer_radius <= 1e4 ~ 10,
-                buffer_radius == 1e5 ~ 8,
-                buffer_radius == 1e6 ~ 6,
-                buffer_radius == 1e7 ~ 4,
-                buffer_radius == 1e8 ~ 2,
-                buffer_radius >= 1e9 ~ 1)
-        } else {
-            stop('dev_machine_status must be either "1337" or "n00b"')
-        }
-        
-        return(dem_resolution)
     }
     
     #for determining whether the DEM extent wasn't big enough to allow full
@@ -689,7 +687,6 @@ ms_delineate_watershed <- function(lat,
                                                     confirm = TRUE,
                                                     scratch_dir = tempdir(),
                                                     write_dir,
-                                                    dev_machine_status = 'n00b',
                                                     verbose = FALSE){
         
         #This function calls delineate_watershed_apriori recursively, taking
@@ -712,7 +709,6 @@ ms_delineate_watershed <- function(lat,
             burn_streams = burn_streams,
             buffer_radius = buffer_radius,
             scratch_dir = scratch_dir,
-            dev_machine_status = dev_machine_status,
             verbose = verbose)
         
         inspection_dir <- delin_out$inspection_dir
@@ -733,15 +729,15 @@ ms_delineate_watershed <- function(lat,
             return(files_to_inspect[1])
         }
         
-        temp_point <- glue(scratch_dir, '/', 'POINT')
+        # temp_point <- glue(scratch_dir, '/', 'POINT')
         
-        tibble(longitude = long, latitude = lat) %>%
+        temp_point <- tibble(longitude = long, latitude = lat) %>%
             sf::st_as_sf(coords = c('longitude', 'latitude'),
-                         crs = crs) %>%
-            sf::st_write(dsn = temp_point,
-                         driver = 'ESRI Shapefile',
-                         delete_dsn = TRUE,
-                         quiet = TRUE)
+                         crs = crs)
+            # sf::st_write(dsn = temp_point,
+            #              driver = 'ESRI Shapefile',
+            #              delete_dsn = TRUE,
+            #              quiet = TRUE)
         
         nshapes <- length(files_to_inspect)
         numeric_selections <- paste('Accept delineation', 1:nshapes)
@@ -762,14 +758,14 @@ ms_delineate_watershed <- function(lat,
                                sep = ': ',
                                collapse = '\n')
         
-        helper_code <- glue('{id}.\nmapview::mapviewOptions(fgb = FALSE);',
-                            'mapview::mapview(sf::st_read("{wd}/{f}")) + ',
-                            'mapview::mapview(sf::st_read("{pf}"))',
-                            id = 1:length(files_to_inspect),
-                            wd = inspection_dir,
-                            f = files_to_inspect,
-                            pf = temp_point) %>%
-            paste(collapse = '\n\n')
+        # helper_code <- glue('{id}.\nmapview::mapviewOptions(fgb = FALSE);',
+        #                     'mapview::mapview(sf::st_read("{wd}/{f}")) + ',
+        #                     'mapview::mapview(sf::st_read("{pf}"))',
+        #                     id = 1:length(files_to_inspect),
+        #                     wd = inspection_dir,
+        #                     f = files_to_inspect,
+        #                     pf = temp_point) %>%
+        #     paste(collapse = '\n\n')
         
         msg <- glue('Visually inspect the watershed boundary candidate shapefiles ',
                     'by pasting the mapview lines below into a separate instance of R.\n\n{hc}\n\n',
@@ -782,6 +778,19 @@ ms_delineate_watershed <- function(lat,
                     'network, domain) [function not yet built]\n\nChoices:\n{sel}\n\nEnter choice(s) here > ',
                     hc = helper_code,
                     sel = wb_selections)
+        
+        # mapview::mapviewOptions(fgb = FALSE);',
+        for(i in seq_along(files_to_inspect)){
+            mpv <- mapview::mapview(sf::st_read(file.path(inspection_dir,
+                                                          files_to_inspect[i]),
+                                                quiet = TRUE),
+                                    layer.name = paste('Candidate watershed', i)) +
+                mapview::mapview(sf::st_read(temp_point,
+                                             quiet = TRUE),
+                                 layer.name = 'Input lat/long')
+            print(mpv)
+            get_response_enter() 
+        }
         
         resp <- get_response_mchar(
             msg = msg,
@@ -898,7 +907,6 @@ ms_delineate_watershed <- function(lat,
                 buffer_radius = buffer_radius_,
                 scratch_dir = scratch_dir,
                 write_dir = write_dir,
-                dev_machine_status = dev_machine_status,
                 verbose = verbose)
             
             return(selection)
@@ -911,10 +919,12 @@ ms_delineate_watershed <- function(lat,
                         to_dir = write_dir,
                         new_name_vec = site_code)
         
-        message(glue('Selection {s}:\n\t{sel}\nwas written to:\n\t{sdr}',
+        message(glue('Selection {s}:\n\t{sel}\nwas written to:\n\t{sdr}/\nas{nm}',
+                     '.shp, {nm}.shx, {nm}.dbf, {nm}.prj',
                      s = resp,
                      sel = selection,
-                     sdr = write_dir))
+                     sdr = write_dir,
+                     nm = site_code))
         
         return(selection)
     }
@@ -932,7 +942,6 @@ ms_delineate_watershed <- function(lat,
                                             burn_streams = FALSE,
                                             buffer_radius = NULL,
                                             scratch_dir = tempdir(),
-                                            dev_machine_status = 'n00b',
                                             verbose = FALSE){
         
         #lat: numeric representing latitude in decimal degrees
@@ -962,8 +971,6 @@ ms_delineate_watershed <- function(lat,
         #   layers from OpenStreetMap.
         #scratch_dir: the directory where intermediate files will be dumped. This
         #   is a randomly generated temporary directory if not specified.
-        #dev_machine_status: either '1337', indicating that your machine has >= 16 GB
-        #   RAM, or 'n00b', indicating < 16 GB RAM. DEM resolution is chosen accordingly
         #verbose: logical. determines the amount of informative messaging during run
         
         #returns the location of candidate watershed boundary files
@@ -972,22 +979,22 @@ ms_delineate_watershed <- function(lat,
         # tmp <- str_replace_all(tmp, '\\\\', '/')
         
         if(! is.null(dem_resolution) && ! is.numeric(dem_resolution)){
-            stop('dem_resolution must be a numeric integer or NULL')
+            stop('dem_resolution must be an integer from 1 to 14, or NULL.')
         }
         if(! is.null(flat_increment) && ! is.numeric(flat_increment)){
-            stop('flat_increment must be numeric or NULL')
+            stop('flat_increment must be numeric or NULL. Recommended values are 0.1, 0.01, or 0.001.')
         }
         if(! is.null(snap_dist) && ! is.numeric(snap_dist)){
-            stop('snap_dist must be numeric or NULL')
+            stop('snap_dist must be numeric (meters) or NULL')
         }
         if(! is.null(buffer_radius) && ! is.numeric(buffer_radius)){
-            stop('buffer_radius must be numeric or NULL')
+            stop('buffer_radius must be numeric (meters) or NULL')
         }
         if(! is.null(snap_method) && ! snap_method %in% c('jenson', 'standard')){
             stop('snap_dist must be "jenson", "standard", or NULL')
         }
         if(! breach_method %in% c('lc', 'basic')) stop('breach_method must be "basic" or "lc"')
-        if(! is.logical(burn_streams)) stop('burn_streams must be logical')
+        if(! is.logical(burn_streams)) stop('burn_streams must be TRUE or FALSE')
         
         inspection_dir <- glue(scratch_dir, '/INSPECT_THESE')
         point_dir <- glue(scratch_dir, '/POINT')
@@ -1030,9 +1037,6 @@ ms_delineate_watershed <- function(lat,
             while_loop_begin <- FALSE
             
             if(is.null(dem_resolution)){
-                # dem_resolution <- choose_dem_resolution(
-                #     dev_machine_status = dev_machine_status,
-                #     buffer_radius = buffer_radius)
                 dem_resolution <- 10
             }
             
@@ -1385,6 +1389,11 @@ ms_delineate_watershed <- function(lat,
         ! is.null(spec_breach_method) &&
         ! is.null(spec_burn_streams)
     
+    if(! confirm && ! all_specs_provided){
+        warning('confirm is FALSE but some specs parameters not provided. Setting to TRUE. Note that flat_increment need not be provided.')
+        confirm <- TRUE
+    }
+    
     selection <- sw(delineate_watershed_apriori_recurse(
         lat = lat,
         long = long,
@@ -1397,10 +1406,10 @@ ms_delineate_watershed <- function(lat,
         flat_increment = spec_flat_increment,
         breach_method = spec_breach_method,
         burn_streams = spec_burn_streams,
-        confirm = ! (all_specs_provided && ! confirm),
+        confirm = confirm,
+        # confirm = ! (all_specs_provided && ! confirm),
         scratch_dir = tmp,
         write_dir = write_dir,
-        # dev_machine_status = 'n00b',
         verbose = verbose))
     
     #calculate watershed area in hectares
@@ -1419,7 +1428,6 @@ ms_delineate_watershed <- function(lat,
                             'BREACH(basic|lc)BURN(TRUE|FALSE)\\.shp$'))
     
     deets <- list(name = write_name,
-                  watershed_area_ha = ws_area_ha,
                   buffer_radius_m = as.numeric(rgx[, 2]),
                   snap_distance_m = as.numeric(rgx[, 4]),
                   snap_method = rgx[, 3],
@@ -1428,7 +1436,32 @@ ms_delineate_watershed <- function(lat,
                   breach_method = rgx[, 7],
                   burn_streams = as.logical(rgx[, 8]))
     
-    return(deets)
+    return(list(out_path = write_dir,
+                filename_base = site_code,
+                watershed_area_ha = ws_area_ha,
+                deets = deets))
 }
 
-ms_delineate_watershed(
+sm <- suppressMessages
+sw <- suppressWarnings
+library(tidyverse)
+library(glue)
+library(sf)
+library(data.table)
+library(terra)
+library(mapview)
+library(whitebox)
+library(elevatr)
+
+ms_delineate_watershed(lat = 44.21013,
+                       long = -122.2571,
+                       crs = 4326,
+                       write_dir = '/tmp/ws_test2',
+                       write_name = 'example_site',
+                       spec_buffer_radius_m = 1000,
+                       spec_snap_distance_m = 150,
+                       spec_snap_method = 'standard',
+                       spec_dem_resolution = 10,
+                       spec_flat_increment = NULL,
+                       spec_breach_method = 'lc',
+                       spec_burn_streams = FALSE)
