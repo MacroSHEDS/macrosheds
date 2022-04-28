@@ -2,22 +2,26 @@
 % Please edit documentation in R/ms_catalog.R
 \name{ms_catalog}
 \alias{ms_catalog}
-\title{Query MacroSheds variable catalog}
+\title{Download the MacroSheds site-variable catalog}
 \usage{
 ms_catalog(fp = NULL)
 }
+\arguments{
+\item{fp}{character. provide a valid filepath to download the catalog to.}
+}
 \value{
 returns a \code{data.frame} of the variables in
-the MacroSheds dataset and metadata about them.
+the MacroSheds dataset, the sites that record them,
+number of observations, and more.
 }
 \description{
-downloads the MacroSheds variable catalog, which documents
-important metadata for all variables in MacroSheds -- such
-as sites, number of observations, first and last record of
-at each site, and more.
+downloads the MacroSheds catalog, which documents
+important metadata about what variables are recorded at what sites,
+and the number of observations, first and last record, and other
+important metadata for all site-variable pairs.
 }
 \examples{
-macrosheds_var_catalog <- ms_download_var_catalog()
+site_vars_catalog <- ms_catalog()
 }
 \seealso{
 \code{\link[=ms_download_variables]{ms_download_variables()}}, \code{\link[=ms_download_site_data]{ms_download_site_data()}}

@@ -196,6 +196,11 @@ my_q <- ms_load_product(
     sort_result = TRUE,
     warn = TRUE
 )
+
+# The current dataset has duplicates of observations, the new version of the dataset
+# does not have that issue but is not on figshare yet. Sorry about that! 
+my_q <- my_q %>%
+    distinct(datetime, site_code, .keep_all = T)
 ```
 
 
@@ -215,6 +220,11 @@ my_chem <- ms_load_product(
     sort_result = TRUE,
     warn = TRUE
 )
+
+# The current dataset has duplicates of observations, the new version of the dataset
+# does not have that issue but is not on figshare yet. Sorry about that! 
+my_chem <- my_chem %>%
+    distinct(datetime, site_code, var, .keep_all = T)
 
 head(my_chem)
 ```
@@ -255,25 +265,26 @@ We can plug in our discharge and chemistry data directly.
 my_flux <- ms_calc_flux(
     chemistry = my_chem_sync,
     q = my_q,
-    q_type = 'discharge'
+    q_type = 'discharge',
+    site_info = ms_sites
 )
 head(my_flux)
 ```
 
-From the documentation of `ms_calc_flux` we know, based on our input flow type ('discharge' as opposed to 'precipitation'), that our flux units are `kg/T` where T is the sampling interval. However, we are comparing between two very different watersheds- and it would be appropriate to scale by area. MacroSheds provides 'ms\_scale\_flux\_by\_area' for this very purpose.
+From the documentation of `ms_calc_flux` we know, that our flux units are `kg/ha/T` where T is the sampling interval. This is ideal becuase we are comparing between two very different watersheds and it is appropriate to scale by area. But is you were intrested in clooking at the mass of a solute being exported from a watershed, not normalized to area, you can so with the MacroSheds function 'ms\_undo\_scale\_flux\_by\_area'.
 
 
 #### ms\_scale\_flux\_by\_area
 
 
 ```{r ms-scale}
-my_flux_scaled <- ms_scale_flux_by_area(my_flux)
+my_flux_unscaled <- ms_undo_scale_flux_by_area(my_flux)
 ```
 
 Looks great! We have used the MacroSheds package and dataset to retrieve, synchronize, scale, and calculate flux from streamflow and nitrate-nitrogen concentration data from two sites on the east and west coasts of the United States with > 60 years of data. let's plot it!
 
 ```{r ms-explore}
-my_annual_mean_flux <- my_flux_scaled %>%
+my_annual_mean_flux <- my_flux %>%
     mutate(year = as.numeric(format(as.Date(datetime), format="%Y"))) %>%
     group_by(year, site_code) %>%
     summarize(

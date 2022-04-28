@@ -16,14 +16,7 @@ Download the macrosheds site data table with information on networks, domains,
 location of stream gauges, and more.
 }
 \examples{
-<<<<<<< HEAD
-macrosheds_sites <- download_ms_site_data()
-=======
 macrosheds_sites <- ms_download_site_data()
-}
-\seealso{
-\code{\link[=ms_download_variables]{ms_download_variables()}}, \code{\link[=ms_download_core_data]{ms_download_core_data()}}
->>>>>>> 43d097da872114e008e3cf37e874dddc04a25dc8
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}
