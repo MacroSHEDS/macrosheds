@@ -16,7 +16,7 @@
 
 ms_download_site_data <- function(fp = NULL){
     
-    ms_sites <- read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/34382846',
+    ms_sites <- readr::read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/34382846',
                          col_types = cols())
 
     # allow local download if file path supplied

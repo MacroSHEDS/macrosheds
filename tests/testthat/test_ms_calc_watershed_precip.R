@@ -121,9 +121,9 @@ dir.create(file.path(temp_dir, 'pgauge_', 'wb1'), recursive = TRUE)
 
 write_feather(precip, file.path(temp_dir, 'precip_', 'precip.feather'))
 write_feather(pchem, file.path(temp_dir, 'pchem_', 'pchem.feather'))
-st_write(ws_boundary, file.path(temp_dir, 'ws_bound_', 'wb1'),
+sf::st_write(ws_boundary, file.path(temp_dir, 'ws_bound_', 'wb1'),
          driver = 'ESRI Shapefile', delete_dsn = TRUE)
-st_write(precip_gauge, file.path(temp_dir, 'pgauge_', 'wb1'),
+sf::st_write(precip_gauge, file.path(temp_dir, 'pgauge_', 'wb1'),
          driver = 'ESRI Shapefile', delete_dsn = TRUE)
 
 # options(error=recover)

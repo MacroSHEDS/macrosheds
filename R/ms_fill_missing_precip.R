@@ -43,10 +43,10 @@
 # 
 # fils <- list.files('../data_processing/data/lter/santa_barbara/derived/precipitation__ms002/', 
 #                    full.names = TRUE)
-# precip <- map_dfr(fils, read_feather) %>%
+# precip <- purrr::map_dfr(fils, feather::read_feather) %>%
 #     filter(! site_code == 'BuelltonFireStation233')
 # pgauge_path <- list.files('../data_processing/data/lter/santa_barbara/derived/precip_gauge_locations__ms004/', full.names = TRUE)
-# precip_gauge <- map_dfr(pgauge_path, sf::st_read) %>%
+# precip_gauge <- purrr::map_dfr(pgauge_path, sf::st_read) %>%
 #     filter(! site_code %in% c('BuelltonFS233', 'Nojoqui236'))
 
 
@@ -62,7 +62,7 @@ ms_fill_missing_precip <- function(precip,
     # Load in precipitation gauge locations
     if(! inherits(precip_gauge, 'sf')){
         rg_path <- list.files(precip_gauge, full.names = TRUE)
-        rg <- try(map_dfr(rg_path, sf::st_read))
+        rg <- try(purrr::map_dfr(rg_path, sf::st_read))
         
         if(inherits(rg, 'try-error')){
             stop('precip_gauge file failed to load, check file path is correct')
@@ -74,7 +74,7 @@ ms_fill_missing_precip <- function(precip,
     # Load in precipitation data 
     if(! inherits(precip, c('data.frame', 'tbl', 'tibble', 'tbl_df'))){
         precip_path <- list.files(precip, full.names = TRUE)
-        precip <- try(map_dfr(precip_path, read_feather))
+        precip <- try(purrr::map_dfr(precip_path, feather::read_feather))
         
         if(inherits(precip, 'try-error')){
             stop('precip file failed to load, check file path is correct')
@@ -347,7 +347,7 @@ ms_fill_missing_precip <- function(precip,
     if(is.null(out_path)){
         return(precip_final)
     } else{
-        write_feather(precip_final, outpath)
+        feather::write_feather(precip_final, outpath)
     }
 
 }

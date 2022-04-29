@@ -447,7 +447,7 @@ get_DecYear <- function(dates){
         }
     }
     
-    days_in_year <- map_dbl(year, get_days)
+    days_in_year <- purrr::map_dbl(year, get_days)
     
     DecYear <- (lubridate::yday(dates)/days_in_year)+lubridate::year(dates)
     
@@ -564,7 +564,7 @@ read_combine_feathers <- function(network,
     
     combined <- tibble()
     for(i in 1:length(prodpaths)){
-        part <- read_feather(prodpaths[i])
+        part <- feather::read_feather(prodpaths[i])
         combined <- bind_rows(combined, part)
     }
     
@@ -1152,7 +1152,7 @@ apply_detection_limit_t <- function(X,
             base::split(sn)
         
         Xerr <- lapply(X = site_lst,
-                       FUN = function(z) errors(z$val)) %>%
+                       FUN = function(z) errors::errors(z$val)) %>%
             unlist() %>%
             unname()
         
@@ -1197,7 +1197,7 @@ apply_detection_limit_t <- function(X,
             unlist() %>%
             unname()
         
-        errors(rounded) <- Xerr
+        errors::errors(rounded) <- Xerr
         
         return(rounded)
     }
@@ -1286,7 +1286,7 @@ write_ms_file <- function(d,
                              p = prodname_ms))
             }
         }
-        #make sure write_feather will omit attrib by def (with no artifacts)
+        #make sure feather::write_feather will omit attrib by def (with no artifacts)
         feather::write_feather(d, site_file)
     }
     
@@ -1719,7 +1719,7 @@ reconstruct_var_column <- function(d,
         stop('level must be either "munged" or "derived"')
     }
     
-    prods <- sm(read_csv(glue::glue('src/{n}/{d}/products.csv',
+    prods <- sm(readr::read_csv(glue::glue('src/{n}/{d}/products.csv',
                               n = network,
                               d = domain)))
     
@@ -1801,7 +1801,7 @@ choose_projection <- function(lat = NULL,
     
     #this is what the makers of https://projectionwizard.org/# use to choose
     #a suitable projection: https://rdrr.io/cran/rCAT/man/simProjWiz.html
-    # THIS WORKS (PROJECTS STUFF), BUT CAN'T BE READ AUTOMATICALLY BY st_read
+    # THIS WORKS (PROJECTS STUFF), BUT CAN'T BE READ AUTOMATICALLY BY sf::st_read
     if(abslat < 70){ #tropical or temperate
         PROJ4 <- glue::glue('+proj=cea +lon_0={lng} +lat_ts=0 +x_0=0 +y_0=0 ',
                             '+ellps=WGS84 +datum=WGS84 +units=m +no_defs',

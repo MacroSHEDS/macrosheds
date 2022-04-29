@@ -122,8 +122,8 @@ prefix <- hbef_flux %>%
     mutate(sampling = macrosheds::extract_var_prefix(var))
 
 #### synchronize_timestep ####
-d <- read_feather('data/ms_test/hbef/stream_chemistry__ms006/w6.feather')
-d <- read_feather('data/ms_test/hbef/precipitation__ms900/w1.feather')
+d <- feather::read_feather('data/ms_test/hbef/stream_chemistry__ms006/w6.feather')
+d <- feather::read_feather('data/ms_test/hbef/precipitation__ms900/w1.feather')
 d <- d %>%
     filter(!is.na(val)) %>%
     filter(ms_interp == 0)
@@ -171,16 +171,16 @@ EGRET::plotDiffContours(egret_results, year0=1990, year1=2017)
 
 #### ms_calc_watershed_precip ####
 pchem_path <- list.files('../data_processing/data/czo/boulder/munged/precip_chemistry__3639/', full.names = TRUE)
-pchem <- map_dfr(pchem_path, read_feather)
+pchem <- purrr::map_dfr(pchem_path, feather::read_feather)
 precip_path1 <- list.files('../data_processing/data/czo/boulder/munged/precipitation__2435/', full.names = TRUE)
 precip_path2 <- list.files('../data_processing/data/czo/boulder/munged/precipitation__2888/', full.names = TRUE)
 precip_path3 <- list.files('../data_processing/data/czo/boulder/munged/precipitation__2889/', full.names = TRUE)
 precip_path <- c(precip_path1, precip_path2, precip_path3)
-precip_ <- map_dfr(precip_path, read_feather)
+precip_ <- purrr::map_dfr(precip_path, feather::read_feather)
 wb_path <- list.files('../data_processing/data/czo/boulder/derived/ws_boundary__ms000/', full.names = TRUE)
-ws_boundary <- map_dfr(wb_path, sf::st_read)
+ws_boundary <- purrr::map_dfr(wb_path, sf::st_read)
 pgauge_path <- list.files('../data_processing/data/czo/boulder/derived/precip_gauge_locations__ms002/', full.names = TRUE)
-precip_gauge <- map_dfr(pgauge_path, sf::st_read)
+precip_gauge <- purrr::map_dfr(pgauge_path, sf::st_read)
 
 fake_tib <- tibble()
 
@@ -194,7 +194,7 @@ ms_calc_watershed_precip(precip = precip,
 
 all_files <- list.files('data/precip_test/precipitation__ms900/', full.names = TRUE)
 
-look <- map_dfr(all_files, read_feather)
+look <- purrr::map_dfr(all_files, feather::read_feather)
 look %>%
     ggplot(aes(datetime, val, col = var, shape = site_code)) +
     geom_point()
@@ -203,7 +203,7 @@ look %>%
 
 #### Investigate ####
 # Sites 
-dist_record <- read_csv('../macrosheds_support/data/disturbance_record.csv') %>%
+dist_record <- readr::read_csv('../macrosheds_support/data/disturbance_record.csv') %>%
     filter(site_code %in% c('w1', 'w2', 'w4', 'w5', 'w6', 'GSWS01', 'GSWS02',
                             'GSWS06', 'GSWS07', 'GSWS08', 'GSWS08', 'WS-1', 'WS-2',
                             'WS-3', 'WS-4', 'WS-5', 'WS-6', 'WS-7'))
@@ -244,7 +244,7 @@ annual %>%
     theme(legend.position = 'none')
 
 #### ms_identify_usgs_gauges ####
-sites <- read_csv('../macrosheds_support/data/SOTF_Data - All_Data.csv') %>%
+sites <- readr::read_csv('../macrosheds_support/data/SOTF_Data - All_Data.csv') %>%
     distinct(map_code, .keep_all = TRUE) %>%
     filter(!is.na(Longitude),
            !is.na(Latitude)) 
@@ -256,7 +256,7 @@ sites <- sites %>%
 
 look <- ms_identify_usgs_gauges(sites = sites)
 
-sites <- read_csv('../macrosheds_support/data/SOTF_Data - All_Data.csv') %>%
+sites <- readr::read_csv('../macrosheds_support/data/SOTF_Data - All_Data.csv') %>%
     distinct(map_code, .keep_all = TRUE) %>%
     filter(!is.na(Longitude),
            !is.na(Latitude)) 
@@ -268,7 +268,7 @@ look_2 <- ms_identify_usgs_gauges(sites = sites, lat = 'Latitude',
 
 
 
-sites <- read_csv('../macrosheds_support/data/SOTF_Data - All_Data.csv') %>%
+sites <- readr::read_csv('../macrosheds_support/data/SOTF_Data - All_Data.csv') %>%
     distinct(map_code, .keep_all = TRUE) %>%
     filter(!is.na(Longitude),
            !is.na(Latitude)) 
