@@ -1,0 +1,200 @@
+---
+title: "Precipitation Interpolation"
+author: Spencer Rhea, Weston Slaughter, Mike Vlah
+subtitle: Using the `macrosheds` package to interpolate rain gauge measurments to a 
+output:
+    html_document:
+      toc: true 
+      theme: united
+      highlight: zenburn
+      df_print: kable
+editor_options: 
+  chunk_output_type: console
+---
+
+
+
+This walkthought is intended for someone with a basic understanding of hydrology 
+who whats to calculate basin average precipitation from a few rain gaues in or near
+a watershed. We recomend looking at one of our other walkthroughs to get an understanding of how
+to use the MacroSheds dataset in conjuction with the package.
+
+
+# Install and explore the `macrosheds` package
+
+
+To use the `macrosheds` package, you must first **make sure you have the `macrosheds` package on your computer, built, and installed in R**. Currently, the package is only available via github. If you have not already, you can install the `macrosheds` package as follows: 
+
+```{r ms-install, eval = FALSE}
+# install.packages('devtools') #you may need to install devtools too
+
+devtools::install_github("https://github.com/MacroSHEDS/macrosheds")
+```
+
+Now, that we have the `macrosheds` package,  we load it into our library, along with other packages we will be using in this walkthrough. 
+
+```{r setup-library, message = FALSE}
+   
+library(macrosheds)
+library(ggplot2)
+library(tidyverse)
+
+```
+
+Precipitation is already reported as a basin average for all data in MacroSheds,
+but we will use a watershed in the MacroSheds dataset as an example.
+
+We will download data from the the Baltimore Ecosystem Study to use one of their 
+watersheds as an example.
+```{r}
+my_ms_dir <- "./example/data"
+
+ms_download_core_data(
+    macrosheds_root = my_ms_dir,
+    domains = 'baltimore',
+    quiet = FALSE
+)
+```
+
+We can use the `macrosheds` function `ms_load_spatial_product` to load in watershed 
+boundaries and precipitation gauge locations. The package `mapview` is a nice way
+to quickly plot spatial data.
+
+```{r}
+ws_boundaries <- macrosheds::ms_load_spatial_product(
+    macrosheds_root = my_ms_dir,
+    domains = 'baltimore',
+    spatial_product = 'ws_boundary'
+)
+
+precip_gauges <- macrosheds::ms_load_spatial_product(
+    macrosheds_root = my_ms_dir,
+    domains = 'baltimore',
+    spatial_product = 'precip_gauge_locations'
+)
+
+mapview::mapview(ws_boundaries) + precip_gauges
+```
+
+Let's use one watershed for this example, GFVN (Gwynns Falls at Villa Nova). We'll 
+also filter the three gauges inside that watershed: c('WXMCDO', 'WXGFND', 'WXGFGL')
+```{r}
+ws_boundary <- ws_boundaries %>%
+    filter(site_code == 'GFVN')
+
+relevant_precip_gauges <- precip_gauges %>%
+    filter(site_code %in% c('WXMCDO', 'WXGFND', 'WXGFGL'))
+```
+
+
+Now that we have the spatial data, we need input precipitation records for these three
+gauges. Becuase macrosheds only reports the basin average precipitaiton value, 
+we will make a dumby preipitiaon records for these three gauges. If you were using
+your own data, here you would load in the data for your gauges. Then you would need
+to convert your data into the MacroSheds format, see how data is formatted below.
+
+```{r}
+# Creat a vector of datetime from 200-01-01 to 2000-12-31
+datetime_sting = lubridate::as_datetime(seq.POSIXt(lubridate::as_datetime('2000-01-01'), lubridate::as_datetime('2000-12-31'), by = '1 day'))
+
+# Build the dummby dataset for each gauge 
+WXMCDO_records <- tibble(datetime = datetime_sting,
+                         site_code = 'WXMCDO',
+                         # Creat random values
+                         val = sample(0:10, 366, replace=T),
+                         var = 'IS_precipitation',
+                         ms_status = 0,
+                         ms_interp = 0,
+                         val_err = 0)
+
+WXGFND_records <- tibble(datetime = datetime_sting,
+                         site_code = 'WXGFND',
+                         # Creat random values
+                         val = sample(0:10, 366, replace=T),
+                         var = 'IS_precipitation',
+                         ms_status = 0,
+                         ms_interp = 0,
+                         val_err = 0)
+
+WXGFGL_records <- tibble(datetime = datetime_sting,
+                         site_code = 'WXGFGL',
+                         # Creat random values
+                         val = sample(0:10, 366, replace=T),
+                         var = 'IS_precipitation',
+                         ms_status = 0,
+                         ms_interp = 0,
+                         val_err = 0)
+
+all_precip_records <- rbind(WXMCDO_records, WXGFND_records, WXGFGL_records)
+```
+
+Now that we have the three components needed for basin precipitation interpolations, we are
+ready to use the function `ms_calc_watershed_precip` to calculate the precipitation for 
+our watershed of interest. 
+
+```{r}
+ms_calc_watershed_precip(precip = all_precip_records,
+                         ws_boundary = ws_boundary,
+                         precip_gauge = relevant_precip_gauges,
+                         parallel = TRUE,
+                         maxcores = Inf,
+                         elevation_agnostic = TRUE,
+                         verbose = TRUE,
+                         out_path = my_ms_dir)
+```
+
+The `ms_calc_watershed_precip` function saves the results in the folder(s): precipitation__ms900,
+precip_chemistry__ms901, and precip_flux_inst__ms902. If no chemistry is supplied to 
+the function, then only the precipitation__ms900 folder will be created with a file for each 
+watershed that was interpolated. 
+
+Let's read in the data and take a look!
+```{r}
+basin_precip <- feather::read_feather(paste0(my_ms_dir, '/precipitation__ms900/GFVN.feather'))
+
+ggplot(basin_precip, aes(datetime, val)) + 
+    geom_line() +
+    labs(x = 'Date',
+         y = 'Precipitation (mm)')
+```
+
+
+We can also compare the basin average precip to the three gauges used in the interpolation 
+```{r}
+WXMCDO_records_just_p <- WXMCDO_records %>%
+    select(datetime, WXMCDO = val)
+
+WXGFND_records_just_p <- WXGFND_records %>%
+    select(datetime, WXGFND = val)
+
+WXGFGL_records_just_p <- WXGFGL_records %>%
+    select(datetime, WXGFGL = val)
+
+basin_precip_comp <- basin_precip %>%
+    full_join(., WXMCDO_records_just_p, by = 'datetime') %>%
+    full_join(., WXGFND_records_just_p, by = 'datetime') %>%
+    full_join(., WXGFGL_records_just_p, by = 'datetime') 
+
+ggplot(basin_precip_comp, aes(val, WXMCDO)) +
+    geom_point() +
+    geom_abline() +
+    labs(x = 'Basin Average Precipitation (mm)',
+         y = 'WXMCDO Precipitation (mm)')
+```
+
+```{r}
+ggplot(basin_precip_comp, aes(val, WXGFND)) +
+    geom_point() +
+    geom_abline() +
+    labs(x = 'Basin Average Precipitation (mm)',
+         y = 'WXGFND Precipitation (mm)')
+```
+
+```{r}
+ggplot(basin_precip_comp, aes(val, WXGFGL)) +
+    geom_point() +
+    geom_abline() +
+    labs(x = 'Basin Average Precipitation (mm)',
+         y = 'WXGFGL Precipitation (mm)')
+```
+
