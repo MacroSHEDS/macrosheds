@@ -2,7 +2,7 @@ library(macrosheds)
 library(lubridate)
 library(testthat)
 
-test_no_data <- tibble(datetime = ymd('2000-01-01'),
+test_no_data <- tibble(datetime = lubridate::ymd('2000-01-01'),
                        site_code = 'w1',
                        var = 'GN_P',
                        val = 1,
@@ -10,7 +10,7 @@ test_no_data <- tibble(datetime = ymd('2000-01-01'),
                        ms_interp = 0,
                        val_err = 0.01)
 
-test_d <- tibble(datetime = seq.Date(ymd('2000-01-01'), ymd('2001-12-31'), 
+test_d <- tibble(datetime = seq.Date(lubridate::ymd('2000-01-01'), lubridate::ymd('2001-12-31'), 
                                      by = '1 day'),
                  site_code = 'w1',
                  var = 'GN_P',
@@ -19,7 +19,7 @@ test_d <- tibble(datetime = seq.Date(ymd('2000-01-01'), ymd('2001-12-31'),
                  ms_interp = 0,
                  val_err = 0.01)
 
-test_d_interp <- tibble(datetime = seq.Date(ymd('2000-01-01'), ymd('2001-12-31'), 
+test_d_interp <- tibble(datetime = seq.Date(lubridate::ymd('2000-01-01'), lubridate::ymd('2001-12-31'), 
                                             by = '1 week'),
                         site_code = 'w1',
                         var = 'GN_P',

@@ -31,7 +31,7 @@ Now, that we have the `macrosheds` package,  we load it into our library, along 
 ```{r setup-library, message = FALSE}
    
 library(macrosheds)
-library(dplyr)
+# library(dplyr)
 library(ggplot2)
 
 ```
@@ -196,11 +196,6 @@ my_q <- ms_load_product(
     sort_result = TRUE,
     warn = TRUE
 )
-
-# The current dataset has duplicates of observations, the new version of the dataset
-# does not have that issue but is not on figshare yet. Sorry about that! 
-my_q <- my_q %>%
-    distinct(datetime, site_code, .keep_all = T)
 ```
 
 
@@ -220,11 +215,6 @@ my_chem <- ms_load_product(
     sort_result = TRUE,
     warn = TRUE
 )
-
-# The current dataset has duplicates of observations, the new version of the dataset
-# does not have that issue but is not on figshare yet. Sorry about that! 
-my_chem <- my_chem %>%
-    distinct(datetime, site_code, var, .keep_all = T)
 
 head(my_chem)
 ```

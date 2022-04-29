@@ -16,7 +16,7 @@
 ms_download_variables <- function(fp = NULL){
     
     ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/34382849',
-                        col_types = cols())
+                        col_types = readr::cols())
 
     # allow local download if file path supplied
     if(!is.null(fp)) {
