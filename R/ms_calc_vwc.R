@@ -1,4 +1,3 @@
-
 #' Calculates chemical fluxes
 #'
 #' Calculates stream discharge and precipitation fluxes of chemicals from Q (discharge
@@ -27,13 +26,13 @@
 #' error. The first is that we don't omit discharge values from the denominator that lack a corresponding
 #' flux value (this is expensive, and not doing it should rarely skew the results). The second is that a "month"
 #' is considered 30 days here, which only affects coverage filtering.
-#' @seealso [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
-#' @export
+#' @seealso [ms_calc_flux], [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
 #' @examples
 #' #' ### Load some MacroSheds data:
 #' ms_root = 'data/macrosheds'
 #' ms_download_core_data(macrosheds_root = ms_root,
 #'                       domains = 'hbef')
+#'
 #' chemistry <- ms_load_product(macrosheds_root = ms_root,
 #'                              prodname = 'stream_chemistry',
 #'                              site_codes = c('w1', 'w3', 'w6'),
@@ -43,7 +42,7 @@
 #'                      prodname = 'discharge',
 #'                      site_codes = c('w1', 'w3', 'w6'))
 #'
-#' flux <- ms_calc_flux(chemistry = chemistry,
+#' flux <- ms_calc_vwc(chemistry = chemistry,
 #'                      q = q,
 #'                      q_type = 'discharge')
 
