@@ -14,22 +14,10 @@
 #' macrosheds_sites <- ms_download_site_data()
 
 
-ms_download_site_data <- function(fp = NULL){
+ms_download_site_data <- function(){
     
     ms_sites <- readr::read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/34382846',
-                         col_types = readr::cols())
-
-    # allow local download if file path supplied
-    if(!is.null(fp)) {
-      tryCatch(
-        expr = {
-          write.csv(ms_sites, fp)
-        },
-        error = function(e) {
-          print(paste("file failed to write to:", fp))
-        }
-      )
-    }
+                                col_types = readr::cols())
 
     return(ms_sites)
 }

@@ -30,7 +30,8 @@ variables will be converted to the same unit.}
 
 \item{convert_molecules}{character vector. Molecules that will be
 converted according to the atomic mass of their main constituent. For example,
-this can be used to convert NO3-N to NO3, or NO3 to NO3-N. See details.}
+this can be used to convert NO3-N to NO3, or NO3 to NO3-N. See details.
+\code{\link[=ms_download_variables]{ms_download_variables()}}. If not supplied, ms_vars will be retrieved automatically.}
 }
 \value{
 returns a \code{tibble} in MacroSheds format, containing concentration data converted to new units.

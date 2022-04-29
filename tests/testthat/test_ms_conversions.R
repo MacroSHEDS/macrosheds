@@ -1,5 +1,4 @@
 library(macrosheds)
-library(lubridate)
 library(testthat)
 
 datetime_string <- c(lubridate::ymd('2000-01-01', '2000-01-02', '2000-01-03',
