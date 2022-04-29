@@ -199,21 +199,21 @@ convert_unit <- function(x, input_unit, output_unit){
                     convert_factor = c(0.000000001, 0.000001, 0.001, 0.01, 0.1, 100,
                                        1000, 1000000))
     
-    old_fraction <- as.vector(str_split_fixed(input_unit, "/", n = Inf))
-    old_top <- as.vector(str_split_fixed(old_fraction[1], "", n = Inf))
+    old_fraction <- as.vector(stringr::str_split_fixed(input_unit, "/", n = Inf))
+    old_top <- as.vector(stringr::str_split_fixed(old_fraction[1], "", n = Inf))
     
     if(length(old_fraction) == 2) {
-        old_bottom <- as.vector(str_split_fixed(old_fraction[2], "", n = Inf))
+        old_bottom <- as.vector(stringr::str_split_fixed(old_fraction[2], "", n = Inf))
     }
     
-    new_fraction <- as.vector(str_split_fixed(output_unit, "/", n = Inf))
-    new_top <- as.vector(str_split_fixed(new_fraction[1], "", n = Inf))
+    new_fraction <- as.vector(stringr::str_split_fixed(output_unit, "/", n = Inf))
+    new_top <- as.vector(stringr::str_split_fixed(new_fraction[1], "", n = Inf))
     
     if(length(new_fraction == 2)) {
-        new_bottom <- as.vector(str_split_fixed(new_fraction[2], "", n = Inf))
+        new_bottom <- as.vector(stringr::str_split_fixed(new_fraction[2], "", n = Inf))
     }
     
-    old_top_unit <- tolower(str_split_fixed(old_top, "", 2)[1])
+    old_top_unit <- tolower(stringr::str_split_fixed(old_top, "", 2)[1])
     
     if(old_top_unit %in% c('g', 'e', 'q', 'l') || old_fraction[1] == 'mol') {
         old_top_conver <- 1
@@ -221,7 +221,7 @@ convert_unit <- function(x, input_unit, output_unit){
         old_top_conver <- as.numeric(filter(units, prefix == old_top_unit)[,2])
     }
     
-    old_bottom_unit <- tolower(str_split_fixed(old_bottom, "", 2)[1])
+    old_bottom_unit <- tolower(stringr::str_split_fixed(old_bottom, "", 2)[1])
     
     if(old_bottom_unit %in% c('g', 'e', 'q', 'l') || old_fraction[2] == 'mol') {
         old_bottom_conver <- 1
@@ -229,7 +229,7 @@ convert_unit <- function(x, input_unit, output_unit){
         old_bottom_conver <- as.numeric(filter(units, prefix == old_bottom_unit)[,2])
     }
     
-    new_top_unit <- tolower(str_split_fixed(new_top, "", 2)[1])
+    new_top_unit <- tolower(stringr::str_split_fixed(new_top, "", 2)[1])
     
     if(new_top_unit %in% c('g', 'e', 'q', 'l') || new_fraction[1] == 'mol') {
         new_top_conver <- 1
@@ -237,7 +237,7 @@ convert_unit <- function(x, input_unit, output_unit){
         new_top_conver <- as.numeric(filter(units, prefix == new_top_unit)[,2])
     }
     
-    new_bottom_unit <- tolower(str_split_fixed(new_bottom, "", 2)[1])
+    new_bottom_unit <- tolower(stringr::str_split_fixed(new_bottom, "", 2)[1])
     
     if(new_bottom_unit %in% c('g', 'e', 'q', 'l') || new_fraction[2] == 'mol') {
         new_bottom_conver <- 1
@@ -736,9 +736,9 @@ ms_parallelize <- function(maxcores = Inf){
     # Sys.info()[1] %in% c('Linux', 'Darwin')
     
     # if(ms_instance$which_machine == 'DCC'){
-        doFuture::registerDoFuture()
+        # doFuture::registerDoFuture()
         # future::plan(cluster, workers = clst) #might need this instead of Slurm one day
-        future::plan(future.batchtools::batchtools_slurm)
+        # future::plan(future.batchtools::batchtools_slurm)
     # }
     # } else if(.Platform$OS.type == 'windows'){
     #     #issues (found while testing on linux):
@@ -752,8 +752,9 @@ ms_parallelize <- function(maxcores = Inf){
     #     #clst <- parallel::makeCluster(ncores, type = 'PSOCK')
     # } else {
     #     # future::plan(multicore) #can't be done from Rstudio
-        clst <- parallel::makeCluster(ncores, type = 'FORK')
-        doParallel::registerDoParallel(clst)
+        # clst <- parallel::makeCluster(ncores, type = 'FORK')
+    clst <- parallel::makeCluster(ncores)
+    doParallel::registerDoParallel(clst)
     # }
     
     return(clst)
@@ -1024,7 +1025,7 @@ ms_unparallelize <- function(cluster_object){
     #         error=function(e) print('nope'))
     
     if(is.null(cluster_object)){
-        future::plan(future::sequential)
+        # future::plan(future::sequential)
         return()
     }
     
@@ -2464,7 +2465,8 @@ numeric_any_v <- function(...){ #attack of the ellipses
 
 get_response_1char <- function(msg,
                                possible_chars,
-                               subsequent_prompt = FALSE){
+                               subsequent_prompt = FALSE,
+                               response_from_file = NULL){
 
     #msg: character. a message that will be used to prompt the user
     #possible_chars: character vector of acceptable single-character responses
@@ -2480,7 +2482,14 @@ get_response_1char <- function(msg,
         cat(msg)
     }
 
-    ch <- as.character(readLines(con = stdin(), 1))
+    if(! is.null(response_from_file)){
+        ch <- as.character(readLines(con = response_from_file, 1))
+        rsps <- readLines(con = response_from_file)
+        rsps <- rsps[2:length(rsps)]
+        writeLines(rsps, con = response_from_file)
+    } else {
+        ch <- as.character(readLines(con = stdin(), 1))
+    }
 
     if(length(ch) == 1 && ch %in% possible_chars){
         return(ch)
@@ -2494,7 +2503,8 @@ get_response_1char <- function(msg,
 get_response_mchar <- function(msg,
                                possible_resps,
                                allow_alphanumeric_response = TRUE,
-                               subsequent_prompt = FALSE){
+                               subsequent_prompt = FALSE,
+                               response_from_file = NULL){
     
     #msg: character. a message that will be used to prompt the user
     #possible_resps: character vector. If length 1, each character in the response
@@ -2527,7 +2537,14 @@ get_response_mchar <- function(msg,
         cat(msg)
     }
     
-    chs <- as.character(readLines(con = stdin(), 1))
+    if(! is.null(response_from_file)){
+        chs <- as.character(readLines(con = response_from_file, 1))
+        rsps <- readLines(con = response_from_file)
+        rsps <- rsps[2:length(rsps)]
+        writeLines(rsps, con = response_from_file)
+    } else {
+        chs <- as.character(readLines(con = stdin(), 1))
+    }
     
     if(! allow_alphanumeric_response &&
        split_by_character &&
@@ -2582,7 +2599,8 @@ get_response_mchar <- function(msg,
 get_response_int <- function(msg,
                              min_val,
                              max_val,
-                             subsequent_prompt = FALSE){
+                             subsequent_prompt = FALSE,
+                             response_from_file = NULL){
     
     #msg: character. a message that will be used to prompt the user
     #min_val: int. minimum allowable value, inclusive
@@ -2598,7 +2616,14 @@ get_response_int <- function(msg,
         cat(msg)
     }
     
-    nm <- as.numeric(as.character(readLines(con = stdin(), 1)))
+    if(! is.null(response_from_file)){
+        nm <- as.numeric(as.character(readLines(con = response_from_file, 1)))
+        rsps <- readLines(con = response_from_file)
+        rsps <- rsps[2:length(rsps)]
+        writeLines(rsps, con = response_from_file)
+    } else {
+        nm <- as.numeric(as.character(readLines(con = stdin(), 1)))
+    }
     
     if(nm %% 1 == 0 && nm >= min_val && nm <= max_val){
         return(nm)
@@ -2610,13 +2635,21 @@ get_response_int <- function(msg,
     }
 }
 
-get_response_enter <- function(msg){
+get_response_enter <- function(msg,
+                               response_from_file = NULL){
     
-    #only returns if ENTER is pressed
+    #only returns if ENTER is pressed (or if anything is passed by response_from_file
     
     cat(msg)
     
-    ch <- as.character(readLines(con = stdin(), 1))
+    if(! is.null(response_from_file)){
+        ch <- as.character(readLines(con = response_from_file, 1))
+        rsps <- readLines(con = response_from_file)
+        rsps <- rsps[2:length(rsps)]
+        writeLines(rsps, con = response_from_file)
+    } else {
+        ch <- as.character(readLines(con = stdin(), 1))
+    }
     
     return(invisible(NULL))
 }

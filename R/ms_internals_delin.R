@@ -20,9 +20,11 @@ move_shapefiles <- function(shp_files,
         stop('new_name_vec must have the same length as shp_files')
     }
     
-    dir.create(to_dir,
-               showWarnings = FALSE,
-               recursive = TRUE)
+    if(! file.exists(to_dir)){
+        tryCatch({
+            dir.create(to_dir, recursive = TRUE)
+        }, warning = function(w) stop(w))
+    }
     
     for(i in 1:length(shp_files)){
         
@@ -76,8 +78,6 @@ move_shapefiles <- function(shp_files,
                    unlink)
         })
     }
-    
-    #return()
 }
 
 #for determining whether the DEM extent wasn't big enough to allow full
@@ -307,7 +307,8 @@ delineate_watershed_apriori_recurse <- function(lat,
                                                 confirm = TRUE,
                                                 scratch_dir = tempdir(),
                                                 write_dir,
-                                                verbose = FALSE){
+                                                verbose = FALSE,
+                                                responses_from_file){
     
     #This function calls delineate_watershed_apriori recursively, taking
     #   user input after each call, until the user selects a delineation
@@ -337,14 +338,14 @@ delineate_watershed_apriori_recurse <- function(lat,
                                    pattern = '.shp')
     
     if(! confirm){
+    
+        message(glue::glue('Delineation successful and confirm == FALSE. Writing shapefile to ',
+                           write_dir))
         
         move_shapefiles(shp_files = files_to_inspect[1],
                         from_dir = inspection_dir,
                         to_dir = write_dir,
                         new_name_vec = site_code)
-        
-        message(glue::glue('Delineation successful and confirm == FALSE. Shapefile written to ',
-                     write_dir))
         
         return(files_to_inspect[1])
     }
@@ -374,7 +375,7 @@ delineate_watershed_apriori_recurse <- function(lat,
                              'Select DEM resolution',
                              'Set flat_increment',
                              # 'Next (skip this one for now, if you\'re delineating in a loop)',
-                             'Abort delineation. Silently returns NULL'),
+                             'Abort delineation. Silently returns NULL. Ignores other selections.'),
                            sep = ': ',
                            collapse = '\n')
     
@@ -387,7 +388,7 @@ delineate_watershed_apriori_recurse <- function(lat,
     #                     pf = temp_point) %>%
     #     paste(collapse = '\n\n')
     
-    msg <- glue::glue('\nVisually inspect the watershed boundary candidate shapefiles.\n',
+    msg <- glue::glue('\n\nVisually inspect the watershed boundary candidates.\n',
                 # 'by pasting the mapview lines below into a separate instance of R.\n\n{hc}\n\n',
                 'Enter the number corresponding to the ',
                 'one that looks best, or select one or more tuning ',
@@ -402,11 +403,13 @@ delineate_watershed_apriori_recurse <- function(lat,
                                             quiet = TRUE),
                                 layer.name = paste('Candidate watershed', i)) +
             mapview::mapview(temp_point,
+                             legend = FALSE,
                              layer.name = 'Input lat/long')
         print(mpv)
         if(i != length(files_to_inspect)){
-            get_response_enter(paste('Press [enter/return] to see candidate',
-                                     i + 1))
+            get_response_enter(paste('\nPress [enter/return] to see candidate',
+                                     i + 1),
+                               response_from_file = responses_from_file)
         }
     }
     
@@ -414,7 +417,8 @@ delineate_watershed_apriori_recurse <- function(lat,
         msg = msg,
         possible_resps = paste(c(1:nshapes, 'M', 'D', 'S', 'B', 'U', 'R', 'I', 'n', 'a'),
                                collapse = ''),
-        allow_alphanumeric_response = FALSE)
+        allow_alphanumeric_response = FALSE,
+        response_from_file = responses_from_file)
     
     # if('n' %in% resp){
     #     unlink(write_dir,
@@ -443,7 +447,8 @@ delineate_watershed_apriori_recurse <- function(lat,
                          'method tries to snap to the nearest cell identified as part of a flowline.\n\n',
                          '1. Jenson\n2. Standard\n\n',
                          'Enter choice here > '),
-            possible_chars = paste(1:2))
+            possible_chars = paste(1:2),
+            response_from_file = responses_from_file)
         snap_method <- ifelse(snap_method == '1', 'jenson', 'standard')
     }
     
@@ -451,7 +456,8 @@ delineate_watershed_apriori_recurse <- function(lat,
         snap_dist <- get_response_int(
             msg = paste0('Enter a snap distance between 0 and 200 (meters) > '),
             min_val = 0,
-            max_val = 200)
+            max_val = 200,
+            response_from_file = responses_from_file)
     }
     
     if('S' %in% resp){
@@ -471,7 +477,8 @@ delineate_watershed_apriori_recurse <- function(lat,
         buffer_radius <- get_response_int(
             msg = paste0('Enter a buffer radius between 1000 and 100000 (meters) > '),
             min_val = 0,
-            max_val = 100000)
+            max_val = 100000,
+            response_from_file = responses_from_file)
     }
     
     if('R' %in% resp){
@@ -480,7 +487,8 @@ delineate_watershed_apriori_recurse <- function(lat,
                          ' to pass to elevatr::get_elev_raster. For tiny ',
                          'watersheds, use 12-13. For big ones, use 8-9.\n\n',
                          'Enter choice here > '),
-            possible_resps = paste(1:14))
+            possible_resps = paste(1:14),
+            response_from_file = responses_from_file)
         dem_resolution <- as.numeric(dem_resolution)
     }
     
@@ -500,7 +508,8 @@ delineate_watershed_apriori_recurse <- function(lat,
         resp2 <- get_response_1char(
             msg = glue::glue('Pick the size of the elevation increment to pass to ',
                        bm, '.\n\n', new_options, '\n\nEnter choice here > '),
-            possible_chars = c('S', 'M', 'L'))
+            possible_chars = c('S', 'M', 'L'),
+            response_from_file = responses_from_file)
         
         flat_increment <- switch(resp2,
                                  S = 0.001,
@@ -530,7 +539,8 @@ delineate_watershed_apriori_recurse <- function(lat,
             buffer_radius = buffer_radius_,
             scratch_dir = scratch_dir,
             write_dir = write_dir,
-            verbose = verbose)
+            verbose = verbose,
+            responses_from_file = responses_from_file)
         
         return(selection)
     }
@@ -543,7 +553,7 @@ delineate_watershed_apriori_recurse <- function(lat,
                     new_name_vec = site_code)
     
     message(glue::glue('Selection {s}:\n\t{sel}\nwas written to:\n\t{sdr}/\nas {nm}',
-                 '.shp, {nm}.shx, {nm}.dbf, {nm}.prj',
+                 '.shp, {nm}.shx, {nm}.dbf, and {nm}.prj',
                  s = resp,
                  sel = selection,
                  sdr = write_dir,

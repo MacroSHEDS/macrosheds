@@ -15,10 +15,11 @@ ms_delineate_watershed(
   spec_snap_method = NULL,
   spec_dem_resolution = NULL,
   spec_flat_increment = NULL,
-  spec_breach_method = NULL,
-  spec_burn_streams = NULL,
+  spec_breach_method = "basic",
+  spec_burn_streams = FALSE,
   verbose = TRUE,
-  confirm = TRUE
+  confirm = TRUE,
+  responses_from_file = NULL
 )
 }
 \arguments{
@@ -43,10 +44,16 @@ be written. e.g. \code{write_name = 'foo'} would produce foo.shp, foo.shx, foo.p
 If TRUE, you will be asked to visually confirm the delineation before it is
 written to \code{write_dir}.}
 
+\item{responses_from_file}{character. Path to a file containing responses to
+\code{ms_delineate_watershed} internal prompts--one per line. The file must end with
+a newline, and it will be emptied, line-by-line from the top, during operation.
+This is used for testing and is unlikely to be useful to end-users, but who knows?}
+
 \item{spec_buffer_radius_m:}{optional integer. the radius, in meters, of the buffer circle around the site location.
 A DEM will be acquired that covers at least the full area of the buffer, so
-basically a square of DEM in which that circle is inscribed. Set initially to 1000 meters
-if NULL.}
+basically a square of DEM in which that circle is inscribed. Must be between 1000
+and 100,000 meters, though your watershed may be larger (in which case the buffer will be
+incremented automatically. This is set initially to 1000 meters if NULL.}
 
 \item{spec_snap_distance_m:}{optional integer [0,200]. the radius, in meters, of a circle around the recorded site location.
 A pour point will be identified within this circle. method depends on \code{snap_method}.
@@ -159,12 +166,43 @@ and the successful set of specifications are returned.
 }
 }
 \examples{
-area_and_specs <- ms_delineate_watershed(
+#here's the agnostic approach, if you're delineating this site for the first time.
+out <- ms_delineate_watershed(
     lat = 44.21013,
     long = -122.2571,
     crs = 4326,
-    write_dir = '/some/path',
+    write_dir = '/your/path',
     write_name = 'example_site'
+)
+
+#or maybe you know the watershed is on the order of 10,000 km^2 and that.
+#there are large highway bridges over some reaches.
+out <- ms_delineate_watershed(
+    lat = 44.21013,
+    long = -122.2571,
+    crs = 4326,
+    write_dir = '/your/path',
+    write_name = 'example_site',
+    spec_buffer_radius_m = 10000,
+    spec_burn_streams = TRUE,
+)
+
+#or maybe you've delineated this site before and you know which specs were successful.
+out <- ms_delineate_watershed(
+    lat = 44.21013,
+    long = -122.2571,
+    crs = 4326,
+    write_dir = '/your/path',
+    write_name = 'example_site',
+    spec_buffer_radius_m = 1000,
+    spec_snap_distance_m = 150,
+    spec_snap_method = 'standard',
+    spec_dem_resolution = 10,
+    spec_flat_increment = 0.01,
+    spec_breach_method = 'basic',
+    spec_burn_streams = FALSE,
+    verbose = FALSE,
+    confirm = FALSE
 )
 }
 \seealso{

@@ -23,8 +23,9 @@
 #' be written. e.g. \code{write_name = 'foo'} would produce foo.shp, foo.shx, foo.prj, foo.dbf.
 #' @param spec_buffer_radius_m: optional integer. the radius, in meters, of the buffer circle around the site location.
 #' A DEM will be acquired that covers at least the full area of the buffer, so
-#' basically a square of DEM in which that circle is inscribed. Set initially to 1000 meters
-#' if NULL.
+#' basically a square of DEM in which that circle is inscribed. Must be between 1000
+#' and 100,000 meters, though your watershed may be larger (in which case the buffer will be
+#' incremented automatically. This is set initially to 1000 meters if NULL.
 #' @param spec_snap_distance_m: optional integer \[0,200\]. the radius, in meters, of a circle around the recorded site location.
 #' A pour point will be identified within this circle. method depends on \code{snap_method}.
 #' Several reasonable values chosen if NULL.
@@ -59,6 +60,10 @@
 #' (the ones that start with "spec_") are supplied.
 #' If TRUE, you will be asked to visually confirm the delineation before it is
 #' written to \code{write_dir}.
+#' @param responses_from_file character. Path to a file containing responses to
+#' \code{ms_delineate_watershed} internal prompts--one per line. The file must end with
+#' a newline, and it will be emptied, line-by-line from the top, during operation.
+#' This is used for testing and is unlikely to be useful to end-users, but who knows?
 #' @return 
 #' Writes a shapefile to \code{write_dir}. Also returns a list containing the following components:
 #' + watershed_area_ha: the area of the delineated watershed in hectares
@@ -118,13 +123,44 @@
 #'    and the successful set of specifications are returned.
 #' @seealso [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
 #' @examples
-#' area_and_specs <- ms_delineate_watershed(
+#' #here's the agnostic approach, if you're delineating this site for the first time.
+#' out <- ms_delineate_watershed(
 #'     lat = 44.21013,
 #'     long = -122.2571,
 #'     crs = 4326,
-#'     write_dir = '/some/path',
+#'     write_dir = '/your/path',
 #'     write_name = 'example_site'
 #' )
+#' 
+#' #or maybe you know the watershed is on the order of 10,000 km^2 and that.
+#' #there are large highway bridges over some reaches.
+#' out <- ms_delineate_watershed(
+#'     lat = 44.21013,
+#'     long = -122.2571,
+#'     crs = 4326,
+#'     write_dir = '/your/path',
+#'     write_name = 'example_site',
+#'     spec_buffer_radius_m = 10000,
+#'     spec_burn_streams = TRUE,
+#')
+#'
+#' #or maybe you've delineated this site before and you know which specs were successful.
+#' out <- ms_delineate_watershed(
+#'     lat = 44.21013,
+#'     long = -122.2571,
+#'     crs = 4326,
+#'     write_dir = '/your/path',
+#'     write_name = 'example_site',
+#'     spec_buffer_radius_m = 1000,
+#'     spec_snap_distance_m = 150,
+#'     spec_snap_method = 'standard',
+#'     spec_dem_resolution = 10,
+#'     spec_flat_increment = 0.01,
+#'     spec_breach_method = 'basic',
+#'     spec_burn_streams = FALSE,
+#'     verbose = FALSE,
+#'     confirm = FALSE
+#')
 #' @export
 
 ms_delineate_watershed <- function(lat,
@@ -137,14 +173,25 @@ ms_delineate_watershed <- function(lat,
                                    spec_snap_method = NULL,
                                    spec_dem_resolution = NULL,
                                    spec_flat_increment = NULL,
-                                   spec_breach_method = NULL,
-                                   spec_burn_streams = NULL,
+                                   spec_breach_method = 'basic',
+                                   spec_burn_streams = FALSE,
                                    verbose = TRUE,
-                                   confirm = TRUE){
+                                   confirm = TRUE,
+                                   responses_from_file = NULL){
+    
+    if(missing(write_dir) || is.null(write_dir)){
+        stop('write_dir must be provided')
+    }
+    if(missing(write_name) || is.null(write_name)){
+        stop('write_name must be provided')
+    }
+    if(missing(crs) || is.null(crs)){
+        stop('crs must be provided')
+    }
     
     if(spec_breach_method == 'lc'){
         spec_breach_method <- 'basic'
-        warning('spec_breach_method = "lc" is currently unavailable. Setting spec_breach_method = "basic"')
+        message('spec_breach_method = "lc" is currently unavailable. Setting spec_breach_method = "basic"')
     }
     
     if(verbose){
@@ -161,7 +208,7 @@ ms_delineate_watershed <- function(lat,
         ! is.null(spec_burn_streams)
     
     if(! confirm && ! all_specs_provided){
-        warning('confirm is FALSE but some specs parameters not provided. Setting to TRUE. Note that flat_increment need not be provided.')
+        message('confirm is FALSE but required specs parameters not provided. Setting to TRUE. Note that flat_increment need not be provided.')
         confirm <- TRUE
     }
     
@@ -181,7 +228,8 @@ ms_delineate_watershed <- function(lat,
         # confirm = ! (all_specs_provided && ! confirm),
         scratch_dir = tmp,
         write_dir = write_dir,
-        verbose = verbose))
+        verbose = verbose,
+        responses_from_file = responses_from_file))
     
     if(inherits(selection, 'abort_delin')){
         return(invisible(NULL))
