@@ -5,8 +5,8 @@
 #' @keywords internal 
 
 # Function aliases 
-sw = suppressWarnings
-sm = suppressWarnings
+sw <- suppressWarnings
+sm <- suppressWarnings
 `%dopar%` <- foreach::`%dopar%`
 `%do%` <- foreach::`%do%`
 # end function aliases 
@@ -45,14 +45,14 @@ parse_molecular_formulae <- function(formulae){
     # formulae = 'BCH10He10PLi2'
     # formulae='Mn'
     
-    conc_vars = str_match(formulae, '^(?:OM|TM|DO|TD|UT|UTK|TK|TI|TO|DI)?([A-Za-z0-9]+)_?')[,2]
-    two_let_symb_num = str_extract_all(conc_vars, '([A-Z][a-z][0-9]+)')
-    conc_vars = str_remove_all(conc_vars, '([A-Z][a-z][0-9]+)')
-    one_let_symb_num = str_extract_all(conc_vars, '([A-Z][0-9]+)')
-    conc_vars = str_remove_all(conc_vars, '([A-Z][0-9]+)')
-    two_let_symb = str_extract_all(conc_vars, '([A-Z][a-z])')
-    conc_vars = str_remove_all(conc_vars, '([A-Z][a-z])')
-    one_let_symb = str_extract_all(conc_vars, '([A-Z])')
+    conc_vars = stringr::str_match(formulae, '^(?:OM|TM|DO|TD|UT|UTK|TK|TI|TO|DI)?([A-Za-z0-9]+)_?')[,2]
+    two_let_symb_num = stringr::str_extract_all(conc_vars, '([A-Z][a-z][0-9]+)')
+    conc_vars = stringr::str_remove_all(conc_vars, '([A-Z][a-z][0-9]+)')
+    one_let_symb_num = stringr::str_extract_all(conc_vars, '([A-Z][0-9]+)')
+    conc_vars = stringr::str_remove_all(conc_vars, '([A-Z][0-9]+)')
+    two_let_symb = stringr::str_extract_all(conc_vars, '([A-Z][a-z])')
+    conc_vars = stringr::str_remove_all(conc_vars, '([A-Z][a-z])')
+    one_let_symb = stringr::str_extract_all(conc_vars, '([A-Z])')
     
     constituents = mapply(c, SIMPLIFY=FALSE,
                           two_let_symb_num, one_let_symb_num, two_let_symb, one_let_symb)
@@ -64,7 +64,7 @@ combine_atomic_masses <- function(molecular_constituents){
     
     #`molecular_constituents` is a vector
     
-    xmat = str_match(molecular_constituents,
+    xmat = stringr::str_match(molecular_constituents,
                      '([A-Z][a-z]?)([0-9]+)?')[, -1, drop=FALSE]
     elems = xmat[,1]
     mults = as.numeric(xmat[,2])
@@ -811,7 +811,7 @@ shortcut_idw <- function(encompassing_dem,
     #elev_agnostic: logical that determines whether elevation should be
     #   included as a predictor of the variable being interpolated
     
-    # loginfo(glue('shortcut_idw: working on {ss}', ss=stream_site_code),
+    # loginfo(glue::glue('shortcut_idw: working on {ss}', ss=stream_site_code),
     #     logger = logger_module)
     
     if(output_varname != 'SPECIAL CASE PRECIP' && save_precip_quickref){
@@ -1660,7 +1660,7 @@ write_precip_quickref <- function(precip_idw_list,
                                 tz = 'UTC'),
                        sep = '_')
     
-    chunkfile <- str_replace_all(chunkfile, ':', '-')
+    chunkfile <- stringr::str_replace_all(chunkfile, ':', '-')
     
     saveRDS(object = precip_idw_list,
             file = glue::glue('{qd}/{cf}', #omitting extension for easier parsing
@@ -1680,12 +1680,12 @@ write_precip_quickref <- function(precip_idw_list,
     #                             side = 'left',
     #                             pad = '0')
     #
-    # quickref_dir <- glue('data/{n}/{d}/precip_idw_quickref/{s}',
+    # quickref_dir <- glue::glue('data/{n}/{d}/precip_idw_quickref/{s}',
     #                      n = network,
     #                      d = domain,
     #                      s = site_code)
     #
-    # chunkfile <- glue('chunk{ch}.rds',
+    # chunkfile <- glue::glue('chunk{ch}.rds',
     #                   ch = chunkID)
     #
     # if(! file.exists(chunkfile)){ #in case another thread has already written it
@@ -1793,10 +1793,10 @@ choose_projection <- function(lat = NULL,
     abslat <- abs(lat)
     
     # if(abslat < 23){ #tropical
-    #     PROJ4 = glue('+proj=laea +lon_0=', long)
+    #     PROJ4 = glue::glue('+proj=laea +lon_0=', long)
     #              # ' +datum=WGS84 +units=m +no_defs')
     # } else { #temperate or polar
-    #     PROJ4 = glue('+proj=laea +lat_0=', lat, ' +lon_0=', long)
+    #     PROJ4 = glue::glue('+proj=laea +lat_0=', lat, ' +lon_0=', long)
     # }
     
     #this is what the makers of https://projectionwizard.org/# use to choose
@@ -1816,10 +1816,10 @@ choose_projection <- function(lat = NULL,
     ## UTM/UPS would be nice for watersheds that don't fall on more than two zones
     ## (incomplete)
     # if(lat > 84 || lat < -80){ #polar; use Universal Polar Stereographic (UPS)
-    #     PROJ4 <- glue('+proj=ups +lon_0=', long)
+    #     PROJ4 <- glue::glue('+proj=ups +lon_0=', long)
     #              # ' +datum=WGS84 +units=m +no_defs')
     # } else { #not polar; use UTM
-    #     PROJ4 <- glue('+proj=utm +lat_0=', lat, ' +lon_0=', long)
+    #     PROJ4 <- glue::glue('+proj=utm +lat_0=', lat, ' +lon_0=', long)
     # }
     
     ## EXTRA CODE FOR CHOOSING PROJECTION BY LATITUDE ONLY
@@ -2156,7 +2156,7 @@ resolve_datetime <- function(d,
     
     dt_tb <- tibble(basecol = rep(NA, nrow(d)))
     for(i in 1:length(datetime_colnames)){
-        dt_comps <- str_match_all(string = datetime_formats[i],
+        dt_comps <- stringr::str_match_all(string = datetime_formats[i],
                                   pattern = '%([a-zA-Z])')[[1]][,2]
         dt_regex <- dt_format_to_regex(datetime_formats[i],
                                        optional = optional)
@@ -2273,11 +2273,11 @@ identify_sampling <- function(df,
     is_sensor <- ifelse(is_sensor, 'S', 'N')
     
     #set up directory system to store sample regimen metadata
-    sampling_dir <- glue('data/{n}/{d}',
+    sampling_dir <- glue::glue('data/{n}/{d}',
                          n = network,
                          d = domain)
     
-    sampling_file <- glue('data/{n}/{d}/sampling_type.json',
+    sampling_file <- glue::glue('data/{n}/{d}/sampling_type.json',
                           n = network,
                           d = domain)
     
@@ -2305,7 +2305,7 @@ identify_sampling <- function(df,
     
     for(p in 1:length(data_cols)){
         
-        # var_name <- str_split_fixed(data_cols[p], '__', 2)[1]
+        # var_name <- stringr::str_split_fixed(data_cols[p], '__', 2)[1]
         
         # df_var <- df %>%
         #     select(datetime, !!var_name := .data[[data_cols[p]]], site_code)
@@ -2378,14 +2378,14 @@ identify_sampling <- function(df,
                     mutate(type = sampling_type)
             }
             
-            var_name_base <- str_split(string = data_cols[p],
+            var_name_base <- stringr::str_split(string = data_cols[p],
                                        pattern = '__\\|')[[1]][1]
             
             g_a <- g_a %>%
                 mutate(
                     type = paste0(type,
                                   !!is_sensor[var_name_base]),
-                    var = as.character(glue('{ty}_{vb}',
+                    var = as.character(glue::glue('{ty}_{vb}',
                                             ty = type,
                                             vb = var_name_base)))
             
@@ -2591,7 +2591,7 @@ get_response_int <- function(msg,
     #   get_response_int during recursion.
     
     if(subsequent_prompt){
-        cat(glue('Please choose an integer in the range [{minv}, {maxv}].',
+        cat(glue::glue('Please choose an integer in the range [{minv}, {maxv}].',
                  minv = min_val,
                  maxv = max_val))
     } else {

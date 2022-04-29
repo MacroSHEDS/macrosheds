@@ -224,7 +224,7 @@ ms_fill_missing_precip <- function(precip,
                     
                     weighted_val <- sm(fill_dates[r,] %>%
                         select(-datetime) %>%
-                        pivot_longer(cols = everything(), names_to = 'site_code') %>%
+                        tidyr::pivot_longer(cols = everything(), names_to = 'site_code') %>%
                         filter(!is.na(value)) %>%
                         left_join(rg_ts, by = 'site_code') %>%
                         mutate(prop_val = value * weight))
@@ -335,7 +335,7 @@ ms_fill_missing_precip <- function(precip,
     pivot_names <- names(precip_final)
     pivot_names <- pivot_names[! pivot_names %in% 'datetime']
     precip_final <- precip_final %>%
-        pivot_longer(cols = !!pivot_names, 
+        tidyr::pivot_longer(cols = !!pivot_names, 
                      names_to = 'site_code',
                      values_to = 'val') %>%
         full_join(status_cols, by = c('site_code', 'datetime')) %>%
@@ -373,7 +373,7 @@ ms_fill_missing_precip <- function(precip,
 # pivot_names <- pivot_names[! pivot_names %in% 'datetime']
 # 
 # precip_test <- precip_test %>%
-#     pivot_longer(cols = !!pivot_names, 
+#     tidyr::pivot_longer(cols = !!pivot_names, 
 #                  names_to = 'site_code',
 #                  values_to = 'val') %>%
 #     arrange(site_code, datetime) 

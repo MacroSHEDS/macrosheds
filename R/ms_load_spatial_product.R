@@ -91,7 +91,7 @@ ms_load_spatial_product <- function(macrosheds_root,
     
     # List site files
     if(!missing(site_codes)){
-        sites <- str_match(string = prodpaths,
+        sites <- stringr::str_match(string = prodpaths,
                            pattern = '([^/]+)(?=\\.shp$)')[,1]
         # prodpaths_sites <- prodpaths[grep(paste0(site_codes, collapse = '|'), sites)]
         prodpaths_sites <- prodpaths[sites %in% site_codes]

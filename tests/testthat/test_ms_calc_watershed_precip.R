@@ -28,7 +28,7 @@ precip <- tibble(C1 = runif(100, min = 0, max = 25),
                  saddle = runif(100, min = 0, max = 10),
                  datetime = seq.POSIXt(as.POSIXct('2000-01-01', format = '%Y-%m-%d', tz = 'UTC'), 
                                      as.POSIXct('2000-04-09', format = '%Y-%m-%d', tz = 'UTC'), by = 'day')) %>%
-    pivot_longer(cols = c('D1', 'C1', 'saddle'), names_to = 'site_code',
+    tidyr::pivot_longer(cols = c('D1', 'C1', 'saddle'), names_to = 'site_code',
                  values_to = 'val') %>%
     mutate(var = 'IS_precipitation',
            ms_status = 0,
@@ -42,7 +42,7 @@ pchem <- tibble(C1 = runif(100, min = 0, max = 25),
                  saddle = runif(100, min = 0, max = 10),
                 datetime = seq.POSIXt(as.POSIXct('2000-01-01', format = '%Y-%m-%d', tz = 'UTC'), 
                                       as.POSIXct('2000-04-09', format = '%Y-%m-%d', tz = 'UTC'), by = 'day')) %>%
-    pivot_longer(cols = c('D1', 'C1', 'saddle'), names_to = 'site_code',
+    tidyr::pivot_longer(cols = c('D1', 'C1', 'saddle'), names_to = 'site_code',
                  values_to = 'val') %>%
     mutate(var = 'GS_NO3_N',
            ms_status = 0,

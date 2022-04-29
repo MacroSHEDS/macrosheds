@@ -176,7 +176,7 @@ ms_conversions <- function(d,
                                                  from = convert_molecules_element[v],
                                                  to = unname(molecular_conversion_map[v]))
             
-            check_double <- str_split_fixed(unname(molecular_conversion_map[v]), '', n = Inf)[1,]
+            check_double <- stringr::str_split_fixed(unname(molecular_conversion_map[v]), '', n = Inf)[1,]
             
             if(length(check_double) > 1 && length(unique(check_double)) == 1) {
                 molecular_conversion_map[v] <- unique(check_double)
@@ -197,7 +197,7 @@ ms_conversions <- function(d,
                                                                             from = convert_molecules_element[v],
                                                                             to = whole_molecule[element_to_whole[v]])
             
-            # check_double <- str_split_fixed(unname(molecular_conversion_map[v]), '', n = Inf)[1,]
+            # check_double <- stringr::str_split_fixed(unname(molecular_conversion_map[v]), '', n = Inf)[1,]
             # 
             # if(length(check_double) > 1 && length(unique(check_double)) == 1) {
             #     molecular_conversion_map[v] <- unique(check_double)

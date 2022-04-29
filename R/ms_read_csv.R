@@ -128,7 +128,7 @@ ms_read_csv <- function(filepath,
     tibble_supplied <-  ! missing(preprocessed_tibble) && ! is.null(preprocessed_tibble)
     
     if(filepath_supplied && tibble_supplied){
-        stop(glue('Only one of filepath and preprocessed_tibble can be supplied. ',
+        stop(glue::glue('Only one of filepath and preprocessed_tibble can be supplied. ',
                   'preprocessed_tibble is for rare circumstances only.'))
     }
     

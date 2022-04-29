@@ -1,97 +1,58 @@
 library(macrosheds)
 library(testthat)
 
-#testthat changes the working directory to r_package/tests/testthat
-wd <- '../../data/ms_test'
-#but, if you're testing these piecemeal, use:
-#wd <- '.'
 
-#### data for test
-dir.create(wd, showWarnings = FALSE)
-macrosheds::ms_download_core_data(macrosheds_root = wd,
-                                  domains = c('hbef', 'hjandrews', 'boulder',
-                                              'santee'),
-                                  quiet = TRUE)
-
-
-test_that('the correct domains are loaded in', {
+test_that('output watershed area is correct when specs supplied and confirm = FALSE', {
     
-    results_hbef <- macrosheds::ms_load_product(macrosheds_root = wd, 
-                                prodname = 'discharge',
-                                domains = c('hbef'),
-                                warn = F) %>%
-        pull(site_code) %>%
-        unique()
-     expect_equal(results_hbef, 
-                c('w1', 'w2', 'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9'))
+    out <- ms_delineate_watershed(
+        lat = 44.21013,
+        long = -122.2571,
+        crs = 4326,
+        write_dir = '/tmp/ws_test2',
+        write_name = 'example_site',
+        spec_buffer_radius_m = 1000,
+        spec_snap_distance_m = 150,
+        spec_snap_method = 'standard',
+        spec_dem_resolution = 10,
+        spec_flat_increment = NULL,
+        spec_breach_method = 'basic',
+        spec_burn_streams = FALSE,
+        confirm = FALSE,
+        verbose = FALSE
+    )
     
-     results_santee <- macrosheds::ms_load_product(macrosheds_root = wd, 
-                                                 prodname = 'discharge',
-                                                 domains = c('santee'),
-                                                 warn = F) %>%
-         pull(site_code) %>%
-         unique()
-    expect_equal(results_santee, 
-                 c('WS77', 'WS78', 'WS79', 'WS80'))
-    
-    results_2_doms <- macrosheds::ms_load_product(macrosheds_root = wd, 
-                                                  prodname = 'discharge',
-                                                  domains = c('santee', 'hbef'),
-                                                  warn = F) %>%
-        pull(site_code) %>%
-        unique()
-    expect_equal(results_2_doms, 
-                 c('w1', 'w2', 'w3', 'w4', 'w5', 'w6', 'w7', 'w8', 'w9', 'WS77', 'WS78', 'WS79', 'WS80'))
+    expect_equal(out$watershed_area_ha, 6219.831)
 })
 
-test_that('the correct sites are loaded in', {
+test_that('output watershed area is correct when specs supplied and confirm = TRUE (also burning streams)', {
     
-    results_hbef <- macrosheds::ms_load_product(macrosheds_root = wd, 
-                                                prodname = 'discharge',
-                                                site_codes = c('w1', 'w2'),
-                                                warn = F) %>%
-        pull(site_code) %>%
-        unique()
-    expect_equal(results_hbef, 
-                 c('w1', 'w2'))
+    f <- tempfile()
+    # ans <- paste(lines, collapse = "\n")
+    write("\n", f)
     
-    results_santee <- macrosheds::ms_load_product(macrosheds_root = wd, 
-                                                  prodname = 'discharge',
-                                                  site_codes = c('WS77', 'w7'),
-                                                  warn = F) %>%
-        pull(site_code) %>%
-        unique()
-    expect_equal(results_santee, 
-                 c('w7', 'WS77'))
+    out <- ms_delineate_watershed(
+        lat = 44.21013,
+        long = -122.2571,
+        crs = 4326,
+        write_dir = '/tmp/ws_test2',
+        write_name = 'example_site',
+        spec_buffer_radius_m = 1000,
+        spec_snap_distance_m = 150,
+        spec_snap_method = 'standard',
+        spec_dem_resolution = 10,
+        spec_flat_increment = 0.01,
+        spec_breach_method = 'basic',
+        spec_burn_streams = TRUE,
+        confirm = FALSE,
+        verbose = FALSE
+    )
+    
+    expect_equal(out$watershed_area_ha, 6219.831)
 })
 
-test_that('the correct sites and domains are loaded in', {
-    
-    results_hbef <- macrosheds::ms_load_product(macrosheds_root = wd, 
-                                                prodname = 'discharge',
-                                                domains = 'santee',
-                                                site_codes = c('w1', 'w2'),
-                                                warn = F) %>%
-        pull(site_code) %>%
-        unique()
-    expect_equal(results_hbef, 
-                 c('WS77', 'WS78', 'WS79', 'WS80', 'w1', 'w2'))
-})
-
-test_that('directory error is printed', {
-    expect_error(ms_load_product(macrosheds_root = 'fake_dir_test', 
-                                 prodname = 'stream_chemistry'),
-                 'macrosheds_root does not exist, please ensure correct directory is supplied')
-})
-
-test_that('filter_vars filters the correct vars', {
-    results_vars <- macrosheds::ms_load_product(macrosheds_root = wd, 
-                                                prodname = 'stream_chemistry',
-                                                domains = c('hjandrews', 'hbef'),
-                                                filter_vars = c('PO4_P', 'temp'),
-                                                warn = F) %>%
-        pull(var) %>%
-        unique()
-    expect_equal(results_vars, 
-                 c('GN_PO4_P', 'GN_temp',  'IS_temp'))
-})
+#some specs supplied
+#interactive
+#confirm = FALSE (legal)
+#confirm = FALSE (illegal)
+#file written
+#abort

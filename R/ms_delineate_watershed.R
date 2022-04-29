@@ -188,7 +188,7 @@ ms_delineate_watershed <- function(lat,
     }
     
     #calculate watershed area in hectares
-    wb <- sf::st_read(glue('{d}/{s}.shp',
+    wb <- sf::st_read(glue::glue('{d}/{s}.shp',
                            d = write_dir,
                            s = write_name),
                       quiet = TRUE)
@@ -197,7 +197,7 @@ ms_delineate_watershed <- function(lat,
     
     #return the specifications of the correctly delineated watershed, and some
     #   other goodies
-    rgx <- str_match(selection,
+    rgx <- stringr::str_match(selection,
                      paste0('^wb[0-9]+_BUF([0-9]+)(standard|jenson)',
                             'DIST([0-9]+)RES([0-9]+)INC([0-1\\.null]+)',
                             'BREACH(basic|lc)BURN(TRUE|FALSE)\\.shp$'))
@@ -212,7 +212,7 @@ ms_delineate_watershed <- function(lat,
                   burn_streams = as.logical(rgx[, 8]))
     
     return(list(out_path = write_dir,
-                filename_base = site_code,
+                filename_base = write_name,
                 watershed_area_ha = ws_area_ha,
                 deets = deets))
 }
