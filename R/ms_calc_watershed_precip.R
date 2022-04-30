@@ -425,7 +425,8 @@ ms_calc_watershed_precip <- function(precip,
                 ws_mean_precip_chunk <- foreach::foreach(
                     j = 1:min(nthreads, nrow(precip_superchunk)),
                     .combine = idw_parallel_combine,
-                    .init = 'first iter') %parcond% {
+                    .init = 'first iter',
+                    .packages = 'dplyr') %parcond% {
                         
                         pchunk <- precip_chunklist[[j]]
                         
@@ -548,7 +549,8 @@ ms_calc_watershed_precip <- function(precip,
                         l = 1:length(chemflux_chunklist),
                         # l = 1:min(nthreads, nrow(chemflux_superchunk)),
                         .combine = idw_parallel_combine,
-                        .init = 'first iter') %parcond% {
+                        .init = 'first iter',
+                        .packages = 'dplyr') %parcond% {
                             
                             if(is_fluxable){
                                 

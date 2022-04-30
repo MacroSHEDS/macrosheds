@@ -794,9 +794,6 @@ shortcut_idw <- function(encompassing_dem,
     #elev_agnostic: logical that determines whether elevation should be
     #   included as a predictor of the variable being interpolated
     
-    # loginfo(glue::glue('shortcut_idw: working on {ss}', ss=stream_site_code),
-    #     logger = logger_module)
-    
     if(output_varname != 'SPECIAL CASE PRECIP' && save_precip_quickref){
         stop(paste('save_precip_quickref can only be TRUE if output_varname',
                    '== "SPECIAL CASE PRECIP"'))
@@ -863,22 +860,12 @@ shortcut_idw <- function(encompassing_dem,
         dk <- filter(data_locations,
                      site_code == colnames(data_matrix)[k])
         
-        # inv_dists_site <- 1 / raster::distanceFromPoints(dem_wb, dk)^2 %>%
-        #     terra::values(.)
-        
         inv_dists_site <- 1 / terra::distance(terra::rast(dem_wb_all_na), terra::vect(dk))^2 %>%
             terra::values(.)
         
-        # inv_dists_site[is.na(elevs)] <- NA #mask
         inv_dists_site <- inv_dists_site[! is.na(elevs)] #drop elevs not included in mask
         inv_distmat[, k] <- inv_dists_site
     }
-    
-    # if(output_varname == 'SPECIAL CASE PRECIP'){ REMOVE
-    #     precip_quickref <- data.frame(matrix(NA,
-    #                                          nrow = ntimesteps,
-    #                                          ncol = nrow(inv_distmat)))
-    # }
     
     #calculate watershed mean at every timestep
     if(save_precip_quickref) precip_quickref <- list()
@@ -941,22 +928,7 @@ shortcut_idw <- function(encompassing_dem,
         ws_mean[k] <- mean(d_idw, na.rm=TRUE)
         errors::errors(ws_mean)[k] <- mean(errors::errors(d_idw), na.rm=TRUE)
         
-        # quickref_ind <- k %% 1000 REMOVE
-        # update_quickref <- quickref_ind == 0
-        # if(! update_quickref){
-        # precip_quickref[[quickref_ind]] <- p_idw
         if(save_precip_quickref) precip_quickref[[k]] <- d_idw
-        # } else {
-        
-        # precip_quickref[[1000]] <- p_idw
-        
-        # save_precip_quickref(precip_idw_list = precip_quickref,
-        #                      network = network,
-        #                      domain = domain,
-        #                      site_code = stream_site_code,
-        #                      # chunk_number = quickref_chunk)
-        #                      timestep = k)
-        # }
     }
     
     if(save_precip_quickref){
@@ -975,7 +947,6 @@ shortcut_idw <- function(encompassing_dem,
                               chunkdtrange = range(d_dt),
                               macrosheds_root = macrosheds_root)
     }
-    # compare_interp_methods()
     
     if(output_varname == 'SPECIAL CASE PRECIP'){
         
@@ -1649,39 +1620,6 @@ write_precip_quickref <- function(precip_idw_list,
             file = glue::glue('{qd}/{cf}', #omitting extension for easier parsing
                               qd = quickref_dir,
                               cf = chunkfile))
-    
-    #previous approach: when chunks have a size limit:
-    
-    # #not to be confused with the precip idw tempfile (dumpfile),
-    # #the quickref file allows the same precip idw data to be used across all
-    # #chemistry variables when calculating flux. it's stored in 1000-timestep
-    # #chunks
-    #
-    # chunk_number <- floor((timestep - 1) / 1000) + 1
-    # chunkID <- stringr::str_pad(string = chunk_number,
-    #                             width = 3,
-    #                             side = 'left',
-    #                             pad = '0')
-    #
-    # quickref_dir <- glue::glue('data/{n}/{d}/precip_idw_quickref/{s}',
-    #                      n = network,
-    #                      d = domain,
-    #                      s = site_code)
-    #
-    # chunkfile <- glue::glue('chunk{ch}.rds',
-    #                   ch = chunkID)
-    #
-    # if(! file.exists(chunkfile)){ #in case another thread has already written it
-    #
-    #     dir.create(path = quickref_dir,
-    #                showWarnings = FALSE,
-    #                recursive = TRUE)
-    #
-    #     saveRDS(object = precip_idw_list,
-    #             file = paste(quickref_dir,
-    #                          chunkfile,
-    #                          sep = '/'))
-    # }
 }
 
 reconstruct_var_column <- function(d,

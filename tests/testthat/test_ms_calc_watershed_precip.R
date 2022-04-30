@@ -1,7 +1,5 @@
 library(macrosheds)
 library(testthat)
-library(feather)
-library(sf)
 
 #### data for test
 temp_dir <- 'data/test_precip_function'

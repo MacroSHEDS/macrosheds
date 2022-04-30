@@ -85,8 +85,8 @@ ms_conversions <- function(d,
                            convert_units_to,
                            convert_molecules){
     
-    ms_vars <- read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/34965591',
-                        col_types = cols())
+    ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/34965591',
+                               col_types = readr::cols())
     
     #checks
     cm <- ! missing(convert_molecules)
