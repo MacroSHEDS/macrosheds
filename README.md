@@ -58,7 +58,7 @@ To use the MacroSheds R package a user must have R installed on their machine.
 
    ```{r}
    install.packages("devtools")
-   devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git")
+   devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git", build_vignettes = TRUE)
    ```
 
 * Command Line Installation
