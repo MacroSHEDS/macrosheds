@@ -11,6 +11,11 @@
 #' @references Blodgett, D., 2019, nhdplusTools: Tools for Accessing and Working with the NHDPlus, https://code.usgs.gov/water/nhdplusTools
 #'
 #' @example 
+#' To use this data:
+#' data(poudre_ws)
+#' print(poudre_ws)
+#' mapview::mapview(poudre_ws)
+#' 
 #' This watershed was retrieved as follows:
 #' start_point <- sf::st_as_sf(data.frame(x = -105.077466, y = 40.595203), 
 #' coords = c("x", "y"), crs = 4326)
@@ -35,9 +40,4 @@
 #' poudre_ws <- watersheds %>%
 #'     mutate(site_code = 'poudre_river') %>%
 #'     rename(geometry = x)
-#' 
-#' To use this data:
-#' data(poudre_ws)
-#' print(poudre_ws)
-#' mapview::mapview(poudre_ws)
 "poudre_ws"

@@ -27,7 +27,7 @@ site_vars_catalog <- ms_catalog()
 \code{\link[=ms_download_variables]{ms_download_variables()}}, \code{\link[=ms_download_site_data]{ms_download_site_data()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@@gmail.com}
+Spencer Rhea, \email{spencerrhea41@gmail.com}
 
 Mike Vlah
 
