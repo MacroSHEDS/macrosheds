@@ -77,7 +77,7 @@ To use the MacroSheds R package a user must have R installed on their machine.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-_For more information about how to use the MacroSheds R package, please refer to the [Vignettes](https://github.com/MacroSHEDS/macrosheds/tree/master/vignettes)_
+_For more information about how to use the MacroSheds R package, please refer to the [Vignettes](https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_retrieval_flux_calc.md)_
 
 _For more information about MacroSheds Project, please refer to the [website](https://macrosheds.org)_
 
