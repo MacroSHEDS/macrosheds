@@ -309,12 +309,12 @@ ggplot(data=my_annual_mean_flux, aes(x=year, y=mean_flux, group=site_code)) +
     ylab("Nitrate-Nitrogen Flux (kg/ha/day)") +
     theme_minimal() +
     theme(
-      axis.text = element_text(size = 26),
-      axis.title = element_text(size = 30),
-      plot.title = element_text(size = 36),
-      plot.subtitle = element_text(size = 32),
-      legend.title = element_text(size = 36),
-      legend.text = element_text(size = 30),
+      axis.text = element_text(size = 22),
+      axis.title = element_text(size = 26),
+      plot.title = element_text(size = 32),
+      plot.subtitle = element_text(size = 28),
+      legend.title = element_text(size = 32),
+      legend.text = element_text(size = 26),
     ) 
   
 ```
