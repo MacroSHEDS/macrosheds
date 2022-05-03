@@ -292,19 +292,19 @@ ggplot(data=my_annual_mean_flux, aes(x=year, y=mean_flux, group=site_code)) +
       name = "Site"
     ) +
     ggtitle(
-      label = "Mean Annual Nitrate-Nitrogen Flux in an Eastern and Western Watershed",
+      label = "Mean Annual Nitrate-Nitrogen Flux",
       subtitle = "Hubbard Brook and HJ Andrews, 1970-2020"
     ) +
     xlab("Year") +
     ylab("Nitrate-Nitrogen Flux (kg/ha/day)") +
     theme_minimal() +
     theme(
-      axis.text = element_text(size = 26),
-      axis.title = element_text(size = 30),
-      plot.title = element_text(size = 36),
-      plot.subtitle = element_text(size = 32),
-      legend.title = element_text(size = 36),
-      legend.text = element_text(size = 30),
+      axis.text = element_text(size = 16),
+      axis.title = element_text(size = 20),
+      plot.title = element_text(size = 24),
+      plot.subtitle = element_text(size = 22),
+      legend.title = element_text(size = 21),
+      legend.text = element_text(size = 20),
     ) 
   
 ```
