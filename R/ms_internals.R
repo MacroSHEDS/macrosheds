@@ -732,13 +732,17 @@ ms_parallelize <- function(maxcores = Inf){
     # clst <- parallel::makeCluster(ncores)
     clst <- NULL
     ncores <- min(parallel::detectCores(), maxcores)
+    clst <- parallel::makeCluster(ncores)
+    doParallel::registerDoParallel(clst)
     
     # Sys.info()[1] %in% c('Linux', 'Darwin')
     
     # if(ms_instance$which_machine == 'DCC'){
-        doFuture::registerDoFuture()
+    # Un-comment this
+        # doFuture::registerDoFuture()
         # future::plan(cluster, workers = clst) #might need this instead of Slurm one day
-        future::plan(future.batchtools::batchtools_slurm)
+    # Un-comment this
+        # future::plan(future.batchtools::batchtools_slurm)
     # }
     # } else if(.Platform$OS.type == 'windows'){
     #     #issues (found while testing on linux):
@@ -752,8 +756,13 @@ ms_parallelize <- function(maxcores = Inf){
     #     #clst <- parallel::makeCluster(ncores, type = 'PSOCK')
     # } else {
     #     # future::plan(multicore) #can't be done from Rstudio
-        clst <- parallel::makeCluster(ncores, type = 'FORK')
-        doParallel::registerDoParallel(clst)
+        if(Sys.info()['sysname'] == 'Windows'){
+            clst <- parallel::makeCluster(ncores, type = 'PSOCK')
+            doParallel::registerDoParallel(clst)
+        } else{
+            clst <- parallel::makeCluster(ncores, type = 'FORK')
+            doParallel::registerDoParallel(clst)
+        }
     # }
     
     return(clst)
@@ -837,11 +846,13 @@ shortcut_idw <- function(encompassing_dem,
     d_status <- data_values$ms_status
     d_interp <- data_values$ms_interp
     d_dt <- data_values$datetime
-    data_matrix <- select(data_values,
+    data_matrix <- dplyr::select(data_values,
                           -ms_status,
                           -datetime,
                           -ms_interp) %>%
         err_df_to_matrix()
+    
+    print('here')
     
     #clean dem and get elevation values
     dem_wb <- terra::crop(encompassing_dem, wshd_bnd)

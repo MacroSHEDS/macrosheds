@@ -425,7 +425,8 @@ ms_calc_watershed_precip <- function(precip,
                 ws_mean_precip_chunk <- foreach::foreach(
                     j = 1:min(nthreads, nrow(precip_superchunk)),
                     .combine = idw_parallel_combine,
-                    .init = 'first iter') %parcond% {
+                    .init = 'first iter',
+                    .packages = c('magrittr', 'dplyr', 'raster')) %parcond% {
                         
                         pchunk <- precip_chunklist[[j]]
                         
