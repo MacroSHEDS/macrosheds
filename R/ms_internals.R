@@ -852,8 +852,6 @@ shortcut_idw <- function(encompassing_dem,
                           -ms_interp) %>%
         err_df_to_matrix()
     
-    print('here')
-    
     #clean dem and get elevation values
     dem_wb <- terra::crop(encompassing_dem, wshd_bnd)
     dem_wb <- terra::mask(dem_wb, wshd_bnd)
