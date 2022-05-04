@@ -1,5 +1,4 @@
 library(macrosheds)
-library(lubridate)
 library(testthat)
 
 sites <- tibble(site_code = c('MA_AE03', 'MI_KR01'),
@@ -28,10 +27,9 @@ test_that('function works with sf', {
 test_that('data.frame with usgs_site column is returned', {
     
     expect_error(ms_identify_usgs_gauges(sites = sites, long = 'Longitude'),
-                 'Both lat and long must be provided or a sf objust must be the input to site')
+                 'Both lat and long must be provided or the argument to sites must be an sf object')
     expect_error(ms_identify_usgs_gauges(sites = sites, lat = 'Longitude'),
-                 'Both lat and long must be provided or a sf objust must be the input to site')
-    
+                 'Both lat and long must be provided or the argument to sites must be an sf object')
 })
 
 site_sf_weird <- sites %>%

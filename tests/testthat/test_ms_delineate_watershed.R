@@ -75,32 +75,7 @@ test_that('all options can be set interactively by user', {
         responses_from_file = f
     )
     
-    expect_equal(round(out$watershed_area_ha), 6220)
-})
-
-test_that('all options can be set interactively by user', {
-    
-    f <- tempfile()
-    writeLines(c('MDSBURI', '1', '200', '10000', '9', 'L', 'a'), f)
-    
-    out <- ms_delineate_watershed(
-        lat = 44.21013,
-        long = -122.2571,
-        crs = 4326,
-        write_dir = '/tmp/ws_test2',
-        write_name = 'example_site',
-        spec_buffer_radius_m = 1000,
-        spec_snap_distance_m = 150,
-        spec_snap_method = 'standard',
-        spec_dem_resolution = 10,
-        spec_flat_increment = 0.01,
-        spec_breach_method = 'basic',
-        spec_burn_streams = FALSE,
-        verbose = FALSE,
-        responses_from_file = f
-    )
-    
-    expect_equal(round(out$watershed_area_ha), 6220)
+    expect_null(out)
 })
 
 test_that('flipping through multiple candidates works', {
@@ -123,7 +98,7 @@ test_that('flipping through multiple candidates works', {
         responses_from_file = f
     )
     
-    expect_equal(round(out$watershed_area_ha), 6220)
+    expect_equal(round(out$watershed_area_ha), 2)
 })
 
 test_that('illegal operations raise error', {

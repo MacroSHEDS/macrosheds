@@ -259,7 +259,8 @@ ms_conversions <- function(d,
             
             d$val[vars == v] <- convert_to_gl(x = d$val[vars == v],
                                               input_unit = unitfrom,
-                                              formula = formula)
+                                              formula = formula,
+                                              ms_vars = ms_vars)
             
             g_conver <- TRUE
         }

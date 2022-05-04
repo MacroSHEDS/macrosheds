@@ -1,7 +1,5 @@
 library(macrosheds)
-library(lubridate)
 library(testthat)
-
 
 test_that('tables are checked for ms format', {
     
@@ -31,12 +29,12 @@ test_that('tables are checked for ms format', {
     
     expect_error(macrosheds::ms_run_egret(stream_chemistry = ms_table_c_fake,
                                           discharge = ms_table_d),
-                 'stream_chemistry must be a macrosheds file with the columns site_code, 
+                 'stream_chemistry must be a data.frame in MacroSheds format with the columns site_code, 
              datetime, var, and, val')
     
     expect_error(macrosheds::ms_run_egret(stream_chemistry = ms_table_c,
                                           discharge = ms_table_d_fake),
-                 'discharge must be a macrosheds file with the columns site_code, 
+                 'discharge must be a data.frame in MacroSheds format with the columns site_code, 
              datetime, var, and, val')
     
 })
