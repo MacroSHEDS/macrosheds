@@ -43,10 +43,10 @@
 # 
 # fils <- list.files('../data_processing/data/lter/santa_barbara/derived/precipitation__ms002/', 
 #                    full.names = TRUE)
-# precip <- map_dfr(fils, read_feather) %>%
+# precip <- purrr::map_dfr(fils, feather::read_feather) %>%
 #     filter(! site_code == 'BuelltonFireStation233')
 # pgauge_path <- list.files('../data_processing/data/lter/santa_barbara/derived/precip_gauge_locations__ms004/', full.names = TRUE)
-# precip_gauge <- map_dfr(pgauge_path, sf::st_read) %>%
+# precip_gauge <- purrr::map_dfr(pgauge_path, sf::st_read) %>%
 #     filter(! site_code %in% c('BuelltonFS233', 'Nojoqui236'))
 
 
@@ -62,7 +62,7 @@ ms_fill_missing_precip <- function(precip,
     # Load in precipitation gauge locations
     if(! inherits(precip_gauge, 'sf')){
         rg_path <- list.files(precip_gauge, full.names = TRUE)
-        rg <- try(map_dfr(rg_path, sf::st_read))
+        rg <- try(purrr::map_dfr(rg_path, sf::st_read))
         
         if(inherits(rg, 'try-error')){
             stop('precip_gauge file failed to load, check file path is correct')
@@ -74,7 +74,7 @@ ms_fill_missing_precip <- function(precip,
     # Load in precipitation data 
     if(! inherits(precip, c('data.frame', 'tbl', 'tibble', 'tbl_df'))){
         precip_path <- list.files(precip, full.names = TRUE)
-        precip <- try(map_dfr(precip_path, read_feather))
+        precip <- try(purrr::map_dfr(precip_path, feather::read_feather))
         
         if(inherits(precip, 'try-error')){
             stop('precip file failed to load, check file path is correct')
@@ -224,7 +224,7 @@ ms_fill_missing_precip <- function(precip,
                     
                     weighted_val <- sm(fill_dates[r,] %>%
                         select(-datetime) %>%
-                        pivot_longer(cols = everything(), names_to = 'site_code') %>%
+                        tidyr::pivot_longer(cols = everything(), names_to = 'site_code') %>%
                         filter(!is.na(value)) %>%
                         left_join(rg_ts, by = 'site_code') %>%
                         mutate(prop_val = value * weight))
@@ -335,7 +335,7 @@ ms_fill_missing_precip <- function(precip,
     pivot_names <- names(precip_final)
     pivot_names <- pivot_names[! pivot_names %in% 'datetime']
     precip_final <- precip_final %>%
-        pivot_longer(cols = !!pivot_names, 
+        tidyr::pivot_longer(cols = !!pivot_names, 
                      names_to = 'site_code',
                      values_to = 'val') %>%
         full_join(status_cols, by = c('site_code', 'datetime')) %>%
@@ -347,7 +347,7 @@ ms_fill_missing_precip <- function(precip,
     if(is.null(out_path)){
         return(precip_final)
     } else{
-        write_feather(precip_final, outpath)
+        feather::write_feather(precip_final, outpath)
     }
 
 }
@@ -373,7 +373,7 @@ ms_fill_missing_precip <- function(precip,
 # pivot_names <- pivot_names[! pivot_names %in% 'datetime']
 # 
 # precip_test <- precip_test %>%
-#     pivot_longer(cols = !!pivot_names, 
+#     tidyr::pivot_longer(cols = !!pivot_names, 
 #                  names_to = 'site_code',
 #                  values_to = 'val') %>%
 #     arrange(site_code, datetime) 

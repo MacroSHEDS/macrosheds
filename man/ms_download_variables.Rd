@@ -4,7 +4,7 @@
 \alias{ms_download_variables}
 \title{Download macrosheds variables data table}
 \usage{
-ms_download_variables(fp = NULL)
+ms_download_variables()
 }
 \value{
 returns a \code{data.frame} of variables, codes,
@@ -21,7 +21,7 @@ macrosheds_sites <- ms_downloadvariables()
 \code{\link[=ms_download_site_data]{ms_download_site_data()}}, \code{\link[=ms_download_core_data]{ms_download_core_data()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@@gmail.com}
+Spencer Rhea, \email{spencerrhea41@gmail.com}
 
 Mike Vlah
 

@@ -21,13 +21,13 @@ directory, established with \code{\link[=ms_download_core_data]{ms_download_core
 product will be combined across specified networks/domains.}
 
 \item{networks}{character vector. MacroSheds networks to load; optional. To see a catalog of
-networks, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).}
+networks, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds dataset}.}
 
 \item{domains}{character vector. MacroSheds domains to load; optional. To see a catalog of
-networks, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).}
+networks, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds dataset}.}
 
 \item{site_codes}{character vector. MacroSheds networks to load; optional. To see a catalog of
-networks, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).}
+networks, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds dataset}.}
 }
 \value{
 returns an \code{sf} object containing all data belonging to the
@@ -51,7 +51,7 @@ macrosheds_data <- load_spatial_product(macrosheds_root = ms_root,
 \code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_product]{ms_load_product()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@@gmail.com}
+Spencer Rhea, \email{spencerrhea41@gmail.com}
 
 Mike Vlah
 

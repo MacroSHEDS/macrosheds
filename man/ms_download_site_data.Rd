@@ -2,24 +2,24 @@
 % Please edit documentation in R/ms_download_site_data.R
 \name{ms_download_site_data}
 \alias{ms_download_site_data}
-\title{Download macrosheds site data table}
+\title{Download MacroSheds site data table}
 \usage{
-ms_download_site_data(fp = NULL)
+ms_download_site_data()
 }
 \value{
-returns a \code{data.frame} of all sites in the macrosheds systems
+returns a \code{data.frame} of all sites in the MacroSheds systems
 with their corresponding network, domain, latitude, longitude, area, and
 additional information.
 }
 \description{
-Download the macrosheds site data table with information on networks, domains,
+Download the MacroSheds site data table with information on networks, domains,
 location of stream gauges, and more.
 }
 \examples{
 macrosheds_sites <- ms_download_site_data()
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@@gmail.com}
+Spencer Rhea, \email{spencerrhea41@gmail.com}
 
 Mike Vlah
 

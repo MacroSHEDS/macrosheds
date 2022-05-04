@@ -120,7 +120,9 @@ ms_download_core_data <- function(macrosheds_root,
         
         download_status <- try(download.file(url = fig_call,
                                              destfile = temp_file_dom,
-                                             quiet = quiet))
+                                             quiet = quiet,
+                                             cacheOK = FALSE,
+                                             mode = 'wb'))
         
         if(inherits(download_status, 'try-error')) next
         

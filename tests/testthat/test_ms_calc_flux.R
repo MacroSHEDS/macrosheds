@@ -2,7 +2,7 @@ library(macrosheds)
 library(lubridate)
 library(testthat)
 
-test_no_data <- tibble(datetime = seq.Date(ymd('2000-01-01'), ymd('2001-01-01'),
+test_no_data <- tibble(datetime = seq.Date(lubridate::ymd('2000-01-01'), lubridate::ymd('2001-01-01'),
                                            by = '1 day'),
                        site_code = 'w1',
                        var = 'GN_P',
@@ -48,8 +48,8 @@ test_that('tibble is returned with correct columns', {
 
 })
 
-stream_chem_date <- tibble(datetime = seq.Date(ymd('2000-01-01'), 
-                                          ymd('2000-12-30'), by = '1 day'),
+stream_chem_date <- tibble(datetime = seq.Date(lubridate::ymd('2000-01-01'), 
+                                          lubridate::ymd('2000-12-30'), by = '1 day'),
                       site_code = 'w1',
                       var = 'GN_Ca',
                       val = rando_chem,

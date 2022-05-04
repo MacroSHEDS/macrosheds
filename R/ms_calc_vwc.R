@@ -177,8 +177,8 @@ ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
           chem_split[[i]] <- chem_split[[i]] %>%
             filter_at(vars(val_x, val_y),
                       all_vars(!is.na(.))) %>%
-            mutate(month = month(datetime),
-                   year = year(datetime)) %>%
+            mutate(month = lubridate::month(datetime),
+                   year = lubridate::year(datetime)) %>%
             group_by_at(agg_step) %>%
             summarize(site_code = site_code_x,
                       var = var_x,

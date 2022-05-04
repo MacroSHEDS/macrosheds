@@ -25,6 +25,7 @@
 #' @param convert_molecules character vector. Molecules that will be 
 #'    converted according to the atomic mass of their main constituent. For example,
 #'    this can be used to convert NO3-N to NO3, or NO3 to NO3-N. See details.
+#'    [ms_download_variables()]. If not supplied, ms_vars will be retrieved automatically.
 #' @return returns a \code{tibble} in MacroSheds format, containing concentration data converted to new units.
 #' @details In MacroSheds format, concentrations of the following molecules are represented
 #'    according to the atomic mass of their primary constituent atom: NO3, NH4, NH3,
@@ -84,8 +85,8 @@ ms_conversions <- function(d,
                            convert_units_to,
                            convert_molecules){
     
-    ms_vars <- read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/34382849',
-                    col_types = cols())
+    ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/34965591',
+                               col_types = readr::cols())
     
     #checks
     cm <- ! missing(convert_molecules)
@@ -172,11 +173,20 @@ ms_conversions <- function(d,
         convert_molecules_element <-  whole_molecule[whole_to_element]
         for(v in 1:length(convert_molecules_element)){
             
-            d$val[vars == convert_molecules_element[v]] <- convert_molecule(x = d$val[vars == convert_molecules_element[v]],
-                                                 from = convert_molecules_element[v],
-                                                 to = unname(molecular_conversion_map[v]))
+            molecule_real <- ms_vars %>%
+                filter(variable_code == !!convert_molecules_element[v]) %>%
+                pull(molecule)
             
-            check_double <- str_split_fixed(unname(molecular_conversion_map[v]), '', n = Inf)[1,]
+            if(is.na(molecule_real)) {
+                molecule_real <- convert_molecules_element[v]
+            }
+            
+            d$val[vars == convert_molecules_element[v]] <-
+                convert_molecule(x = d$val[vars == convert_molecules_element[v]],
+                                 from = molecule_real,
+                                 to = unname(molecular_conversion_map[v]))
+            
+            check_double <- stringr::str_split_fixed(unname(molecular_conversion_map[v]), '', n = Inf)[1,]
             
             if(length(check_double) > 1 && length(unique(check_double)) == 1) {
                 molecular_conversion_map[v] <- unique(check_double)
@@ -193,11 +203,20 @@ ms_conversions <- function(d,
         convert_molecules_element <-  element_molecule[element_to_whole]
         for(v in 1:length(convert_molecules_element)){
             
-            d$val[vars == convert_molecules_element[v]] <- convert_molecule(x = d$val[vars == convert_molecules_element[v]],
-                                                                            from = convert_molecules_element[v],
-                                                                            to = whole_molecule[element_to_whole[v]])
+            molecule_real <- ms_vars %>%
+                filter(variable_code == !!convert_molecules_element[v]) %>%
+                pull(molecule)
             
-            # check_double <- str_split_fixed(unname(molecular_conversion_map[v]), '', n = Inf)[1,]
+            if(is.na(molecule_real)) {
+                molecule_real <- convert_molecules_element[v]
+            }
+            
+            d$val[vars == convert_molecules_element[v]] <-
+                convert_molecule(x = d$val[vars == convert_molecules_element[v]],
+                                 from = molecule_real,
+                                 to = whole_molecule[element_to_whole[v]])
+            
+            # check_double <- stringr::str_split_fixed(unname(molecular_conversion_map[v]), '', n = Inf)[1,]
             # 
             # if(length(check_double) > 1 && length(unique(check_double)) == 1) {
             #     molecular_conversion_map[v] <- unique(check_double)
@@ -228,9 +247,20 @@ ms_conversions <- function(d,
         g_conver <- FALSE
         if(grepl('mol|eq', unitfrom) && grepl('g', unitto) || v %in% convert_molecules){
             
+            molecule_real <- ms_vars %>%
+                filter(variable_code == !!v) %>%
+                pull(molecule)
+            
+            if(! is.na(molecule_real)){
+                formula <- molecule_real
+            } else {
+                formula <- v
+            }
+            
             d$val[vars == v] <- convert_to_gl(x = d$val[vars == v],
                                               input_unit = unitfrom,
-                                              molecule = v)
+                                              formula = formula,
+                                              ms_vars = ms_vars)
             
             g_conver <- TRUE
         }
@@ -247,7 +277,8 @@ ms_conversions <- function(d,
                                                 input_unit = unitfrom,
                                                 output_unit = unitto,
                                                 molecule = v,
-                                                g_conver = g_conver)
+                                                g_conver = g_conver,
+                                                ms_vars = ms_vars)
         }
     }
     

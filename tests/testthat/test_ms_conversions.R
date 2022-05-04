@@ -1,8 +1,7 @@
 library(macrosheds)
-library(lubridate)
 library(testthat)
 
-datetime_string <- c(ymd('2000-01-01', '2000-01-02', '2000-01-03',
+datetime_string <- c(lubridate::ymd('2000-01-01', '2000-01-02', '2000-01-03',
                          '2000-01-04', '2000-01-05', '2000-01-06'))
 
 no3 <- tibble(datetime = datetime_string,

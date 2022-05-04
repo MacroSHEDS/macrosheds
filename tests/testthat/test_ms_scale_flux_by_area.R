@@ -2,7 +2,7 @@ library(macrosheds)
 library(testthat)
 library(lubridate)
 
-w1 <- tibble(datetime = c(ymd('2001-01-01', '2001-01-02', '2001-01-03')),
+w1 <- tibble(datetime = c(lubridate::ymd('2001-01-01', '2001-01-02', '2001-01-03')),
              site_code = 'w1',
              var = 'GN_Ca',
              val = c(1,2,3),

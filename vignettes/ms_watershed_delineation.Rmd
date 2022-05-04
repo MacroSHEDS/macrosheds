@@ -1,7 +1,7 @@
 ---
-title: MacroSheds Discharge and Chemistry Data Retrieval and Flux Calculation 
-author: Weston Slaughter, Spencer Rhea, Mike Vlah
-subtitle: Using the `macrosheds` package to retrieve discharge and chemistry data for target sites and variables, and to use it to calculate stream solute flux
+title: Watershed dealineation with the macrosheds package 
+author: Mike Vlah
+subtitle: Delineation requires only latitude and longitude, and can be interactive.
 output:
     html_document:
       toc: true 
@@ -10,30 +10,26 @@ output:
       df_print: kable
 ---
 
+Step 1: load the `macrosheds` package.
 
+_See the ms_retrieval_flux_calc vignette for an introduction to the package._
 
-This walkthrough is from the perspective of a first time user, with some knowledge of the R programming language. This example user, for a college project, needs to compare the flux of nitrate between two watersheds, one from the Eastern US and one from the Western US, each with at least 60 years of data.
-
-
-# Install and explore the `macrosheds` package
-
-
-To use the `macrosheds` package, you must first **make sure you have the `macrosheds` package on your computer, built, and installed in R**. Currently, the package is only available via github. If you have not already, you can install the `macrosheds` package as follows: 
-
-```{r ms-install, eval = FALSE}
-# install.packages('devtools') #you may need to install devtools too
-
-devtools::install_github("https://github.com/MacroSHEDS/macrosheds")
+```{r load-ms, message = FALSE}
+library(macrosheds)
 ```
 
-Now, that we have the `macrosheds` package,  we load it into our library, along with other packages we will be using in this walkthrough. 
 
-```{r setup-library, message = FALSE}
-   
-library(macrosheds)
-# library(dplyr)
-library(ggplot2)
+We use `elevatr` to retrieve digital elevation models (DEMs) and WhiteboxTools for
+DEM conditioning, pour point snapping, flow accumulation, and delineation itself.
+The `whitebox` package requires binaries that aren't shipped with the CRAN package,
+but you can install them like so:
 
+```{r whitebox-setup, message = FALSE}
+if(! whitebox::check_whitebox_binary()){
+    whitebox::install_whitebox()
+} else {
+    print('No action needed')
+}
 ```
 
 In this walkthrough, to learn more about the `macrosheds` package, its functions, and how to use them, we will be using the `macrosheds` package's documentation. 
@@ -292,19 +288,19 @@ ggplot(data=my_annual_mean_flux, aes(x=year, y=mean_flux, group=site_code)) +
       name = "Site"
     ) +
     ggtitle(
-      label = "Mean Annual Nitrate-Nitrogen Flux",
+      label = "Mean Annual Nitrate-Nitrogen Flux in an Eastern and Western Watershed",
       subtitle = "Hubbard Brook and HJ Andrews, 1970-2020"
     ) +
     xlab("Year") +
     ylab("Nitrate-Nitrogen Flux (kg/ha/day)") +
     theme_minimal() +
     theme(
-      axis.text = element_text(size = 16),
-      axis.title = element_text(size = 20),
-      plot.title = element_text(size = 24),
-      plot.subtitle = element_text(size = 22),
-      legend.title = element_text(size = 21),
-      legend.text = element_text(size = 20),
+      axis.text = element_text(size = 26),
+      axis.title = element_text(size = 30),
+      plot.title = element_text(size = 36),
+      plot.subtitle = element_text(size = 32),
+      legend.title = element_text(size = 36),
+      legend.text = element_text(size = 30),
     ) 
   
 ```

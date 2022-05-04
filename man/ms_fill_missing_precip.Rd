@@ -48,7 +48,7 @@ fill the missing values.
 }
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@@gmail.com}
+Spencer Rhea, \email{spencerrhea41@gmail.com}
 
 Mike Vlah
 

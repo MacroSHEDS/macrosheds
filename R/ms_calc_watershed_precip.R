@@ -107,7 +107,7 @@ ms_calc_watershed_precip <- function(precip,
     # load watershed boundaries
     if(! inherits(ws_boundary, 'sf') && inherits(ws_boundary, 'character')){
         wb_path <- list.files(ws_boundary, full.names = TRUE)
-        wb <- try(map_dfr(wb_path, sf::st_read))
+        wb <- try(purrr::map_dfr(wb_path, sf::st_read))
         
         if(inherits(wb, 'try-error')){
             stop('ws_boundary file failed to load, check file path is correct')
@@ -119,7 +119,7 @@ ms_calc_watershed_precip <- function(precip,
     # Load in precipitation gauge locations
     if(! inherits(precip_gauge, 'sf') && inherits(precip_gauge, 'character')){
         rg_path <- list.files(precip_gauge, full.names = TRUE)
-        rg <- try(map_dfr(rg_path, sf::st_read))
+        rg <- try(purrr::map_dfr(rg_path, sf::st_read))
         
         if(inherits(rg, 'try-error')){
             stop('precip_gauge file failed to load, check file path is correct')
@@ -136,7 +136,7 @@ ms_calc_watershed_precip <- function(precip,
     } else {
         if(! inherits(precip, 'data.frame')){
             precip_path <- list.files(precip, full.names = TRUE)
-            precip <- try(map_dfr(precip_path, read_feather))
+            precip <- try(purrr::map_dfr(precip_path, feather::read_feather))
             
             if(inherits(precip, 'try-error')){
                 stop('precip files failed to load; check file path is correct')
@@ -152,7 +152,7 @@ ms_calc_watershed_precip <- function(precip,
     } else {
         if(! inherits(pchem, 'data.frame')){
             pchem_path <- list.files(pchem, full.names = TRUE)
-            pchem <- try(map_dfr(pchem_path, read_feather))
+            pchem <- try(purrr::map_dfr(pchem_path, feather::read_feather))
             
             if(inherits(pchem, 'try-error')){
                 stop('pchem files failed to load; check file path is correct')
@@ -425,7 +425,8 @@ ms_calc_watershed_precip <- function(precip,
                 ws_mean_precip_chunk <- foreach::foreach(
                     j = 1:min(nthreads, nrow(precip_superchunk)),
                     .combine = idw_parallel_combine,
-                    .init = 'first iter') %parcond% {
+                    .init = 'first iter',
+                    .packages = c('dplyr', 'raster')) %parcond% {
                         
                         pchunk <- precip_chunklist[[j]]
                         
@@ -548,7 +549,8 @@ ms_calc_watershed_precip <- function(precip,
                         l = 1:length(chemflux_chunklist),
                         # l = 1:min(nthreads, nrow(chemflux_superchunk)),
                         .combine = idw_parallel_combine,
-                        .init = 'first iter') %parcond% {
+                        .init = 'first iter',
+                        .packages = 'dplyr') %parcond% {
                             
                             if(is_fluxable){
                                 

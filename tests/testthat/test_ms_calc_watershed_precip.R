@@ -1,7 +1,5 @@
 library(macrosheds)
 library(testthat)
-library(feather)
-library(sf)
 
 #### data for test
 temp_dir <- 'data/test_precip_function'
@@ -28,7 +26,7 @@ precip <- tibble(C1 = runif(100, min = 0, max = 25),
                  saddle = runif(100, min = 0, max = 10),
                  datetime = seq.POSIXt(as.POSIXct('2000-01-01', format = '%Y-%m-%d', tz = 'UTC'), 
                                      as.POSIXct('2000-04-09', format = '%Y-%m-%d', tz = 'UTC'), by = 'day')) %>%
-    pivot_longer(cols = c('D1', 'C1', 'saddle'), names_to = 'site_code',
+    tidyr::pivot_longer(cols = c('D1', 'C1', 'saddle'), names_to = 'site_code',
                  values_to = 'val') %>%
     mutate(var = 'IS_precipitation',
            ms_status = 0,
@@ -42,7 +40,7 @@ pchem <- tibble(C1 = runif(100, min = 0, max = 25),
                  saddle = runif(100, min = 0, max = 10),
                 datetime = seq.POSIXt(as.POSIXct('2000-01-01', format = '%Y-%m-%d', tz = 'UTC'), 
                                       as.POSIXct('2000-04-09', format = '%Y-%m-%d', tz = 'UTC'), by = 'day')) %>%
-    pivot_longer(cols = c('D1', 'C1', 'saddle'), names_to = 'site_code',
+    tidyr::pivot_longer(cols = c('D1', 'C1', 'saddle'), names_to = 'site_code',
                  values_to = 'val') %>%
     mutate(var = 'GS_NO3_N',
            ms_status = 0,
@@ -121,9 +119,9 @@ dir.create(file.path(temp_dir, 'pgauge_', 'wb1'), recursive = TRUE)
 
 write_feather(precip, file.path(temp_dir, 'precip_', 'precip.feather'))
 write_feather(pchem, file.path(temp_dir, 'pchem_', 'pchem.feather'))
-st_write(ws_boundary, file.path(temp_dir, 'ws_bound_', 'wb1'),
+sf::st_write(ws_boundary, file.path(temp_dir, 'ws_bound_', 'wb1'),
          driver = 'ESRI Shapefile', delete_dsn = TRUE)
-st_write(precip_gauge, file.path(temp_dir, 'pgauge_', 'wb1'),
+sf::st_write(precip_gauge, file.path(temp_dir, 'pgauge_', 'wb1'),
          driver = 'ESRI Shapefile', delete_dsn = TRUE)
 
 # options(error=recover)
