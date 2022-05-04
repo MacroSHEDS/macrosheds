@@ -4,7 +4,7 @@
 \alias{ms_download_site_data}
 \title{Download MacroSheds site data table}
 \usage{
-ms_download_site_data(fp = NULL)
+ms_download_site_data()
 }
 \value{
 returns a \code{data.frame} of all sites in the MacroSheds systems

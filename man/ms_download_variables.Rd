@@ -4,7 +4,7 @@
 \alias{ms_download_variables}
 \title{Download macrosheds variables data table}
 \usage{
-ms_download_variables(fp = NULL)
+ms_download_variables()
 }
 \value{
 returns a \code{data.frame} of variables, codes,

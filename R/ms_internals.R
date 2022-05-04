@@ -5,8 +5,8 @@
 #' @keywords internal 
 
 # Function aliases 
-sw = suppressWarnings
-sm = suppressWarnings
+sw <- suppressWarnings
+sm <- suppressWarnings
 `%dopar%` <- foreach::`%dopar%`
 `%do%` <- foreach::`%do%`
 # end function aliases 
@@ -45,14 +45,14 @@ parse_molecular_formulae <- function(formulae){
     # formulae = 'BCH10He10PLi2'
     # formulae='Mn'
     
-    conc_vars = str_match(formulae, '^(?:OM|TM|DO|TD|UT|UTK|TK|TI|TO|DI)?([A-Za-z0-9]+)_?')[,2]
-    two_let_symb_num = str_extract_all(conc_vars, '([A-Z][a-z][0-9]+)')
-    conc_vars = str_remove_all(conc_vars, '([A-Z][a-z][0-9]+)')
-    one_let_symb_num = str_extract_all(conc_vars, '([A-Z][0-9]+)')
-    conc_vars = str_remove_all(conc_vars, '([A-Z][0-9]+)')
-    two_let_symb = str_extract_all(conc_vars, '([A-Z][a-z])')
-    conc_vars = str_remove_all(conc_vars, '([A-Z][a-z])')
-    one_let_symb = str_extract_all(conc_vars, '([A-Z])')
+    conc_vars = stringr::str_match(formulae, '^(?:OM|TM|DO|TD|UT|UTK|TK|TI|TO|DI)?([A-Za-z0-9]+)_?')[,2]
+    two_let_symb_num = stringr::str_extract_all(conc_vars, '([A-Z][a-z][0-9]+)')
+    conc_vars = stringr::str_remove_all(conc_vars, '([A-Z][a-z][0-9]+)')
+    one_let_symb_num = stringr::str_extract_all(conc_vars, '([A-Z][0-9]+)')
+    conc_vars = stringr::str_remove_all(conc_vars, '([A-Z][0-9]+)')
+    two_let_symb = stringr::str_extract_all(conc_vars, '([A-Z][a-z])')
+    conc_vars = stringr::str_remove_all(conc_vars, '([A-Z][a-z])')
+    one_let_symb = stringr::str_extract_all(conc_vars, '([A-Z])')
     
     constituents = mapply(c, SIMPLIFY=FALSE,
                           two_let_symb_num, one_let_symb_num, two_let_symb, one_let_symb)
@@ -64,7 +64,7 @@ combine_atomic_masses <- function(molecular_constituents){
     
     #`molecular_constituents` is a vector
     
-    xmat = str_match(molecular_constituents,
+    xmat = stringr::str_match(molecular_constituents,
                      '([A-Z][a-z]?)([0-9]+)?')[, -1, drop=FALSE]
     elems = xmat[,1]
     mults = as.numeric(xmat[,2])
@@ -91,14 +91,6 @@ convert_molecule <- function(x, from, to){
     
     #e.g. convert_molecule(1.54, 'NH4', 'N')
     
-    molecule_real <- ms_vars %>%
-        filter(variable_code == !!from) %>%
-        pull(molecule)
-    
-    if(!is.na(molecule_real)) {
-        from <- molecule_real
-    }
-    
     from_mass <- calculate_molar_mass(from)
     to_mass <- calculate_molar_mass(to)
     converted_mass <- x * to_mass / from_mass
@@ -106,22 +98,12 @@ convert_molecule <- function(x, from, to){
     return(converted_mass)
 }
 
-convert_to_gl <- function(x, input_unit, molecule) {
-    
-    molecule_real <- ms_vars %>%
-        filter(variable_code == !!molecule) %>%
-        pull(molecule)
-    
-    if(!is.na(molecule_real)) {
-        formula <- molecule_real
-    } else {
-        formula <- molecule
-    }
+convert_to_gl <- function(x, input_unit, formula, ms_vars){
     
     if(grepl('eq', input_unit)) {
-        valence = ms_vars$valence[ms_vars$variable_code %in% molecule]
+        valence = ms_vars$valence[ms_vars$variable_code %in% formula]
         
-        if(length(valence) == 0) {stop('Varible is likely missing from ms_vars')}
+        if(length(valence) == 0) {stop('Is this a non-MacroSheds variable?')}
         x = (x * calculate_molar_mass(formula)) / valence
         
         return(x)
@@ -137,7 +119,7 @@ convert_to_gl <- function(x, input_unit, molecule) {
     
 }
 
-convert_from_gl <- function(x, input_unit, output_unit, molecule, g_conver) {
+convert_from_gl <- function(x, input_unit, output_unit, molecule, g_conver, ms_vars){
     
     molecule_real <- ms_vars %>%
         filter(variable_code == !!molecule) %>%
@@ -153,7 +135,7 @@ convert_from_gl <- function(x, input_unit, output_unit, molecule, g_conver) {
        grepl('eq', output_unit) && g_conver) {
         
         valence = ms_vars$valence[ms_vars$variable_code %in% molecule]
-        if(length(valence) == 0 | is.na(valence)) {stop('Varible is likely missing from ms_vars')}
+        if(length(valence) == 0 | is.na(valence)) {stop('Is this a non-MacroSheds variable?')}
         x = (x * valence) / calculate_molar_mass(formula)
         
         return(x)
@@ -170,7 +152,7 @@ convert_from_gl <- function(x, input_unit, output_unit, molecule, g_conver) {
     if(grepl('mol', output_unit) && grepl('eq', input_unit) && !g_conver) {
         
         valence = ms_vars$valence[ms_vars$variable_code %in% molecule]
-        if(length(valence) == 0) {stop('Varible is likely missing from ms_vars')}
+        if(length(valence) == 0) {stop('Is this a non-MacroSheds variable?')}
         x = (x * calculate_molar_mass(formula)) / valence
         
         x = x / calculate_molar_mass(formula)
@@ -183,7 +165,7 @@ convert_from_gl <- function(x, input_unit, output_unit, molecule, g_conver) {
         x = x * calculate_molar_mass(formula)
         
         valence = ms_vars$valence[ms_vars$variable_code %in% molecule]
-        if(length(valence) == 0) {stop('Varible is likely missing from ms_vars')}
+        if(length(valence) == 0) {stop('Is this a non-MacroSheds variable?')}
         x = (x * valence)/calculate_molar_mass(formula)
         
         return(x)
@@ -199,21 +181,21 @@ convert_unit <- function(x, input_unit, output_unit){
                     convert_factor = c(0.000000001, 0.000001, 0.001, 0.01, 0.1, 100,
                                        1000, 1000000))
     
-    old_fraction <- as.vector(str_split_fixed(input_unit, "/", n = Inf))
-    old_top <- as.vector(str_split_fixed(old_fraction[1], "", n = Inf))
+    old_fraction <- as.vector(stringr::str_split_fixed(input_unit, "/", n = Inf))
+    old_top <- as.vector(stringr::str_split_fixed(old_fraction[1], "", n = Inf))
     
     if(length(old_fraction) == 2) {
-        old_bottom <- as.vector(str_split_fixed(old_fraction[2], "", n = Inf))
+        old_bottom <- as.vector(stringr::str_split_fixed(old_fraction[2], "", n = Inf))
     }
     
-    new_fraction <- as.vector(str_split_fixed(output_unit, "/", n = Inf))
-    new_top <- as.vector(str_split_fixed(new_fraction[1], "", n = Inf))
+    new_fraction <- as.vector(stringr::str_split_fixed(output_unit, "/", n = Inf))
+    new_top <- as.vector(stringr::str_split_fixed(new_fraction[1], "", n = Inf))
     
     if(length(new_fraction == 2)) {
-        new_bottom <- as.vector(str_split_fixed(new_fraction[2], "", n = Inf))
+        new_bottom <- as.vector(stringr::str_split_fixed(new_fraction[2], "", n = Inf))
     }
     
-    old_top_unit <- tolower(str_split_fixed(old_top, "", 2)[1])
+    old_top_unit <- tolower(stringr::str_split_fixed(old_top, "", 2)[1])
     
     if(old_top_unit %in% c('g', 'e', 'q', 'l') || old_fraction[1] == 'mol') {
         old_top_conver <- 1
@@ -221,7 +203,7 @@ convert_unit <- function(x, input_unit, output_unit){
         old_top_conver <- as.numeric(filter(units, prefix == old_top_unit)[,2])
     }
     
-    old_bottom_unit <- tolower(str_split_fixed(old_bottom, "", 2)[1])
+    old_bottom_unit <- tolower(stringr::str_split_fixed(old_bottom, "", 2)[1])
     
     if(old_bottom_unit %in% c('g', 'e', 'q', 'l') || old_fraction[2] == 'mol') {
         old_bottom_conver <- 1
@@ -229,7 +211,7 @@ convert_unit <- function(x, input_unit, output_unit){
         old_bottom_conver <- as.numeric(filter(units, prefix == old_bottom_unit)[,2])
     }
     
-    new_top_unit <- tolower(str_split_fixed(new_top, "", 2)[1])
+    new_top_unit <- tolower(stringr::str_split_fixed(new_top, "", 2)[1])
     
     if(new_top_unit %in% c('g', 'e', 'q', 'l') || new_fraction[1] == 'mol') {
         new_top_conver <- 1
@@ -237,7 +219,7 @@ convert_unit <- function(x, input_unit, output_unit){
         new_top_conver <- as.numeric(filter(units, prefix == new_top_unit)[,2])
     }
     
-    new_bottom_unit <- tolower(str_split_fixed(new_bottom, "", 2)[1])
+    new_bottom_unit <- tolower(stringr::str_split_fixed(new_bottom, "", 2)[1])
     
     if(new_bottom_unit %in% c('g', 'e', 'q', 'l') || new_fraction[2] == 'mol') {
         new_bottom_conver <- 1
@@ -447,7 +429,7 @@ get_DecYear <- function(dates){
         }
     }
     
-    days_in_year <- map_dbl(year, get_days)
+    days_in_year <- purrr::map_dbl(year, get_days)
     
     DecYear <- (lubridate::yday(dates)/days_in_year)+lubridate::year(dates)
     
@@ -564,7 +546,7 @@ read_combine_feathers <- function(network,
     
     combined <- tibble()
     for(i in 1:length(prodpaths)){
-        part <- read_feather(prodpaths[i])
+        part <- feather::read_feather(prodpaths[i])
         combined <- bind_rows(combined, part)
     }
     
@@ -738,10 +720,6 @@ ms_parallelize <- function(maxcores = Inf){
     # Sys.info()[1] %in% c('Linux', 'Darwin')
     
     # if(ms_instance$which_machine == 'DCC'){
-    # Un-comment this
-        # doFuture::registerDoFuture()
-        # future::plan(cluster, workers = clst) #might need this instead of Slurm one day
-    # Un-comment this
         # future::plan(future.batchtools::batchtools_slurm)
     # }
     # } else if(.Platform$OS.type == 'windows'){
@@ -820,9 +798,6 @@ shortcut_idw <- function(encompassing_dem,
     #elev_agnostic: logical that determines whether elevation should be
     #   included as a predictor of the variable being interpolated
     
-    # loginfo(glue('shortcut_idw: working on {ss}', ss=stream_site_code),
-    #     logger = logger_module)
-    
     if(output_varname != 'SPECIAL CASE PRECIP' && save_precip_quickref){
         stop(paste('save_precip_quickref can only be TRUE if output_varname',
                    '== "SPECIAL CASE PRECIP"'))
@@ -889,22 +864,12 @@ shortcut_idw <- function(encompassing_dem,
         dk <- filter(data_locations,
                      site_code == colnames(data_matrix)[k])
         
-        # inv_dists_site <- 1 / raster::distanceFromPoints(dem_wb, dk)^2 %>%
-        #     terra::values(.)
-        
         inv_dists_site <- 1 / terra::distance(terra::rast(dem_wb_all_na), terra::vect(dk))^2 %>%
             terra::values(.)
         
-        # inv_dists_site[is.na(elevs)] <- NA #mask
         inv_dists_site <- inv_dists_site[! is.na(elevs)] #drop elevs not included in mask
         inv_distmat[, k] <- inv_dists_site
     }
-    
-    # if(output_varname == 'SPECIAL CASE PRECIP'){ REMOVE
-    #     precip_quickref <- data.frame(matrix(NA,
-    #                                          nrow = ntimesteps,
-    #                                          ncol = nrow(inv_distmat)))
-    # }
     
     #calculate watershed mean at every timestep
     if(save_precip_quickref) precip_quickref <- list()
@@ -967,22 +932,7 @@ shortcut_idw <- function(encompassing_dem,
         ws_mean[k] <- mean(d_idw, na.rm=TRUE)
         errors::errors(ws_mean)[k] <- mean(errors::errors(d_idw), na.rm=TRUE)
         
-        # quickref_ind <- k %% 1000 REMOVE
-        # update_quickref <- quickref_ind == 0
-        # if(! update_quickref){
-        # precip_quickref[[quickref_ind]] <- p_idw
         if(save_precip_quickref) precip_quickref[[k]] <- d_idw
-        # } else {
-        
-        # precip_quickref[[1000]] <- p_idw
-        
-        # save_precip_quickref(precip_idw_list = precip_quickref,
-        #                      network = network,
-        #                      domain = domain,
-        #                      site_code = stream_site_code,
-        #                      # chunk_number = quickref_chunk)
-        #                      timestep = k)
-        # }
     }
     
     if(save_precip_quickref){
@@ -1001,7 +951,6 @@ shortcut_idw <- function(encompassing_dem,
                               chunkdtrange = range(d_dt),
                               macrosheds_root = macrosheds_root)
     }
-    # compare_interp_methods()
     
     if(output_varname == 'SPECIAL CASE PRECIP'){
         
@@ -1033,7 +982,7 @@ ms_unparallelize <- function(cluster_object){
     #         error=function(e) print('nope'))
     
     if(is.null(cluster_object)){
-        future::plan(future::sequential)
+        # future::plan(future::sequential)
         return()
     }
     
@@ -1072,157 +1021,6 @@ ms_unparallelize <- function(cluster_object){
     #               envir = .GlobalEnv))
     #     }
     # }
-}
-
-apply_detection_limit_t <- function(X,
-                                    network,
-                                    domain,
-                                    prodname_ms,
-                                    ignore_pred = FALSE){
-    
-    #this is the temporally explicit version of apply_detection_limit (_t).
-    #it supersedes the scalar version (apply_detection_limit_s).
-    #that version just returns its output. This version relies on stored data,
-    #so automatically reads from data/<network>/<domain>/detection_limits.json.
-    
-    #X is a 2d array-like object. must have datetime,
-    #   site_code, var, and val columns. if X was generated by ms_cast_and_reflag,
-    #   you should be good to go.
-    #ignore_pred: logical; set to TRUE if detection limits should be retrieved
-    #   from the supplied prodname_ms directly, rather than its precursor.
-    
-    #Attempting to apply detection
-    #limits to a variable for which detection limits are not known (not present
-    #in detection_limits.json) results in error. Superfluous variable entries in
-    #detection_limits.json are ignored.
-    
-    X <- as_tibble(X) %>%
-        arrange(site_code, var, datetime)
-    
-    if(ignore_pred &&
-       (length(prodname_ms) > 1 || ! is_derived_product(prodname_ms))){
-        stop('If ignoring precursors, a single derived prodname_ms must be supplied')
-    }
-    
-    if(length(prodname_ms) > 1 && any(is_derived_product(prodname_ms))){
-        #i can't think of a time when we'd need to supply multiple derived
-        #products and knit them, but if such a case exists feel free to
-        #amend this error checker
-        stop('Cannot knit multiple detlims when one or more of them is derived.')
-    }
-    
-    if(length(prodname_ms) == 1 &&
-       is_derived_product(prodname_ms) &&
-       ! ignore_pred){
-        
-        prodname_ms <- get_detlim_precursors(network = network,
-                                             domain = domain,
-                                             prodname_ms = prodname_ms)
-    }
-    
-    if(length(prodname_ms) > 1) {
-        detlim <- knit_det_limits(network = network,
-                                  domain = domain,
-                                  prodname_ms = prodname_ms)
-    } else {
-        detlim <- read_detection_limit(network = network,
-                                       domain = domain,
-                                       prodname_ms = prodname_ms)
-    }
-    
-    if(is_ms_err(detlim)){
-        stop('problem reading detection limits from file')
-    }
-    
-    apply_detection_limit_ <- function(x, varnm, detlim){
-        
-        
-        #plenty of code superfluity in this function. adapted from a previous
-        #   version and there's negligible efficiency loss if any
-        
-        if(! varnm %in% names(detlim)){
-            stop(glue::glue('Missing detection limits for var: {v}', v = varnm))
-        }
-        
-        detlim_var <- detlim[[varnm]]
-        
-        x <- filter(x, var == varnm)
-        
-        #nrow(x) == 1 was added because there was an error occurring if there
-        #was a site with only one sample of a variable
-        if(nrow(x) == 0){
-            return(NULL)
-        }
-        
-        sn = x$site_code
-        dt = x$datetime
-        
-        site_lst <- tibble(dt, sn, val = x$val) %>%
-            base::split(sn)
-        
-        Xerr <- lapply(X = site_lst,
-                       FUN = function(z) errors(z$val)) %>%
-            unlist() %>%
-            unname()
-        
-        rounded <- lapply(X = site_lst,
-                          FUN = function(z){
-                              
-                              if(all(is.na(z$val))) return(z$val)
-                              
-                              detlim_varsite <- detlim_var[[z$sn[1]]]
-                              if(all(is.na(detlim_varsite$lim))) return(z$val)
-                              
-                              cutvec <- c(as.POSIXct(detlim_varsite$startdt,
-                                                     tz = 'UTC'),
-                                          as.POSIXct('2900-01-01 00:00:00'))
-                              
-                              roundvec <- cut(x = z$dt,
-                                              breaks = cutvec,
-                                              include.lowest = TRUE,
-                                              labels = detlim_varsite$lim) %>%
-                                  as.character() %>%
-                                  as.numeric()
-                              
-                              #sometimes synchronize_timestep will adjust a point
-                              #to a time before the earliest startdt recorded
-                              #in detection_limits.json. this handles that.
-                              if(length(roundvec == 1) && is.na(roundvec)){
-                                  roundvec = detlim_varsite$lim[1]
-                              } else {
-                                  roundvec <- imputeTS::na_locf(x = roundvec,
-                                                                option = 'nocb')
-                              }
-                              
-                              rounded <- mapply(FUN = function(a, b){
-                                  round(a, b)
-                              },
-                              a = z$val,
-                              b = roundvec,
-                              USE.NAMES = FALSE)
-                              
-                              return(rounded)
-                          }) %>%
-            unlist() %>%
-            unname()
-        
-        errors(rounded) <- Xerr
-        
-        return(rounded)
-    }
-    
-    variables <- unique(X$var)
-    
-    for(v in variables){
-        for(s in unique(X$site_code)){
-            x <- filter(X, site_code == s)
-            dlv <- apply_detection_limit_(x, v, detlim)
-            if(is.null(dlv)) next
-            X$val[X$site_code == s & X$var == v] <- dlv
-        }
-    }
-    
-    return(X)
 }
 
 write_ms_file <- function(d,
@@ -1295,7 +1093,7 @@ write_ms_file <- function(d,
                              p = prodname_ms))
             }
         }
-        #make sure write_feather will omit attrib by def (with no artifacts)
+        #make sure feather::write_feather will omit attrib by def (with no artifacts)
         feather::write_feather(d, site_file)
     }
     
@@ -1580,57 +1378,6 @@ idw_log_wb <- function(verbose, site_code, i, nw){
     #return()
 }
 
-knit_det_limits <- function(network, domain, prodname_ms){
-    
-    
-    detlim <- read_detection_limit(network, domain, prodname_ms[1])
-    
-    if(is.null(detlim)){
-        prodname_ms <- get_successor(network = network,
-                                     domain = domain,
-                                     prodname_ms = prodname_ms[1])
-    }
-    
-    for(i in 2:length(prodname_ms)) {
-        detlim_ <- read_detection_limit(network, domain, prodname_ms[i])
-        
-        old_vars <- names(detlim)
-        new_vars <- names(detlim_)
-        
-        common_vars <- base::intersect(old_vars, new_vars)
-        
-        if(length(common_vars) > 0) {
-            
-            for(p in 1:length(common_vars)) {
-                
-                old_sites <- names(detlim[[common_vars[p]]])
-                new_sites <- names(detlim_[[common_vars[p]]])
-                
-                common_sites <- base::intersect(old_sites, new_sites)
-                
-                if(!length(common_sites) == 0) {
-                    new_sites <- new_sites[!new_sites %in% common_sites]
-                }
-                
-                if(length(new_sites) > 0){
-                    for(z in 1:length(new_sites)) {
-                        detlim[[common_vars[p]]][[new_sites[z]]] <- detlim_[[common_vars[p]]][[new_sites[z]]]
-                    }
-                }
-            }
-        }
-        
-        unique_vars <- new_vars[!new_vars %in% old_vars]
-        if(length(unique_vars) > 0) {
-            for(v in 1:length(unique_vars)) {
-                detlim[[unique_vars[v]]] <- detlim_[[unique_vars[v]]]
-            }
-            
-        }
-    }
-    
-    return(detlim)
-}
 
 err_df_to_matrix <- function(df){
     
@@ -1669,118 +1416,12 @@ write_precip_quickref <- function(precip_idw_list,
                                 tz = 'UTC'),
                        sep = '_')
     
-    chunkfile <- str_replace_all(chunkfile, ':', '-')
+    chunkfile <- stringr::str_replace_all(chunkfile, ':', '-')
     
     saveRDS(object = precip_idw_list,
             file = glue::glue('{qd}/{cf}', #omitting extension for easier parsing
                               qd = quickref_dir,
                               cf = chunkfile))
-    
-    #previous approach: when chunks have a size limit:
-    
-    # #not to be confused with the precip idw tempfile (dumpfile),
-    # #the quickref file allows the same precip idw data to be used across all
-    # #chemistry variables when calculating flux. it's stored in 1000-timestep
-    # #chunks
-    #
-    # chunk_number <- floor((timestep - 1) / 1000) + 1
-    # chunkID <- stringr::str_pad(string = chunk_number,
-    #                             width = 3,
-    #                             side = 'left',
-    #                             pad = '0')
-    #
-    # quickref_dir <- glue('data/{n}/{d}/precip_idw_quickref/{s}',
-    #                      n = network,
-    #                      d = domain,
-    #                      s = site_code)
-    #
-    # chunkfile <- glue('chunk{ch}.rds',
-    #                   ch = chunkID)
-    #
-    # if(! file.exists(chunkfile)){ #in case another thread has already written it
-    #
-    #     dir.create(path = quickref_dir,
-    #                showWarnings = FALSE,
-    #                recursive = TRUE)
-    #
-    #     saveRDS(object = precip_idw_list,
-    #             file = paste(quickref_dir,
-    #                          chunkfile,
-    #                          sep = '/'))
-    # }
-}
-
-reconstruct_var_column <- function(d,
-                                   network,
-                                   domain,
-                                   prodname,
-                                   level = 'munged'){
-    
-    #currently only used inside the precip idw interpolator, where
-    #we no longer have variable prefix information. this attempts
-    #to determine that information from the stored detlim file.
-    #it's not yet equipped to handle the case where precipitation
-    #(or any other variable) has multiple prefixes through time.
-    
-    #returns d with a new var column
-    
-    if(! level %in% c('munged', 'derived')){
-        stop('level must be either "munged" or "derived"')
-    }
-    
-    prods <- sm(read_csv(glue::glue('src/{n}/{d}/products.csv',
-                              n = network,
-                              d = domain)))
-    
-    rgx <- ifelse(level == 'munged',
-                  '^(?!ms[0-9]{3}).*?',
-                  '^ms[0-9]{3}$')
-    
-    prodname_ms <- prods %>%
-        filter(prodname == !!prodname,
-               grepl(pattern = rgx,
-                     x = prodcode,
-                     perl = TRUE)) %>%
-        mutate(prodname_ms = paste(prodname,
-                                   prodcode,
-                                   sep = '__')) %>%
-        pull(prodname_ms)
-    
-    detlim <- tryCatch(
-        {
-            if(length(prodname_ms) > 1){
-                knit_det_limits(network = network,
-                                domain = domain,
-                                prodname_ms = prodname_ms)
-            } else {
-                read_detection_limit(network = network,
-                                     domain = domain,
-                                     prodname_ms = prodname_ms)
-            }
-        },
-        error = function(e){
-            stop(glue::glue('could not read detection limits, which are ',
-                      'needed for reconstructing the var column'))
-        }
-    )
-    
-    if(length(detlim) == 1){
-        var <- names(detlim)
-    } else {
-        # # d <<- d
-        # vv <<- detlim
-        # detlim = vv
-        stop(glue::glue('Not sure if we\'ll ever encounter this, but if ',
-                  'so we need to build it now!'))
-    }
-    
-    d <- d %>%
-        mutate(var = !!var) %>%
-        select(datetime, site_code, var,
-               any_of(x = c('val', 'concentration', 'flux')),
-               ms_status, ms_interp)
-    
-    return(d)
 }
 
 choose_projection <- function(lat = NULL,
@@ -1802,15 +1443,15 @@ choose_projection <- function(lat = NULL,
     abslat <- abs(lat)
     
     # if(abslat < 23){ #tropical
-    #     PROJ4 = glue('+proj=laea +lon_0=', long)
+    #     PROJ4 = glue::glue('+proj=laea +lon_0=', long)
     #              # ' +datum=WGS84 +units=m +no_defs')
     # } else { #temperate or polar
-    #     PROJ4 = glue('+proj=laea +lat_0=', lat, ' +lon_0=', long)
+    #     PROJ4 = glue::glue('+proj=laea +lat_0=', lat, ' +lon_0=', long)
     # }
     
     #this is what the makers of https://projectionwizard.org/# use to choose
     #a suitable projection: https://rdrr.io/cran/rCAT/man/simProjWiz.html
-    # THIS WORKS (PROJECTS STUFF), BUT CAN'T BE READ AUTOMATICALLY BY st_read
+    # THIS WORKS (PROJECTS STUFF), BUT CAN'T BE READ AUTOMATICALLY BY sf::st_read
     if(abslat < 70){ #tropical or temperate
         PROJ4 <- glue::glue('+proj=cea +lon_0={lng} +lat_ts=0 +x_0=0 +y_0=0 ',
                             '+ellps=WGS84 +datum=WGS84 +units=m +no_defs',
@@ -1825,10 +1466,10 @@ choose_projection <- function(lat = NULL,
     ## UTM/UPS would be nice for watersheds that don't fall on more than two zones
     ## (incomplete)
     # if(lat > 84 || lat < -80){ #polar; use Universal Polar Stereographic (UPS)
-    #     PROJ4 <- glue('+proj=ups +lon_0=', long)
+    #     PROJ4 <- glue::glue('+proj=ups +lon_0=', long)
     #              # ' +datum=WGS84 +units=m +no_defs')
     # } else { #not polar; use UTM
-    #     PROJ4 <- glue('+proj=utm +lat_0=', lat, ' +lon_0=', long)
+    #     PROJ4 <- glue::glue('+proj=utm +lat_0=', lat, ' +lon_0=', long)
     # }
     
     ## EXTRA CODE FOR CHOOSING PROJECTION BY LATITUDE ONLY
@@ -2165,7 +1806,7 @@ resolve_datetime <- function(d,
     
     dt_tb <- tibble(basecol = rep(NA, nrow(d)))
     for(i in 1:length(datetime_colnames)){
-        dt_comps <- str_match_all(string = datetime_formats[i],
+        dt_comps <- stringr::str_match_all(string = datetime_formats[i],
                                   pattern = '%([a-zA-Z])')[[1]][,2]
         dt_regex <- dt_format_to_regex(datetime_formats[i],
                                        optional = optional)
@@ -2282,11 +1923,11 @@ identify_sampling <- function(df,
     is_sensor <- ifelse(is_sensor, 'S', 'N')
     
     #set up directory system to store sample regimen metadata
-    sampling_dir <- glue('data/{n}/{d}',
+    sampling_dir <- glue::glue('data/{n}/{d}',
                          n = network,
                          d = domain)
     
-    sampling_file <- glue('data/{n}/{d}/sampling_type.json',
+    sampling_file <- glue::glue('data/{n}/{d}/sampling_type.json',
                           n = network,
                           d = domain)
     
@@ -2314,7 +1955,7 @@ identify_sampling <- function(df,
     
     for(p in 1:length(data_cols)){
         
-        # var_name <- str_split_fixed(data_cols[p], '__', 2)[1]
+        # var_name <- stringr::str_split_fixed(data_cols[p], '__', 2)[1]
         
         # df_var <- df %>%
         #     select(datetime, !!var_name := .data[[data_cols[p]]], site_code)
@@ -2387,14 +2028,14 @@ identify_sampling <- function(df,
                     mutate(type = sampling_type)
             }
             
-            var_name_base <- str_split(string = data_cols[p],
+            var_name_base <- stringr::str_split(string = data_cols[p],
                                        pattern = '__\\|')[[1]][1]
             
             g_a <- g_a %>%
                 mutate(
                     type = paste0(type,
                                   !!is_sensor[var_name_base]),
-                    var = as.character(glue('{ty}_{vb}',
+                    var = as.character(glue::glue('{ty}_{vb}',
                                             ty = type,
                                             vb = var_name_base)))
             
@@ -2473,7 +2114,8 @@ numeric_any_v <- function(...){ #attack of the ellipses
 
 get_response_1char <- function(msg,
                                possible_chars,
-                               subsequent_prompt = FALSE){
+                               subsequent_prompt = FALSE,
+                               response_from_file = NULL){
 
     #msg: character. a message that will be used to prompt the user
     #possible_chars: character vector of acceptable single-character responses
@@ -2489,7 +2131,14 @@ get_response_1char <- function(msg,
         cat(msg)
     }
 
-    ch <- as.character(readLines(con = stdin(), 1))
+    if(! is.null(response_from_file)){
+        ch <- as.character(readLines(con = response_from_file, 1))
+        rsps <- readLines(con = response_from_file)
+        rsps <- rsps[2:length(rsps)]
+        writeLines(rsps, con = response_from_file)
+    } else {
+        ch <- as.character(readLines(con = stdin(), 1))
+    }
 
     if(length(ch) == 1 && ch %in% possible_chars){
         return(ch)
@@ -2498,4 +2147,158 @@ get_response_1char <- function(msg,
                            possible_chars = possible_chars,
                            subsequent_prompt = TRUE)
     }
+}
+
+get_response_mchar <- function(msg,
+                               possible_resps,
+                               allow_alphanumeric_response = TRUE,
+                               subsequent_prompt = FALSE,
+                               response_from_file = NULL){
+    
+    #msg: character. a message that will be used to prompt the user
+    #possible_resps: character vector. If length 1, each character in the response
+    #   will be required to match a character in possible_resps, and the return
+    #   value will be a character vector of each single-character tokens in the
+    #   response. If
+    #   length > 1, the response will be required to match an element of
+    #   possible_resps exactly, and the response will be returned as-is.
+    #allow_alphanumeric_response: logical. If FALSE, the response may not
+    #   include both numerals and letters. Only applies when possible_resps
+    #   has length 1.
+    #subsequent prompt: not to be set directly. This is handled by
+    #   get_response_mchar during recursion.
+    
+    split_by_character <- ifelse(length(possible_resps) == 1, TRUE, FALSE)
+    
+    if(subsequent_prompt){
+        
+        if(split_by_character){
+            pr <- strsplit(possible_resps, split = '')[[1]]
+        } else {
+            pr <- possible_resps
+        }
+        
+        cat(paste('Your options are:',
+                  paste(pr,
+                        collapse = ', '),
+                  '\n> '))
+    } else {
+        cat(msg)
+    }
+    
+    if(! is.null(response_from_file)){
+        chs <- as.character(readLines(con = response_from_file, 1))
+        rsps <- readLines(con = response_from_file)
+        rsps <- rsps[2:length(rsps)]
+        writeLines(rsps, con = response_from_file)
+    } else {
+        chs <- as.character(readLines(con = stdin(), 1))
+    }
+    
+    if(! allow_alphanumeric_response &&
+       split_by_character &&
+       grepl('[0-9]', chs) &&
+       grepl('[a-zA-Z]', chs)){
+        
+        cat('Response may not include both letters and numbers.\n> ')
+        resp <- get_response_mchar(
+            msg = msg,
+            possible_resps = possible_resps,
+            allow_alphanumeric_response = allow_alphanumeric_response,
+            subsequent_prompt = FALSE)
+        
+        return(resp)
+    }
+    
+    if(length(chs)){
+        if(split_by_character){
+            
+            if(length(possible_resps) != 1){
+                stop('possible_resps must be length 1 if split_by_character is TRUE')
+            }
+            
+            chs <- strsplit(chs, split = '')[[1]]
+            possible_resps_split <- strsplit(possible_resps, split = '')[[1]]
+            
+            if(all(chs %in% possible_resps_split)){
+                return(chs)
+            }
+            
+        } else {
+            
+            if(length(possible_resps) < 2){
+                stop('possible_resps must have length > 1 if split_by_character is FALSE')
+            }
+            
+            if(any(possible_resps == chs)){
+                return(chs)
+            }
+        }
+    }
+    
+    resp <- get_response_mchar(
+        msg = msg,
+        possible_resps = possible_resps,
+        allow_alphanumeric_response = allow_alphanumeric_response,
+        subsequent_prompt = TRUE)
+    
+    return(resp)
+}
+
+get_response_int <- function(msg,
+                             min_val,
+                             max_val,
+                             subsequent_prompt = FALSE,
+                             response_from_file = NULL){
+    
+    #msg: character. a message that will be used to prompt the user
+    #min_val: int. minimum allowable value, inclusive
+    #max_val: int. maximum allowable value, inclusive
+    #subsequent prompt: not to be set directly. This is handled by
+    #   get_response_int during recursion.
+    
+    if(subsequent_prompt){
+        cat(glue::glue('Please choose an integer in the range [{minv}, {maxv}].',
+                 minv = min_val,
+                 maxv = max_val))
+    } else {
+        cat(msg)
+    }
+    
+    if(! is.null(response_from_file)){
+        nm <- as.numeric(as.character(readLines(con = response_from_file, 1)))
+        rsps <- readLines(con = response_from_file)
+        rsps <- rsps[2:length(rsps)]
+        writeLines(rsps, con = response_from_file)
+    } else {
+        nm <- as.numeric(as.character(readLines(con = stdin(), 1)))
+    }
+    
+    if(nm %% 1 == 0 && nm >= min_val && nm <= max_val){
+        return(nm)
+    } else {
+        get_response_int(msg = msg,
+                         min_val = min_val,
+                         max_val = max_val,
+                         subsequent_prompt = TRUE)
+    }
+}
+
+get_response_enter <- function(msg,
+                               response_from_file = NULL){
+    
+    #only returns if ENTER is pressed (or if anything is passed by response_from_file
+    
+    cat(msg)
+    
+    if(! is.null(response_from_file)){
+        ch <- as.character(readLines(con = response_from_file, 1))
+        rsps <- readLines(con = response_from_file)
+        rsps <- rsps[2:length(rsps)]
+        writeLines(rsps, con = response_from_file)
+    } else {
+        ch <- as.character(readLines(con = stdin(), 1))
+    }
+    
+    return(invisible(NULL))
 }
