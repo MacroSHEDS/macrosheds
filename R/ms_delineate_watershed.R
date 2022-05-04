@@ -1,7 +1,8 @@
 #' Delineate a watershed from a stream location.
 #' 
 #' From any geographic location, this function (iteratively) attempts to delineate a watershed,
-#' i.e. the land area that contributes overland flow to that location. Delineation
+#' i.e. the land area that contributes overland flow to that location. You will need to install whitebox
+#' binaries via \code{whitebox::install_whitebox()} before it will work. Delineation
 #' can be guided by user knowledge of local geography, or it can be fully agnostic.
 #' Any specifications not explicitly passed are given reasonable defaults. Candidate
 #' delineations are made available for viewing and the user is asked to pick one,
@@ -212,27 +213,36 @@ ms_delineate_watershed <- function(lat,
         confirm <- TRUE
     }
     
-    selection <- sw(delineate_watershed_apriori_recurse(
-        lat = lat,
-        long = long,
-        crs = crs,
-        site_code = write_name,
-        buffer_radius = spec_buffer_radius_m,
-        snap_dist = spec_snap_distance_m,
-        snap_method = spec_snap_method,
-        dem_resolution = spec_dem_resolution,
-        flat_increment = spec_flat_increment,
-        breach_method = spec_breach_method,
-        burn_streams = spec_burn_streams,
-        confirm = confirm,
-        # confirm = ! (all_specs_provided && ! confirm),
-        scratch_dir = tmp,
-        write_dir = write_dir,
-        verbose = verbose,
-        responses_from_file = responses_from_file))
+    selection <- try({
+        sw(delineate_watershed_apriori_recurse(
+            lat = lat,
+            long = long,
+            crs = crs,
+            site_code = write_name,
+            buffer_radius = spec_buffer_radius_m,
+            snap_dist = spec_snap_distance_m,
+            snap_method = spec_snap_method,
+            dem_resolution = spec_dem_resolution,
+            flat_increment = spec_flat_increment,
+            breach_method = spec_breach_method,
+            burn_streams = spec_burn_streams,
+            confirm = confirm,
+            # confirm = ! (all_specs_provided && ! confirm),
+            scratch_dir = tmp,
+            write_dir = write_dir,
+            verbose = verbose,
+            responses_from_file = responses_from_file))
+    })
     
     if(inherits(selection, 'abort_delin')){
         return(invisible(NULL))
+    }
+    
+    if(inherits(selection, 'try-error')){
+        message(paste('See additional error details, but note that if you',
+                      'haven\'t already run whitebox::install_whitebox(),',
+                      'that\'s the solution!'))
+        stop(selection)
     }
     
     #calculate watershed area in hectares
