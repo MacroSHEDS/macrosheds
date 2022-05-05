@@ -714,8 +714,6 @@ ms_parallelize <- function(maxcores = Inf){
     # clst <- parallel::makeCluster(ncores)
     clst <- NULL
     ncores <- min(parallel::detectCores(), maxcores)
-    clst <- parallel::makeCluster(ncores)
-    doParallel::registerDoParallel(clst)
     
     # Sys.info()[1] %in% c('Linux', 'Darwin')
     

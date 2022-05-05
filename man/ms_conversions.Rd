@@ -34,10 +34,10 @@ converted according to the atomic mass of their main constituent. For example,
 this can be used to convert NO3-N to NO3, or NO3 to NO3-N. See details.
 \code{\link[=ms_download_variables]{ms_download_variables()}}. If not supplied, ms_vars will be retrieved automatically.}
 
-\item{macrosheds_root}{file path. Path to folder macrosheds data is downloaded to
-from figshare. This path is needed because ms_conversions needs information on
+\item{macrosheds_root}{file path. Path to a folder where macrosheds data is stored.
+This path is needed because ms_conversions needs information on
 units in order to perform conversions. If the ms_vars file is not in this directory
-then the file will be downloaded.}
+then the file will be downloaded and saved to macrosheds_root as \code{ms_vars.feather}.}
 }
 \value{
 returns a \code{tibble} in MacroSheds format, containing concentration data converted to new units.

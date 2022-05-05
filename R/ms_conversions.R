@@ -29,7 +29,7 @@
 #' @param macrosheds_root file path. Path to a folder where macrosheds data is stored. 
 #'    This path is needed because ms_conversions needs information on 
 #'    units in order to perform conversions. If the ms_vars file is not in this directory 
-#'    then the file will be downloaded and saved to in the folder as ms_vars.feather.. 
+#'    then the file will be downloaded and saved to macrosheds_root as \code{ms_vars.feather}.
 #' @return returns a \code{tibble} in MacroSheds format, containing concentration data converted to new units.
 #' @details In MacroSheds format, concentrations of the following molecules are represented
 #'    according to the atomic mass of their primary constituent atom: NO3, NH4, NH3,
