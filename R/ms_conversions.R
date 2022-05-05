@@ -26,6 +26,10 @@
 #'    converted according to the atomic mass of their main constituent. For example,
 #'    this can be used to convert NO3-N to NO3, or NO3 to NO3-N. See details.
 #'    [ms_download_variables()]. If not supplied, ms_vars will be retrieved automatically.
+#' @param macrosheds_root file path. Path to a folder where macrosheds data is stored. 
+#'    This path is needed because ms_conversions needs information on 
+#'    units in order to perform conversions. If the ms_vars file is not in this directory 
+#'    then the file will be downloaded and saved to macrosheds_root as \code{ms_vars.feather}.
 #' @return returns a \code{tibble} in MacroSheds format, containing concentration data converted to new units.
 #' @details In MacroSheds format, concentrations of the following molecules are represented
 #'    according to the atomic mass of their primary constituent atom: NO3, NH4, NH3,
@@ -51,23 +55,27 @@
 #' ### Convert all variables from mg/L to ug/L (micrograms per liter)
 #' converted_data <- ms_conversions(d = d,
 #'                                  convert_units_from = 'mg/l',
-#'                                  convert_units_to = 'ug/l')
+#'                                  convert_units_to = 'ug/l',
+#'                                  macrosheds_root = ms_root)
 #'                                  
 #' ### Convert mg/L NO3-N to mg/L NO3
 #' converted_data <- ms_conversions(d = d,
 #'                                  convert_units_from = 'mg/l',
 #'                                  convert_units_to = 'mg/l',
-#'                                  convert_molecules = 'NO3_N')
+#'                                  convert_molecules = 'NO3_N',
+#'                                  macrosheds_root = ms_root)
 #'
 #' ### Convert from mg/L to mmol/L
 #' converted_data <- ms_conversions(d = d,
 #'                                  convert_units_from = 'mg/l',
-#'                                  convert_units_to = 'mmol/l')
+#'                                  convert_units_to = 'mmol/l',
+#'                                  macrosheds_root = ms_root)
 #'                                  
 #' ### Convert from mg/L to mEq/L
 #' converted_data <- ms_conversions(d = d,
 #'                                  convert_units_from = 'mg/l',
-#'                                  convert_units_to = 'meq/l')
+#'                                  convert_units_to = 'meq/l',
+#'                                  macrosheds_root = ms_root)
 #' 
 #' ### Convert variables to different units
 #' converted_data <- ms_conversions(d = d,
@@ -78,15 +86,29 @@
 #'                                  convert_units_to = c('NO3_N' = 'meq/l',
 #'                                                       'Na' = 'ug/l',
 #'                                                       'Mg' = 'umol/l',
-#'                                                       'SO4_S' = 'g/l'))
+#'                                                       'SO4_S' = 'g/l'),
+#'                                  macrosheds_root = ms_root)
 
 ms_conversions <- function(d,
                            convert_units_from = 'mg/l',
                            convert_units_to,
-                           convert_molecules){
+                           convert_molecules,
+                           macrosheds_root){
     
-    ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/34965591',
-                               col_types = readr::cols())
+    if(missing(macrosheds_root)){
+        stop('Please provide macrosheds_root, information needed to convert variables is stored here')
+    }
+    
+    ms_vars_path <- paste0(macrosheds_root, '/ms_vars.feahter')
+    
+    if(! file.exists(ms_vars_path)){
+        ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/34965591',
+                                   col_types = readr::cols())
+        
+        feather::write_feather(ms_vars, ms_vars_path)
+    } else{
+        ms_vars <- feather::read_feather(ms_vars_path)
+    }
     
     #checks
     cm <- ! missing(convert_molecules)

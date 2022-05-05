@@ -718,8 +718,6 @@ ms_parallelize <- function(maxcores = Inf){
     # Sys.info()[1] %in% c('Linux', 'Darwin')
     
     # if(ms_instance$which_machine == 'DCC'){
-        # doFuture::registerDoFuture()
-        # future::plan(cluster, workers = clst) #might need this instead of Slurm one day
         # future::plan(future.batchtools::batchtools_slurm)
     # }
     # } else if(.Platform$OS.type == 'windows'){
@@ -734,9 +732,13 @@ ms_parallelize <- function(maxcores = Inf){
     #     #clst <- parallel::makeCluster(ncores, type = 'PSOCK')
     # } else {
     #     # future::plan(multicore) #can't be done from Rstudio
-        # clst <- parallel::makeCluster(ncores, type = 'FORK')
-    clst <- parallel::makeCluster(ncores)
-    doParallel::registerDoParallel(clst)
+        if(Sys.info()['sysname'] == 'Windows'){
+            clst <- parallel::makeCluster(ncores, type = 'PSOCK')
+            doParallel::registerDoParallel(clst)
+        } else{
+            clst <- parallel::makeCluster(ncores, type = 'FORK')
+            doParallel::registerDoParallel(clst)
+        }
     # }
     
     return(clst)
@@ -817,7 +819,7 @@ shortcut_idw <- function(encompassing_dem,
     d_status <- data_values$ms_status
     d_interp <- data_values$ms_interp
     d_dt <- data_values$datetime
-    data_matrix <- select(data_values,
+    data_matrix <- dplyr::select(data_values,
                           -ms_status,
                           -datetime,
                           -ms_interp) %>%

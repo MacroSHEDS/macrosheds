@@ -44,9 +44,7 @@ test_that('function works with non WGS84 sf object', {
 
 test_that('error is thrown for only one input of lat or long', {
     
-    expect_error(ms_identify_usgs_gauges(sites = sites, long = 'Longitude'),
-                    'Both lat and long must be provided or a sf objust must be the input to site')
-    expect_error(ms_identify_usgs_gauges(sites = sites, lat = 'Longitude'),
-                 'Both lat and long must be provided or a sf objust must be the input to site')
+    expect_error(ms_identify_usgs_gauges(sites = sites, long = 'Longitude'))
+    expect_error(ms_identify_usgs_gauges(sites = sites, lat = 'Longitude'))
     
 })

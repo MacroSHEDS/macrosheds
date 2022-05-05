@@ -117,8 +117,8 @@ dir.create(file.path(temp_dir, 'pchem_'))
 dir.create(file.path(temp_dir, 'ws_bound_', 'wb1'), recursive = TRUE)
 dir.create(file.path(temp_dir, 'pgauge_', 'wb1'), recursive = TRUE)
 
-write_feather(precip, file.path(temp_dir, 'precip_', 'precip.feather'))
-write_feather(pchem, file.path(temp_dir, 'pchem_', 'pchem.feather'))
+feather::write_feather(precip, file.path(temp_dir, 'precip_', 'precip.feather'))
+feather::write_feather(pchem, file.path(temp_dir, 'pchem_', 'pchem.feather'))
 sf::st_write(ws_boundary, file.path(temp_dir, 'ws_bound_', 'wb1'),
          driver = 'ESRI Shapefile', delete_dsn = TRUE)
 sf::st_write(precip_gauge, file.path(temp_dir, 'pgauge_', 'wb1'),
@@ -180,8 +180,7 @@ test_that('only macrosheds sheds format is accepted', {
                                   precip_gauge = precip_gauge,
                                   out_path = temp_dir,
                                   parallel = T,
-                                  verbose = T),
-                 'precip file must be in macrosheds format with the column names datetime, site_code, val, val_err, and var at minimum')
+                                  verbose = T))
     
     expect_error(ms_calc_watershed_precip(precip = precip,
                                   pchem = pchem_fake,
@@ -189,7 +188,6 @@ test_that('only macrosheds sheds format is accepted', {
                                   precip_gauge = precip_gauge,
                                   out_path = temp_dir,
                                   parallel = T,
-                                  verbose = T),
-                 'precip_chem file must be in macrosheds format with the column names datetime, site_code, val, val_err, and var at minimum')
+                                  verbose = T))
     
-    })
+})
