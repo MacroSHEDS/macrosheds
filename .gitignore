@@ -2,8 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
-data/
+ms_data/
 example/
 catalog.R
 notes.txt
 ms.org
+tests/testthat/data/
+/data/*
+!data/poudre_ws.RData

@@ -8,7 +8,8 @@ ms_conversions(
   d,
   convert_units_from = "mg/l",
   convert_units_to,
-  convert_molecules
+  convert_molecules,
+  macrosheds_root
 )
 }
 \arguments{
@@ -32,6 +33,11 @@ variables will be converted to the same unit.}
 converted according to the atomic mass of their main constituent. For example,
 this can be used to convert NO3-N to NO3, or NO3 to NO3-N. See details.
 \code{\link[=ms_download_variables]{ms_download_variables()}}. If not supplied, ms_vars will be retrieved automatically.}
+
+\item{macrosheds_root}{file path. Path to a folder where macrosheds data is stored.
+This path is needed because ms_conversions needs information on
+units in order to perform conversions. If the ms_vars file is not in this directory
+then the file will be downloaded and saved to macrosheds_root as \code{ms_vars.feather}.}
 }
 \value{
 returns a \code{tibble} in MacroSheds format, containing concentration data converted to new units.
@@ -67,23 +73,27 @@ d <- ms_load_product(macrosheds_root = ms_root,
 ### Convert all variables from mg/L to ug/L (micrograms per liter)
 converted_data <- ms_conversions(d = d,
                                  convert_units_from = 'mg/l',
-                                 convert_units_to = 'ug/l')
+                                 convert_units_to = 'ug/l',
+                                 macrosheds_root = ms_root)
                                  
 ### Convert mg/L NO3-N to mg/L NO3
 converted_data <- ms_conversions(d = d,
                                  convert_units_from = 'mg/l',
                                  convert_units_to = 'mg/l',
-                                 convert_molecules = 'NO3_N')
+                                 convert_molecules = 'NO3_N',
+                                 macrosheds_root = ms_root)
 
 ### Convert from mg/L to mmol/L
 converted_data <- ms_conversions(d = d,
                                  convert_units_from = 'mg/l',
-                                 convert_units_to = 'mmol/l')
+                                 convert_units_to = 'mmol/l',
+                                 macrosheds_root = ms_root)
                                  
 ### Convert from mg/L to mEq/L
 converted_data <- ms_conversions(d = d,
                                  convert_units_from = 'mg/l',
-                                 convert_units_to = 'meq/l')
+                                 convert_units_to = 'meq/l',
+                                 macrosheds_root = ms_root)
 
 ### Convert variables to different units
 converted_data <- ms_conversions(d = d,
@@ -94,7 +104,8 @@ converted_data <- ms_conversions(d = d,
                                  convert_units_to = c('NO3_N' = 'meq/l',
                                                       'Na' = 'ug/l',
                                                       'Mg' = 'umol/l',
-                                                      'SO4_S' = 'g/l'))
+                                                      'SO4_S' = 'g/l'),
+                                 macrosheds_root = ms_root)
 }
 \seealso{
 \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_drop_variable_prefix]{ms_drop_variable_prefix()}}, \code{\link[=ms_download_variables]{ms_download_variables()}}
