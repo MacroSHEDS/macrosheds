@@ -1,4 +1,4 @@
-#' Watershed Boundary for the Catch la Poudre river
+#' Watershed Boundary for the Cache la Poudre River
 #'
 #' Data was retrieved using the nhdplusTools package
 #'
@@ -10,7 +10,7 @@
 #' 
 #' @references Blodgett, D., 2019, nhdplusTools: Tools for Accessing and Working with the NHDPlus, https://code.usgs.gov/water/nhdplusTools
 #'
-#' @example 
+#' @examples
 #' To use this data:
 #' data(poudre_ws)
 #' print(poudre_ws)

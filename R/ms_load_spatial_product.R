@@ -41,7 +41,7 @@ ms_load_spatial_product <- function(macrosheds_root,
     if(missing(macrosheds_root)) {
         stop('macrosheds_root must be supplied')
     }
-    if(missing(spatial_product) || ! spatial_product %in% c('ws_boundary', 'precip_gauge_locations', 'stream_gauge_locations')) {
+    if(missing(spatial_product) || ! any(spatial_product %in% c('ws_boundary', 'precip_gauge_locations', 'stream_gauge_locations'))) {
         stop('a spatial_product of ws_boundary, precip_gauge_locations, or stream_gauge_locations must be supplied')
     }
     
