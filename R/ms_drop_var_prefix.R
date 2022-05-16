@@ -14,7 +14,7 @@
 #'    monitoring piece of equipment, or manually by a human. 
 #'    The second position is either S for "sensor" or N for "non-sensor".
 #'    Non-sensor samples are generally measured analytically, in a laboratory.
-#'    For more information, see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    For more information, see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
 #' @export
 #' @seealso [ms_extract_var_prefix()]
 #' @examples

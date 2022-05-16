@@ -14,17 +14,17 @@
 #'    precip_chemistry, precip_flux_inst.
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
-#'    variable prefixes). To see a catalog of variables, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    variable prefixes). To see a catalog of variables, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
 #' @param networks character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    networks, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
 #' @param domains character vector. MacroSheds domains to load; optional. To see a catalog of
-#'    domains, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    domains, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
 #' @param site_codes character vector. MacroSheds sites to load, optional. To see a catalog of
-#'    site_codes, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    site_codes, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
 #' @param sort_result logical. If TRUE, output will be sorted by site_code, var,
 #'    datetime. this may add considerable loading time for large datasets.
 #' @param warn logical. If TRUE, function will not load more than 100MB without permission.
-#' @return Returns a \code{tibble} in MacroSheds format. See [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740) for definitions.
+#' @return Returns a \code{tibble} in MacroSheds format. See [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740) for definitions.
 #' @export
 #' @seealso [ms_download_core_data()], [ms_load_spatial_product()], [ms_read_csv()]
 #' @examples
