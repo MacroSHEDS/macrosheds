@@ -1,21 +1,21 @@
 #' Download macrosheds variables data table 
 #'
-#' Download the macrosheds variables table with information on variables codes,
+#' Download a table of MacroSheds variables with information on variable codes,
 #' units, and more.
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @return returns a \code{data.frame} of variables, codes,
-#'     and units in macrosheds
+#'     and units in MacroSheds format
 #' @export
 #' @seealso [ms_download_site_data()], [ms_download_core_data()]
 #' @examples
-#' macrosheds_sites <- ms_downloadvariables()
+#' ms_vars <- ms_download_variables()
 
 ms_download_variables <- function(){
     
-    ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/34382849',
+    ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/34965591',
                                col_types = readr::cols())
 
     return(ms_vars)
