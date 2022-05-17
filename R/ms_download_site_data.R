@@ -16,7 +16,7 @@
 
 ms_download_site_data <- function(){
     
-    ms_sites <- readr::read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/34961514',
+    ms_sites <- readr::read_csv('https://figshare.com/articles/dataset/site_metadata/19358582/files/35134501',
                                 col_types = readr::cols())
 
     return(ms_sites)

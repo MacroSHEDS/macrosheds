@@ -26,16 +26,16 @@ precip_chemistry, precip_flux_inst.}
 
 \item{filter_vars}{character vector. for products like stream_chemistry that include
 multiple variables, this filters to just the ones specified (ignores
-variable prefixes). To see a catalog of variables, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds dataset}.}
+variable prefixes). To see a catalog of variables, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
 
 \item{networks}{character vector. MacroSheds networks to load; optional. To see a catalog of
-networks, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds dataset}.}
+networks, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
 
 \item{domains}{character vector. MacroSheds domains to load; optional. To see a catalog of
-domains, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds dataset}.}
+domains, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
 
 \item{site_codes}{character vector. MacroSheds sites to load, optional. To see a catalog of
-site_codes, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds dataset}.}
+site_codes, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
 
 \item{sort_result}{logical. If TRUE, output will be sorted by site_code, var,
 datetime. this may add considerable loading time for large datasets.}
@@ -43,7 +43,7 @@ datetime. this may add considerable loading time for large datasets.}
 \item{warn}{logical. If TRUE, function will not load more than 100MB without permission.}
 }
 \value{
-Returns a \code{tibble} in MacroSheds format. See \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds dataset} for definitions.
+Returns a \code{tibble} in MacroSheds format. See \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation} for definitions.
 }
 \description{
 Loads and optionally filters MacroSheds time-series products (e.g stream_chemistry, discharge, etc.) from a

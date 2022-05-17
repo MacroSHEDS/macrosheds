@@ -102,7 +102,7 @@ ms_conversions <- function(d,
     ms_vars_path <- paste0(macrosheds_root, '/ms_vars.feahter')
     
     if(! file.exists(ms_vars_path)){
-        ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/34965591',
+        ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/35134504',
                                    col_types = readr::cols())
         
         feather::write_feather(ms_vars, ms_vars_path)

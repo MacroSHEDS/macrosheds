@@ -15,7 +15,7 @@
 
 ms_download_variables <- function(){
     
-    ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/34965591',
+    ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/35134504',
                                col_types = readr::cols())
 
     return(ms_vars)

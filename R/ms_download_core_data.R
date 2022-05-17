@@ -77,7 +77,8 @@ ms_download_core_data <- function(macrosheds_root,
         domains <- 'none'
     }
     
-    if(domains == 'all' || networks == 'all') {
+    if((length(domains) == 1 && domains == 'all') ||
+       (length(networks) == 1 && networks == 'all')) {
         rel_download <- figshare_codes
     } else{
         if(!dom_missing && !net_missing){
