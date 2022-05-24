@@ -44,42 +44,20 @@ MacroSheds unites stream and watershed data from all these sources on one platfo
 MacroSheds is funded by the U.S. National Science Foundation (Awd. 1926420). MacroSheds aquatic data are collected and provided by U.S. federally funded projects, with limited exception, see notes tab on the [MacroSheds Web Portal](https://macrosheds.org)
 
 <!-- GETTING STARTED -->
-## Getting Started
-
-To get a local copy up and running follow these simple steps.
-
-### Prerequisites
-
-To use the MacroSheds R package a user must have R installed on their machine.
 
 ### Installation
 
-* R Installation
-
-   ```{r}
-   install.packages("devtools")
-   devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git", build_vignettes = TRUE)
-   ```
-
-* Command Line Installation
-
-   ```sh
-   git clone https://github.com/MacroSHEDS/macrosheds.git
-   ```
-
-    after downloading the repository via the command line, the package needs to be built in R. 
-
-   ```{r}
-   install.packages("devtools")
-   devtools::build("https://github.com/MacroSHEDS/macrosheds.git")
-   ```
+```{r}
+install.packages("devtools")
+devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git")
+```
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 _For more information about how to use the MacroSheds R package, please refer to the [Vignettes](https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_retrieval_flux_calc.md)_
 
-_For more information about MacroSheds Project, please refer to the [website](https://macrosheds.org)_
+_For more information about the MacroSheds Project, visit the [data portal](https://macrosheds.org)_
 
 <!-- LICENSE -->
 ## License
