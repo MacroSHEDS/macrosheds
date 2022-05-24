@@ -118,7 +118,8 @@ used to condition the DEM.
 }
 \description{
 From any geographic location, this function (iteratively) attempts to delineate a watershed,
-i.e. the land area that contributes overland flow to that location. Delineation
+i.e. the land area that contributes overland flow to that location. You will need to install whitebox
+binaries via \code{whitebox::install_whitebox()} before it will work. Delineation
 can be guided by user knowledge of local geography, or it can be fully agnostic.
 Any specifications not explicitly passed are given reasonable defaults. Candidate
 delineations are made available for viewing and the user is asked to pick one,

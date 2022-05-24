@@ -8,14 +8,14 @@ ms_download_variables()
 }
 \value{
 returns a \code{data.frame} of variables, codes,
-and units in macrosheds
+and units in MacroSheds format
 }
 \description{
-Download the macrosheds variables table with information on variables codes,
+Download a table of MacroSheds variables with information on variable codes,
 units, and more.
 }
 \examples{
-macrosheds_sites <- ms_downloadvariables()
+ms_vars <- ms_download_variables()
 }
 \seealso{
 \code{\link[=ms_download_site_data]{ms_download_site_data()}}, \code{\link[=ms_download_core_data]{ms_download_core_data()}}

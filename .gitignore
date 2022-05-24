@@ -10,3 +10,4 @@ ms.org
 tests/testthat/data/
 /data/*
 !data/poudre_ws.RData
+vignettes/data

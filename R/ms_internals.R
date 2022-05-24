@@ -685,61 +685,16 @@ ms_parallelize <- function(maxcores = Inf){
     #maxcores is the maximum number of processor cores to use for R tasks.
     #   you may want to leave a few aside for other processes.
     
-    #value: a cluster object. you'll need this to return to serial mode and
-    #   free up the cores that were employed by R. Be sure to run
-    #ms_unparallelize() after the parallel tasks are complete.
-    
-    #we need to find a way to protect some cores for serving the portal
-    #if we end up processing data and serving the portal on the same
-    #machine/cluster. we can use taskset to assign the shiny process
-    #to 1-3 cores and this process to any others.
-    
-    #NOTE: this function has been updated to work with doFuture, which
-    #   supplants doParallel. doFuture allows us to dispatch jobs on a cluster
-    #   via Slurm. it might also allow us to dispatch multisession jobs on
-    #   Windows
-    
-    #obsolete-ish notes:
-    # #variables used inside the foreach loop on the master process will
-    # #be written to the global environment, in some cases overwriting needed
-    # #globals. we can set them aside in a separate environment and restore them later
-    # protected_vars <- c('prodname_ms', 'verbose', 'site_code')
-    # assign(x = 'protected_vars',
-    #        val = mget(protected_vars,
-    #                   ifnotfound = list(NULL, NULL, NULL),
-    #                   inherits = TRUE),
-    #        envir = protected_environment)
-    
-    #then set up parallelization
-    # clst <- parallel::makeCluster(ncores)
     clst <- NULL
     ncores <- min(parallel::detectCores(), maxcores)
     
-    # Sys.info()[1] %in% c('Linux', 'Darwin')
-    
-    # if(ms_instance$which_machine == 'DCC'){
-        # future::plan(future.batchtools::batchtools_slurm)
-    # }
-    # } else if(.Platform$OS.type == 'windows'){
-    #     #issues (found while testing on linux):
-    #     #1. inner precip logging waits till outer loop completes, then only prints to console.
-    #     #2. konza error that doesn't occur with FORK cluster:
-    #     #   task 1 failed - "task 2 failed - "unused argument (datetime_x = datetime)"
-    #     #3. not fully utilizing cores like FORK does
-    #     doFuture::registerDoFuture()
-    #     # clst <- parallel::makeCluster(ncores)
-    #     future::plan(multisession, workers = ncores)
-    #     #clst <- parallel::makeCluster(ncores, type = 'PSOCK')
-    # } else {
-    #     # future::plan(multicore) #can't be done from Rstudio
-        if(Sys.info()['sysname'] == 'Windows'){
-            clst <- parallel::makeCluster(ncores, type = 'PSOCK')
-            doParallel::registerDoParallel(clst)
-        } else{
-            clst <- parallel::makeCluster(ncores, type = 'FORK')
-            doParallel::registerDoParallel(clst)
-        }
-    # }
+    if(Sys.info()['sysname'] == 'Windows'){
+        clst <- parallel::makeCluster(ncores, type = 'PSOCK')
+        doParallel::registerDoParallel(clst)
+    } else{
+        clst <- parallel::makeCluster(ncores, type = 'FORK')
+        doParallel::registerDoParallel(clst)
+    }
     
     return(clst)
 }
