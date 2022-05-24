@@ -13,11 +13,11 @@
 #'    "stream_gauge_locations", or "precip_gauge_locations". Files associated with this
 #'    product will be combined across specified networks/domains.
 #' @param networks character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    networks, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
 #' @param domains character vector. MacroSheds domains to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    networks, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
 #' @param site_codes character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    networks, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
 #' @return returns an \code{sf} object containing all data belonging to the 
 #'    selected spatial product in the \code{macrosheds_root} directory.
 #' @export
@@ -41,7 +41,7 @@ ms_load_spatial_product <- function(macrosheds_root,
     if(missing(macrosheds_root)) {
         stop('macrosheds_root must be supplied')
     }
-    if(missing(spatial_product) || ! spatial_product %in% c('ws_boundary', 'precip_gauge_locations', 'stream_gauge_locations')) {
+    if(missing(spatial_product) || ! any(spatial_product %in% c('ws_boundary', 'precip_gauge_locations', 'stream_gauge_locations'))) {
         stop('a spatial_product of ws_boundary, precip_gauge_locations, or stream_gauge_locations must be supplied')
     }
     

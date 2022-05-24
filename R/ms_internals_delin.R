@@ -398,13 +398,18 @@ delineate_watershed_apriori_recurse <- function(lat,
     
     # mapview::mapviewOptions(fgb = FALSE);',
     for(i in seq_along(files_to_inspect)){
+        
         mpv <- mapview::mapview(sf::st_read(file.path(inspection_dir,
                                                       files_to_inspect[i]),
                                             quiet = TRUE),
                                 layer.name = paste('Candidate watershed', i)) +
             mapview::mapview(temp_point,
                              legend = FALSE,
-                             layer.name = 'Input lat/long')
+                             layer.name = 'Input lat/long') +
+            mapview::mapview(sf::st_read(delin_out$unique_snaps_f[i]),
+                             legend = FALSE,
+                             layer.name = 'Snapped pour point')
+            
         print(mpv)
         if(i != length(files_to_inspect)){
             get_response_enter(paste('\nPress [enter/return] to see candidate',
@@ -517,7 +522,7 @@ delineate_watershed_apriori_recurse <- function(lat,
                                  L = 0.1)
     }
     
-    if(! grepl('[0-9]', resp)){
+    if(! any(grepl('[0-9]', resp))){
         
         if(is.null(buffer_radius)){
             buffer_radius_ <- delin_out$buffer_radius
@@ -1003,7 +1008,8 @@ delineate_watershed_apriori <- function(lat,
     }
     
     delin_out <- list(inspection_dir = inspection_dir,
-                      buffer_radius = buffer_radius)
+                      buffer_radius = buffer_radius,
+                      unique_snaps_f = unique_snaps_f)
     
     return(delin_out)
 }

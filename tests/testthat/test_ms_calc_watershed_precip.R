@@ -173,7 +173,7 @@ precip_fake <- tibble(d1 = c(0,1,2),
 pchem_fake <- tibble(d1 = c(0,1,2),
                      c1 = c(0,0,0))
 
-test_that('only macrosheds sheds format is accepted', {
+test_that('only macrosheds format is accepted', {
     
     expect_error(ms_calc_watershed_precip(precip = precip_fake,
                                   ws_boundary = ws_boundary,

@@ -21,7 +21,7 @@
 #' @return Downloads all core data for selected domains to the
 #'    directory specified by \code{macrosheds_root}. Site datasets are arranged according to the following
 #'    structure: domain/prodname/site_code.feather. For definitions of these terms as used by
-#'    MacroSheds, see [MacroSheds dataset](https://doi.org/10.6084/m9.figshare.c.5621740). 
+#'    MacroSheds, see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740). 
 #' 
 #' @details Either \code{networks} or \code{domains} must be supplied. If 'all' is 
 #'    supplied to either argument, all domains will be downloaded regardless of 
@@ -53,20 +53,21 @@ ms_download_core_data <- function(macrosheds_root,
     
     figshare_base <- 'https://figshare.com/ndownloader/files/'
     
-    figshare_codes <- data.frame(network = c('krycklan', 'walker_branch', 'usgs', 'usfs', 'usfs',
-                                             'usfs', 'usfs', 'neon', 'lter', 'lter', 'lter', 'lter',
-                                             'lter', 'lter', 'lter', 'lter', 'lter', 'lter', 'lter',
-                                             'doe', 'czo', 'czo', 'czo', 'czo'),
-                                 domain = c('krycklan', 'walker_branch', 'usgs', 'suef', 'santee',
-                                            'krew', 'fernow', 'neon', 'santa_barbara', 'plum', 'niwot',
-                                            'mcmurdo', 'luquillo', 'konza', 'hjandrews', 'hbef', 'bonanza',
-                                            'baltimore', 'arctic', 'east_river', 'shale_hills',
-                                            'catalina_jemez', 'calhoun', 'boulder'),
-                                 fig_code = c(30829555, 30829456, 30829453, 30829441, 30829432,
-                                              30829426, 30829408, 30829393, 30829387, 30829375,
-                                              30829372, 30829369, 30829333, 30829318, 30829240,
-                                              30828991, 30828985, 30828979, 30828922, 30827524,
-                                              30827185, 30824872, 30824785, 30824707))
+    figshare_codes <- file_ids_for_r_package #loaded in R/sysdata.rda, which is written in postprocessing
+    #figshare_codes <- data.frame(network = c('krycklan', 'walker_branch', 'usgs', 'usfs', 'usfs',
+    #                                         'usfs', 'usfs', 'neon', 'lter', 'lter', 'lter', 'lter',
+    #                                         'lter', 'lter', 'lter', 'lter', 'lter', 'lter', 'lter',
+    #                                         'doe', 'czo', 'czo', 'czo', 'czo'),
+    #                             domain = c('krycklan', 'walker_branch', 'usgs', 'suef', 'santee',
+    #                                        'krew', 'fernow', 'neon', 'santa_barbara', 'plum', 'niwot',
+    #                                        'mcmurdo', 'luquillo', 'konza', 'hjandrews', 'hbef', 'bonanza',
+    #                                        'baltimore', 'arctic', 'east_river', 'shale_hills',
+    #                                        'catalina_jemez', 'calhoun', 'boulder'),
+    #                             fig_code = c(30829555, 30829456, 30829453, 30829441, 30829432,
+    #                                          30829426, 30829408, 30829393, 30829387, 30829375,
+    #                                          30829372, 30829369, 30829333, 30829318, 30829240,
+    #                                          30828991, 30828985, 30828979, 30828922, 30827524,
+    #                                          30827185, 30824872, 30824785, 30824707))
     
     if(net_missing){
         networks <- 'none'
@@ -76,7 +77,8 @@ ms_download_core_data <- function(macrosheds_root,
         domains <- 'none'
     }
     
-    if(domains == 'all' || networks == 'all') {
+    if((length(domains) == 1 && domains == 'all') ||
+       (length(networks) == 1 && networks == 'all')) {
         rel_download <- figshare_codes
     } else{
         if(!dom_missing && !net_missing){

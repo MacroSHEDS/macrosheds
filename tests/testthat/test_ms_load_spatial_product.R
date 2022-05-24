@@ -6,6 +6,7 @@ wd <- '../../data/ms_test'
 #but, if you're testing these piecemeal, use:
 #wd <- '.'
 
+options(timeout = 1200)
 dir.create(wd, showWarnings = FALSE)
 macrosheds::ms_download_core_data(macrosheds_root = wd,
                                   domains = 'hbef',
