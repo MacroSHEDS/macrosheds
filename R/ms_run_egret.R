@@ -21,6 +21,10 @@
 #'     default parameters in the EGRET model but need data in the eList format.
 #' @param Kalman logical. Should EGRET run the Kalman filter on WRTDS results? See
 #'     [EGRET::WRTDSKalman()] for more information.
+#' @param site_data tibble. Default NULL, if you are using a non-MacroSheds site you must 
+#'    supply a tibble with the columns: site_code, ws_area_ha, latitude, longitude. If
+#'    using a MacroSheds site you can leave this argument NULL and the MacroSheds site_data
+#'    table will be downloaded.
 #' @param quiet logical. Should warnings be printed to console?
 #' @return returns a \code{list} in the EGRET format with model results.
 #' @details
@@ -38,7 +42,8 @@
 #' @export
 
 ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE, 
-                         run_egret = TRUE, kalman = FALSE, quiet = FALSE){
+                         run_egret = TRUE, kalman = FALSE, quiet = FALSE,
+                         site_data = NULL){
     
     # Checks 
     if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(stream_chemistry))){
@@ -64,7 +69,16 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
     }
     
     # Get var and site info
-    site_data <- macrosheds::ms_download_site_data()
+    if(is.null(site_data)){
+        site_data <- macrosheds::ms_download_site_data()
+    } else{
+        if(!all(names(site_data) %in% c('site_code', 'ws_area_ha', 'latitude', 'longitude'))){
+            stop('If you are not using a macrosheds site, you must supply site_data with a tibble with the names: site_code, ws_area_ha, latitude, longitude')
+        }
+        site_data <- site_data %>% 
+            mutate(site_type = 'stream_gauge')
+    }
+    
     ms_vars <- macrosheds::ms_download_variables()
     
     site_code <- unique(stream_chemistry$site_code)
