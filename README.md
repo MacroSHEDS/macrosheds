@@ -44,6 +44,11 @@ MacroSheds unites stream and watershed data from all these sources on one platfo
 MacroSheds is funded by the U.S. National Science Foundation (Awd. 1926420). MacroSheds aquatic data are collected and provided by U.S. federally funded projects, with limited exception, see notes tab on the [MacroSheds Web Portal](https://macrosheds.org)
 
 <!-- GETTING STARTED -->
+## Getting Started
+
+### Prerequisites
+
+To use the MacroSheds R package a user must have at least R version 3.6.1 installed. We recommend the latest R version.
 
 ### Installation
 
@@ -51,6 +56,15 @@ MacroSheds is funded by the U.S. National Science Foundation (Awd. 1926420). Mac
 install.packages("devtools")
 devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git")
 ```
+
+If you'll be using our watershed delineator `ms_delineate_watershed`, you'll also need to run
+
+```{r}
+whitebox::wbt_init()
+whitebox::install_whitebox()
+```
+
+which initializes the WhiteboxTools geospatial backend and installs its Rust binaries that aren't included on CRAN. More info [here](https://giswqs.github.io/whiteboxR/).
 
 <!-- USAGE EXAMPLES -->
 ## Usage
