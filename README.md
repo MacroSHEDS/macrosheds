@@ -46,40 +46,32 @@ MacroSheds is funded by the U.S. National Science Foundation (Awd. 1926420). Mac
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple steps.
-
 ### Prerequisites
 
-To use the MacroSheds R package a user must have R installed on their machine.
+To use the MacroSheds R package a user must have at least R version 3.6.1 installed. We recommend the latest R version.
 
 ### Installation
 
-* R Installation
+```{r}
+install.packages("devtools")
+devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git")
+```
 
-   ```{r}
-   install.packages("devtools")
-   devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git", build_vignettes = TRUE)
-   ```
+If you'll be using our watershed delineator `ms_delineate_watershed`, you'll also need to run
 
-* Command Line Installation
+```{r}
+whitebox::wbt_init()
+whitebox::install_whitebox()
+```
 
-   ```sh
-   git clone https://github.com/MacroSHEDS/macrosheds.git
-   ```
-
-    after downloading the repository via the command line, the package needs to be built in R. 
-
-   ```{r}
-   install.packages("devtools")
-   devtools::build("https://github.com/MacroSHEDS/macrosheds.git")
-   ```
+which initializes the WhiteboxTools geospatial backend and installs its Rust binaries that aren't included on CRAN. More info [here](https://giswqs.github.io/whiteboxR/).
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
 _For more information about how to use the MacroSheds R package, please refer to the [Vignettes](https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_retrieval_flux_calc.md)_
 
-_For more information about MacroSheds Project, please refer to the [website](https://macrosheds.org)_
+_For more information about the MacroSheds Project, visit the [data portal](https://macrosheds.org)_
 
 <!-- LICENSE -->
 ## License

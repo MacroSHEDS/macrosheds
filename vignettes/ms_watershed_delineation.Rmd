@@ -24,11 +24,7 @@ The `whitebox` package requires binaries that aren't shipped with the CRAN packa
 but you can install them like so:
 
 ```{r whitebox-setup, message = FALSE}
-if(! whitebox::check_whitebox_binary()){
-    whitebox::install_whitebox()
-} else {
-    print('No action needed')
-}
+whitebox::install_whitebox()
 ```
 
 ## Delineation without prior information
