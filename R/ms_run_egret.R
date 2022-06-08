@@ -71,6 +71,10 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
     # Get var and site info
     if(is.null(site_data)){
         site_data <- macrosheds::ms_download_site_data()
+        
+        if(! unique(stream_chemistry$site_code) %in% site_data$site_code){
+            stop('This site is not in the MacroSheds dataset, provide a site_data table with the names: site_code, ws_area_ha, latitude, longitude')
+        }
     } else{
         if(!all(names(site_data) %in% c('site_code', 'ws_area_ha', 'latitude', 'longitude'))){
             stop('If you are not using a macrosheds site, you must supply site_data with a tibble with the names: site_code, ws_area_ha, latitude, longitude')
