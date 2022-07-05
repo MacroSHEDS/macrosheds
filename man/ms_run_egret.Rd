@@ -10,7 +10,8 @@ ms_run_egret(
   prep_data = TRUE,
   run_egret = TRUE,
   kalman = FALSE,
-  quiet = FALSE
+  quiet = FALSE,
+  site_data = NULL
 )
 }
 \arguments{
@@ -32,6 +33,11 @@ eList will be returned. This argument is intended for those who want to change
 default parameters in the EGRET model but need data in the eList format.}
 
 \item{quiet}{logical. Should warnings be printed to console?}
+
+\item{site_data}{tibble. Default NULL, if you are using a non-MacroSheds site you must
+supply a tibble with the columns: site_code, ws_area_ha, latitude, longitude. If
+using a MacroSheds site you can leave this argument NULL and the MacroSheds site_data
+table will be downloaded.}
 
 \item{Kalman}{logical. Should EGRET run the Kalman filter on WRTDS results? See
 \code{\link[EGRET:wrtdsK]{EGRET::WRTDSKalman()}} for more information.}
