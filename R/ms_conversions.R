@@ -99,7 +99,7 @@ ms_conversions <- function(d,
         stop('Please provide macrosheds_root, information needed to convert variables is stored here')
     }
     
-    ms_vars_path <- paste0(macrosheds_root, '/ms_vars.feahter')
+    ms_vars_path <- paste0(macrosheds_root, '/ms_vars.feather')
     
     if(! file.exists(ms_vars_path)){
         ms_vars <- readr::read_csv('https://figshare.com/articles/dataset/variable_metadata/19358585/files/35134504',
