@@ -72,9 +72,7 @@ move_shapefiles <- function(shp_files,
                    nm = new_name_base,
                    ext = extensions)
             
-            lapply(paste(from_dir,
-                         files_to_move,
-                         sep = '/'),
+            lapply(file.path(from_dir, files_to_move),
                    unlink)
         })
     }
@@ -425,18 +423,7 @@ delineate_watershed_apriori_recurse <- function(lat,
         allow_alphanumeric_response = FALSE,
         response_from_file = responses_from_file)
     
-    # if('n' %in% resp){
-    #     unlink(write_dir,
-    #            recursive = TRUE)
-    #     print(glue::glue('Moving on.',
-    #                s = site_code))
-    #     return(1)
-    # }
-    
     if('a' %in% resp){
-        
-        unlink(write_dir,
-               recursive = TRUE)
         
         print(glue::glue('Aborted delineation.'))
         
@@ -634,14 +621,14 @@ delineate_watershed_apriori <- function(lat,
     if(! breach_method %in% c('lc', 'basic')) stop('breach_method must be "basic" or "lc"')
     if(! is.logical(burn_streams)) stop('burn_streams must be TRUE or FALSE')
     
-    inspection_dir <- glue::glue(scratch_dir, '/INSPECT_THESE')
-    point_dir <- glue::glue(scratch_dir, '/POINT')
-    dem_f <- glue::glue(scratch_dir, '/dem.tif')
-    point_f <- glue::glue(scratch_dir, '/point.shp')
-    streams_f <- glue::glue(scratch_dir, '/streams.shp')
-    roads_f <- glue::glue(scratch_dir, '/roads.shp')
-    d8_f <- glue::glue(scratch_dir, '/d8_pntr.tif')
-    flow_f <- glue::glue(scratch_dir, '/flow.tif')
+    inspection_dir <- file.path(scratch_dir, 'INSPECT_THESE')
+    point_dir <- file.path(scratch_dir, 'POINT')
+    dem_f <- file.path(scratch_dir, 'dem.tif')
+    point_f <- file.path(scratch_dir, 'point.shp')
+    streams_f <- file.path(scratch_dir, 'streams.shp')
+    roads_f <- file.path(scratch_dir, 'roads.shp')
+    d8_f <- file.path(scratch_dir, 'd8_pntr.tif')
+    flow_f <- file.path(scratch_dir, 'flow.tif')
     
     dir.create(path = inspection_dir,
                showWarnings = FALSE)
