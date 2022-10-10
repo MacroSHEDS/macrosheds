@@ -874,12 +874,12 @@ shortcut_idw <- function(encompassing_dem,
             # Set all negative values to 0
             d_from_elev[d_from_elev < 0] <- 0
             
-            #average both approaches (this should be weighted toward idw
-            #when close to any data location, and weighted half and half when far)
-            # d_idw <- mapply(function(x, y) mean(c(x, y), na.rm=TRUE),
-            #                 d_idw,
-            #                 d_from_elev)
-            d_idw <- (d_idw + d_from_elev) / 2
+            #get weighted mean of both approaches:
+            #weight on idw is 1; weight on elev-predicted is |R^2|
+            r2 <- cor(d_elev$d, mod$fitted.values)^2
+            abs_adjr2 <- abs(1 - (1 - r2) * ((nobs(mod) - 1) / mod$df.residual))
+
+            d_idw <- (d_idw + d_from_elev * abs_adjr2) / (1 + abs_adjr2)
         }
         
         ws_mean[k] <- mean(d_idw, na.rm=TRUE)
@@ -1668,8 +1668,9 @@ approxjoin_datetime <- function(x,
     #for any datetimes in x or y that were matched more than once, keep only
     #the nearest match
     joined[, `:=` (datetime_match_diff = abs(datetime_x - datetime_y_orig))]
-    joined <- joined[, .SD[which.min(datetime_match_diff)], by = datetime_x]
-    joined <- joined[, .SD[which.min(datetime_match_diff)], by = datetime_y_orig]
+    joined <- joined[order(datetime_match_diff),
+                     lapply(.SD, function(z) first(na.omit(z))),
+                     by = datetime_x]
     
     if(indices_only){
         y_indices <- which(y$datetime_y %in% joined$datetime_y_orig)
