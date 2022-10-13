@@ -303,7 +303,7 @@ function.
     my_chem_sync <- ms_synchronize_timestep(
         my_chem,
         desired_interval = "1 day",
-        impute_limit = 40
+        interpolate_limit = 40
     )
 
 Calculate flux from this data
