@@ -69,7 +69,7 @@ which initializes the WhiteboxTools geospatial backend and installs its Rust bin
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-_For more information about how to use the MacroSheds R package, please refer to the [Vignettes](https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_retrieval_flux_calc.md)_
+_For more information about how to use the MacroSheds R package, please refer to the [Vignettes](https://github.com/MacroSHEDS/macrosheds/tree/master/vignettes). To see the compiled vignettes through your browser, click on the *.html* or *.md* files, for example this [flux data retrieval and calculation  vignette](https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_retrieval_flux_calc.md). The *.Rmd* version of these files can also be compiled using an R interpeter. 
 
 _For more information about the MacroSheds Project, visit the [data portal](https://macrosheds.org)_
 
