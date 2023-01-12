@@ -2,12 +2,6 @@
 title: Watershed dealineation with the macrosheds package 
 author: Mike Vlah
 subtitle: Delineation requires only latitude and longitude, and can be done interactively.
-output:
-    html_document:
-      toc: true 
-      theme: united
-      highlight: zenburn
-      df_print: kable
 ---
 
 Step 1: load the `macrosheds` package.
@@ -29,10 +23,17 @@ whitebox::install_whitebox()
 
 ## Delineation without prior information
 
-To delineate a watershed with no prior knowledge of its area, road density, etc.,
-you don't need to supply many arguments. Just latitude, longitude, and their coordinate
-reference system. If you don't know the CRS, try 4326 (WGS 84). If you run this as-is,
-it'll create a new folder called 'my_watershed_boundaries' in your home directory. Feel
+To delineate a watershed with no prior knowledge of its area, road density, etc., you 
+don't need to supply many arguments. Just latitude, longitude, and their coordinate 
+reference system. If you don't know the CRS, try 4326 (WGS 84). In this case, we are 
+providing specifications, and setting *verbose* and *confirm* to FALSE, because
+this allows the function to run without interaction - necessary for this vignette's R code 
+to run and knit into a markdown document without user interaction. In real application, these
+specifications should only be provided if the user has already visually inspected each parameter
+and knows they approve of the resulting delineation. The reader is encouraged to run this code without 
+the specification arguments in their own R console, and see the interactive features. The meaning of the specification arguments 
+
+If you run this as-is, it'll create a new folder called 'my_watershed_boundaries' in your home directory. Feel
 free to change that.
 
 ```{r demo, eval = FALSE}
@@ -41,7 +42,18 @@ free to change that.
         long = -122.2571,
         crs = 4326,
         write_dir = '~/my_watershed_boundaries',
-        write_name = 'example_site'
+        write_name = 'example_site',
+        # arguments below allow for this function
+        # to run without interactive confirmation
+        spec_buffer_radius_m = 1000,
+        spec_snap_distance_m = 150,
+        spec_snap_method = 'standard',
+        spec_dem_resolution = 10,
+        spec_flat_increment = 0.01,
+        spec_breach_method = 'basic',
+        spec_burn_streams = FALSE,
+        verbose = FALSE,
+        confirm = FALSE
     )
 ```
 
@@ -62,7 +74,7 @@ shapefile afterward and and view it.
 ```{r output, message = FALSE}
 library(sf)
 st_read('~/my_watershed_boundaries/example_site.shp', quiet = TRUE) %>% 
-    mapview::mapview()
+    plot()
 ```
 
 And here are the contents of `out`:
