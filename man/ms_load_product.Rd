@@ -52,7 +52,7 @@ downloaded MacroSheds dataset. For watershed boundaries and gauge locations, see
 \examples{
 ms_root = 'data/macrosheds'
 dir.create(ms_root, recursive = TRUE)
-ms_downloadcore_data(macrosheds_root = ms_root,
+ms_download_core_data(macrosheds_root = ms_root,
                       domains = c('niwot', 'hjandrews'))
 macrosheds_data <- ms_load_product(macrosheds_root = ms_root, 
                                    prodname = 'stream_chemistry', 
