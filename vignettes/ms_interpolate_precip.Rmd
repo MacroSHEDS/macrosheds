@@ -232,14 +232,14 @@ ms_near_stations <- near_stations %>%
     filter(site_code %in% !!gauges_with_data)
 ```
 
-# Look at watershed of intrest
+# Look at watershed of interest
 The last piece we need is a watershed boundary. The Poudre watersheds is included in
 MacroSheds as an example but see the data documentation for how to retrieve a watersheds
 using nhdplusTools. 
 ```{r}
 ?poudre_ws
 print(poudre_ws)
-mapview::mapview(poudre_ws)
+plot(poudre_ws)
 ```
 
 # Calculate basin average precipitation
