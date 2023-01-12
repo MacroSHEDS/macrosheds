@@ -2,12 +2,12 @@
 title: "Precipitation Interpolation"
 author: Spencer Rhea, Weston Slaughter, Mike Vlah
 subtitle: Using the `macrosheds` package to interpolate rain gauge measurments to a watershed
-output:
-    html_document:
-      toc: true 
-      theme: united
-      highlight: zenburn
-      df_print: kable
+<!-- output: -->
+<!--     html_document: -->
+<!--       toc: true  -->
+<!--       theme: united -->
+<!--       highlight: zenburn -->
+<!--       df_print: kable -->
 editor_options: 
   chunk_output_type: console
 ---
