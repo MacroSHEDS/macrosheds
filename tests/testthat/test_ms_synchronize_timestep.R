@@ -30,14 +30,14 @@ test_d_interp <- tibble(datetime = seq.Date(lubridate::ymd('2000-01-01'), lubrid
 test_that('tables with less than 2 samples throws an error', {
     expect_error(ms_synchronize_timestep(d = test_no_data, 
                                          desired_interval = '1 day',
-                                         impute_limit = 10),
+                                         interpolate_limit = 10),
                  'not enough data to synchronize')
 })
 
 test_that('summary_fun error thrown', {
     expect_error(ms_synchronize_timestep(d = test_d, 
                                          desired_interval = '1 month',
-                                         impute_limit = 10,
+                                         interpolate_limit = 10,
                                          summary_fun = '1 month'),
                  'summary_fun must be either "sum" or "mean"')
 })
@@ -69,23 +69,23 @@ test_that('summary to month works', {
 test_that('interpoltion works', {
     expect_s3_class(ms_synchronize_timestep(d = test_d_interp, 
                                             desired_interval = '1 day',
-                                            impute_limit = 10),
+                                            interpolate_limit = 10),
                     'data.frame')
     
     expect_equal(nrow(ms_synchronize_timestep(d = test_d_interp, 
                                               desired_interval = '1 day',
-                                              impute_limit = 10)),
+                                              interpolate_limit = 10)),
                  729)
 })
 
 test_that('sub-daily interpoltion works', {
     expect_s3_class(ms_synchronize_timestep(d = test_d, 
                                             desired_interval = '15 min',
-                                            impute_limit = 96),
+                                            interpolate_limit = 96),
                     'data.frame')
     
     expect_equal(nrow(ms_synchronize_timestep(d = test_d, 
                                               desired_interval = '15 min',
-                                              impute_limit = 96)),
+                                              interpolate_limit = 96)),
                  70081)
 })

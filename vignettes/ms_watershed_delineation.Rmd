@@ -1,5 +1,5 @@
 ---
-title: Watershed dealineation with the macrosheds package 
+title: Watershed delineation with the macrosheds package 
 author: Mike Vlah
 subtitle: Delineation requires only latitude and longitude, and can be done interactively.
 output:

@@ -52,9 +52,9 @@
 #'    to every cell of a watershed DEM. If \code{elevation_agnostic} is set to TRUE, the resulting
 #'    watershed average will be a simple arithmetic mean of all watershed cell values, ignoring
 #'    the local relationship between precipitation and elevation.
-#'    If FALSE (the default), the resulting watershed average will be a mean of two separate estimates: the
-#'    mean of cell values \emph{and} the prediction of a linear regression with elevation. At least 3 gauges
-#'    must record at a given time step for the regression to be leveraged in generating the final prediction.
+#'    If FALSE (the default), the resulting watershed average will be a weighted mean of two separate estimates: the
+#'    mean of cell values (weight: 1) \emph{and} the prediction of a linear regression with elevation (weight: absolute value of adjusted R^2 of modeled data).
+#'    At least 3 gauges must record at a given time step for the regression to be leveraged in generating the final prediction.
 #'    Note that these computations are performed at every time step, using all available
 #'    (non-missing, non-NA) gauges.
 #'    

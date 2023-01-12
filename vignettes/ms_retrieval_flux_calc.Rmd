@@ -233,7 +233,7 @@ Now that we have our nitrate-nitrogen data, we have to correct for differences i
 my_chem_sync <- ms_synchronize_timestep(
     my_chem,
     desired_interval = "1 day",
-    impute_limit = 40
+    interpolate_limit = 40
 )
 ```
 
