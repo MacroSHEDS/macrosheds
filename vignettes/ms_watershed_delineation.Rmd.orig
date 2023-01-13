@@ -14,8 +14,7 @@ Step 1: load the `macrosheds` package.
 
 _See the ms_retrieval_flux_calc vignette for an introduction to the package._
 
-
-```r
+```{r load-ms, message = FALSE}
 library(macrosheds)
 ```
 
@@ -24,13 +23,8 @@ DEM conditioning, pour point snapping, flow accumulation, and delineation itself
 The `whitebox` package requires binaries that aren't shipped with the CRAN package,
 but you can install them like so:
 
-
-```r
+```{r whitebox-setup, message = FALSE}
 whitebox::install_whitebox()
-```
-
-```
-## WhiteboxTools binary is located here:  /home/weston/R/x86_64-pc-linux-gnu-library/4.2/whitebox/WBT/whitebox_tools
 ```
 
 ## Delineation without prior information
@@ -41,8 +35,7 @@ reference system. If you don't know the CRS, try 4326 (WGS 84). If you run this 
 it'll create a new folder called 'my_watershed_boundaries' in your home directory. Feel
 free to change that.
 
-
-```r
+```{r demo, eval = FALSE}
     out <- ms_delineate_watershed(
         lat = 44.21013,
         long = -122.2571,
@@ -66,8 +59,7 @@ has, you can try again with "S", which burns streams into the DEM. If you're sat
 Of course you'd see the watershed interactively during the delineation, but here's how you can load the
 shapefile afterward and and view it.
 
-
-```r
+```{r output, message = FALSE, eval = FALSE}
 library(sf)
 st_read('~/my_watershed_boundaries/example_site.shp', quiet = TRUE) %>% 
     plot()
@@ -135,8 +127,7 @@ You can glean these by looking at the output above. Let's specify them all, and 
 we already know the outcome of this
 run, there's no need to be prompted for anything--let's set `confirm = FALSE`.
 
-
-```r
+```{r demo2}
     out <- ms_delineate_watershed(
         lat = 44.21013,
         long = -122.2571,
@@ -152,22 +143,4 @@ run, there's no need to be prompted for anything--let's set `confirm = FALSE`.
         verbose = FALSE,
         confirm = FALSE
     )
-```
-
-```
-##  Accessing raster elevation [-------------------------]   0% Accessing raster elevation [=========================] 100%
-## Mosaicing & Projecting
-```
-
-```
-## fill_single_cell_pits - Elapsed Time (excluding I/O): 0.1s
-## breach_depressions - Elapsed Time (excluding I/O): 0.36s
-## d8_pointer - Elapsed Time (excluding I/O): 0.2s
-## d8_flow_accumulation - Elapsed Time (excluding I/O): 0.9s
-## snap_pour_points - Elapsed Time (excluding I/O): 0.0s
-## watershed - Elapsed Time (excluding I/O): 0.6s
-```
-
-```
-## Delineation successful and confirm == FALSE. Writing shapefile to ~/my_watershed_boundaries
 ```
