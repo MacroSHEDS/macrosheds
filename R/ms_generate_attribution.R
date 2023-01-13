@@ -21,7 +21,7 @@
 
 #library(macrosheds)
 
-#d2 <- macrosheds::ms_load_product(macrosheds_root = '../../../r_package/data/ms_test',
+# d <- macrosheds::ms_load_product(macrosheds_root = '../r_package/data/ms_test',
 #                                            prodname = 'precip_chemistry',
 #                                            domains = c('hbef'),
 #                                            warn = F)
@@ -35,38 +35,96 @@
 #     col_types = 'c'
 # )
 
-ms_generate_attribution <- function(d){
+ms_generate_attribution <- function(d, chem_source = 'both',
+                                    # return_format = 'basic_dataframe',
+                                    include_ws_attr = TRUE){
+    
+    if(! chem_source %in% c('stream', 'precip', 'both')){
+        stop('chem_source must be one of "stream", "precip", or "both"')
+    }
+    
+    # rtn_fmts <- c('basic_dataframe', 'complete_dataframe', 'attribution_only')
+    # if(! return_format %in% rtn_fmts){
+    #     stop(paste0('return_format must be one of "',
+    #                paste(rtn_fmts, collapse = '", "'), '"'))
+    # }
+    
+    attrib <- list()
+    
+    if(missing(d)){
+        
+        message('d (data.frame in MacroSheds format) not supplied. Returning all rows.')
+        
+        attrib$IR_timeseries <- attrib_ts_data
+        
+        if(include_ws_attr){
+            
+            attrib$IR_ws_attr <- attrib_ws_data
+            attrib$acknowledgements <- format_acknowledgements(attrib_ts_data,
+                                                               ws_attr = TRUE)
+            attrib$bibliography <- format_bibliography(attrib_ts_data,
+                                                       ws_attr = TRUE)
+        } else {
+            
+            attrib$acknowledgements <- format_acknowledgements(attrib_ts_data)
+            attrib$bibliography <- format_bibliography(attrib_ts_data)
+        }
+        
+        return(attrib)
+    }
     
     sitevars <- d %>% 
         mutate(var = macrosheds::ms_drop_var_prefix(var)) %>%
+        mutate(var = case_when(var == 'precipitation' ~ 'precipitation',
+                               var == 'discharge' ~ 'discharge',
+                               TRUE ~ 'chemistry')) %>% 
         distinct(site_code, var)
     
-    if(! is.null(site_data)){
-        if(! all(c('domain', 'site_code') %in% colnames(site_data))){
-            stop('site_data invalid; see ms_download_site_data, or leave this parameter unassigned.')
+    if('chemistry' %in% sitevars$var){
+        
+        if(chem_source == 'precip'){
+            sitevars$var[sitevars$var == 'chemistry'] <- 'precip_chemistry'
+        } else if(chem_source == 'stream'){
+            sitevars$var[sitevars$var == 'chemistry'] <- 'stream_chemistry'
+        } else {
+            sv0 <- sitevars
+            sv0$var[sv0$var == 'chemistry'] <- 'stream_chemistry'
+            sitevars$var[sitevars$var == 'chemistry'] <- 'precip_chemistry'
+            sitevars <- bind_rows(sv0, sitevars)
         }
-    } else {
-        message('Retrieving site data')
-        site_data <- macrosheds::ms_download_site_data()
     }
     
-    # if(! is.null(attrib_data)){
-    #     if(! all(c('domain', 'macrosheds_prodcode') %in% colnames(attrib_data))){
-    #         stop('attrib_data invalid; see ms_download_attribution, or leave this parameter unassigned.')
-    #     }
-    # } else {
-    #     message('Retrieving attribution data')
-    #     attrib_data <- macrosheds::ms_download_attribution()
-    # }
-    # 
-    # sitevars <- left_join(sitevars, select(site_data, domain, site_code), by = 'site_code')
-    # 
-    # #read prodname prodcode mapping
-    # 
-    # sitevars <- left_join(sitevars, attrib_data, by = c('domain', 'prod'))
+    sitevars <- left_join(sitevars,
+                          select(ms_site_data, domain, site_code),
+                          by = 'site_code') %>% 
+        filter(! is.na(domain)) %>% 
+        distinct(domain, var)
     
-    #filter
-    #acknowledge can't distinguish precip from stream
+    dmns <- unique(sitevars$domain)
+    sitevars <- tibble(domain = rep(dmns, each = 3),
+           var = rep(c('ws_boundary', 'stream_gauge_locations', 'precip_gauge_locations'),
+                     times = length(dmns))) %>% 
+        bind_rows(sitevars)
+
+    sitevars <- left_join(sitevars, attrib_ts_data,
+                          by = c('domain', var = 'macrosheds_prodname')) %>% 
+        filter(! is.na(network))
+        
+        
+    attrib$IR_timeseries <- sitevars
     
+    if(include_ws_attr){
+        attrib$IR_ws_attr <- attrib_ws_data
+        attrib$acknowledgements <- format_acknowledgements(sitevars,
+                                                           ws_attr = TRUE)
+        attrib$bibliography <- format_bibliography(sitevars,
+                                                   ws_attr = TRUE)
+    } else {
+        
+        attrib$acknowledgements <- format_acknowledgements(attrib_ts_data)
+        attrib$bibliography <- format_bibliography(attrib_ts_data)
+    }
+    
+    return(attrib)
 }
     

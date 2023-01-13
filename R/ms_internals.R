@@ -2467,3 +2467,133 @@ get_response_enter <- function(msg,
     
     return(invisible(NULL))
 }
+
+format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
+    
+    custom_acks <- ts_attrib %>% 
+        filter(! is.na(IR_acknowledgement_text)) %>% 
+        select(domain, IR_acknowledgement_text) %>% 
+        left_join(select(ms_site_data, domain, network_fullname, domain_fullname),
+                  by = 'domain') %>% 
+        distinct() %>% 
+        mutate(network_fullname = ifelse(network_fullname == domain_fullname, '', network_fullname)) %>% 
+        mutate(txt = paste0(domain_fullname, ' ', network_fullname, ': ', IR_acknowledgement_text)) %>% 
+        pull(txt)
+    
+    relevant_deets <- ts_attrib %>% 
+        distinct(domain, funding) %>% 
+        left_join(select(ms_site_data, domain, network_fullname, domain_fullname),
+                  by = 'domain') %>% 
+        distinct() %>% 
+        # bind_rows(tibble(domain='a', domain_fullname = 'a', network_fullname='a', funding='NSF awards: 345, 3535')) %>%
+        mutate(network_fullname = ifelse(network_fullname == domain_fullname, '', network_fullname)) %>% 
+        mutate(txt = paste0(domain_fullname, ' ', network_fullname, ' (', funding, ')')) %>% 
+        pull(txt)
+    
+    ndeets <- length(relevant_deets)
+                                          
+    relevant_deets <- paste0(1:ndeets, '. ', relevant_deets)
+    
+    ack <- glue::glue('Primary data were provided by the following sources:\n{ack_ls}.',
+                      ack_ls = paste(relevant_deets, collapse = '\n'))
+    
+    if(length(custom_acks)){
+        ack <- paste(ack, paste(custom_acks, collapse = '\n'), sep = '\n')
+    }
+    
+    if(ws_attr){
+        ws_add <- glue::glue('Spatial summary data were derived from layers ',
+                             'provided by:\n{ack_ls2}',
+                             ack_ls2 = paste(unique(attrib_ws_data$primary_source),
+                                             collapse = ', '))
+        
+        ack <- paste(ack, ws_add, sep = '\n')
+    }
+    
+    return(ack)
+}
+
+format_citations <- function(ts_attrib, ws_attr = FALSE){
+    
+    # attrib_ts_data
+    bts <- strsplit(ts_bib, '\n\n')[[1]]
+    bts <- grep('^@misc', bts, value = TRUE)
+    authors <- stringr::str_match(bts, 'author = \\{(.+?)\\},\\\n')[, 2]
+    author1 <- stringr::str_match(authors, '^(\\{?[\\.A-Za-z]+,? [A-Za-z])')[, 2]
+    year <- stringr::str_match(bts, 'year = \\{([0-9]{4})\\},\\\n')[, 2]
+    year[is.na(year)] <- 'title'
+    
+    # attrib_ts_data %>% 
+    #     filter(! is.na(citation)) %>% 
+    #     mutate(author1 = stringr::str_match(citation, '^([\\.A-Za-z]+,? [A-Za-z])')[, 2]) %>% 
+    #     pull(author1)
+    # 
+    # word_str <- '([A-Za-z]{2,})'
+    # junk_str <- '[0-9A-Z\\., \\{\\}\\(\\)\\[\\]\\-]*'
+    # # word_str <- '([A-Za-z]+)'
+    # # junk_str <- '[0-9]*'
+    # # rgx <- paste0(word_str, junk_str, word_str)
+    # # stringr::str_match(attrib_ts_data$citation[1], rgx)
+    # 
+    # first_3_words <- attrib_ts_data %>% 
+    #     distinct(citation) %>% 
+    #     slice(1:3) %>% 
+    #     mutate(wrds = stringr::str_match(citation, rgx)[, 2:4]) %>% 
+    #     pull(wrds)
+    # first_3_words
+    
+    #-----#
+    extracts <- attrib_ts_data %>% 
+        filter(! is.na(citation)) %>% 
+        distinct(citation) %>% 
+        mutate(words = stringr::str_extract_all(citation, '[A-Za-z]{2,}'),
+               pubyr = stringr::str_extract(citation, '[1-2][0-9]{3}')) %>% 
+        select(words, pubyr)
+    
+    first_5_words <- sapply(extracts$words, function(x) x[1:5], simplify = FALSE)
+    
+    matches <- c()
+    for(i in seq_len(nrow(extracts))){
+        testvec <- c(first_5_words[i][[1]], extracts$pubyr[i])
+        zz = Filter(function(x) all(sapply(testvec, function(y) grepl(y, x))), bts)
+        matches <- c(matches, length(zz))
+        # mch <- Find(function(x) all(sapply(testvec, function(y) grepl(y, x))), bts)
+        # matches <- c(matches, mch)
+    }
+    
+    REAL SOLUTION: repopulate citation column with formatted citations, then do the
+    above filtering by full title, authors, date
+    
+    #find first three words of only letters
+    #find year
+    #find n bibtext entries that contain all
+    #if only one match for each, g2g
+    
+    relevant_deets <- ts_attrib %>% 
+        distinct(citation, funding) %>% 
+        left_join(select(ms_site_data, domain, network_fullname, domain_fullname),
+                  by = 'domain') %>% 
+        distinct() %>% 
+        # bind_rows(tibble(domain='a', domain_fullname = 'a', network_fullname='a', funding='NSF awards: 345, 3535')) %>%
+        mutate(network_fullname = ifelse(network_fullname == domain_fullname, '', network_fullname)) %>% 
+        mutate(txt = paste0(domain_fullname, ' ', network_fullname, ' (', funding, ')')) %>% 
+        pull(txt)
+    
+    ndeets <- length(relevant_deets)
+                                          
+    relevant_deets <- paste0(1:ndeets, '. ', relevant_deets)
+    
+    ack <- glue::glue('Primary data were provided by the following sources:\n{ack_ls}.',
+                      ack_ls = paste(relevant_deets, collapse = '\n'))
+    
+    if(ws_attr){
+        ws_add <- glue::glue('Spatial summary data were derived from layers ',
+                             'provided by:\n{ack_ls2}',
+                             ack_ls2 = paste(unique(attrib_ws_data$primary_source),
+                                             collapse = ', '))
+        
+        ack <- paste(ack, ws_add, sep = '\n')
+    }
+    
+    return(ack)
+}
