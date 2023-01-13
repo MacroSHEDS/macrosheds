@@ -29,8 +29,7 @@ precipitation gauges in our area of interest, the Cache La Poudre watershed at F
 
 To use the `macrosheds` package, you must first **make sure you have the `macrosheds` package on your computer, built, and installed in R**. Currently, the package is only available via github. If you have not already, you can install the `macrosheds` package as follows: 
 
-
-```r
+```{r ms-install, eval = FALSE}
 # install.packages('devtools') #you may need to install devtools too
 
 devtools::install_github("https://github.com/MacroSHEDS/macrosheds")
@@ -38,21 +37,21 @@ devtools::install_github("https://github.com/MacroSHEDS/macrosheds")
 
 Now, that we have the `macrosheds` package,  we load it into our library, along with other packages we will be using in this walkthrough. 
 
-
-```r
+```{r setup-library, message = FALSE}
+   
 library(rnoaa)
 library(sf)
 library(lubridate)
 library(macrosheds)
 library(ggplot2)
 library(tidyverse)
+
 ```
 
 # Locate and download NOAA data
 
 This is a helper function used to search NOAA's Global Historical Climate Network- Daily dataset for gauges near a location with the rnoaa package. You can skip over this part unless you're interested in downloading other data from NOAA. 
-
-```r
+```{r}
 search_noaa_stations <- function(lat, long, noaa_sites, buffer_km, start_year, end_year) {
     
     # Site = an sf object with a minimum of the columns: site_code and geometry
@@ -144,8 +143,7 @@ We need the file that has the location of all gauges in the NOAA database, so we
 use the `rnoaa::ghcnd_stations` function to pull that data and convert it to an sf
 object. Then we can do geospatial filters on the data. 
 
-
-```r
+```{r, message=FALSE}
 noaa_station <- rnoaa::ghcnd_stations()
 # Only want sites that have temperature measurements
 noaa_station_all_vars <- noaa_station %>%
@@ -159,8 +157,7 @@ noaa_station_sf <- noaa_station %>%
 ```
 
 Now we'll search for stations 30km from the center of the Poudre watershed
-
-```r
+```{r, message=FALSE}
 near_stations <- search_noaa_stations(lat = 40.694473, long = -105.499921,
                                       noaa_sites = noaa_station_sf, buffer_km = 30,
                                       start_year = 2000, 2018)
@@ -170,8 +167,7 @@ Next we'll download the precipitation data for these stations.
 This function will download noaa precipitation (PRCP), daily maximum (TMAX), and 
 daily minimum (TMIN) temperature. NOAA provides this data in units of tenths of mm
 and tenths of degrees. The function will convert these units to mm and degrees C
-
-```r
+```{r, message=FALSE}
 noaa_precip_data <- download_clean_noaa_data(noaa_ids = near_stations$id)
 ```
 
@@ -194,8 +190,7 @@ val_err = uncertainty unknown with observation, can set to 0 is unknown
 
 We will also remove gauges that have more than 10% of their record missing in 2014
 
-
-```r
+```{r}
 ms_noaa_precip_data <- noaa_precip_data %>%
     filter(element == 'PRCP') %>%
     select(site_code = NOAA_id,
@@ -230,8 +225,7 @@ geometry = geospatial informaiton for shape/point
 
 We can use the NOAA site data and convert it to MacroSheds format.
 
-
-```r
+```{r}
 ms_near_stations <- near_stations %>%
     select(site_code = id,
            geometry) %>%
@@ -242,8 +236,7 @@ ms_near_stations <- near_stations %>%
 The last piece we need is a watershed boundary. The Poudre watersheds is included in
 MacroSheds as an example but see the data documentation for how to retrieve a watersheds
 using nhdplusTools. 
-
-```r
+```{r}
 ?poudre_ws
 ```
 ![poudre_ws](ms_interpolate_precip_files/figure-markdown_strict/unnamed-chunk-7-1.png)
@@ -270,8 +263,7 @@ elevation to calculate basin average precipitation. This may be useful when calc
 precipitation in a basin that has a significant relationship between elevation and
 precipitation. 
 
-
-```r
+```{r}
 ms_calc_watershed_precip(precip = ms_noaa_precip_data,
                          ws_boundary = poudre_ws,
                          precip_gauge = ms_near_stations,
@@ -280,48 +272,17 @@ ms_calc_watershed_precip(precip = ms_noaa_precip_data,
                          out_path = 'example',
                          elevation_agnostic = TRUE,
                          verbose = FALSE)
-```
 
-```
-## Warning: PROJ support is provided by the sf and terra packages among others
-
-## Warning: PROJ support is provided by the sf and terra packages among others
-```
-
-```
-##  Accessing raster elevation [-------------------------]   0% Accessing raster elevation [=====>-------------------]  25% Accessing raster elevation [===========>-------------]  50% Accessing raster elevation [==================>------]  75% Accessing raster elevation [=========================] 100%
-## Mosaicing & Projecting
-## Clipping DEM to bbox
-```
-
-```
-## Warning: PROJ support is provided by the sf and terra packages among others
-
-## Warning: PROJ support is provided by the sf and terra packages among others
 ```
 
 Let's look at the data!
-
-```r
+```{r}
 pourdre_precip <- feather::read_feather('example/precipitation__ms900/poudre_river.feather')
 head(pourdre_precip)
 ```
 
-```
-## # A tibble: 6 × 7
-##   datetime   site_code    var                val ms_status ms_interp val_err
-##   <date>     <chr>        <chr>            <dbl>     <dbl>     <dbl>   <dbl>
-## 1 2014-01-01 poudre_river IS_precipitation  2.06         0         0       0
-## 2 2014-01-02 poudre_river IS_precipitation  1.13         0         0       0
-## 3 2014-01-03 poudre_river IS_precipitation  1.11         0         0       0
-## 4 2014-01-04 poudre_river IS_precipitation  6.07         0         0       0
-## 5 2014-01-05 poudre_river IS_precipitation  2.78         0         0       0
-## 6 2014-01-06 poudre_river IS_precipitation  1.91         0         0       0
-```
 
-
-
-```r
+```{r}
 poudre_plot <- ggplot(pourdre_precip, aes(datetime, val)) +
     geom_line() +
     labs(x = 'Date', y = 'Precipitation (mm)')

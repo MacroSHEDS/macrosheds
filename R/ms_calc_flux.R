@@ -10,7 +10,10 @@
 #'    stream chemistry data in MacroSheds format and in units of mg/L.
 #' @param q \code{data.frame}. A \code{data.frame} of precipitation or stream
 #'    discharge in MacroSheds format and in units of mm or L/s, respectively.
-#' @param q_type character. Either 'precipitation' or 'discharge'. 
+#' @param q_type character. Either 'precipitation' or 'discharge'.
+#' @param site_info \code{data.frame}. Optional; if supplied, should be the MacroSheds
+#'    site_data tibble as returned by [ms_download_site_data()]. If omitted,
+#'    [ms_download_site_data()] will be called for you.
 #' @param verbose logical. Default TRUE; prints more information to console.
 #' @return returns a \code{tibble} of stream or precipitation chemical flux for every timestep 
 #'    where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep. 
