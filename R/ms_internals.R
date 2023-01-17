@@ -2513,7 +2513,7 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
     return(ack)
 }
 
-format_citations <- function(ts_attrib, ws_attr = FALSE){
+format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     
     # attrib_ts_data
     bts <- strsplit(ts_bib, '\n\n')[[1]]
@@ -2561,8 +2561,8 @@ format_citations <- function(ts_attrib, ws_attr = FALSE){
         # matches <- c(matches, mch)
     }
     
-    REAL SOLUTION: repopulate citation column with formatted citations, then do the
-    above filtering by full title, authors, date
+    # REAL SOLUTION: repopulate citation column with formatted citations, then do the
+    # above filtering by full title, authors, date
     
     #find first three words of only letters
     #find year

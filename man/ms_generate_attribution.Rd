@@ -4,7 +4,7 @@
 \alias{ms_generate_attribution}
 \title{Easily cite and/or acknowledge primary sources of the MacroSheds dataset}
 \usage{
-ms_generate_attribution(d)
+ms_generate_attribution(d, chem_source = "both", include_ws_attr = TRUE)
 }
 \arguments{
 \item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or}

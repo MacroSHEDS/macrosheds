@@ -3,7 +3,7 @@
 \docType{data}
 \name{attrib_ts_data}
 \alias{attrib_ts_data}
-\title{Attribution and intellectual rights information for MacroSheds time-series data}
+\title{Attribution and intellectual rights information for MacroSheds time-series and watershed attribute data}
 \format{
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 414 rows and 27 columns.
 }
