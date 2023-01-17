@@ -48,7 +48,7 @@ help(package = macrosheds)
 # Identify target sites and variables in the MacroSheds dataset
 
 
-Our first goal is to **identify sites we might want to pull data from**. To get more information about MacroSheds sites, we will use the function `download_ms_site_data`, which loads a tibble of MacroSheds site metadata. 
+Our first goal is to **identify sites we might want to pull data from**. To get more information about MacroSheds sites, we will use the function `ms_download_site_data`, which loads a tibble of MacroSheds site metadata. 
 
 We will use `?` to get more information about the function, and how to use it.
 
