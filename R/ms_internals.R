@@ -2561,9 +2561,9 @@ format_citations <- function(ts_attrib, ws_attr = FALSE){
         # matches <- c(matches, mch)
     }
     
-    ## REAL SOLUTION: repopulate citation column with formatted citations, then do the
-    ## above filtering by full title, authors, date
-    
+    # REAL SOLUTION: repopulate citation column with formatted citations, then do the
+    # above filtering by full title, authors, date
+
     #find first three words of only letters
     #find year
     #find n bibtext entries that contain all
