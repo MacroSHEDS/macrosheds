@@ -10,4 +10,10 @@ ms.org
 tests/testthat/data/
 /data/*
 !data/poudre_ws.RData
+!data/attribution_and_intellectual_rights_timeseries.RData
+!data/attribution_and_intellectual_rights_ws_attr.RData
+!data/ms_vars_ts.RData
+!data/ms_vars_ws_attr.RData
+!data/bibtex_timeseries.RData
+!data/bibtex_ws_attr.RData
 vignettes/data
