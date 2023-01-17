@@ -2513,7 +2513,7 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
     return(ack)
 }
 
-format_citations <- function(ts_attrib, ws_attr = FALSE){
+format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     
     # attrib_ts_data
     bts <- strsplit(ts_bib, '\n\n')[[1]]

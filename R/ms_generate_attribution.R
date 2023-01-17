@@ -53,7 +53,7 @@ ms_generate_attribution <- function(d, chem_source = 'both',
     
     if(missing(d)){
         
-        message('d (data.frame in MacroSheds format) not supplied. Returning all rows.')
+        message('d (data.frame in MacroSheds format) not supplied. Returning all records')
         
         attrib$IR_timeseries <- attrib_ts_data
         
