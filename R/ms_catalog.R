@@ -19,7 +19,7 @@
 
 ms_catalog <- function(fp = NULL){
 
-    ms_cat <- readr::read_csv('https://figshare.com/articles/dataset/variable_catalog/19585810/files/35134507',
+    ms_cat <- readr::read_csv('https://figshare.com/articles/dataset/variable_catalog/19585810/files/38857869',
                         col_types = readr::cols())
     ms_cat <- ms_cat %>%
       select(-chem_category)

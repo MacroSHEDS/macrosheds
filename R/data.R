@@ -41,3 +41,4 @@
 #'     mutate(site_code = 'poudre_river') %>%
 #'     rename(geometry = x)
 "poudre_ws"
+"attribution_and_intellectual_rights_timeseries"
