@@ -26,15 +26,6 @@
 #                                            domains = c('hbef'),
 #                                            warn = F)
 
-# conf <- jsonlite::fromJSON('../../config.json',
-#                            simplifyDataFrame = FALSE)
-# attrib_data <- googlesheets4::read_sheet(
-#     conf$site_doi_license_gsheet,
-#     skip = 5,
-#     na = c('', 'NA'),
-#     col_types = 'c'
-# )
-
 ms_generate_attribution <- function(d, chem_source = 'both',
                                     # return_format = 'basic_dataframe',
                                     include_ws_attr = TRUE){
@@ -60,14 +51,17 @@ ms_generate_attribution <- function(d, chem_source = 'both',
         if(include_ws_attr){
             
             attrib$IR_ws_attr <- attrib_ws_data
-            attrib$acknowledgements <- format_acknowledgements(attrib_ts_data,
-                                                               ws_attr = TRUE)
-            attrib$bibliography <- format_bibliography(attrib_ts_data,
-                                                       ws_attr = TRUE)
+            attrib$acknowledgements <- macrosheds:::format_acknowledgements(
+                attrib_ts_data,
+                ws_attr = TRUE)
+            attrib$bibliography <- macrosheds:::format_bibliography(
+                attrib_ts_data,
+                ws_attr = TRUE)
+            
         } else {
             
-            attrib$acknowledgements <- format_acknowledgements(attrib_ts_data)
-            attrib$bibliography <- format_bibliography(attrib_ts_data)
+            attrib$acknowledgements <- macrosheds:::format_acknowledgements(attrib_ts_data)
+            attrib$bibliography <- macrosheds:::format_bibliography(attrib_ts_data)
         }
         
         return(attrib)
@@ -114,15 +108,20 @@ ms_generate_attribution <- function(d, chem_source = 'both',
     attrib$IR_timeseries <- sitevars
     
     if(include_ws_attr){
+        
         attrib$IR_ws_attr <- attrib_ws_data
-        attrib$acknowledgements <- format_acknowledgements(sitevars,
-                                                           ws_attr = TRUE)
-        attrib$bibliography <- format_bibliography(sitevars,
-                                                   ws_attr = TRUE)
+        attrib$acknowledgements <- macrosheds:::format_acknowledgements(
+            sitevars,
+            ws_attr = TRUE)
+        
+        attrib$bibliography <- macrosheds:::format_bibliography(
+            sitevars,
+            ws_attr = TRUE)
+        
     } else {
         
-        attrib$acknowledgements <- format_acknowledgements(attrib_ts_data)
-        attrib$bibliography <- format_bibliography(attrib_ts_data)
+        attrib$acknowledgements <- macrosheds:::format_acknowledgements(attrib_ts_data)
+        attrib$bibliography <- macrosheds:::format_bibliography(attrib_ts_data)
     }
     
     return(attrib)

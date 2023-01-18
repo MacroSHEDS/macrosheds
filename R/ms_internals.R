@@ -2486,8 +2486,9 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
                   by = 'domain') %>% 
         distinct() %>% 
         # bind_rows(tibble(domain='a', domain_fullname = 'a', network_fullname='a', funding='NSF awards: 345, 3535')) %>%
-        mutate(network_fullname = ifelse(network_fullname == domain_fullname, '', network_fullname)) %>% 
-        mutate(txt = paste0(domain_fullname, ' ', network_fullname, ' (', funding, ')')) %>% 
+        mutate(network_fullname = ifelse(stringr::str_detect(domain_fullname, network_fullname), '', network_fullname)) %>% 
+        mutate(txt = paste0(domain_fullname, ' ', network_fullname, ' (', funding, ')'),
+        txt = stringr::str_extract(txt, '.+?(?=(?: \\(NA\\)|$))')) %>%
         pull(txt)
     
     ndeets <- length(relevant_deets)
@@ -2515,85 +2516,124 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
 
 format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     
-    # attrib_ts_data
+    #organize bibtex records
     bts <- strsplit(ts_bib, '\n\n')[[1]]
-    bts <- grep('^@misc', bts, value = TRUE)
+    bts[1] <- stringr::str_replace(bts[1], '\\\n', '')
+    bts <- grep('^(?:@misc|@article)', bts, value = TRUE)
     authors <- stringr::str_match(bts, 'author = \\{(.+?)\\},\\\n')[, 2]
-    author1 <- stringr::str_match(authors, '^(\\{?[\\.A-Za-z]+,? [A-Za-z])')[, 2]
+    authors <- stringr::str_replace_all(authors, ' and ', '')
+    authors <- stringr::str_remove_all(authors, '[[[:punct:]] ]')
     year <- stringr::str_match(bts, 'year = \\{([0-9]{4})\\},\\\n')[, 2]
-    year[is.na(year)] <- 'title'
+    title <- stringr::str_match(bts, '\\\ttitle = \\{(.+?)(?=(?:\\.| ver |\\},\\\n|$))')[, 2]
+    title <- stringr::str_remove_all(title, '[[[:punct:]] ]')
+    title <- tolower(title)
+    year[is.na(year)] <- 'none'
     
-    # attrib_ts_data %>% 
-    #     filter(! is.na(citation)) %>% 
-    #     mutate(author1 = stringr::str_match(citation, '^([\\.A-Za-z]+,? [A-Za-z])')[, 2]) %>% 
-    #     pull(author1)
-    # 
-    # word_str <- '([A-Za-z]{2,})'
-    # junk_str <- '[0-9A-Z\\., \\{\\}\\(\\)\\[\\]\\-]*'
-    # # word_str <- '([A-Za-z]+)'
-    # # junk_str <- '[0-9]*'
-    # # rgx <- paste0(word_str, junk_str, word_str)
-    # # stringr::str_match(attrib_ts_data$citation[1], rgx)
-    # 
-    # first_3_words <- attrib_ts_data %>% 
-    #     distinct(citation) %>% 
-    #     slice(1:3) %>% 
-    #     mutate(wrds = stringr::str_match(citation, rgx)[, 2:4]) %>% 
-    #     pull(wrds)
-    # first_3_words
-    
-    #-----#
-    extracts <- attrib_ts_data %>% 
-        filter(! is.na(citation)) %>% 
-        distinct(citation) %>% 
-        mutate(words = stringr::str_extract_all(citation, '[A-Za-z]{2,}'),
-               pubyr = stringr::str_extract(citation, '[1-2][0-9]{3}')) %>% 
-        select(words, pubyr)
-    
-    first_5_words <- sapply(extracts$words, function(x) x[1:5], simplify = FALSE)
-    
+    #organize formatted citations
+    extracts <- ts_attrib %>%
+        filter(! is.na(citation)) %>%
+        distinct(citation) %>%
+        mutate(authors = stringr::str_extract(citation, '^.*(?= \\([0-9]{4}[a-z]*\\))'),
+               authors = stringr::str_remove_all(authors, '[ &]'),
+               authors = stringr::str_replace_all(authors, '\\.,', '.'),
+               authors = stringr::str_replace_all(authors, '[[[:punct:]] ]', ''),
+               pubyr = stringr::str_match(citation, '\\(([0-9]{4})[a-z]*\\)')[, 2],
+               title = stringr::str_extract(citation, '(?<=\\([0-9]{4}[a-z]{0,2}\\)\\. ).{1,999}?(?=(?:\\.| ver |\\},\\\n|$))'),
+               title = stringr::str_replace_all(title, '[[[:punct:]] ]', ''),
+               title = tolower(title)) %>% 
+        select(authors, pubyr, title)
+            
+    #match records to citations
     matches <- c()
     for(i in seq_len(nrow(extracts))){
-        testvec <- c(first_5_words[i][[1]], extracts$pubyr[i])
-        zz = Filter(function(x) all(sapply(testvec, function(y) grepl(y, x))), bts)
-        matches <- c(matches, length(zz))
-        # mch <- Find(function(x) all(sapply(testvec, function(y) grepl(y, x))), bts)
-        # matches <- c(matches, mch)
-    }
-    
-    # REAL SOLUTION: repopulate citation column with formatted citations, then do the
-    # above filtering by full title, authors, date
-    
-    #find first three words of only letters
-    #find year
-    #find n bibtext entries that contain all
-    #if only one match for each, g2g
-    
-    relevant_deets <- ts_attrib %>% 
-        distinct(citation, funding) %>% 
-        left_join(select(ms_site_data, domain, network_fullname, domain_fullname),
-                  by = 'domain') %>% 
-        distinct() %>% 
-        # bind_rows(tibble(domain='a', domain_fullname = 'a', network_fullname='a', funding='NSF awards: 345, 3535')) %>%
-        mutate(network_fullname = ifelse(network_fullname == domain_fullname, '', network_fullname)) %>% 
-        mutate(txt = paste0(domain_fullname, ' ', network_fullname, ' (', funding, ')')) %>% 
-        pull(txt)
-    
-    ndeets <- length(relevant_deets)
-                                          
-    relevant_deets <- paste0(1:ndeets, '. ', relevant_deets)
-    
-    ack <- glue::glue('Primary data were provided by the following sources:\n{ack_ls}.',
-                      ack_ls = paste(relevant_deets, collapse = '\n'))
-    
-    if(ws_attr){
-        ws_add <- glue::glue('Spatial summary data were derived from layers ',
-                             'provided by:\n{ack_ls2}',
-                             ack_ls2 = paste(unique(attrib_ws_data$primary_source),
-                                             collapse = ', '))
+        mch0 <- which(authors == extracts$authors[i])
+        mch1 <- which(title == extracts$title[i])
+        mch2 <- which(year == extracts$pubyr[i])
+        mch <- intersect(intersect(mch0, mch1), mch2)
+        if(length(mch) != 1) stop()
         
-        ack <- paste(ack, ws_add, sep = '\n')
+        matches <- c(matches, mch)
     }
     
-    return(ack)
+    #include the entry for MacroSheds itself
+    ms_bib <- paste0(
+    "@article{vlah_etal_macrosheds_2023,\n\ttitle = {MacroSheds: a synthesis of long-term ",
+    "biogeochemical, hydroclimatic, and geospatial data from small watershed ecosystem studies},\n\tauthor = ",
+    "{Vlah, M.J. and Rhea, S. and Bernhardt, E.S. and Slaughter, W. and Gubbins, N. and DelVecchia, A.G. and ",
+    "Thellman, A. and Ross, M.R.V.},\n\tyear = {2023},\n\tjournal = {Limnology and Oceanography Letters},\n\t",
+    "    %    volume = {},
+        %    number = {},
+        %    pages = {5--18},
+        %    publisher = {Elsevier},\n}")
+    
+    #return bibtex for any matches
+    bibtex_out <- bts[matches]
+    bibtex_out <- c(ms_bib, bibtex_out)
+    
+    return(bibtex_out)
+}
+
+format_IR <- function(ts_attrib, ws_attr = FALSE){
+    
+    # apply(select(attrib_ts_data, starts_with('license')), 2, function(x) paste(unique(x)))
+    # apply(select(attrib_ts_data, starts_with('IR_')), 2, function(x) paste(unique(x)))
+    
+    noncomm <- ts_attrib %>% 
+        filter(grepl('NonCommercial', license_type)) %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+    
+    sharealike <- ts_attrib %>% 
+        filter(license_sharealike == 'p') %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+        
+    notify_intent_s <- ts_attrib %>% 
+        filter(IR_notify_of_intentions == 's') %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+    
+    notify_intent_m <- ts_attrib %>% 
+        filter(IR_notify_of_intentions == 'm') %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+    
+    notify_dist_s <- ts_attrib %>% 
+        filter(IR_notify_on_distribution == 's') %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+    
+    notify_dist_m <- ts_attrib %>% 
+        filter(IR_notify_on_distribution == 'm') %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+    
+    provide_access_s <- ts_attrib %>% 
+        filter(IR_provide_online_access == 's') %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+    
+    provide_access_m <- ts_attrib %>% 
+        filter(IR_provide_online_access == 'm') %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+    
+    consult_s <- ts_attrib %>% 
+        filter(IR_collaboration_consultation == 's') %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+    
+    consult_m <- ts_attrib %>% 
+        filter(IR_collaboration_consultation == 'm') %>% 
+        select(network, domain, macrosheds_prodname) %>% 
+        distinct()
+    
+    ir <- list()
+    ir$noncommercial_license <- noncomm
+    ir$sharealike_license <- sharealike
+    HERE: need a way to add notes to this
+    
+    ir <- lapply(ir, function(x) if(nrow(x) == 0) return(NA_character_))
+    
+    return(ir)
 }
