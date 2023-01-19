@@ -2550,7 +2550,7 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
         mch1 <- which(title == extracts$title[i])
         mch2 <- which(year == extracts$pubyr[i])
         mch <- intersect(intersect(mch0, mch1), mch2)
-        if(length(mch) != 1) stop()
+        if(length(mch) != 1) stop(i)
         
         matches <- c(matches, mch)
     }
@@ -2566,17 +2566,23 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
         %    pages = {5--18},
         %    publisher = {Elsevier},\n}")
     
-    #return bibtex for any matches
+    #retrieve bibtex for any matches
     bibtex_out <- bts[matches]
     bibtex_out <- c(ms_bib, bibtex_out)
     
+    #tack on ws attr bibtex if requested
+    if(ws_attr){
+        bts_w <- strsplit(ws_bib, '\n\n')[[1]]
+        bts_w[1] <- stringr::str_replace(bts_w[1], '\\\n', '')
+        bibtex_out <- c(bibtex_out, bts_w)
+    }
+    
+    bibtex_out <- paste0(bibtex_out, '\n')
+
     return(bibtex_out)
 }
 
-format_IR <- function(ts_attrib, ws_attr = FALSE){
-    
-    # apply(select(attrib_ts_data, starts_with('license')), 2, function(x) paste(unique(x)))
-    # apply(select(attrib_ts_data, starts_with('IR_')), 2, function(x) paste(unique(x)))
+format_IR <- function(ts_attrib, ws_attr = FALSE, abide_by){
     
     noncomm <- ts_attrib %>% 
         filter(grepl('NonCommercial', license_type)) %>% 
@@ -2584,56 +2590,107 @@ format_IR <- function(ts_attrib, ws_attr = FALSE){
         distinct()
     
     sharealike <- ts_attrib %>% 
-        filter(license_sharealike == 'p') %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        filter(grepl('ShareAlike', license_type)) %>% 
+        mutate(may_disregard_with_permission = ! is.na(license_sharealike) & license_sharealike == 'p') %>% 
+        select(network, domain, macrosheds_prodname, may_disregard_with_permission, contact) %>% 
         distinct()
+    
+    if(ws_attr){
+        sharealike <- bind_rows(
+            sharealike,
+            tibble(network = NA, domain = NA, macrosheds_prodname = 'tcw (watershed attribute)',
+                   may_disregard_with_permission = FALSE, contact = 'https://www.bdi.ox.ac.uk/research/malaria-atlas-project'))
+    }
         
     notify_intent_s <- ts_attrib %>% 
         filter(IR_notify_of_intentions == 's') %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     notify_intent_m <- ts_attrib %>% 
         filter(IR_notify_of_intentions == 'm') %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     notify_dist_s <- ts_attrib %>% 
         filter(IR_notify_on_distribution == 's') %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     notify_dist_m <- ts_attrib %>% 
         filter(IR_notify_on_distribution == 'm') %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     provide_access_s <- ts_attrib %>% 
         filter(IR_provide_online_access == 's') %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     provide_access_m <- ts_attrib %>% 
         filter(IR_provide_online_access == 'm') %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     consult_s <- ts_attrib %>% 
         filter(IR_collaboration_consultation == 's') %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     consult_m <- ts_attrib %>% 
         filter(IR_collaboration_consultation == 'm') %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     ir <- list()
+    ir_explanations <- c('A noncommercial license means you cannot profit from derivative works.',
+                         'A share-alike license means derivative works must propagate the original license terms. If may_disregard_with_permission is TRUE, you may ask the primary source contact for permission to use your own license.',
+                         'notify_of_intent_S means the primary source has requested notice of any plans to publish derivative works that use their data.',
+                         'notify_of_intent_M means the primary source requires notice of any plans to publish derivative works that use their data.',
+                         'notify_on_distribution_S means the primary source has requested that they be informed of any publications resulting from their data.',
+                         'notify_on_distribution_M means the primary source requires that they be informed of any publications resulting from their data.',
+                         'provide_access_S means the primary source requests online access to any publications resulting from their data.',
+                         'provide_access_M means the primary source requires online access to any publications resulting from their data.',
+                         "consult_or_collab_S means the primary source requests consultation and/or collaboration where reasonable (e.g. if you're only using data from one or two domains).",
+                         "consult_or_collab_S means the primary source requires opportunities for consultation and/or collaboration where reasonable (e.g. if you're only using data from one or two domains).")
+    
     ir$noncommercial_license <- noncomm
     ir$sharealike_license <- sharealike
-    HERE: need a way to add notes to this
+    ir$notify_of_intent_S <- if(abide_by == 'suggestions') notify_intent_s else tibble()
+    ir$notify_of_intent_M <- notify_intent_m
+    ir$notify_on_distribution_S <- if(abide_by == 'suggestions') notify_dist_s else tibble()
+    ir$notify_on_distribution_M <- notify_dist_m
+    ir$provide_access_S <- if(abide_by == 'suggestions') provide_access_s else tibble()
+    ir$provide_access_M <- provide_access_m
+    ir$consult_or_collab_S <- if(abide_by == 'suggestions') consult_s else tibble()
+    ir$consult_or_collab_M <- consult_m
     
-    ir <- lapply(ir, function(x) if(nrow(x) == 0) return(NA_character_))
+    applicable <- sapply(ir, function(x) nrow(x) != 0)
+    ir <- ir[applicable]
+    ir_explanations <- ir_explanations[applicable]
+    
+    ir <- list(intellectual_rights = ir,
+               IR_explanations = ir_explanations)
     
     return(ir)
+}
+
+attrib_output_write <- function(attrib, write_to_dir){
+    
+    write_to_dir <- file.path(write_to_dir, 'macrosheds_attribution_information')
+    dir.create(write_to_dir)
+    
+    readr::write_lines(attrib$acknowledgements,
+                       file.path(write_to_dir, 'acknowledgements.txt'))
+    
+    readr::write_lines(attrib$intellectual_rights_explanations, sep = '\n\n',
+                       file.path(write_to_dir, 'intellectual_rights_definitions.txt'))
+    
+    sink(file = file.path(write_to_dir, 'intellectual_rights_notifications.txt'))
+    cat('----INTELLECTUAL RIGHTS NOTIFICATIONS----\n\n')
+    print(lapply(attrib$intellectual_rights_notifications, as.data.frame))
+    sink()
+    
+    readr::write_lines(attrib$bibliography, sep = '\n',
+                       file.path(write_to_dir, 'ms_bibliography.bib'))
 }

@@ -4,31 +4,97 @@
 \alias{ms_generate_attribution}
 \title{Easily cite and/or acknowledge primary sources of the MacroSheds dataset}
 \usage{
-ms_generate_attribution(d, chem_source = "both", include_ws_attr = TRUE)
+ms_generate_attribution(
+  d,
+  chem_source = "both",
+  include_ws_attr = TRUE,
+  abide_by = "requirements only",
+  write_to_dir = NULL
+)
 }
 \arguments{
-\item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or}
+\item{d}{\code{data.frame}. A \code{data.frame} in MacroSheds format (i.e. with
+at least columns datetime, site_code, var.). If omitted, all attribution
+records will be returned.}
+
+\item{chem_source}{\code{character}. Whether \code{d} includes "stream" or "precip"
+chemistry data (as these cannot be distinguished by \code{ms_generate_attribution}).
+If both are included, use "both". If neither, this parameter will be ignored. If
+\code{d} is not provided, this parameter pertains to the full MacroSheds dataset.}
+
+\item{include_ws_attr}{\code{logical}. If FALSE, attribution information will
+be generated only for MacroSheds time-series data products. If TRUE,
+attribution information will be generated for watershed attribute (ws_attr)
+products as well. If you are using our ws_attr products in any capacity,
+set this to TRUE.}
+
+\item{abide_by}{\code{character}. Primary source Intellectual Rights (IR)
+stipulations may use language like "should" or "encouraged to", or they
+might use "must", "required to", etc. If you set this parameter to
+"suggestions", all IR clauses will be returned. If you set it to
+"requirements only", clauses with mild language will be filtered out.
+See details.}
+
+\item{write_to_dir}{\code{character}. A path to an existing directory where
+attribution files will be written.
+A new directory called \code{macrosheds_attribution_information} will be created there.
+If NULL (the default), all attribution
+information will be returned as a list. If specified, some information
+will still be returned as a list, including primary source contact information
+and DOIs. See Value.}
 }
 \value{
-returns a
-where
+Returns a list. If \code{write_to_dir} is not provided, this list contains
+the full output:
+\itemize{
+\item acknowledgements: a string of acknowledgement text
+\item bibliography: a vector of BibTeX entries
+\item intellectual_rights_explanations: a vector of definitions pertaining to
+\code{intellectual_rights_notifications}
+\item intellectual_rights_notifications: a list of tibbles containing special
+notifications
+\item full_details_timeseries: a tibble containing full IR, URL, and contact information
+for each primary source time-series dataset
+\item full_details_ws_attr: a tibble containing full IR, URL, and contact information
+for each primary source watershed attribute dataset
+}
+
+If \code{write_to_dir} is provided, this list contains only \code{full_details_timeseries}
+and \code{full_details_ws_attr}, and all other information is written to files
+in \code{write_to_dir}.
 }
 \description{
 Also returns contact information, URLs, DOIs, and intellectual rights
 details, all based on an input data.frame in MacroSheds format.
 }
 \details{
-Chemical
-\code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}.
-
-Before running \code{\link[=ms_calc_flux]{ms_calc_flux()}}, ensure both \code{q} and
+Note that the world of data IR is still being constructed, and there's a lot
+of legal gray area around whether end-users of data syntheses like
+MacroSheds are held to the same expectations as we were when we assembled
+MacroSheds. We recommend acknowledging/citing our primary sources in any case. Whether
+you adhere to expectations about e.g. contacting primary sources to ask
+permission to use their data... well, we leave that up to you, because the
+fact is you're using products derived from their data. If you're using
+much or all of the MacroSheds dataset for an analysis, it's not reasonable
+to ask you to contact 20 different institutions and ask for various permissions.
+However, if you're only using one or a few MacroSheds domains in your analysis,
+it seems only right that you fulfill all of their IR clauses, just as if you
+were interacting directly with primary source data. Still, pay special attention
+to the noncommercial and sharealike licenses attached to some of the MacroSheds domains.
+These licenses are legally black-and-white, and you can definitely
+get in trouble if you disregard them.
 }
 \examples{
-#' ### Load some MacroSheds data:
-ms_root = 'data/macrosheds'
+d <- macrosheds::ms_load_product(
+    macrosheds_root = 'my/macrosheds/root/',
+    prodname = 'precip_chemistry',
+    domains = 'hbef')
+
+ms_generate_attribution(d, chem_source = 'precip',
+                        write_to_dir = '~/projects/hbef_precip/')
 }
 \seealso{
-\code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}},
+\code{\link[=ms_download_core_data]{ms_download_core_data()}}
 }
 \author{
 Mike Vlah, vlahm13@gmail.com
