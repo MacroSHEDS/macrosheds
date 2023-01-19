@@ -11,15 +11,13 @@
 #' @seealso [ms_download_site_data()], [ms_download_core_data()]
 #' @examples
 
-ms_load_sites <- function(verbose = FALSE){
+ms_load_sites <- function(){
   tryCatch(
     expr = {
-      load('./data/', verbose = verbose)
+      return(ms_site_data)
     },
     error = function(e) {
       stop(paste0('failed to load macrosheds site data into R session'))
     }
     )
-
-    return(ms_sites)
 }

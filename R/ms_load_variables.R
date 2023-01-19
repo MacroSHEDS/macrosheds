@@ -15,12 +15,16 @@
 #' @examples
 #' ms_vars <- ms_download_variables()
 
-ms_load_variables <- function(expanded = TRUE, verbose = FALSE, type = 'ts'){
+ms_load_variables <- function(expanded = FALSE, verbose = FALSE, type = 'ts'){
   warning('ms_load_variables has time series variable info, type = "ts", AND watershed attribute variable info, type = "ws"')
   tryCatch(
       expr = {
         if(type == 'ts') {
-          return(ms_vars_ts)
+          if(expanded) {
+            return(ms_var_catalog)
+          } else {
+            return(ms_vars_ts)
+          }
         } else if(type == 'ws') {
           return(ms_vars_ws)
         } else {
