@@ -4,9 +4,9 @@
 #' as possible to heterogeneous data formats and contents. 
 #'
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Wes Slaughter \email{weston.slaughter@@duke.edu}
 #' @author Mike Vlah
-#' @author Wes Slaughter
+#' @author Spencer Rhea
 #' 
 #' @param filepath character. path to local CSV.
 #' @param preprocessed_tibble tibble. a tibble with all character columns. Supply this argument

@@ -1,11 +1,12 @@
 Package: macrosheds
 Title: Tools for interfacing with the MacroSheds dataset
-Version: 0.0.0.1
-Date: 2021-11-1
-Authors@R: c(person("Spencer", "Rhea", email = "spencerrhea41@gmail.com", role = c("aut", "cre")),
-             person("Mike", "Vlah", email = "vlahm13@gmail.com", role = c("aut")),
-             person("Wes", "Slaughter", email = "weston.slaughter@duke.edu", role = c("aut")))
-Description: Macrosheds is a database of watershed ecosystems studies from around the world. 
+Version: 1.0.0
+Date: 2023-01-23
+Authors@R: c(person("Spencer", "Rhea", email = "spencerrhea41@gmail.com", role = c("aut")),
+             person("Mike", "Vlah", email = "vlahm13@gmail.com", role = c("aut", "cre")),
+             person("Wes", "Slaughter", email = "weston.slaughter@duke.edu", role = c("aut")),
+             person("Nick", "Gubbins", email = "gubbinsnick@gmail.com", role = c("ctb")))
+Description: The macrosheds package accompanies the MacroSheds dataset and web portal (macrosheds.org). It provides data access, facilitates proper attribution, and helps with common routines for watershed data analysis.
 Depends: R (>= 3.6.1), dplyr
 Imports:
     feather, errors, sf, data.table, EGRET, foreach, glue, parallel, dataRetrieval, terra, mapview, elevatr, whitebox, rgdal, doParallel, stringr, purrr, readr, tidyr, lubridate, jsonlite, raster, hydrostats
