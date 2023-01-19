@@ -1,7 +1,7 @@
-#' load macrosheds variables data table
+#' load MacroSheds variables data table
 #'
 #' load a table of MacroSheds variables with information on variable codes,
-#' units, and more from a .Rdata file downloaded with the macrosheds package.
+#' units, and more. (source .Rdata file downloaded with the MacroSheds package)
 #'
 #' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
@@ -32,7 +32,7 @@ ms_load_variables <- function(expanded = FALSE, verbose = FALSE, type = 'ts'){
         }
       },
       error = function(e) {
-        stop(paste0('failed to load macrosheds variable catalog into R session'))
+        stop(paste0('failed to load MacroSheds variable catalog into R session'))
       }
     )
 }
