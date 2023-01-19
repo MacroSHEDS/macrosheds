@@ -17,5 +17,6 @@ tests/testthat/data/
 !data/bibtex_timeseries.RData
 !data/bibtex_ws_attr.RData
 !data/ms_var_catalog.RData
+!data/ms_site_data.RData
 !data/sysdata2.RData
 vignettes/data
