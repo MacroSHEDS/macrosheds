@@ -15,6 +15,11 @@
 #'    information on alpha values and n.reflected can be found using ?hydrostats::baseflows
 #' @export
 #' @examples
+#' q = macrosheds::ms_load_product(
+#'     macrosheds_root = 'my/ms/root/',
+#'     prodname = 'discharge',
+#'     domains = 'hbef')
+#' ms_separate_baseflow(q)
 
 ms_separate_baseflow <- function(discharge, alpha = 0.975, n.reflected = 30) {
     
