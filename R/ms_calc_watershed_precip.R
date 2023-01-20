@@ -101,7 +101,9 @@ ms_calc_watershed_precip <- function(precip,
     precip_only <- missing(pchem)
     pchem_only <- missing(precip)
     
-    ms_vars <- ms_vars_ts
+    ms_vars <- ms_vars_ts %>% 
+        select(variable_code, flux_convertible) %>% 
+        distinct()
         
     #### Load in data if file path supplied ####
     # load watershed boundaries
@@ -319,13 +321,8 @@ ms_calc_watershed_precip <- function(precip,
         
         #determine which variables can be flux converted (prefix handling clunky here)
         
-        not_flux_conv <- c('ANC', 'ANC960', 'ANCMet', 'anionCharge', 'cationCharge',
-                           'CH4_C', 'CHL', 'CO2_C', 'DO', 'ionBalance', 'phaeopig',
-                           'pheophy', 'TCHL', 'TDS', 'TPC', 'TPN', 'TPP', 'TSS', 'VSS')
-        
         flux_vars <- ms_vars %>% 
-            filter(! is.na(chem_category),
-                   ! variable_code %in% not_flux_conv) %>%
+            filter(as.logical(flux_convertible)) %>%
             pull(variable_code)
         
         pchem_vars <- unique(pchem$var)

@@ -84,7 +84,9 @@ ms_conversions <- function(d,
                            convert_units_to,
                            convert_molecules){
     
-    ms_vars <- ms_vars_ts
+    ms_vars <- ms_vars_ts %>% 
+        select(variable_code, unit, molecule, valence) %>% 
+        distinct()
     
     #checks
     cm <- ! missing(convert_molecules)

@@ -83,7 +83,9 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
             mutate(site_type = 'stream_gauge')
     }
     
-    ms_vars <- ms_vars_ts
+    ms_vars <- ms_vars_ts %>% 
+        select(variable_code, unit) %>% 
+        distinct()
     
     site_code <- unique(stream_chemistry$site_code)
     

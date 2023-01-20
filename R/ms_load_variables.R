@@ -27,7 +27,7 @@ ms_load_variables <- function(var_set = 'timeseries'){
     }
 
     if(var_set == 'timeseries'){
-        return(ms_vars_ts)
+        return(select(ms_vars_ts, -molecule))
     } else if(var_set == 'ws_attr'){
         return(ms_vars_ws)
     } else {

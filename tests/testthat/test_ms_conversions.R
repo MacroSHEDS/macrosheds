@@ -36,6 +36,22 @@ ca <- tibble(datetime = datetime_string,
              ms_interp = 0,
              val_err = 0)
 
+fe <- tibble(datetime = datetime_string,
+             site_code = 'w1', 
+             var = 'GN_Fe', 
+             val = c(seq(0.2, 1.2, by = 0.2)),
+             ms_status = 0,
+             ms_interp = 0,
+             val_err = 0)
+
+ag <- tibble(datetime = datetime_string,
+             site_code = 'w1', 
+             var = 'GN_Ag', 
+             val = c(seq(0.2, 1.2, by = 0.2)),
+             ms_status = 0,
+             ms_interp = 0,
+             val_err = 0)
+
 test_that('single input thows error with varibles of diffrent units', {
     
     fake_var <- tibble(datetime = datetime_string,
