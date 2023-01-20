@@ -21,11 +21,11 @@
 #' @return returns an \code{sf} object containing all data belonging to the 
 #'    selected spatial product in the \code{macrosheds_root} directory.
 #' @export
-#' @seealso [ms_download_core_data()], [ms_load_product()]
+#' @seealso [ms_download_core_data()], [ms_load_product()], [ms_load_variables()], [ms_load_sites()]
 #' @examples
 #' ms_root = 'data/macrosheds'
 #' dir.create(ms_root, recursive = TRUE)
-#' ms_downloadcore_data(macrosheds_root = ms_root,
+#' ms_download_core_data(macrosheds_root = ms_root,
 #'                       domains = c('niwot', 'hjandrews', 'hbef'))
 #' macrosheds_data <- load_spatial_product(macrosheds_root = ms_root, 
 #'                                         spatial_product = 'ws_boundary'
@@ -62,7 +62,7 @@ ms_load_spatial_product <- function(macrosheds_root,
     
     # List network files  
     if(!missing(networks)){
-        netdom <- ms_download_site_data() %>%
+        netdom <- ms_site_data %>%
             select(network, domain) %>%
             distinct(domain, .keep_all = TRUE)
         

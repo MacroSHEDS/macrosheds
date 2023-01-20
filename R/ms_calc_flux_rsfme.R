@@ -47,7 +47,7 @@
 #'                      q = q,
 #'                      q_type = 'discharge')
 
-ms_calc_flux <- function(chemistry, q, q_type, site_info = NULL, verbose = TRUE,
+ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                          method = 'simple', aggregation = 'simple') {
 
     #### Checks
@@ -88,16 +88,8 @@ ms_calc_flux <- function(chemistry, q, q_type, site_info = NULL, verbose = TRUE,
       writeLines(glue('calculating flux over: {aggregation}', aggregation = aggregation))
     }
 
-    if(q_type == 'discharge' && is.null(site_info)) {
-        site_info <- try(ms_download_site_data())
-
-        if(inherits(site_info, 'try-error')){
-            stop("When q_type == 'discharge', you must either have site_info defined as the MacroSheds \n
-                 site_data table or you must have an internet connection to download the table with ms_download_site_data()")
-        }
-    } else {
-        site_info$ws_area_ha <- errors::set_errors(site_info$ws_area_ha, 0)
-    }
+    site_info <- ms_site_data
+    site_info$ws_area_ha <- errors::set_errors(site_info$ws_area_ha, 0)
 
     # Check both files have the same sites
     sites_chem <- unique(chemistry$site_code)

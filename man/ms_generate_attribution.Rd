@@ -61,7 +61,7 @@ for each primary source watershed attribute dataset
 
 If \code{write_to_dir} is provided, this list contains only \code{full_details_timeseries}
 and \code{full_details_ws_attr}, and all other information is written to files
-in \code{write_to_dir}.
+in \code{write_to_dir/macrosheds_attribution_information}.
 }
 \description{
 Also returns contact information, URLs, DOIs, and intellectual rights
