@@ -192,7 +192,7 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE) {
                                           'ms_status_', 'ms_interp_'))) %>%
                     filter(! is.na(val)) %>% #should be redundant
                   arrange(datetime) %>%
-                  ms_scale_flux_by_area(site_info)
+                  ms_scale_flux_by_area()
             } else {
                 chem_split[[i]] <- chem_split[[i]] %>%
                     mutate(site_code = site_code_x,
