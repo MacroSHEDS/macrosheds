@@ -26,7 +26,7 @@
 #' @param warn logical. If TRUE, function will not load more than 100MB without permission.
 #' @return Returns a \code{tibble} in MacroSheds format. See [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740) for definitions.
 #' @export
-#' @seealso [ms_download_core_data()], [ms_load_spatial_product()], [ms_read_csv()]
+#' @seealso [ms_download_core_data()], [ms_load_spatial_product()], [ms_load_variables()], [ms_load_sites()]
 #' @examples
 #' ms_root = 'data/macrosheds'
 #' dir.create(ms_root, recursive = TRUE)
@@ -76,7 +76,7 @@ ms_load_product <- function(macrosheds_root,
     
     # List network files  
     if(!missing(networks)){
-        netdom <- ms_download_site_data() %>%
+        netdom <- ms_site_data %>%
             select(network, domain) %>%
             distinct(domain, .keep_all = TRUE)
         

@@ -41,14 +41,14 @@ or stream_gauge_locations) from a downloaded MacroSheds dataset. See
 \examples{
 ms_root = 'data/macrosheds'
 dir.create(ms_root, recursive = TRUE)
-ms_downloadcore_data(macrosheds_root = ms_root,
+ms_download_core_data(macrosheds_root = ms_root,
                       domains = c('niwot', 'hjandrews', 'hbef'))
 macrosheds_data <- load_spatial_product(macrosheds_root = ms_root, 
                                         spatial_product = 'ws_boundary'
                                         domains = 'hbef')
 }
 \seealso{
-\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_product]{ms_load_product()}}
+\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_load_variables]{ms_load_variables()}}, \code{\link[=ms_load_sites]{ms_load_sites()}}
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}

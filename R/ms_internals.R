@@ -103,7 +103,7 @@ convert_to_gl <- function(x, input_unit, formula, ms_vars){
     if(grepl('eq', input_unit)) {
         valence = ms_vars$valence[ms_vars$variable_code %in% formula]
         
-        if(length(valence) == 0) {stop('Is this a non-MacroSheds variable?')}
+        if(length(valence) == 0 | is.na(valence)) {stop(paste('valency of', formula, 'unknown'))}
         x = (x * calculate_molar_mass(formula)) / valence
         
         return(x)
@@ -135,7 +135,7 @@ convert_from_gl <- function(x, input_unit, output_unit, molecule, g_conver, ms_v
        grepl('eq', output_unit) && g_conver) {
         
         valence = ms_vars$valence[ms_vars$variable_code %in% molecule]
-        if(length(valence) == 0 | is.na(valence)) {stop('Is this a non-MacroSheds variable?')}
+        if(length(valence) == 0 | is.na(valence)) {stop(paste('valency of', molecule, 'unknown'))}
         x = (x * valence) / calculate_molar_mass(formula)
         
         return(x)
@@ -152,7 +152,7 @@ convert_from_gl <- function(x, input_unit, output_unit, molecule, g_conver, ms_v
     if(grepl('mol', output_unit) && grepl('eq', input_unit) && !g_conver) {
         
         valence = ms_vars$valence[ms_vars$variable_code %in% molecule]
-        if(length(valence) == 0) {stop('Is this a non-MacroSheds variable?')}
+        if(length(valence) == 0 | is.na(valence)) {stop(paste('valency of', molecule, 'unknown'))}
         x = (x * calculate_molar_mass(formula)) / valence
         
         x = x / calculate_molar_mass(formula)
@@ -165,7 +165,7 @@ convert_from_gl <- function(x, input_unit, output_unit, molecule, g_conver, ms_v
         x = x * calculate_molar_mass(formula)
         
         valence = ms_vars$valence[ms_vars$variable_code %in% molecule]
-        if(length(valence) == 0) {stop('Is this a non-MacroSheds variable?')}
+        if(length(valence) == 0 | is.na(valence)) {stop(paste('valency of', molecule, 'unknown'))}
         x = (x * valence)/calculate_molar_mass(formula)
         
         return(x)
@@ -1810,31 +1810,31 @@ approxjoin_datetime <- function(x,
     if('val' %in% colnames(x)){
 
         x <- x %>%
-            mutate(err = errors(val),
+            mutate(err = errors::errors(val),
                    val = errors::drop_errors(val)) %>%
             rename_with(.fn = ~paste0(., '_x'),
                         .cols = everything()) %>%
-            as.data.table()
+            data.table::as.data.table()
 
         y <- y %>%
-            mutate(err = errors(val),
+            mutate(err = errors::errors(val),
                    val = errors::drop_errors(val)) %>%
             rename_with(.fn = ~paste0(., '_y'),
                         .cols = everything()) %>%
-            as.data.table()
+            data.table::as.data.table()
 
     } else {
 
         if(indices_only){
             x <- rename(x, datetime_x = datetime) %>%
                 mutate(across(where(~inherits(., 'errors')),
-                              ~drop_errors(.))) %>%
-                as.data.table()
+                              ~errors::drop_errors(.))) %>%
+                data.table::as.data.table()
 
             y <- rename(y, datetime_y = datetime) %>%
                 mutate(across(where(~inherits(., 'errors')),
-                              ~drop_errors(.))) %>%
-                as.data.table()
+                              ~errors::drop_errors(.))) %>%
+                data.table::as.data.table()
         } else {
             stop('this case not yet handled')
         }
@@ -1900,7 +1900,7 @@ approxjoin_datetime <- function(x,
     
     #restore error objects, var column, original column names (with suffixes).
     #original column order
-    joined <- as_tibble(joined) %>%
+    joined <- tibble::as_tibble(joined) %>%
         mutate(val_x = errors::set_errors(val_x, err_x),
                val_y = errors::set_errors(val_y, err_y)) %>%
         select(-err_x, -err_y)

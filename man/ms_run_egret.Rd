@@ -37,7 +37,7 @@ default parameters in the EGRET model but need data in the eList format.}
 \item{site_data}{tibble. Default NULL, if you are using a non-MacroSheds site you must
 supply a tibble with the columns: site_code, ws_area_ha, latitude, longitude. If
 using a MacroSheds site you can leave this argument NULL and the MacroSheds site_data
-table will be downloaded.}
+table will be retrieved.}
 
 \item{Kalman}{logical. Should EGRET run the Kalman filter on WRTDS results? See
 \code{\link[EGRET:wrtdsK]{EGRET::WRTDSKalman()}} for more information.}
