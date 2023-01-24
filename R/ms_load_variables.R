@@ -17,7 +17,7 @@
 #' @export
 #' @seealso [ms_load_sites()], [ms_load_spatial_product()], [ms_load_product()]
 #' @examples
-#' ms_vars <- ms_load_variables()
+#' vars <- ms_load_variables()
 
 ms_load_variables <- function(var_set = 'timeseries'){
 

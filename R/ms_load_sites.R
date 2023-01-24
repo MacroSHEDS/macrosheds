@@ -17,7 +17,7 @@
 #' @export
 #' @seealso [ms_load_variables()], [ms_load_spatial_product()], [ms_load_product()]
 #' @examples
-#' macrosheds::ms_site_data <- ms_load_sites()
+#' site_data <- ms_load_sites()
 
 ms_load_sites <- function(){
 
@@ -25,7 +25,7 @@ ms_load_sites <- function(){
     
     #thisenv <- environment()
     #
-    #data(macrosheds::ms_site_data,
+    #data(ms_site_data,
     #     package = 'macrosheds',
     #     envir = thisenv,
     #     verbose = FALSE)
