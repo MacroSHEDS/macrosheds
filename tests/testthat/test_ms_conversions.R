@@ -36,6 +36,22 @@ ca <- tibble(datetime = datetime_string,
              ms_interp = 0,
              val_err = 0)
 
+fe <- tibble(datetime = datetime_string,
+             site_code = 'w1', 
+             var = 'GN_Fe', 
+             val = c(seq(0.2, 1.2, by = 0.2)),
+             ms_status = 0,
+             ms_interp = 0,
+             val_err = 0)
+
+ag <- tibble(datetime = datetime_string,
+             site_code = 'w1', 
+             var = 'GN_Ag', 
+             val = c(seq(0.2, 1.2, by = 0.2)),
+             ms_status = 0,
+             ms_interp = 0,
+             val_err = 0)
+
 test_that('single input thows error with varibles of diffrent units', {
     
     fake_var <- tibble(datetime = datetime_string,
@@ -48,8 +64,7 @@ test_that('single input thows error with varibles of diffrent units', {
     
     expect_error(macrosheds::ms_conversions(d = fake_var,
                                             convert_units_from = 'ug/l',
-                                            convert_units_to = 'mg/l',
-                                            macrosheds_root = 'data/'))
+                                            convert_units_to = 'mg/l'))
 })
 
 test_that('non macrosheds variables supplied to the funciton throw error', {
@@ -65,8 +80,7 @@ test_that('non macrosheds variables supplied to the funciton throw error', {
     
     expect_error(macrosheds::ms_conversions(d = ph_ca,
                                             convert_units_from = 'ug/l',
-                                            convert_units_to = 'mg/l',
-                                            macrosheds_root = 'data/'))
+                                            convert_units_to = 'mg/l'))
 })
 
 test_that('when there are different variables and not all specified, throw error', {
@@ -84,8 +98,7 @@ test_that('when there are different variables and not all specified, throw error
                                             convert_units_from = c('Ca' = 'ug/l',
                                                                    'Na' = 'ug/l'),
                                             convert_units_to = c('Ca' = 'mg/l',
-                                                                 'Na' = 'mg/l'),
-                                            macrosheds_root = 'data/'))
+                                                                 'Na' = 'mg/l')))
 })
 
 test_that('when names of variables are diffrent, throw error', {
@@ -105,23 +118,20 @@ test_that('when names of variables are diffrent, throw error', {
                                                                    'Li' = 'ug/l'),
                                             convert_units_to = c('Ca' = 'mg/l',
                                                                  'Na' = 'mg/l',
-                                                                 'Cl' = 'mg/l'),
-                                            macrosheds_root = 'data/'))
+                                                                 'Cl' = 'mg/l')))
 })
 
 test_that('metric conversions are correct', {
     
     ug_results <- macrosheds::ms_conversions(d = cl,
                                              convert_units_from = 'ug/l',
-                                             convert_units_to = 'mg/l',
-                                             macrosheds_root = 'data/')
+                                             convert_units_to = 'mg/l')
     expect_equal(round(ug_results$val, 4), 
                  c(0.0002, 0.0004, 0.0006, 0.0008, 0.0010, 0.0012))
     
     g_results <- macrosheds::ms_conversions(d = cl,
                                             convert_units_from = 'g/l',
-                                            convert_units_to = 'mg/l',
-                                            macrosheds_root = 'data/')
+                                            convert_units_to = 'mg/l')
     expect_equal(g_results$val, 
                  c(200, 400, 600, 800, 1000, 1200))
     
@@ -131,15 +141,13 @@ test_that('molar conversions are correct', {
     
     moles_results <- macrosheds::ms_conversions(d = cl,
                                                 convert_units_from = 'mmol/l',
-                                                convert_units_to = 'mg/l',
-                                                macrosheds_root = 'data/')
+                                                convert_units_to = 'mg/l')
     expect_equal(round(moles_results$val, 2), 
                  c(7.09, 14.18, 21.27, 28.36, 35.45, 42.54))
     
     moles_g_results <- macrosheds::ms_conversions(d = cl,
                                                   convert_units_from = 'mg/l',
-                                                  convert_units_to = 'mmol/l',
-                                                  macrosheds_root = 'data/')
+                                                  convert_units_to = 'mmol/l')
     expect_equal(round(moles_g_results$val, 5), 
                  c(0.00564, 0.01128, 0.01692, 0.02257, 0.02821, 0.03385))
     
@@ -149,15 +157,13 @@ test_that('equivalents conversions are correct', {
     
     eq_results <- macrosheds::ms_conversions(d = ca,
                                              convert_units_from = 'eq/l',
-                                             convert_units_to = 'g/l',
-                                             macrosheds_root = 'data/')
+                                             convert_units_to = 'g/l')
     expect_equal(round(eq_results$val, 2), 
                  c(4.01, 8.02, 12.02, 16.03, 20.04, 24.05))
     
     mg_eq_results <- macrosheds::ms_conversions(d = cl,
                                                 convert_units_from = 'g/l',
-                                                convert_units_to = 'eq/l',
-                                                macrosheds_root = 'data/')
+                                                convert_units_to = 'eq/l')
     expect_equal(round(mg_eq_results$val, 4), 
                  c(0.0056, 0.0113, 0.0169, 0.0226, 0.0282, 0.0338))
     
@@ -168,16 +174,14 @@ test_that('molecular conversions are correct', {
     molecular_results <- macrosheds::ms_conversions(d = no3,
                                                     convert_units_from = 'mg/l',
                                                     convert_units_to = 'mg/l',
-                                                    convert_molecules = 'NO3',
-                                                    macrosheds_root = 'data/')
+                                                    convert_molecules = 'NO3')
     expect_equal(round(molecular_results$val, 3), 
                  c(0.045, 0.090, 0.136, 0.181, 0.226, 0.271))
     
     molecular_full_results <- macrosheds::ms_conversions(d = no3_n,
                                                          convert_units_from = 'mg/l',
                                                          convert_units_to = 'mg/l',
-                                                         convert_molecules = 'NO3_N',
-                                                         macrosheds_root = 'data/')
+                                                         convert_molecules = 'NO3_N')
     expect_equal(round(molecular_full_results$val, 3), 
                  c(0.885, 1.771, 2.656, 3.541, 4.427, 5.312))
     
@@ -188,16 +192,14 @@ test_that('molecular and molar conversions are correct', {
     molecular_results <- macrosheds::ms_conversions(d = no3,
                                                     convert_units_from = 'mmol/l',
                                                     convert_units_to = 'mg/l',
-                                                    convert_molecules = 'NO3',
-                                                    macrosheds_root = 'data/')
+                                                    convert_molecules = 'NO3')
     expect_equal(round(molecular_results$val, 3), 
                  c(2.801, 5.603, 8.404, 11.205, 14.007, 16.808))
     
     molecular_full_results <- macrosheds::ms_conversions(d = no3_n,
                                                          convert_units_from = 'mg/l',
                                                          convert_units_to = 'mmol/l',
-                                                         convert_molecules = 'NO3_N',
-                                                         macrosheds_root = 'data/')
+                                                         convert_molecules = 'NO3_N')
     expect_equal(round(molecular_full_results$val, 3), 
                  c(0.063, 0.126, 0.190, 0.253, 0.316, 0.379))
     

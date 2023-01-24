@@ -59,7 +59,7 @@ macrosheds_data <- ms_load_product(macrosheds_root = ms_root,
                                    filter_vars = 'NO3_N')
 }
 \seealso{
-\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_read_csv]{ms_read_csv()}}
+\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_load_variables]{ms_load_variables()}}, \code{\link[=ms_load_sites]{ms_load_sites()}}
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}

@@ -101,11 +101,18 @@ ms_calc_watershed_precip <- function(precip,
     precip_only <- missing(pchem)
     pchem_only <- missing(precip)
     
-    ms_vars <- macrosheds::ms_download_variables()
+    ms_vars <- ms_vars_ts %>% 
+        select(variable_code, flux_convertible) %>% 
+        distinct()
         
     #### Load in data if file path supplied ####
     # load watershed boundaries
     if(! inherits(ws_boundary, 'sf') && inherits(ws_boundary, 'character')){
+        
+        if(grepl('\\.sh[a-z]$', ws_boundary)){
+            stop('ws_boundary must be a directory if it is not an sf object')
+        }
+        
         wb_path <- list.files(ws_boundary, full.names = TRUE)
         wb <- try(purrr::map_dfr(wb_path, sf::st_read))
         
@@ -118,6 +125,11 @@ ms_calc_watershed_precip <- function(precip,
     
     # Load in precipitation gauge locations
     if(! inherits(precip_gauge, 'sf') && inherits(precip_gauge, 'character')){
+        
+        if(grepl('\\.sh[a-z]$', precip_gauge)){
+            stop('precip_gauge must be a directory if it is not an sf object')
+        }
+        
         rg_path <- list.files(precip_gauge, full.names = TRUE)
         rg <- try(purrr::map_dfr(rg_path, sf::st_read))
         
@@ -259,12 +271,12 @@ ms_calc_watershed_precip <- function(precip,
     
     dem <- expo_backoff(
         expr = {
-            elevatr::get_elev_raster(locations = wb_rg_bbox,
+            suppressWarnings(elevatr::get_elev_raster(locations = wb_rg_bbox,
                                      z = dem_res,
                                      clip = 'bbox',
                                      expand = 0.005,
                                      verbose = verbose,
-                                     override_size_check = TRUE)
+                                     override_size_check = TRUE))
         },
         max_attempts = 5
     )
@@ -308,7 +320,11 @@ ms_calc_watershed_precip <- function(precip,
     if(! precip_only){
         
         #determine which variables can be flux converted (prefix handling clunky here)
-        flux_vars <- ms_vars$variable_code[as.logical(ms_vars$flux_convertible)]
+        
+        flux_vars <- ms_vars %>% 
+            filter(as.logical(flux_convertible)) %>%
+            pull(variable_code)
+        
         pchem_vars <- unique(pchem$var)
         pchem_vars_fluxable0 <- base::intersect(ms_drop_var_prefix(pchem_vars),
                                                 flux_vars)

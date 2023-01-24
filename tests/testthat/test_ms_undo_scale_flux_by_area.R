@@ -32,9 +32,8 @@ test_that('the value for 2001-01-01 is ~14.0619', {
 
 test_that("the value for 2001-01-01 is ~14.0619 when site_data is passed", {
     expect_equal({
-        site_d <- ms_download_site_data()
         out <- macrosheds::ms_undo_scale_flux_by_area(d = w1,
-                                                      site_data = site_d)
+                                                      site_data = ms_site_data)
         round(pull(out[1, 4]), 4)
     }, 14.0619)
 })

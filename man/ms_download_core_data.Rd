@@ -46,7 +46,7 @@ ms_download_core_data(macrosheds_root = 'data/macrosheds',
                       domains = c('niwot', 'hjandrews'))
 }
 \seealso{
-\code{\link[=ms_download_site_data]{ms_download_site_data()}}, \code{\link[=ms_download_variables]{ms_download_variables()}}, \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}
+\code{\link[=ms_load_sites]{ms_load_sites()}}, \code{\link[=ms_load_variables]{ms_load_variables()}}, \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}

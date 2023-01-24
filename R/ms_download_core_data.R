@@ -29,7 +29,7 @@
 #'    compressed and may take minutes to hours to download, depending on connection speed. When uncompressed,
 #'    the dataset is approximately 4 GiB, so be mindful of disk space.
 #' @export
-#' @seealso [ms_download_site_data()], [ms_download_variables()], [ms_load_product()], [ms_load_spatial_product()]
+#' @seealso [ms_load_sites()], [ms_load_variables()], [ms_load_product()], [ms_load_spatial_product()]
 #' @examples
 #' dir.create('data/macrosheds', recursive = TRUE)
 #' ms_download_core_data(macrosheds_root = 'data/macrosheds',

@@ -1,2 +1,11 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^function_to_get\.R$
+^functions_to_check\.R$
+^notes\.txt$
+^README\.md$
+^site_data\.csv$
+^variables\.csv$
+^tester\.R$
+^roxygen_code\.R$
+tests/testthat/data/test_precip_function
