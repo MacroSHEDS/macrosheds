@@ -84,6 +84,8 @@ ms_conversions <- function(d,
                            convert_units_to,
                            convert_molecules){
     
+    requireNamespace('macrosheds', quietly = TRUE)
+
     ms_vars <- ms_vars_ts %>% 
         select(variable_code, unit, molecule, valence) %>% 
         distinct()

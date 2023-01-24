@@ -67,6 +67,8 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
         chemistry$datetime <- as.POSIXct(chemistry$datetime)
     }
 
+    requireNamespace('macrosheds', quietly = TRUE)
+
     # check that method, if non-null, is in accepted list
     rsfme_accepted <- c('average', 'pw', 'composite', 'wrtds', 'beale', 'simple')
     if(!method %in% rsfme_accepted) {

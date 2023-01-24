@@ -173,6 +173,8 @@ ms_read_csv <- function(filepath,
             stop('sampling_type must be either I or G')
         }
     }
+
+    requireNamespace('macrosheds', quietly = TRUE)
     
     #parse args; deal with missing args
     datetime_colnames <- names(datetime_cols)

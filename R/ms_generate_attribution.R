@@ -103,6 +103,8 @@ ms_generate_attribution <- function(d, chem_source = 'both',
             stop(paste(write_to_dir, 'does not exist. Make sure write_to_dir is a valid directory, not a file.'))
         }
     }
+
+    requireNamespace('macrosheds', quietly = TRUE)
     
     attrib <- list()
     

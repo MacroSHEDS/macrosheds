@@ -67,6 +67,8 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
     if(! unique(stream_chemistry$site_code) == unique(discharge$site_code)){
         stop('stream_chemistry and discharge must contain the same site_code')
     }
+
+    requireNamespace('macrosheds', quietly = TRUE)
     
     # Get var and site info
     if(is.null(site_data)){

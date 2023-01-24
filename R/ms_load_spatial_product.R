@@ -57,6 +57,8 @@ ms_load_spatial_product <- function(macrosheds_root,
     if(length(prodpaths) == 0){
         stop('No spatial products in macrosheds_root, check macrosheds_root is correct or files exist')
     }
+
+    requireNamespace('macrosheds', quietly = TRUE)
     
     prodpaths <- grep(spatial_product, prodpaths, value = TRUE)
     

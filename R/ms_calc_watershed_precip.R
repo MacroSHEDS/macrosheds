@@ -100,6 +100,8 @@ ms_calc_watershed_precip <- function(precip,
 
     precip_only <- missing(pchem)
     pchem_only <- missing(precip)
+
+    requireNamespace('macrosheds', quietly = TRUE)
     
     ms_vars <- ms_vars_ts %>% 
         select(variable_code, flux_convertible) %>% 
