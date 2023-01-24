@@ -90,7 +90,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
       writeLines(glue('calculating flux over: {aggregation}', aggregation = aggregation))
     }
 
-    site_info <- ms_site_data
+    site_info <- macrosheds::ms_site_data
     site_info$ws_area_ha <- errors::set_errors(site_info$ws_area_ha, 0)
 
     # Check both files have the same sites

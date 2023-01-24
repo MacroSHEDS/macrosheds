@@ -17,7 +17,7 @@
 #' @export
 #' @seealso [ms_load_variables()], [ms_load_spatial_product()], [ms_load_product()]
 #' @examples
-#' ms_site_data <- ms_load_sites()
+#' macrosheds::ms_site_data <- ms_load_sites()
 
 ms_load_sites <- function(){
 
@@ -25,14 +25,14 @@ ms_load_sites <- function(){
     
     #thisenv <- environment()
     #
-    #data(ms_site_data,
+    #data(macrosheds::ms_site_data,
     #     package = 'macrosheds',
     #     envir = thisenv,
     #     verbose = FALSE)
 
     tryCatch(
         expr = {
-            return(ms_site_data)
+            return(macrosheds::ms_site_data)
         },
         error = function(e) {
             stop('failed to load macrosheds site data into R session')

@@ -2473,7 +2473,7 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
     custom_acks <- ts_attrib %>% 
         filter(! is.na(IR_acknowledgement_text)) %>% 
         select(domain, IR_acknowledgement_text) %>% 
-        left_join(select(ms_site_data, domain, network_fullname, domain_fullname),
+        left_join(select(macrosheds::ms_site_data, domain, network_fullname, domain_fullname),
                   by = 'domain') %>% 
         distinct() %>% 
         mutate(network_fullname = ifelse(network_fullname == domain_fullname, '', network_fullname)) %>% 
@@ -2482,7 +2482,7 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
     
     relevant_deets <- ts_attrib %>% 
         distinct(domain, funding) %>% 
-        left_join(select(ms_site_data, domain, network_fullname, domain_fullname),
+        left_join(select(macrosheds::ms_site_data, domain, network_fullname, domain_fullname),
                   by = 'domain') %>% 
         distinct() %>% 
         # bind_rows(tibble(domain='a', domain_fullname = 'a', network_fullname='a', funding='NSF awards: 345, 3535')) %>%
@@ -2505,7 +2505,7 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
     if(ws_attr){
         ws_add <- glue::glue('Spatial summary data were derived from layers ',
                              'provided by:\n{ack_ls2}',
-                             ack_ls2 = paste(unique(attrib_ws_data$primary_source),
+                             ack_ls2 = paste(unique(macrosheds::attrib_ws_data$primary_source),
                                              collapse = ', '))
         
         ack <- paste(ack, ws_add, sep = '\n')
@@ -2517,7 +2517,7 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
 format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     
     #organize bibtex records
-    bts <- strsplit(ts_bib, '\n\n')[[1]]
+    bts <- strsplit(macrosheds::ts_bib, '\n\n')[[1]]
     bts[1] <- stringr::str_replace(bts[1], '\\\n', '')
     bts <- grep('^(?:@misc|@article)', bts, value = TRUE)
     authors <- stringr::str_match(bts, 'author = \\{(.+?)\\},\\\n')[, 2]
@@ -2572,7 +2572,7 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     
     #tack on ws attr bibtex if requested
     if(ws_attr){
-        bts_w <- strsplit(ws_bib, '\n\n')[[1]]
+        bts_w <- strsplit(macrosheds::ws_bib, '\n\n')[[1]]
         bts_w[1] <- stringr::str_replace(bts_w[1], '\\\n', '')
         bibtex_out <- c(bibtex_out, bts_w)
     }

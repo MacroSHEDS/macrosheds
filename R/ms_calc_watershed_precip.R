@@ -103,7 +103,7 @@ ms_calc_watershed_precip <- function(precip,
 
     requireNamespace('macrosheds', quietly = TRUE)
     
-    ms_vars <- ms_vars_ts %>% 
+    ms_vars <- macrosheds::ms_vars_ts %>% 
         select(variable_code, flux_convertible) %>% 
         distinct()
         

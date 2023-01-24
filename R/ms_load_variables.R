@@ -30,14 +30,14 @@ ms_load_variables <- function(var_set = 'timeseries'){
     
     if(var_set == 'timeseries'){
         
-        return(select(ms_vars_ts, -molecule))
+        return(select(macrosheds::ms_vars_ts, -molecule))
         
     } else if(var_set == 'ws_attr'){
         
-        return(ms_vars_ws)
+        return(macrosheds::ms_vars_ws)
         
     } else {
         
-        return(ms_var_catalog)
+        return(macrosheds::ms_var_catalog)
     }
 }

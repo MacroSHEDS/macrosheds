@@ -34,7 +34,7 @@ ms_undo_scale_flux_by_area <- function(d){
     
     requireNamespace('macrosheds', quietly = TRUE)
 
-    site_data <- ms_site_data
+    site_data <- macrosheds::ms_site_data
     
     sites <- unique(d$site_code)
     
