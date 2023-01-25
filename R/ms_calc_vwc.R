@@ -65,6 +65,8 @@ ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
         chemistry$datetime <- as.POSIXct(chemistry$datetime)
     }
 
+    requireNamespace('macrosheds', quietly = TRUE)
+
     # Check the intervals are the same in both chemistry and q
     q_interval <- Mode(diff(as.numeric(q$datetime)))
 

@@ -103,6 +103,8 @@ ms_generate_attribution <- function(d, chem_source = 'both',
             stop(paste(write_to_dir, 'does not exist. Make sure write_to_dir is a valid directory, not a file.'))
         }
     }
+
+    requireNamespace('macrosheds', quietly = TRUE)
     
     attrib <- list()
     
@@ -111,25 +113,25 @@ ms_generate_attribution <- function(d, chem_source = 'both',
         message('d (data.frame in MacroSheds format) not supplied. Returning all records')
         
         attrib$acknowledgements <- macrosheds:::format_acknowledgements(
-            attrib_ts_data,
+            macrosheds::attrib_ts_data,
             ws_attr = include_ws_attr)
         
         attrib$bibliography <- macrosheds:::format_bibliography(
-            attrib_ts_data,
+            macrosheds::attrib_ts_data,
             ws_attr = include_ws_attr)
         
         ir <- macrosheds:::format_IR(
-            attrib_ts_data,
+            macrosheds::attrib_ts_data,
             ws_attr = include_ws_attr,
             abide_by = abide_by)
         
         attrib$intellectual_rights_notifications <- ir$intellectual_rights
         attrib$intellectual_rights_explanations <- ir$IR_explanations
         
-        attrib$full_details_timeseries <- attrib_ts_data
+        attrib$full_details_timeseries <- macrosheds::attrib_ts_data
         
         if(include_ws_attr){
-            attrib$full_details_ws_attr <- attrib_ws_data
+            attrib$full_details_ws_attr <- macrosheds::attrib_ws_data
         }
         
         if(is.null(write_to_dir)){
@@ -165,7 +167,7 @@ ms_generate_attribution <- function(d, chem_source = 'both',
     }
     
     sitevars <- left_join(sitevars,
-                          select(ms_site_data, domain, site_code),
+                          select(macrosheds::ms_site_data, domain, site_code),
                           by = 'site_code') %>% 
         filter(! is.na(domain)) %>% 
         distinct(domain, var)
@@ -176,7 +178,7 @@ ms_generate_attribution <- function(d, chem_source = 'both',
                      times = length(dmns))) %>% 
         bind_rows(sitevars)
 
-    sitevars <- left_join(sitevars, attrib_ts_data,
+    sitevars <- left_join(sitevars, macrosheds::attrib_ts_data,
                           by = c('domain', var = 'macrosheds_prodname')) %>% 
         rename(macrosheds_prodname = var) %>%
         relocate(macrosheds_prodname, .after = macrosheds_prodcode) %>% 
@@ -201,7 +203,7 @@ ms_generate_attribution <- function(d, chem_source = 'both',
     attrib$full_details_timeseries <- sitevars
     
     if(include_ws_attr){
-        attrib$full_details_ws_attr <- attrib_ws_data
+        attrib$full_details_ws_attr <- macrosheds::attrib_ws_data
     }
     
     if(is.null(write_to_dir)){

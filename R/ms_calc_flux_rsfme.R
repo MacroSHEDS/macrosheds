@@ -67,6 +67,8 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
         chemistry$datetime <- as.POSIXct(chemistry$datetime)
     }
 
+    requireNamespace('macrosheds', quietly = TRUE)
+
     # check that method, if non-null, is in accepted list
     rsfme_accepted <- c('average', 'pw', 'composite', 'wrtds', 'beale', 'simple')
     if(!method %in% rsfme_accepted) {
@@ -88,7 +90,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
       writeLines(glue('calculating flux over: {aggregation}', aggregation = aggregation))
     }
 
-    site_info <- ms_site_data
+    site_info <- macrosheds::ms_site_data
     site_info$ws_area_ha <- errors::set_errors(site_info$ws_area_ha, 0)
 
     # Check both files have the same sites
