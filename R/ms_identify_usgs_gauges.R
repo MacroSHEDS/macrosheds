@@ -48,7 +48,6 @@ ms_identify_usgs_gauges <- function(sites, lat = NULL, long = NULL, radius = 500
         use_sf = FALSE
     }
     
-    
     for(i in 1:nrow(sites)){
         if(use_sf){
             point <- sites[i,] %>%

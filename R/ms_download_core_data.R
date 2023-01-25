@@ -40,6 +40,8 @@ ms_download_core_data <- function(macrosheds_root,
                                   domains,
                                   quiet = FALSE) {
     
+    requireNamespace('macrosheds', quietly = TRUE)
+
     dom_missing <- missing(domains)
     net_missing <- missing(networks)
     

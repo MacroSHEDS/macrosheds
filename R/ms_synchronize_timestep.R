@@ -70,6 +70,8 @@ ms_synchronize_timestep <- function(d,
     if(! round_method %in% c('round', 'floor')){
         stop('round_method must be "floor" or "round"')
     }
+
+    requireNamespace('macrosheds', quietly = TRUE)
     
     #split dataset by site and variable.
     d_split <- d %>%
