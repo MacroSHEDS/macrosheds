@@ -44,7 +44,8 @@ ms_load_product <- function(macrosheds_root,
                             site_codes,
                             sort_result = FALSE,
                             warn = TRUE){
-    
+
+    requireNamespace('macrosheds', quietly = TRUE)
     
     # Checks 
     avail_prodnames <- c('discharge', 'stream_chemistry', 'stream_flux_inst_scaled',
