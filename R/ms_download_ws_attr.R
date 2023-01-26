@@ -20,7 +20,7 @@
 #' @examples
 #' ms_download_ws_attr_summary(ws_attr_dir = 'ms/spatial', dataset = 'time series', quiet = FALSE)
 
-ms_download_ws_attr_summary <- function(ws_attr_dir, dataset = 'summaries', quiet = FALSE){
+ms_download_ws_attr <- function(ws_attr_dir, dataset = 'summaries', quiet = FALSE){
     requireNamespace('macrosheds', quietly = TRUE)
 
     # figshare basic info handling
