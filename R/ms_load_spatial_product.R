@@ -37,7 +37,7 @@ ms_load_spatial_product <- function(macrosheds_root,
                                     domains,
                                     site_codes){
 
-    requireNamespace("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE)
     
     # Checks 
     if(missing(macrosheds_root)) {

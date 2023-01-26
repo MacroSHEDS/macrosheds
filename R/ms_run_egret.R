@@ -45,7 +45,7 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
                          run_egret = TRUE, kalman = FALSE, quiet = FALSE,
                          site_data = NULL){
 
-    requireNamespace("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE)
     
     # Checks 
     if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(stream_chemistry))){

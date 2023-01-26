@@ -180,7 +180,7 @@ ms_delineate_watershed <- function(lat,
                                    confirm = TRUE,
                                    responses_from_file = NULL){
 
-    requireNamespace("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE)
     
     if(missing(write_dir) || is.null(write_dir)){
         stop('write_dir must be provided')

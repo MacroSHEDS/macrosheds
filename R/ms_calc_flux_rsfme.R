@@ -50,7 +50,7 @@
 ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                          method = 'simple', aggregation = 'simple') {
 
-    requireNamespace("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE)
 
     #### Checks
     if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(chemistry))){

@@ -98,7 +98,7 @@ ms_calc_watershed_precip <- function(precip,
                                      elevation_agnostic = TRUE,
                                      verbose = TRUE){
 
-    requireNamespace("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE)
 
     precip_only <- missing(pchem)
     pchem_only <- missing(precip)
