@@ -17,7 +17,7 @@
 #' @export
 #' @seealso [ms_load_sites()], [ms_load_spatial_product()], [ms_load_product()]
 #' @examples
-#' ms_vars <- ms_load_variables()
+#' vars <- ms_load_variables()
 
 ms_load_variables <- function(var_set = 'timeseries'){
 
@@ -26,11 +26,18 @@ ms_load_variables <- function(var_set = 'timeseries'){
         stop(paste('var_set must be one of', paste(opts, collapse = ', ')))
     }
 
+    requireNamespace('macrosheds', quietly = TRUE)
+    
     if(var_set == 'timeseries'){
-        return(select(ms_vars_ts, -molecule))
+        
+        return(select(macrosheds::ms_vars_ts, -molecule))
+        
     } else if(var_set == 'ws_attr'){
-        return(ms_vars_ws)
+        
+        return(macrosheds::ms_vars_ws)
+        
     } else {
-        return(ms_var_catalog)
+        
+        return(macrosheds::ms_var_catalog)
     }
 }

@@ -40,6 +40,8 @@ ms_download_core_data <- function(macrosheds_root,
                                   domains,
                                   quiet = FALSE) {
     
+    requireNamespace('macrosheds', quietly = TRUE)
+
     dom_missing <- missing(domains)
     net_missing <- missing(networks)
     
@@ -53,7 +55,7 @@ ms_download_core_data <- function(macrosheds_root,
     
     figshare_base <- 'https://figshare.com/ndownloader/files/'
     
-    figshare_codes <- file_ids_for_r_package #loaded in R/sysdata.rda, which is written in postprocessing
+    figshare_codes <- macrosheds::file_ids_for_r_package #loaded in R/sysdata.rda, which is written in postprocessing
     #figshare_codes <- data.frame(network = c('krycklan', 'walker_branch', 'usgs', 'usfs', 'usfs',
     #                                         'usfs', 'usfs', 'neon', 'lter', 'lter', 'lter', 'lter',
     #                                         'lter', 'lter', 'lter', 'lter', 'lter', 'lter', 'lter',

@@ -57,7 +57,7 @@ ms_fill_missing_precip <- function(precip,
                                    out_path = NULL,
                                    verbose = TRUE){
     
-    #### Load in data is file path supplied ####
+    requireNamespace('macrosheds', quietly = TRUE)
 
     # Load in precipitation gauge locations
     if(! inherits(precip_gauge, 'sf')){

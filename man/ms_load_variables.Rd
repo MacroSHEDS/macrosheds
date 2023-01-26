@@ -25,7 +25,7 @@ function simply retrieves a data.frame from the macrosheds namespace and makes i
 in the global environment.
 }
 \examples{
-ms_vars <- ms_load_variables()
+vars <- ms_load_variables()
 }
 \seealso{
 \code{\link[=ms_load_sites]{ms_load_sites()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_load_product]{ms_load_product()}}

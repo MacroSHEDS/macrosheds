@@ -194,6 +194,8 @@ ms_delineate_watershed <- function(lat,
         spec_breach_method <- 'basic'
         message('spec_breach_method = "lc" is currently unavailable. Setting spec_breach_method = "basic"')
     }
+
+    requireNamespace('macrosheds', quietly = TRUE)
     
     if(verbose){
         message('Beginning watershed delineation')
