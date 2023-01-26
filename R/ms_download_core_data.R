@@ -21,7 +21,7 @@
 #' @return Downloads all core data for selected domains to the
 #'    directory specified by \code{macrosheds_root}. Site datasets are arranged according to the following
 #'    structure: domain/prodname/site_code.feather. For definitions of these terms as used by
-#'    MacroSheds, see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740). 
+#'    MacroSheds, see [MacroSheds documentation](EDI link pending). 
 #' 
 #' @details Either \code{networks} or \code{domains} must be supplied. If 'all' is 
 #'    supplied to either argument, all domains will be downloaded regardless of 
