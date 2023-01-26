@@ -1,9 +1,10 @@
 
-# setwd('~/git/macrosheds/r_package/')
+setwd('~/git/macrosheds/r_package/')
 
 #address any errors here before building.
 devtools::document('.') #preview won't render markdown-style Rd formatting
 # devtools::check('.') #this runs all example code, so we can save it for CRAN submission
+devtools::install('.', quick = T)
 devtools::install('.')
 # devtools::install('.', quick = TRUE, build = FALSE) #if you just made a small change and want to reinstall minimally
 devtools::test()

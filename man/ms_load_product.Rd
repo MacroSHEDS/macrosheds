@@ -17,33 +17,41 @@ ms_load_product(
 }
 \arguments{
 \item{macrosheds_root}{character. The path to the MacroSheds dataset's parent
-directory, established with \code{\link[=ms_download_core_data]{ms_download_core_data()}}.}
+directory, established with \code{\link[=ms_download_core_data]{ms_download_core_data()}} and/or \code{\link[=ms_download_ws_attr]{ms_download_ws_attr()}}.
+If you specified different locations with each of these functions, you'll need to
+refer to them separately when loading time-series data vs. watershed attribute data.}
 
 \item{prodname}{character. A MacroSheds product name. Files associated with this
-product name will be read and combined. Available prodnames are:
+product name will be read and combined. Available prodnames are (for core time-series products):
 discharge, stream_chemistry, stream_flux_inst, precipitation,
-precip_chemistry, precip_flux_inst.}
+precip_chemistry, precip_flux_inst, (and for watershed attribute products:)
+ws_attr_summaries, ws_attr_timeseries:climate,
+ws_attr_timeseries:hydrology, ws_attr_timeseries:landcover,
+ws_attr_timeseries:parentmaterial, ws_attr_timeseries:terrain,
+ws_attr_timeseries:vegetation}
 
 \item{filter_vars}{character vector. for products like stream_chemistry that include
 multiple variables, this filters to just the ones specified (ignores
-variable prefixes). To see a catalog of variables, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
+variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
+To see a catalog of variables, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
 
 \item{networks}{character vector. MacroSheds networks to load; optional. To see a catalog of
-networks, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
+networks, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
 
 \item{domains}{character vector. MacroSheds domains to load; optional. To see a catalog of
-domains, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
+domains, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
 
 \item{site_codes}{character vector. MacroSheds sites to load, optional. To see a catalog of
-site_codes, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
+site_codes, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
 
-\item{sort_result}{logical. If TRUE, output will be sorted by site_code, var,
+\item{sort_result}{logical. Ignored if requesting watershed attributes.
+If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
 datetime. this may add considerable loading time for large datasets.}
 
-\item{warn}{logical. If TRUE, function will not load more than 100MB without permission.}
+\item{warn}{logical. If TRUE, function will not load more than 100 MB without permission.}
 }
 \value{
-Returns a \code{tibble} in MacroSheds format. See \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation} for definitions.
+Returns a \code{tibble} in MacroSheds format. See \link{MacroSheds documentation}(EDI link pending) for definitions.
 }
 \description{
 Loads and optionally filters MacroSheds time-series products (e.g stream_chemistry, discharge, etc.) from a
@@ -59,7 +67,7 @@ macrosheds_data <- ms_load_product(macrosheds_root = ms_root,
                                    filter_vars = 'NO3_N')
 }
 \seealso{
-\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_load_variables]{ms_load_variables()}}, \code{\link[=ms_load_sites]{ms_load_sites()}}
+\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_download_ws_attr]{ms_download_ws_attr()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_load_variables]{ms_load_variables()}}, \code{\link[=ms_load_sites]{ms_load_sites()}}
 }
 \author{
 Spencer Rhea, \email{spencerrhea41@gmail.com}

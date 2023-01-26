@@ -7,26 +7,34 @@
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param macrosheds_root character. The path to the MacroSheds dataset's parent
-#'    directory, established with [ms_download_core_data()].
+#'    directory, established with [ms_download_core_data()] and/or [ms_download_ws_attr()].
+#'    If you specified different locations with each of these functions, you'll need to
+#'    refer to them separately when loading time-series data vs. watershed attribute data.
 #' @param prodname character. A MacroSheds product name. Files associated with this
-#'    product name will be read and combined. Available prodnames are:
+#'    product name will be read and combined. Available prodnames are (for core time-series products):
 #'    discharge, stream_chemistry, stream_flux_inst, precipitation,
-#'    precip_chemistry, precip_flux_inst.
+#'    precip_chemistry, precip_flux_inst, (and for watershed attribute products:)
+#'    ws_attr_summaries, ws_attr_timeseries:climate,
+#'    ws_attr_timeseries:hydrology, ws_attr_timeseries:landcover,
+#'    ws_attr_timeseries:parentmaterial, ws_attr_timeseries:terrain,
+#'    ws_attr_timeseries:vegetation
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
-#'    variable prefixes). To see a catalog of variables, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
+#'    To see a catalog of variables, visit macrosheds.org or see [MacroSheds documentation](EDI link pending).
 #' @param networks character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    networks, visit macrosheds.org or see [MacroSheds documentation](EDI link pending).
 #' @param domains character vector. MacroSheds domains to load; optional. To see a catalog of
-#'    domains, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
+#'    domains, visit macrosheds.org or see [MacroSheds documentation](EDI link pending).
 #' @param site_codes character vector. MacroSheds sites to load, optional. To see a catalog of
-#'    site_codes, visit macrosheds.org or see [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740).
-#' @param sort_result logical. If TRUE, output will be sorted by site_code, var,
+#'    site_codes, visit macrosheds.org or see [MacroSheds documentation](EDI link pending).
+#' @param sort_result logical. Ignored if requesting watershed attributes.
+#'    If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
 #'    datetime. this may add considerable loading time for large datasets.
-#' @param warn logical. If TRUE, function will not load more than 100MB without permission.
-#' @return Returns a \code{tibble} in MacroSheds format. See [MacroSheds documentation](https://doi.org/10.6084/m9.figshare.c.5621740) for definitions.
+#' @param warn logical. If TRUE, function will not load more than 100 MB without permission.
+#' @return Returns a \code{tibble} in MacroSheds format. See [MacroSheds documentation](EDI link pending) for definitions.
 #' @export
-#' @seealso [ms_download_core_data()], [ms_load_spatial_product()], [ms_load_variables()], [ms_load_sites()]
+#' @seealso [ms_download_core_data()], [ms_download_ws_attr()], [ms_load_spatial_product()], [ms_load_variables()], [ms_load_sites()]
 #' @examples
 #' ms_root = 'data/macrosheds'
 #' dir.create(ms_root, recursive = TRUE)
@@ -51,22 +59,49 @@ ms_load_product <- function(macrosheds_root,
     
     # Checks 
     avail_prodnames <- c('discharge', 'stream_chemistry', 'stream_flux_inst_scaled',
-                         'precipitation', 'precip_chemistry', 'precip_flux_inst_scaled')
+                         'precipitation', 'precip_chemistry', 'precip_flux_inst_scaled',
+                         'ws_attr_summaries', 'ws_attr_timeseries:climate',
+                         'ws_attr_timeseries:hydrology', 'ws_attr_timeseries:landcover',
+                         'ws_attr_timeseries:parentmaterial', 'ws_attr_timeseries:terrain',
+                         'ws_attr_timeseries:vegetation')
 
+    if(missing(macrosheds_root)){ 
+        stop('macrosheds_root must be supplied.')
+    }
     if(! dir.exists(macrosheds_root)){
-        stop('macrosheds_root does not exist, please ensure correct directory is supplied')
+        stop('macrosheds_root does not exist. This should be the directory you specified when you ran ms_download_core_data or ms_download_ws_attr.')
     }
-    if(missing(macrosheds_root)) { 
-        stop('macrosheds_root must be supplied')
-        }
-    if(missing(prodname)) {
-        stop('A prodname must be supplied such as stream_chemistry, discharge, etc.')
+    if(missing(prodname)){
+        stop('prodname must be supplied')
     }
-
+    if(! inherits(prodname, 'character') || length(prodname) != 1){
+        stop('prodname must be a character string')
+    }
     if(! prodname %in% avail_prodnames){
-        stop(paste0('prodname must be one of: ',
-                    paste(avail_prodnames,
-                          collapse = ', ')))
+        stop(paste0('prodname must be one of: "',
+                    paste(avail_prodnames, collapse = '", "'),
+                    '".'))
+    }
+    if(! missing(networks)){
+        ntws <- unique(macrosheds::ms_site_data$network)
+        if(any(! networks %in% ntws)){
+            illeg <- Filter(function(x) ! x %in% ntws, networks)
+            stop('illegal network names: ', paste(illeg, collapse = ', '), '. see ms_load_sites().')
+        }
+    }
+    if(! missing(domains)){
+        dmns <- unique(macrosheds::ms_site_data$domain)
+        if(any(! domains %in% dmns)){
+            illeg <- Filter(function(x) ! x %in% dmns, domains)
+            stop('illegal network names: ', paste(illeg, collapse = ', '), '. see ms_load_sites().')
+        }
+    }
+    if(! missing(site_codes)){
+        sits <- unique(macrosheds::ms_site_data$site_code)
+        if(any(! site_codes %in% sits)){
+            illeg <- Filter(function(x) ! x %in% sits, site_codes)
+            stop('illegal network names: ', paste(illeg, collapse = ', '), '. see ms_load_sites().')
+        }
     }
     
     # Fill in missing inputs with NULL
@@ -74,8 +109,50 @@ ms_load_product <- function(macrosheds_root,
         filter_vars <- NULL
     }
     
+    if(grepl('^ws_attr_', prodname)){
+        
+        if(prodname == 'ws_attr_summaries') msfile <- 'watershed_summaries.feather'
+        
+        if(grepl('^ws_attr_timeseries', prodname)){
+            attr_set <- stringr::str_extract(prodname, '(?<=ws_attr_timeseries:).*')
+            msfile <- paste0('spatial_timeseries_', attr_set, '.feather')
+        }
+        msfile <- file.path(macrosheds_root, msfile)
+        
+        # Create size warning
+        file_sizes <- file.info(msfile)$size
+        file_sizes <- round(sum(file_sizes, na.rm = TRUE)/1000000, 1)
+        
+        if(warn && file_sizes > 100){
+            
+            resp <- get_response_1char(msg = paste0('This dataset will occupy about ',
+                                                    file_sizes,
+                                                    ' MB in memory. Do you want to continue? (y/n) > '),
+                                       possible_chars = c('y', 'n'))
+            
+            if(resp == 'n'){
+                message('Aborting dataset load. Sorry, but there\'s no easy way to make this one smaller. Contact us.')
+                return(invisible())
+            }
+        }
+        
+        o <- feather::read_feather(msfile)
+        
+        if(! missing(networks)){
+            o <- filter(o, network %in% networks)
+        }
+        if(! missing(domains)){
+            o <- filter(o, domain %in% domains)
+        }
+        if(! missing(site_codes)){
+            o <- filter(o, site_code %in% site_codes)
+        }
+        
+        return(o)
+    }
+    
     prodname_dirs <- list_all_product_dirs(macrosheds_root = macrosheds_root,
-                                          prodname = prodname)
+                                           prodname = prodname)
     
     # List network files  
     if(!missing(networks)){

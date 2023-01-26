@@ -14,7 +14,8 @@ macrosheds::ms_download_core_data(macrosheds_root = wd,
                                   domains = c('hbef', 'hjandrews', 'boulder',
                                               'santee'),
                                   quiet = TRUE)
-
+macrosheds::ms_download_ws_attr(macrosheds_root = wd, dataset = 'summaries')
+macrosheds::ms_download_ws_attr(macrosheds_root = wd, dataset = 'time series', omit_climate_data = T)
 
 test_that('the correct domains are loaded in', {
     
@@ -96,4 +97,31 @@ test_that('filter_vars filters the correct vars', {
         unique()
     expect_equal(results_vars, 
                  c('GN_PO4_P', 'GN_temp',  'IS_temp'))
+})
+
+test_that('loading ws attr summaries works', {
+    
+    r = macrosheds::ms_load_product(macrosheds_root = wd, 
+                    prodname = 'ws_attr_summaries',
+                    domains = c('hjandrews', 'hbef'),
+                    filter_vars = c('PO4_P', 'temp')) #ignored
+    
+    expect_length(unique(r$domain), 2)
+})
+
+test_that('loading ws attr timeseries works', {
+    
+    r = macrosheds::ms_load_product(macrosheds_root = wd, 
+                    prodname = 'ws_attr_timeseries:landcover',
+                    domains = c('hjandrews', 'hbef'))
+    
+    expect_true('pctCellErr' %in% colnames(r))
+})
+
+test_that('misspecified network produces error', {
+    
+    expect_error(macrosheds::ms_load_product(macrosheds_root = wd, 
+                    prodname = 'ws_attr_timeseries:landcover',
+                    domains = c('hjandrews', 'hbef', 'donkey')),
+                 regexp = 'illegal')
 })
