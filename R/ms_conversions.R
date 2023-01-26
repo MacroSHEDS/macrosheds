@@ -83,6 +83,8 @@ ms_conversions <- function(d,
                            convert_units_from = 'mg/l',
                            convert_units_to,
                            convert_molecules){
+
+    library("dplyr", quietly = TRUE)
     
     requireNamespace('macrosheds', quietly = TRUE)
 

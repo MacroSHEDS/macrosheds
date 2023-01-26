@@ -33,6 +33,8 @@
 
 ms_scale_flux_by_area <- function(d){
 
+    library("dplyr", quietly = TRUE)
+
     requireNamespace('macrosheds', quietly = TRUE)
     
     site_data <- macrosheds::ms_site_data

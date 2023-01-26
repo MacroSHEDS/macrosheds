@@ -56,6 +56,8 @@ ms_fill_missing_precip <- function(precip,
                                    distance_threshold = NULL,
                                    out_path = NULL,
                                    verbose = TRUE){
+
+    library("dplyr", quietly = TRUE)
     
     requireNamespace('macrosheds', quietly = TRUE)
 

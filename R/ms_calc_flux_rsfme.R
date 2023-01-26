@@ -50,6 +50,8 @@
 ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                          method = 'simple', aggregation = 'simple') {
 
+    library("dplyr", quietly = TRUE)
+
     #### Checks
     if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(chemistry))){
         stop('The argument to chemistry must contain precipitation chemistry or stream chemistry data in MacroSheds format (column names of site_code, val, var, datetime, ms_interp, ms_status at minimum).')

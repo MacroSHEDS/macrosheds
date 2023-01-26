@@ -54,6 +54,8 @@ ms_synchronize_timestep <- function(d,
                                     summary_fun,
                                     quiet = FALSE){
 
+    library("dplyr", quietly = TRUE)
+
     # Checks 
     if(nrow(d) < 2 || sum(! is.na(d$val)) < 2){
         stop('not enough data to synchronize')

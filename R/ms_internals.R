@@ -12,7 +12,7 @@ sm <- suppressWarnings
 # end function aliases 
 
 list_all_product_dirs <- function(macrosheds_root, prodname){
-    
+
     prodname_dirs <- list.dirs(path = macrosheds_root,
                                full.names = TRUE,
                                recursive = TRUE)

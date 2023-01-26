@@ -21,6 +21,8 @@
 
 ms_load_variables <- function(var_set = 'timeseries'){
 
+    library("dplyr", quietly = TRUE)
+
     opts <- c('timeseries', 'timeseries_by_site', 'ws_attr')
     if(! var_set %in% opts){
         stop(paste('var_set must be one of', paste(opts, collapse = ', ')))
