@@ -1,18 +1,24 @@
 #' Download MacroSheds watershed attribute summary data tables
 #'
-#' Download the MacroSheds site data table with information on networks, domains,
-#'  location of stream gauges, and more. (source .Rdata file downloaded with the MacroSheds package)
+#' Download MacroSheds watershed attribute data for each site, both summary and time series datasets
+#' are available
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Wes Slaughter, \email{wslaughter@@berkeley.edu}
 #' @author Mike Vlah
-#' @author Wes Slaughter
-#' @return returns a \code{data.frame} of all sites in the MacroSheds systems
-#'    with their corresponding network, domain, latitude, longitude, area, and
-#'    additional information.
+#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @param ws_attr_dir character. Directory where macrosheds watershed attribute data files will be downloaded.
+#'    If this directory does not exist, it will be created.
+#' @param dataset character. This function can download the two types of watershed attribute dataset
+#'    provided by macrosheds. "summaries" will download a feather file containing watershed attributes
+#'    summarized for each macrosheds site over all available data. "time series" will download 6 feather
+#'    files containing time series data of watershed attributes, these files are each prefixed "spatial_timeseries":
+#'    "vegetation", "terrain", "parentmaterial", "landcover", "hydrology", "climate"
+#' @param quiet logical. If TRUE, some messages will be suppressed.
+#' @return returns nothing.
 #' @export
 #' @seealso [ms_download_site_data()], [ms_download_core_data()]
 #' @examples
-#' ms_site_data <- ms_download_ws_attr_summary()
+#' ms_download_ws_attr_summary(ws_attr_dir = 'ms/spatial', dataset = 'time series', quiet = FALSE)
 
 ms_download_ws_attr_summary <- function(ws_attr_dir, dataset = 'summaries', quiet = FALSE){
     requireNamespace('macrosheds', quietly = TRUE)
@@ -51,13 +57,18 @@ ms_download_ws_attr_summary <- function(ws_attr_dir, dataset = 'summaries', quie
 
     n_downloads <- length(rel_download)
 
+    # loop through figshare IDs and download each data product
     for(i in 1:n_downloads) {
 
         rel_code <- rel_download[i]
-        rel_nm = paste0(dataset, rel_code)
-        ws_attr_fp = paste0(ws_attr_dir, '/', rel_nm, '.feather')
+        fig_call <- paste0(figshare_base, rel_code)
 
-        fig_call <- paste0(figshare_base, '_', rel_code)
+
+        # we have to get the 'correct' filename via regex of the http call
+        hh <- httr::HEAD(fig_call)
+        fig_regex = paste0(rel_code, "/(.*?).feather")
+        rel_nm = stringr::str_match(hh$url, fig_regex)[2]
+        ws_attr_fp = file.path(ws_attr_dir, paste0(rel_nm, '.feather'))
 
         if(! quiet){
             print(glue::glue('Downloading dataset type: {ds} ({ii}/{iN}; Figshare code {rc})',
@@ -77,6 +88,8 @@ ms_download_ws_attr_summary <- function(ws_attr_dir, dataset = 'summaries', quie
 
         if(! quiet) print(paste(rel_nm, 'successfully downloaded and unzipped.'))
     }
+
+
 
     return(invisible())
 }
