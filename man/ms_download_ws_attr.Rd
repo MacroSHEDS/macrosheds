@@ -25,7 +25,7 @@ files is loaded with \code{\link[=ms_load_ws_attr]{ms_load_ws_attr()}}.}
 \item{quiet}{logical. If TRUE, some messages will be suppressed.}
 
 \item{omit_climate_data}{logical. Ignored if \code{dataset == 'summaries'}. However, if
-\code{dataset == 'time series'}), and you don't care about climate data,
+\code{dataset == 'time series'}, and you don't care about climate data,
 you may use this argument to avoid downloading it (because it's huge), while still downloading
 terrain, vegetation, parent material, land use, and hydrology data (which are tiny).}
 }
