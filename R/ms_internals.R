@@ -13,8 +13,6 @@ sm <- suppressWarnings
 
 list_all_product_dirs <- function(macrosheds_root, prodname){
 
-    requireNamespace("dplyr", quietly = TRUE)
-    
     prodname_dirs <- list.dirs(path = macrosheds_root,
                                full.names = TRUE,
                                recursive = TRUE)
