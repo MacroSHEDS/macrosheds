@@ -16,7 +16,7 @@
 #'    files is loaded with [ms_load_ws_attr()].
 #' @param quiet logical. If TRUE, some messages will be suppressed.
 #' @param omit_climate_data logical. Ignored if \code{dataset == 'summaries'}. However, if
-#'    \code{dataset == 'time series')}, and you don't care about climate data,
+#'    \code{dataset == 'time series'}, and you don't care about climate data,
 #'    you may use this argument to avoid downloading it (because it's huge), while still downloading
 #'    terrain, vegetation, parent material, land use, and hydrology data (which are tiny).
 #' @return returns NULL. Writes files to disk.
