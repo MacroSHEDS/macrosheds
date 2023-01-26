@@ -1,4 +1,3 @@
-
 #' Load MacroSheds site data table
 #'
 #' Load the MacroSheds site data table with information on networks, domains,
