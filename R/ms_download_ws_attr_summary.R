@@ -14,18 +14,8 @@
 #' @examples
 #' ms_site_data <- ms_download_ws_attr_summary()
 
-ms_download_ws_attr_summary <- function(ws_attr_dir, networks, domains, sites, dataset = 'summaries'){
+ms_download_ws_attr_summary <- function(ws_attr_dir, dataset = 'summaries', quiet = FALSE){
     requireNamespace('macrosheds', quietly = TRUE)
-
-    # network and domain selectin handling
-    dom_missing <- missing(domains)
-    net_missing <- missing(networks)
-    net_missing <- missing(sites)
-
-    if(dom_missing && net_missing && sites) {
-        return('At least one domain, network, or site must be listed. Networks and domains can be found in the site data file ms_downloadsite_data()')
-    }
-
 
     # figshare basic info handling
     if(!exists('file_ids_for_r_package2')) {
@@ -59,16 +49,15 @@ ms_download_ws_attr_summary <- function(ws_attr_dir, networks, domains, sites, d
       return('dataset argument must be either "time series" or "summaries"')
     }
 
-    n_downloads <- nrow(rel_download)
+    n_downloads <- length(rel_download)
 
     for(i in 1:n_downloads) {
 
-        temp_dir <- tempdir()
         rel_code <- rel_download[i]
         rel_nm = paste0(dataset, rel_code)
-        temp_file_dom <- paste0(temp_dir, '/', rel_nm, '.zip')
+        ws_attr_fp = paste0(ws_attr_dir, '/', rel_nm, '.feather')
 
-        fig_call <- paste0(figshare_base, rel_code)
+        fig_call <- paste0(figshare_base, '_', rel_code)
 
         if(! quiet){
             print(glue::glue('Downloading dataset type: {ds} ({ii}/{iN}; Figshare code {rc})',
@@ -79,20 +68,15 @@ ms_download_ws_attr_summary <- function(ws_attr_dir, networks, domains, sites, d
         }
 
         download_status <- try(download.file(url = fig_call,
-                                             destfile = temp_file_dom,
+                                             destfile = ws_attr_fp,
                                              quiet = quiet,
                                              cacheOK = FALSE,
                                              mode = 'wb'))
 
         if(inherits(download_status, 'try-error')) next
 
-        unzip_status <- try(unzip(zipfile = temp_file_dom,
-                                  exdir = macrosheds_root))
-
-        if(inherits(unzip_status, 'try-error')) next
-
         if(! quiet) print(paste(rel_nm, 'successfully downloaded and unzipped.'))
     }
 
-    # filter result to nwk/dmn/site of choice
+    return(invisible())
 }
