@@ -2,39 +2,50 @@
 % Please edit documentation in R/ms_download_ws_attr.R
 \name{ms_download_ws_attr}
 \alias{ms_download_ws_attr}
-\title{Download MacroSheds watershed attribute summary data tables}
+\title{Download MacroSheds watershed attributes}
 \usage{
-ms_download_ws_attr(ws_attr_dir, dataset = "summaries", quiet = FALSE)
+ms_download_ws_attr(
+  macrosheds_root,
+  dataset = "summaries",
+  quiet = FALSE,
+  omit_climate_data = FALSE
+)
 }
 \arguments{
-\item{ws_attr_dir}{character. Directory where macrosheds watershed attribute data files will be downloaded.
-If this directory does not exist, it will be created.}
+\item{macrosheds_root}{character. Directory where watershed attribute files will be downloaded.
+If this directory does not exist, it will be created. Does not have to be the same
+as \code(macrosheds_root) provided to \code{\link[=ms_download_core_data]{ms_download_core_data()}}, but might as well be.}
 
-\item{dataset}{character. This function can download the two types of watershed attribute dataset
-provided by macrosheds. "summaries" will download a feather file containing watershed attributes
-summarized for each macrosheds site over all available data. "time series" will download 6 feather
-files containing time series data of watershed attributes, these files are each prefixed "spatial_timeseries":
-"vegetation", "terrain", "parentmaterial", "landcover", "hydrology", "climate"}
+\item{dataset}{character. This function can download the two types of watershed attribute data
+provided by MacroSheds. "summaries" will download a feather file containing watershed attributes
+summarized across time and space (i.e. one value for each site). "time series" will download 6 feather
+files containing time series of watershed attributes where available. Data from these
+files is loaded with \code{\link[=ms_load_ws_attr]{ms_load_ws_attr()}}.}
 
 \item{quiet}{logical. If TRUE, some messages will be suppressed.}
+
+\item{omit_climate_data}{logical. Ignored if \code{dataset == 'summaries'}. However, if
+\code{dataset == 'time series'}, and you don't care about climate data,
+you may use this argument to avoid downloading it (because it's huge), while still downloading
+terrain, vegetation, parent material, land use, and hydrology data (which are tiny).}
 }
 \value{
-returns nothing.
+returns NULL. Writes files to disk.
 }
 \description{
-Download MacroSheds watershed attribute data for each site, both summary and time series datasets
-are available
+Download MacroSheds watershed attribute data for all sites. Choose between
+temporally explicit spatial summaries, or summaries across both time and space.
 }
 \examples{
-ms_download_ws_attr_summary(ws_attr_dir = 'ms/spatial', dataset = 'time series', quiet = FALSE)
+ms_download_ws_attr(macrosheds_root = 'my/macrosheds/root', dataset = 'time series')
 }
 \seealso{
-\code{\link[=ms_download_site_data]{ms_download_site_data()}}, \code{\link[=ms_download_core_data]{ms_download_core_data()}}
+\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_ws_attr]{ms_load_ws_attr()}}
 }
 \author{
 Wes Slaughter, \email{wslaughter@berkeley.edu}
 
 Mike Vlah
 
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea
 }
