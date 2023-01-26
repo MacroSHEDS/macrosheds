@@ -21,6 +21,8 @@
 
 ms_load_sites <- function(){
 
+    requireNamespace("dplyr", quietly = TRUE)
+
     requireNamespace('macrosheds', quietly = TRUE)
     
     #thisenv <- environment()

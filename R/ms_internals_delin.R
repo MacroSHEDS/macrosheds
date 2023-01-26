@@ -4,6 +4,8 @@ move_shapefiles <- function(shp_files,
                             from_dir,
                             to_dir,
                             new_name_vec = NULL){
+
+    requireNamespace("dplyr", quietly = TRUE)
     
     #shp_files is a character vector of filenames with .shp extension
     #   (.shx, .prj, .dbf are handled internally and don't need to be listed)

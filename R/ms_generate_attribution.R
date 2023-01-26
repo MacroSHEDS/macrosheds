@@ -77,6 +77,8 @@ ms_generate_attribution <- function(d, chem_source = 'both',
                                     include_ws_attr = TRUE,
                                     abide_by = 'requirements only',
                                     write_to_dir = NULL){
+
+    requireNamespace("dplyr", quietly = TRUE)
     
     if(! missing(d) && (! inherits(d, 'data.frame') | ! all(c('site_code', 'datetime', 'var') %in% colnames(d)))){
         stop('d must be a data.frame in MacroSheds format (with at least datetime, site_code, and var columns)')

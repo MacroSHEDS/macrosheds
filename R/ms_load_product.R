@@ -45,6 +45,8 @@ ms_load_product <- function(macrosheds_root,
                             sort_result = FALSE,
                             warn = TRUE){
 
+    requireNamespace("dplyr", quietly = TRUE)
+
     requireNamespace('macrosheds', quietly = TRUE)
     
     # Checks 

@@ -22,6 +22,8 @@
 #' ms_separate_baseflow(q)
 
 ms_separate_baseflow <- function(discharge, alpha = 0.975, n.reflected = 30) {
+
+    requireNamespace("dplyr", quietly = TRUE)
     
     # Checks
     if(!all(c('site_code', 'datetime', 'val', 'var') %in% names(discharge))){
