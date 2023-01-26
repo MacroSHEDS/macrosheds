@@ -12,29 +12,30 @@
         error = function(e) FALSE
     )
   
-    # if connected, check if user's local macrosheds figshare IDs
-    # result in successful download
-    if(is_online) {
-        
-        temp_dir <- tempdir()
-        temp_file_dom <- paste0(temp_dir, 'test.feather')
+    # if connected, check whether figshare IDs are up to date
+    if(is_online){
   
-        figshare_base <- 'https://figshare.com/ndownloader/files/'
+        id_check_url <- 'https://raw.githubusercontent.com/vlahm/macrosheds/master/data/figshare_id_check.txt'
         figshare_codes <- macrosheds::file_ids_for_r_package2 #loaded in R/sysdata2.rda
   
-        test_info <- figshare_codes[figshare_codes$ut == 'watershed_summaries', 'fig_code']
+        test_id <- pull(figshare_codes[figshare_codes$ut == 'watershed_summaries', 'fig_code'])
         
-        test_url <- paste0(figshare_base, test_info)
-        
-        result <- try(readChar(url(test_url), 1), silent = TRUE)
+        result <- try(readLines(id_check_url, 1), silent = TRUE)
 
-        # if download error
-        if(inherits(result, 'try-error')) {
-            figshare_message <- paste0('-- macrosheds version check -- FAIL: local data download IDs do not match latest dataset version.',
-                  'Please run:\ndevtools::install_github("https://github.com/MacroSHEDS/macrosheds.git")')
+        if(inherits(result, 'try-error') || ! inherits(result, 'character')){
+            figshare_message <- paste(
+                '-- macrosheds version check -- FAIL: could not check whether MacroSheds',
+                'data download IDs are up to date. This should never happen, so please',
+                'notify us at mail@macrosheds.org')
+        } else if(result == test_id){
+            figshare_message <- paste(
+                '-- macrosheds version check -- SUCCESS: dataset connection tested',
+                'and local macrosheds version has up-to-date data download IDs.')
         } else {
-            # if download success, assume figshare IDs are accurate
-            figshare_message <- '-- macrosheds version check -- SUCCESS: dataset connection tested and local macrosheds version has up-to-date data download IDs'
+            figshare_message <- paste0(
+                '-- macrosheds version check -- FAIL: local data download IDs do ',
+                'not match latest dataset version. Please reinstall macrosheds with:\n',
+                'devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git")')
         }
     } else {
         figshare_message <- '-- macrosheds version check -- UNKNOWN: no internet connection detected.'
