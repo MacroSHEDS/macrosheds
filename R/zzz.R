@@ -15,7 +15,7 @@
     # if connected, check whether figshare IDs are up to date
     if(is_online){
   
-        id_check_url <- 'https://raw.githubusercontent.com/vlahm/macrosheds/master/data/figshare_id_check.txt'
+        id_check_url <- 'https://raw.githubusercontent.com/MacroSHEDS/macrosheds/master/data/figshare_id_check.txt'
         figshare_codes <- macrosheds::file_ids_for_r_package2 #loaded in R/sysdata2.rda
   
         test_id <- pull(figshare_codes[figshare_codes$ut == 'watershed_summaries', 'fig_code'])
