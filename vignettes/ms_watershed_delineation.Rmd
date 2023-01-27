@@ -1,7 +1,7 @@
 ---
 title: Watershed delineation with the macrosheds package 
-author: Mike Vlah
-subtitle: Delineation requires only latitude and longitude, and can be done interactively.
+subtitle: Requires only latitude and longitude, and can be done interactively.
+author: Mike Vlah (mail@macrosheds.org)
 output:
     html_document:
       toc: true 
@@ -9,6 +9,8 @@ output:
       highlight: zenburn
       df_print: kable
 ---
+
+## Setup
 
 Step 1: load the `macrosheds` package.
 
@@ -155,7 +157,9 @@ run, there's no need to be prompted for anything--let's set `confirm = FALSE`.
 ```
 
 ```
-##  Accessing raster elevation [-------------------------]   0% Accessing raster elevation [=========================] 100%
+## 
+ Accessing raster elevation [-------------------------]   0%
+ Accessing raster elevation [=========================] 100%
 ## Mosaicing & Projecting
 ```
 

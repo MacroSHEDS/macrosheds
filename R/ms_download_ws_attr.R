@@ -19,7 +19,9 @@
 #'    \code{dataset == 'time series'}, and you don't care about climate data,
 #'    you may use this argument to avoid downloading it (because it's huge), while still downloading
 #'    terrain, vegetation, parent material, land use, and hydrology data (which are tiny).
-#' @return returns NULL. Writes files to disk.
+#' @return Returns NULL. Downloads watershed attribute data to the
+#'    directory specified by \code{macrosheds_root}. For documentation, visit
+#'   [EDI](EDI link pending). 
 #' @export
 #' @seealso [ms_download_core_data()], [ms_load_ws_attr()]
 #' @examples
