@@ -57,7 +57,7 @@ We will use `?` to get more information about the function, and how to use it.
 
 
 ```{r ms-site-data}
-?ms_download_site_data
+?ms_load_sites
 ```
 
 Looks like the function will run with no arugments, let's run it and look at the results.
