@@ -45,10 +45,10 @@
 #'                      prodname = 'discharge',
 #'                      site_codes = c('w1', 'w3', 'w6'))
 #'
-#' flux <- ms_calc_flux(chemistry = chemistry,
+#' flux <- ms_calc_flux_rsfme(chemistry = chemistry,
 #'                      q = q,
-#'                      q_type = 'discharge')
-
+#'                      q_type = 'discharge',
+#'                      method = c('beale', 'pw'))
 
 ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 'simple', aggregation = 'annual', good_year_check = TRUE) {
 
@@ -204,6 +204,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 's
         if(nrow(site_q) == 0) { return(NULL) }
 
         site_info <- macrosheds::ms_load_sites()
+
         area <- site_info %>%
             filter(site_code == !!site_code) %>%
             distinct() %>%
@@ -429,13 +430,13 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 's
 
 
               #### calculate period weighted #####
-              flux_annual_pw <- calculate_pw(chem_df, q_df, datecol = 'datetime')
+              flux_annual_pw <- calculate_pw(chem_df, q_df, datecol = 'datetime', area = area)
 
               #### calculate beale ######
-              flux_annual_beale <- calculate_beale(chem_df, q_df, datecol = 'datetime')
+              flux_annual_beale <- calculate_beale(chem_df, q_df, datecol = 'datetime', area = area)
 
               #### calculate rating #####
-              flux_annual_rating <- calculate_rating(chem_df, q_df, datecol = 'datetime')
+              flux_annual_rating <- calculate_rating(chem_df, q_df, datecol = 'datetime', area = area)
 
               #### calculate composite ######
               rating_filled_df <- generate_residual_corrected_con(chem_df = chem_df,
@@ -444,7 +445,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 's
                                                                   sitecol = 'site_code')
 
               # calculate annual flux from composite
-              flux_annual_comp <- calculate_composite_from_rating_filled_df(rating_filled_df)
+              flux_annual_comp <- calculate_composite_from_rating_filled_df(rating_filled_df, area = area)
 
               #### select MS favored ####
               paired_df <- q_df %>%
@@ -533,4 +534,5 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 's
   # TODO: WRTDS inclusion
   # TODO: log file option
   # TODO: allow user select one or all methods?
+  # TODO: make handling and make clear that RSFME methods are for q_type discharge only
 }

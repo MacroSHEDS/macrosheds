@@ -132,7 +132,8 @@ ms_sitevar_catalog <- ms_load_variables(var_set = 'timeseries_by_site')
 ms_sitevar_catalog %>% 
     filter(domain %in% my_domains,
            variable_code == 'NO3_N',
-           chem_category == 'stream_conc') %>% 
+           chem_category == 'stream_conc'
+           ) %>% 
     arrange(desc(mean_obs_per_day), desc(observations))
 
 #it looks like GSWS07 comes out on top for HJ Andrews, and w7 for HBEF.

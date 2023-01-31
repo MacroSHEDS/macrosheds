@@ -2989,7 +2989,7 @@ prep_raw_for_riverload <- function(chem_df, q_df, datecol = 'date'){
 
 # FLUX CALCS
 ###### calculate period weighted#########
-calculate_pw <- function(chem_df, q_df, datecol = 'date', period = NULL){
+calculate_pw <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
   rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
 
   if(is.na(rl_data[1,2])){
@@ -3050,7 +3050,7 @@ calculate_pw <- function(chem_df, q_df, datecol = 'date', period = NULL){
 }
 
 ###### calculate beale ######
-calculate_beale <- function(chem_df, q_df, datecol = 'date', period = NULL){
+calculate_beale <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
     rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
 
     if(is.na(rl_data[1,2])){
@@ -3074,7 +3074,7 @@ calculate_beale <- function(chem_df, q_df, datecol = 'date', period = NULL){
 }
 
 ##### calculate rating #####
-calculate_rating <- function(chem_df, q_df, datecol = 'date', period = NULL){
+calculate_rating <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
     rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
 
     if(is.null(period)){
@@ -3180,7 +3180,7 @@ generate_residual_corrected_con <- function(chem_df, q_df, datecol = 'date', sit
         }
 
 ##### calculate monthly flux from composite ####
-calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no = 'site_no', period = NULL){
+calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no = 'site_no', period = NULL, area = 1){
 
         if(is.null(period)){
         flux_from_comp <- rating_filled_df %>%
