@@ -3,9 +3,10 @@
 #' Calculates solute fluxes from Q (discharge 
 #' or precipitation) and chemistry data.
 #'
-#' @author Spencer Rhea, spencerrhea41@@gmail.com
-#' @author Mike Vlah
 #' @author Wes Slaughter
+#' @author Mike Vlah
+#' @author Spencer Rhea, spencerrhea41@@gmail.com
+#'
 #' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or 
 #'    stream chemistry data in MacroSheds format and in units of mg/L.
 #' @param q \code{data.frame}. A \code{data.frame} of precipitation or stream
@@ -73,12 +74,17 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, method = 'simple'
     requireNamespace('macrosheds', quietly = TRUE)
 
     # check that method, if non-null, is in accepted list
-    rsfme_accepted <- c('average', 'pw', 'composite', 'beale', 'simple')
-    if(!method %in% rsfme_accepted) {
+    rsfme_accepted  <- c('average', 'pw', 'composite', 'beale', 'simple', 'rsfme')
+    rsfme_methods  <- c('average', 'pw', 'composite', 'beale', 'simple')
+    if(any(!method == 'rsfme')) {
+      method <- rsfme_methods
+    }
+
+    if(!any(method %in% rsfme_accepted)) {
       stop(glue::glue('method supplied is not in accepted list, must be one of the following:\n {list}',
                 list = rsfme_accepted))
     } else {
-      writeLines(glue::glue('calculating flux using method: {method}', method = method))
+      writeLines(glue::glue('calculating flux using method(s): {method}', method = method))
     }
 
     # make sure agg option is annual or monthly if calculating any non-null method
@@ -91,6 +97,11 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, method = 'simple'
       writeLines(glue::glue('calculating flux at highest possible resolution timestep of data supplied, using simple Q*C methods', aggregation = aggregation))
     } else {
       writeLines(glue::glue('calculating flux over: {aggregation}', aggregation = aggregation))
+    }
+
+    # for now
+    if(aggregation == 'monthly') {
+      stop('monthly aggregation currently unavailable with ms_calc_flux(), only "annual" and "simple" flux calcs')
     }
 
     # pull in variable data
@@ -229,7 +240,9 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, method = 'simple'
             filter(variable_code == this_var)
 
           if(any(this_var_info$flux_convertible == 0)) {
-            warning(glue::glue('{v} is not flux convertible, skipping', v = this_var))
+            if(verbose) {
+              warning(glue::glue('{v} is not flux convertible, skipping', v = this_var))
+            }
             next
           }
 
@@ -292,8 +305,8 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, method = 'simple'
             all_sites_flux <- rbind(all_sites_flux, flux)
             next
           } else {
-          # RSFME methods
-          if(any(method %in% rsfme_accepted)) {
+            # RSFME methods
+            if(any(method %in% rsfme_accepted)) {
               # check chem dataframe for data minimums
               raw_data_con <- chem_chunk %>%
                 # only original data, greater than zero
@@ -364,7 +377,7 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, method = 'simple'
                   select(site_code, datetime = date, var, val)
 
               q_df <- daily_data_q %>%
-                pivot_wider(names_from = var,
+               tidyr::pivot_wider(names_from = var,
                             values_from = val)
 
               raw_data_full <- rbind(daily_data_con, daily_data_q) %>%
@@ -507,6 +520,9 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, method = 'simple'
 
         return(all_sites_flux)
       } else {
+        # filter to requested method
+        out_frame <- out_frame %>%
+          filter(method %in% !!method)
         return(out_frame)
       } # method return for siple or rsfme
   } # 1
