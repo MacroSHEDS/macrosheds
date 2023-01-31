@@ -50,7 +50,7 @@
 #'                      q_type = 'discharge',
 #'                      method = c('beale', 'pw'))
 
-ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 'simple', aggregation = 'annual', good_year_check = TRUE) {
+ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c('average', 'beale', 'pw', 'rating', 'composite'), aggregation = 'annual', good_year_check = TRUE) {
 
     library("dplyr", quietly = TRUE)
 
@@ -75,11 +75,8 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 's
     requireNamespace('macrosheds', quietly = TRUE)
 
     # check that method, if non-null, is in accepted list
-    rsfme_accepted  <- c('average', 'pw', 'composite', 'beale', 'simple', 'rsfme')
-    rsfme_methods  <- c('average', 'pw', 'composite', 'beale', 'simple')
-    if(any(!method == 'rsfme')) {
-      method <- rsfme_methods
-    }
+    rsfme_accepted  <- c('average', 'pw', 'composite', 'beale', 'rating', 'simple')
+    rsfme_methods  <- c('average', 'pw', 'composite', 'beale', 'rating')
 
     if(!any(method %in% rsfme_accepted)) {
       stop(glue::glue('method supplied is not in accepted list, must be one of the following:\n {list}',
@@ -95,9 +92,9 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 's
       stop(glue::glue('time aggregation is not in accepted list, must be one of the following:\n {list}',
                 list = rsfme_aggs))
     } else if(aggregation == 'simple') {
-      writeLines(glue::glue('calculating flux at highest possible resolution timestep of data supplied, using simple Q*C methods', aggregation = aggregation))
+      writeLines(glue::glue('aggregating flux at highest possible resolution timestep of data supplied, using simple Q*C methods', aggregation = aggregation))
     } else {
-      writeLines(glue::glue('calculating flux over: {aggregation}', aggregation = aggregation))
+      writeLines(glue::glue('aggregating flux over: {aggregation}', aggregation = aggregation))
     }
 
     # for now
@@ -144,7 +141,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 's
                     ' of: daily, hourly, 30 minute, 15 minute, 10 minute, 5 minute, or 1 minute.',
                     ' See macrosheds::ms_synchronize_timestep() to standardize your intervals.'))
     } else if(verbose) {
-        print(paste0('q dataset has a ', interval, ' interval'))
+        print(paste0('input q dataset has a ', interval, ' interval'))
     }
 
     # add errors if they don't exist
@@ -514,7 +511,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = 's
          } # end variables loop
       } # end sites loop
 
-      if(method == 'simple') {
+      if(any(method == 'simple')) {
         if(nrow(all_sites_flux) == 0) { return(NULL) }
 
         all_sites_flux$val_err <- errors::errors(all_sites_flux$val)
