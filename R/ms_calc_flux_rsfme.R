@@ -3,8 +3,9 @@
 #' Calculates solute fluxes from Q (discharge
 #' or precipitation) and chemistry data.
 #'
-#' @author Wes Slaughter, wslaughter@berkeley.edu
-#' @author Spencer Rhea, spencerrhea41@@gmail.com
+#' @author Wes Slaughter, \email{wslaughter@berkeley.edu}
+#' @author Nick Gubbins, \email{gubbinsnick@gmail.com}
+#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or
 #'    stream chemistry data in MacroSheds format and in units of mg/L.
@@ -84,12 +85,12 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
     # and otherwise timestep is data-res and using simple QC
     rsfme_aggs <- c('annual', 'monthly', 'simple')
     if(!aggregation %in% rsfme_aggs) {
-      stop(glue('time aggregation is not in accepted list, must be one of the following:\n {list}',
+      stop(glue::glue('time aggregation is not in accepted list, must be one of the following:\n {list}',
                 list = rsfme_aggs))
     } else if(aggregation == 'simple') {
-      writeLines(glue('calculating flux at highest possible resolution timestep of data supplied, using simple Q*C methods', aggregation = aggregation))
+      writeLines(glue::glue('calculating flux at highest possible resolution timestep of data supplied, using simple Q*C methods', aggregation = aggregation))
     } else {
-      writeLines(glue('calculating flux over: {aggregation}', aggregation = aggregation))
+      writeLines(glue::glue('calculating flux over: {aggregation}', aggregation = aggregation))
     }
 
     site_info <- macrosheds::ms_site_data
@@ -188,7 +189,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
             # target solute
             target_solute <- unique(chem_chunk %>% pull(var))
 
-            writeLines(glue('________\n\nformula: {method}\nsolute: {solute}\n________', method = method, solute = target_solute ))
+            writeLines(glue::glue('________\n\nformula: {method}\nsolute: {solute}\n________', method = method, solute = target_solute ))
 
             # 'good year' checks for RSFME calcs
             if(method != 'simple') {
@@ -211,8 +212,8 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                   # NOTE: should we filter out NAs?
                   filter(ms_interp == 0, !is.na(val)) %>%
                   distinct(., date, .keep_all = TRUE) %>%
-                  mutate(water_year = water_year(datetime, origin = "usgs")) %>%
-                  group_by(water_year) %>%
+                  mutate(wtr_yr = wtr_yr(datetime, start_month = 10)) %>%
+                  group_by(wtr_yr) %>%
                   summarise(n = n()) %>%
                   filter(n >= 311)
 
@@ -221,17 +222,17 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                   # NOTE: should we filter out NAs?
                   filter(!is.na(val)) %>%
                   distinct(., date, .keep_all = TRUE) %>%
-                  mutate(water_year = water_year(date, origin = "usgs"),
+                  mutate(wtr_yr = wtr_yr(date, start_month = 10),
                          quart = quarter(date)) %>%
-                  group_by(water_year) %>%
+                  group_by(wtr_yr) %>%
                   summarise(count = n_distinct(quart),
                             n = n()) %>%
                   filter(n >= 4,
                          count > 3)
 
 
-              q_good_years <- q_check$water_year
-              conc_good_years <- conc_check$water_year
+              q_good_years <- q_check$wtr_yr
+              conc_good_years <- conc_check$wtr_yr
 
               # 'good years' where Q and Chem data both meet min requirements
               good_years <- q_good_years[q_good_years %in% conc_good_years]
@@ -239,15 +240,15 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
 
               # NOTE: adding handling if concentration data fails conc check
               if(nrow(conc_check) < 1) {
-                writeLines(glue("{site} concentration data insufficient sample size and frequency to warrant flux estimation",
+                writeLines(glue::glue("{site} concentration data insufficient sample size and frequency to warrant flux estimation",
                                 "\n   no water years in {site} dataset with minimum standards met", site = site_code))
                 next
               } else if(nrow(q_check) < 1) {
-                writeLines(glue("{site} discharge data insufficient sample size and frequency to warrant flux estimation",
+                writeLines(glue::glue("{site} discharge data insufficient sample size and frequency to warrant flux estimation",
                                 "\n   no water years in {site} dataset with minimum standards met", site = site_code))
                 next
               } else if(length(good_years) == 0) {
-                writeLines(glue("no water years where q data and concentration data both meet minimum standards",
+                writeLines(glue::glue("no water years where q data and concentration data both meet minimum standards",
                       "skipping site: {site}", site = site_code))
                 next
               }
@@ -273,8 +274,8 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
 
               raw_data_full <- rbind(daily_data_con, daily_data_q) %>%
                   pivot_wider(names_from = var, values_from = val, id_cols = c(site_code, datetime)) %>%
-                 mutate(wy = water_year(datetime, origin = 'usgs')) %>%
-                 filter(wy %in% good_years)
+                  mutate(wy = wtr_yr(datetime, start_month = 10)) %>%
+                  filter(wy %in% good_years)
 
                con_full <- raw_data_full %>%
                    mutate(wy = as.numeric(as.character(wy))) %>%
@@ -282,7 +283,22 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                      ## filter(wy < 1975) %>%
                  na.omit()
 
+
+
               if(tolower(method) == 'wrtds') {
+
+                stop('WRTDS currently not available in ms_calc_flux')
+
+                # check for if there are > 100 observations (rows)
+                if(nrow(con_full) < 100) {
+                  flux_annual_wrtds <- NA
+                  return(flux_annual_wrtds)
+                }
+                # check if median value is greater than .5
+                if(median(con_full$con) < 0.5) {
+                  flux_annual_wrtds <- NA
+                  return(flux_annual_wrtds)
+                }
 
                 #### calculate WRTDS ######
                 tryCatch(
@@ -345,6 +361,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                 ) # end wrtds
 
               }
+
 
               # if not wrtdsk
               for(k in 1:length(good_years)){
@@ -422,9 +439,9 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
 
             } else {
 
-        # back to simple flux
-        chem_is_highres <- Mode(diff(as.numeric(chem_chunk$datetime))) <= 15 * 60
-        if(is.na(chem_is_highres)) { chem_is_highres <- FALSE}
+              # back to simple flux
+              chem_is_highres <- Mode(diff(as.numeric(chem_chunk$datetime))) <= 15 * 60
+              if(is.na(chem_is_highres)) { chem_is_highres <- FALSE}
 
                             #if both chem and flow data are low resolution (grab samples),
                             #   let approxjoin_datetime match up samples with a 12-hour gap. otherwise the
@@ -473,7 +490,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                             purrr::reduce(bind_rows) %>%
                             arrange(site_code, var, datetime)
 
-                        all_sites_flux <- rbind(all_sites_flux, flux)
+                    all_sites_flux <- rbind(all_sites_flux, flux)
 
 
                     if(nrow(all_sites_flux) == 0) { return(NULL) }
