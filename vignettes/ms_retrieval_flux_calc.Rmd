@@ -1,7 +1,7 @@
 ---
-title: MacroSheds Discharge and Chemistry Data Retrieval and Flux Calculation 
+title: MacroSheds data retrieval and flux calculation 
 author: Weston Slaughter, Spencer Rhea, Mike Vlah
-subtitle: Using the `macrosheds` package to retrieve discharge and chemistry data for target sites and variables, and to use it to calculate stream solute flux
+subtitle: Using the `macrosheds` package to retrieve discharge and chemistry data for target sites and variables, and to calculate simple stream solute flux
 output:
     html_document:
       toc: true 
@@ -10,9 +10,12 @@ output:
       df_print: kable
 ---
 
-
+_See https://eartharxiv.org/repository/view/3499/ for background_
 
 This walkthrough is from the perspective of a first time user, with some knowledge of the R programming language. This example user, for a college project, needs to compare the flux of nitrate between two watersheds, one from the Eastern US and one from the Western US, each with at least 60 years of data.
+
+You can use [macrosheds.org](https://macrosheds.org) to explore the full dataset, and to identify sites that
+fit your needs.
 
 
 # Install and explore the `macrosheds` package
@@ -23,22 +26,19 @@ To use the `macrosheds` package, you must first **make sure you have the `macros
 ```{r ms-install, eval = FALSE}
 # install.packages('devtools') #you may need to install devtools too
 
-devtools::install_github("https://github.com/MacroSHEDS/macrosheds")
+devtools::install_github('https://github.com/MacroSHEDS/macrosheds')
 ```
 
-Now, that we have the `macrosheds` package,  we load it into our library, along with other packages we will be using in this walkthrough. 
+Now load the package. We're loading ggplot2 here as well, but you don't need it to use `macrosheds`.
 
 ```{r setup-library, message = FALSE}
    
 library(macrosheds)
-# library(dplyr)
 library(ggplot2)
 
 ```
 
-In this walkthrough, to learn more about the `macrosheds` package, its functions, and how to use them, we will be using the `macrosheds` package's documentation. 
-
-Before anything else, we need to know what functions are available. Let's explore the package with `help()`
+Explore package functions with `help()`
 
 ```{r ms-help}
 help(package = macrosheds)
@@ -48,32 +48,31 @@ help(package = macrosheds)
 # Identify target sites and variables in the MacroSheds dataset
 
 
-Our first goal is to **identify sites we might want to pull data from**. To get more information about MacroSheds sites, we will use the function `ms_download_site_data`, which loads a tibble of MacroSheds site metadata. 
-
-We will use `?` to get more information about the function, and how to use it.
+Our first goal is to **identify sites we might want to pull data from**. To get more information about MacroSheds sites, we will use the function `ms_load_sites`, which loads a tibble of MacroSheds site metadata. 
 
 
-#### ms\_download\_site\_data
+#### ms\_load\_sites
 
 
 ```{r ms-site-data}
 ?ms_load_sites
 ```
 
-Looks like the function will run with no arugments, let's run it and look at the results.
 
 ```{r ms-sites}
-ms_sites <- ms_download_site_data()
+ms_sites <- ms_load_sites()
 colnames(ms_sites)
 ```
 
-Our objective is to find 2 watersheds, one in the Eastern US and one in the Western US, which both have at least 60 years of nitrate data.
+Skip the rest of this subsection if you just want to see demonstrations of `macrosheds` functions.
 
-The `ms_sites` dataframe columns include "latitude", "longitude", "first\_record\_utc", and "last\_record\_utc". Let's use these to see what sites meet our needs.
+Our objective is to find 2 watersheds, one in the Eastern US and one in the Western US, which both have at least 60 years of nitrate data. You can use [macrosheds.org](https://macrosheds.org) for this, too.
+
+The `ms_sites` `data.frame` columns include "latitude", "longitude", "first\_record\_utc", and "last\_record\_utc". Let's use these to see what sites meet our needs.
 
 
 ```{r ms-site-filter}
-# calculate the amount of days in sixty years
+# calculate the approximate number of days in sixty years
 sixty_yrs_days <- 365 * 60
 
 # filter the dataframe of macrosheds sites
@@ -83,7 +82,7 @@ target_sites <- ms_sites %>%
     mutate(period = as.numeric(
         difftime(last_record_utc,
                  first_record_utc,
-                 units = "days"
+                 units = 'days'
                  ))) %>%
     # to get records > 60 years
     filter(period > sixty_yrs_days)
@@ -106,41 +105,37 @@ target_summary <- target_sites %>%
 head(target_summary)
 ```
 
-From our filter of the site metadata, we have found three domains which have site data that meets our requirements. By summarizing the data, we've found that two of these sites are in the Northeastern US (Fernow, HBEF) and one is on the West Coast (HJ Andrews). Our objective is to compare two sites, one east and one west, and between Fernow and HBEF our summary data show that HBEF has a greater number of overall observations, so let's go with that. 
+By filtering the site metadata, we have found three domains that meet our requirements. Two of these sites are in the Northeastern US (Fernow, HBEF) and one is on the West Coast (HJ Andrews). See the map at [macrosheds.org](https://macrosheds.org). Our summary data show that HBEF has a greater number of overall observations, so let's go with that and HJ Andrews.
 
 ```{r}
-my_domains <- c("hbef", "hjandrews")
+my_domains <- c('hbef', 'hjandrews')
 ```
 
-#### ms\_download\_variables
+#### ms\_load\_variables
 
-Now, we should choose the best site from HBEF and the best site from HJ Andrews -- in this case, which of each domain has the most complete Nitrate record.
-
-To get data for our target variable, nitrate, let's make sure it's in the MacroSheds variable catalog, and see exactly what it is called. For this, we will use `ms_download_variables`, which also does not need arguments. 
+Now, we should choose the best site from HBEF and the best site from HJ Andrews. Let's go with the one from each domain that has the most complete nitrate record.
 
 
 ```{r ms-vars}
-ms_vars <- ms_catalog()
+ms_vars <- ms_load_variables(var_set = 'timeseries')
 head(ms_vars)
 ```
 
 
-This is a pretty long list, let's do a siple text search to see what variable names start with "Nitrate"
-
 ```{r ms-vars-filter}
-ms_NO3 <- ms_vars[grep("^Nitrate", ms_vars$variable_name),]
+filter(ms_vars, grepl('nitrate', variable_name, ignore.case = TRUE))
 
-# lets order the dataframe by number of obervations, and see whats at the top
-ms_NO3 <- ms_NO3[order(-ms_NO3$observations),]
-head(ms_NO3)
+# Nitrate-N of stream water has the most observations. The variable_code
+# for that is 'NO3_N'. Let's see if our sites have that variable.
 
-# Nitrate-N, with variable code NO3_N, tops the list
-# let's make sure that our domains have robust records
-m_NO3 <- ms_NO3 %>%
-  filter(variable_code == "NO3_N") %>%
-  filter(domain %in% my_domains)
+ms_sitevar_catalog <- ms_load_variables(var_set = 'timeseries_by_site')
+ms_sitevar_catalog %>% 
+    filter(domain %in% my_domains,
+           variable_code == 'NO3_N',
+           chem_category == 'stream_conc') %>% 
+    arrange(desc(mean_obs_per_day), desc(observations))
 
-head(ms_NO3)
+#it looks like GSWS07 comes out on top for HJ Andrews, and w7 for HBEF.
 ```
 
 
@@ -148,13 +143,11 @@ head(ms_NO3)
 # Retrieve discharge data for target sites
 
 
-Now, we will retrieve the target data: discharge and nitrate for our two sites. First, we choose a directory to save the data to, and create a vector of target domain names. 
+Now, we will retrieve the target data: discharge and nitrate for our two sites. First, choose a directory to save the data to, and create a vector of target domain names. 
 
 ``` {r ms-dir}
-my_ms_dir <- "./example/data"
+my_ms_dir <- './example/data'
 ```
-
-We will also take a look at `ms_download_core_data` which we will sue to retrieve all the available data for our domains of interest.
 
 
 ##### ms\_download\_core\_data
@@ -164,13 +157,16 @@ We will also take a look at `ms_download_core_data` which we will sue to retriev
 ?ms_download_core_data
 ```
 
-Now, we retrieve MacroSheds data by domain and save it to our directory.
+Now, we retrieve MacroSheds data by domain and save it to our new `macrosheds_root` directory.
+This same directory should be used when downloading watershed attribute data via `ms_download_ws_attr`,
+and it _must_ be used to load data via `ms_load_product`. You can download all core data
+with `domains = 'all'`
 
 ``` {r ms-data, eval = FALSE}
 options(timeout = 600) #default 60 might not be enough if your connection is slow
 
 ms_download_core_data(
-    my_ms_dir,
+    macrosheds_root = my_ms_dir,
     domains = my_domains,
     quiet = FALSE
 )
@@ -191,10 +187,8 @@ Pointing to the directory we downloaded the data to, we use this function to pul
 ```{r ms-q}
 my_q <- ms_load_product(
     my_ms_dir,
-    prodname = "discharge",
-    site_codes = c("w1", "GSWS09"),
-    sort_result = TRUE,
-    warn = TRUE
+    prodname = 'discharge',
+    site_codes = c('w7', 'GSWS07')
 )
 ```
 
@@ -204,46 +198,29 @@ my_q <- ms_load_product(
 
 
 #### ms\_load\_product    *chemistry*
-Now that we have discharge, we will use `ms_load_product` again, but for nitrate-nitrogen data. As we know from searching the variable catalog, the code for nitrate-nitrogen is 'NO3_N'
+Now that we have discharge, we will use `ms_load_product` again, but for nitrate-N data. As we know from searching the variable catalog, the code for nitrate-N is 'NO3_N'
 
 ```{r ms-chem}
 my_chem <- ms_load_product(
     my_ms_dir,
-    prodname = "stream_chemistry",
-    filter_vars = "NO3_N",
-    site_codes = c("w1", "GSWS09"),
-    sort_result = TRUE,
-    warn = TRUE
+    prodname = 'stream_chemistry',
+    filter_vars = 'NO3_N',
+    site_codes = c('w7', 'GSWS07')
 )
 
 head(my_chem)
 ```
 
-# Manipulate and clean data
 
+# Calculate daily flux*
 
-#### ms\_synchronize\_timestep
-
-
-Now that we have our nitrate-nitrogen data, we have to correct for differences in sampling frequency between the two sites. The MacroSheds package helps user achieve this via the `ms_synchronize_timestep` function.
-
-```{r ms-sync, message = FALSE}
-?ms_synchronize_timestep
-
-my_chem_sync <- ms_synchronize_timestep(
-    my_chem,
-    desired_interval = "1 day",
-    interpolate_limit = 40
-)
-```
-
-# Calculate flux from this data
+*see `ms_calc_flux_rsfme` for calculating cumulative monthly/annual flux (in development at the time of this writing)
 
 
 #### ms\_calc\_flux
 
 
-Now that our nitrate-nitrogen data is pulled and synchronized, let's use `ms_calc_flux` to calculate nitrate-nitrogen flux from our discharge and concentration datasets. 
+Use `ms_calc_flux` to calculate daily nitrate-N flux from discharge and concentration datasets. 
 
 ```{r}
 ?ms_calc_flux
@@ -253,32 +230,57 @@ We can plug in our discharge and chemistry data directly.
 
 ```{r ms-flux}
 my_flux <- ms_calc_flux(
-    chemistry = my_chem_sync,
+    chemistry = my_chem,
     q = my_q,
-    q_type = 'discharge',
-    site_info = ms_sites
+    q_type = 'discharge'
 )
+
 head(my_flux)
 ```
 
-From the documentation of `ms_calc_flux` we know, that our flux units are `kg/ha/T` where T is the sampling interval. This is ideal becuase we are comparing between two very different watersheds and it is appropriate to scale by area. But is you were intrested in clooking at the mass of a solute being exported from a watershed, not normalized to area, you can so with the MacroSheds function 'ms\_undo\_scale\_flux\_by\_area'.
+From the documentation of `ms_calc_flux` we can see that flux units are `kg/ha/T`, where T is the sampling interval. This is desirable because we are comparing between two very different watersheds and it is usually appropriate to scale by their areas. If you're interested in the unscaled flux, see 'ms\_undo\_scale\_flux\_by\_area'.
 
+#### ms\_synchronize\_timestep
 
-#### ms\_scale\_flux\_by\_area
+Macrosheds core time-series data are interpolated like so:
+ + discharge: linear interpolation, gaps of up to 3 days
+ + stream chemistry: linear interpolation, gaps of up to 15 days
+ + precipitation chemistry (concentration): next-observation-carried-backward, gaps of up to 45 days
+ + precipitation depth: 0-interpolation (unless special case), gaps of up to 45 days
+ 
+If you'd like to modify these thresholds or use different techniques, you may:
+ 1. filter interpolated values from our datasets by removing records with `ms_status` of 1.
+ 2. increase our interpolation thresholds. For this, see `ms_synchronize_timestep`.
+ 3. specify interpolation methods via `ms_synchronize_timestep`
 
+```{r ms-sync, message = FALSE}
+my_chem2 <- ms_synchronize_timestep(
+    my_chem,
+    desired_interval = '1 day',
+    interpolate_limit = 40
+)
+my_flux2 <- ms_calc_flux(
+    chemistry = my_chem2,
+    q = my_q,
+    q_type = 'discharge'
+)
 
-```{r ms-scale}
-my_flux_unscaled <- ms_undo_scale_flux_by_area(my_flux)
+head(my_flux)
 ```
 
-Looks great! We have used the MacroSheds package and dataset to retrieve, synchronize, scale, and calculate flux from streamflow and nitrate-nitrogen concentration data from two sites on the east and west coasts of the United States with > 60 years of data. let's plot it!
+# Results
+
+We have now used the `macrosheds` package to retrieve discharge and stream nitrate-N data, and calculate daily flux for two sites on the east and west coasts of the United States with > 60 years of data. let's plot it!
+
+Note: `macrosheds::ms_calc_flux_rsfme` will produce much more robust monthly and annual flux estimates. 
+This function is in development, so check back. 
 
 ```{r ms-explore}
-my_annual_mean_flux <- my_flux %>%
-    mutate(year = as.numeric(format(as.Date(datetime), format="%Y"))) %>%
+my_annual_mean_flux <- my_flux2 %>%
+    mutate(year = as.numeric(format(as.Date(datetime), format='%Y'))) %>%
     group_by(year, site_code) %>%
     summarize(
-        mean_flux = sum(val),
+        mean_flux = sum(val, na.rm = TRUE),
         n = n(),
         .groups = 'drop',
     ) %>%
@@ -288,15 +290,15 @@ ggplot(data=my_annual_mean_flux, aes(x=year, y=mean_flux, group=site_code)) +
     geom_line(aes(color=site_code), lwd = 2)+
     geom_point() +
     scale_color_manual(
-      values=c("#E69F00", "#56B4E9"),
-      name = "Site"
+      values=c('#E69F00', '#56B4E9'),
+      name = 'Site'
     ) +
     ggtitle(
-      label = "Mean Annual Nitrate-Nitrogen Flux",
-      subtitle = "Hubbard Brook and HJ Andrews, 1970-2020"
+      label = 'Mean Annual Nitrate-N Flux',
+      subtitle = 'Hubbard Brook (w7) and HJ Andrews (GSWS07), 1970-2020'
     ) +
-    xlab("Year") +
-    ylab("Nitrate-Nitrogen Flux (kg/ha/day)") +
+    xlab('Year') +
+    ylab('Nitrate-N Flux (kg/ha/day)') +
     theme_minimal() +
     theme(
       axis.text = element_text(size = 16),

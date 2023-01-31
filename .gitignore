@@ -20,5 +20,6 @@ tests/testthat/data/
 !data/ms_site_data.RData
 !data/sysdata.RData
 !data/sysdata2.RData
+!data/figshare_id_check.txt
 vignettes/data
 tests/testthat-problems.rds
