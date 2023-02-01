@@ -9,8 +9,9 @@ ms_calc_flux_rsfme(
   q,
   q_type,
   verbose = TRUE,
-  method = "simple",
-  aggregation = "simple"
+  method = c("average", "beale", "pw", "rating", "composite"),
+  aggregation = "annual",
+  good_year_check = TRUE
 )
 }
 \arguments{
@@ -61,17 +62,20 @@ q <- ms_load_product(macrosheds_root = ms_root,
                      prodname = 'discharge',
                      site_codes = c('w1', 'w3', 'w6'))
 
-flux <- ms_calc_flux(chemistry = chemistry,
+flux <- ms_calc_flux_rsfme(chemistry = chemistry,
                      q = q,
-                     q_type = 'discharge')
+                     q_type = 'discharge',
+                     method = c('beale', 'pw'))
 }
 \seealso{
 \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}, \code{\link[=ms_conversions]{ms_conversions()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}, \code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}
 }
 \author{
-Wes Slaughter, wslaughter@berkeley.edu
+Wes Slaughter, \email{wslaughter@berkeley.edu}
 
-Spencer Rhea, spencerrhea41@gmail.com
+Nick Gubbins, \email{gubbinsnick@gmail.com}
+
+Spencer Rhea, \email{spencerrhea41@gmail.com}
 
 Mike Vlah
 }

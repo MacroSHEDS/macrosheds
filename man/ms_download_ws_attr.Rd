@@ -30,7 +30,9 @@ you may use this argument to avoid downloading it (because it's huge), while sti
 terrain, vegetation, parent material, land use, and hydrology data (which are tiny).}
 }
 \value{
-returns NULL. Writes files to disk.
+Returns NULL. Downloads watershed attribute data to the
+directory specified by \code{macrosheds_root}. For documentation, visit
+\link{EDI}(EDI link pending).
 }
 \description{
 Download MacroSheds watershed attribute data for all sites. Choose between

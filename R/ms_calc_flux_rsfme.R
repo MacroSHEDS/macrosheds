@@ -31,6 +31,7 @@
 #' \code{chemistry} have the same time interval. See [ms_synchronize_timestep()].
 #' Also ensure chemistry units are mg/L. See [ms_conversions()].
 #' @seealso [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
+#' @export
 #' @examples
 #' #' ### Load some MacroSheds data:
 #' ms_root = 'data/macrosheds'
@@ -65,6 +66,12 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
     if(! grepl('(precipitation|discharge)', q_type)){
         stop('q_type must be "discharge" or "precipitation"')
     }
+
+    if(q_type == 'precipitation' & any(!!method != "simple")) {
+      warning('setting flux calculation method to "simple," as RSFME methods are intended only for',
+              'surface runoff solute flux estimation.')
+    }
+
     if(! 'POSIXct' %in% class(q$datetime)){
         q$datetime <- as.POSIXct(q$datetime)
     }
@@ -74,15 +81,32 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
 
     requireNamespace('macrosheds', quietly = TRUE)
 
+    # make sure method is accepted, and if method is 'rsfme' set method to all rsfme methods
     # check that method, if non-null, is in accepted list
-    rsfme_accepted  <- c('average', 'pw', 'composite', 'beale', 'rating', 'simple')
+    rsfme_accepted  <- c('average', 'pw', 'composite', 'beale', 'rating', 'simple', 'rsfme')
     rsfme_methods  <- c('average', 'pw', 'composite', 'beale', 'rating')
 
-    if(!any(method %in% rsfme_accepted)) {
-      stop(glue::glue('method supplied is not in accepted list, must be one of the following:\n {list}',
+    if('rsfme' %in% method) {
+      method <- rsfme_methods
+    }
+
+    if(!all(method %in% rsfme_accepted)) {
+      stop(glue::glue('at least one flux calculation method supplied is not in accepted list, must be one of the following:\n {list}',
                 list = rsfme_accepted))
     } else {
-      writeLines(glue::glue('calculating flux using method(s): {method}', method = method))
+      writeLines(glue::glue('calculating flux using method(s): {method}', method = list(method)))
+    }
+
+    riverload_methods <- c('pw', 'beale', 'rating', 'composite')
+    if(any(method %in% riverload_methods)) {
+      # look for RiverLoad package on user machine
+      rl.res <- try(find.package('RiverLoad'))
+      # if not found, stop and give address for download
+      if(class(rl.res) == 'try-error'){
+        stop('package RiverLoad required for pw, beale, rating, and composite flux estimation methods.\n',
+                'install using devtools::install_github("https://github.com/cran/RiverLoad.git") or\n',
+                'remotes::install_github("https://github.com/cran/RiverLoad.git")')
+      }
     }
 
     # make sure agg option is annual or monthly if calculating any non-null method
@@ -99,7 +123,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
 
     # for now
     if(aggregation == 'monthly') {
-      stop('monthly aggregation currently unavailable with ms_calc_flux(), only "annual" and "simple" flux calcs')
+      stop('monthly aggregation currently unavailable with ms_calc_flux_rsfme(), only "annual" and "simple" flux calcs')
     }
 
     # pull in variable data
@@ -165,10 +189,10 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
         errors::errors(q$val) <- 0
     }
 
-    # calc flux
+    # calc flux 'simple' dataframe
     all_sites_flux <- tibble()
 
-    # df to populate with annual flux values by method
+    # calc flux 'rsfme' dataframe, to populate with annual flux values by method
     out_frame <- tibble(wy = as.integer(),
                         site_code = as.character(),
                         var = as.character(),

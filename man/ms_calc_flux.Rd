@@ -45,8 +45,8 @@ Also ensure chemistry units are mg/L. See \code{\link[=ms_conversions]{ms_conver
 ms_root = 'data/macrosheds'
 ms_download_core_data(macrosheds_root = ms_root,
                       domains = 'hbef')
-chemistry <- ms_load_product(macrosheds_root = ms_root, 
-                             prodname = 'stream_chemistry', 
+chemistry <- ms_load_product(macrosheds_root = ms_root,
+                             prodname = 'stream_chemistry',
                              site_codes = c('w1', 'w3', 'w6'),
                              filter_vars = c('NO3_N', 'Cl', 'Na'))
 
