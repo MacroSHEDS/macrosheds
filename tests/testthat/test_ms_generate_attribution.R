@@ -1,5 +1,5 @@
 
-msroot = '~/git/macrosheds/r_package/data/ms_test/'
+msroot <- '../../data/ms_test'
 
 library(macrosheds)
 library(testthat)
@@ -78,7 +78,7 @@ test_that('files written properly', {
     expect_equal(length(o2), 2)
     expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'acknowledgements.txt'))), 4)
     expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_definitions.txt'))), 2)
-    expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_notifications.txt'))), 6)
+    expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_notifications.txt'))), 8)
     expect_gt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 100)
     expect_lt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 200)
 })

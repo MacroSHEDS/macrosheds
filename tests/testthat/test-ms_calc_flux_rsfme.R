@@ -1,20 +1,21 @@
 library(macrosheds)
 library(testthat)
 
+# ms_root = '../data/ms/'
+ms_root = '../../data/ms_test/'
+
+chemistry <- ms_load_product(macrosheds_root = ms_root,
+                             prodname = 'stream_chemistry',
+                             site_codes = c('w1', 'w3', 'w6'),
+                             filter_vars = c('NO3_N', 'Cl', 'Na')) %>%
+    filter(datetime > "2016-01-01")
+
+q <- ms_load_product(macrosheds_root = ms_root,
+                     prodname = 'discharge',
+                     site_codes = c('w1', 'w3', 'w6')) %>%
+    filter(datetime > "2016-01-01")
+
 test_that("dataframe returned with all input sites, input years, and calculated with all rsfme methods", {
-
-  ms_root = '../data/ms/'
-
-  chemistry <- ms_load_product(macrosheds_root = ms_root,
-                              prodname = 'stream_chemistry',
-                              site_codes = c('w1', 'w3', 'w6'),
-                              filter_vars = c('NO3_N', 'Cl', 'Na')) %>%
-      filter(datetime > "2016-01-01")
-
-  q <- ms_load_product(macrosheds_root = ms_root,
-                      prodname = 'discharge',
-                      site_codes = c('w1', 'w3', 'w6')) %>%
-      filter(datetime > "2016-01-01")
 
   # input data
   input_sites <- sort(unique(chemistry$site_code))

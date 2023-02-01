@@ -1,10 +1,7 @@
 library(macrosheds)
 library(testthat)
 
-#testthat changes the working directory to r_package/tests/testthat
 wd <- '../../data/ms_test'
-#but, if you're testing these piecemeal, use:
-#wd <- '.'
 
 options(timeout = 1200)
 

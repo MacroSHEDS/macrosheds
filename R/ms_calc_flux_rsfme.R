@@ -3,8 +3,8 @@
 #' Calculates solute fluxes from Q (discharge
 #' or precipitation) and chemistry data.
 #'
-#' @author Wes Slaughter, \email{wslaughter@berkeley.edu}
-#' @author Nick Gubbins, \email{gubbinsnick@gmail.com}
+#' @author Wes Slaughter, \email{wslaughter@@berkeley.edu}
+#' @author Nick Gubbins, \email{gubbinsnick@@gmail.com}
 #' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
 #' @author Mike Vlah
 #'
