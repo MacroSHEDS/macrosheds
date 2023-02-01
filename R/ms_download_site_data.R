@@ -1,6 +1,6 @@
 #' Download macrosheds site dataset (deprecated)
 #'
-#' this function has been retired, and replaced with `ms_load_sites`, please use this insetad
+#' This function has been retired, and replaced with `ms_load_sites`. Please use this instead.
 #'
 #' @author Wes Slaughter, \email{wslaughter@@berkeley.edu}
 #' @author Mike Vlah

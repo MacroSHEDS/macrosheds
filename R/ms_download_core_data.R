@@ -54,7 +54,7 @@ ms_download_core_data <- function(macrosheds_root,
     if(missing(macrosheds_root)) {
         return('The directory to where the files will be saved must be supplied')
     }
-    
+
     figshare_base <- 'https://figshare.com/ndownloader/files/'
     
     figshare_codes <- macrosheds::file_ids_for_r_package #loaded in R/sysdata.rda, which is written in postprocessing
@@ -80,6 +80,21 @@ ms_download_core_data <- function(macrosheds_root,
     if(dom_missing){
         domains <- 'none'
     }
+
+    sited <- macrosheds::ms_load_sites()
+    ntw_in <- networks %in% c(unique(sited$network), 'all', 'none')
+    if(any(! ntw_in)){
+        stop('Not MacroSheds network(s): ',
+             paste(networks[! ntw_in], collapse = ', '),
+             '.\nSee ms_load_sites()')
+    }
+    dmn_in <- domains %in% c(unique(sited$domain), 'all', 'none')
+    if(any(! dmn_in)){
+        stop('Not MacroSheds domain(s): ',
+             paste(domains[! dmn_in], collapse = ', '),
+             '.\nSee ms_load_sites()')
+    }
+    
     
     if((length(domains) == 1 && domains == 'all') ||
        (length(networks) == 1 && networks == 'all')) {

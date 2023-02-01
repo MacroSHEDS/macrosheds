@@ -7,7 +7,7 @@
 ms_download_site_data()
 }
 \description{
-this function has been retired, and replaced with \code{ms_load_sites}, please use this insetad
+This function has been retired, and replaced with \code{ms_load_sites}. Please use this instead.
 }
 \seealso{
 \code{\link[=ms_load_sites]{ms_load_sites()}}
