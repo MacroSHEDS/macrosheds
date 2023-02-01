@@ -24,7 +24,7 @@ for domains available for download.}
 Downloads all core data for selected domains to the
 directory specified by \code{macrosheds_root}. Site datasets are arranged according to the following
 structure: domain/prodname/site_code.feather. For definitions of these terms as used by
-MacroSheds, see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.
+MacroSheds, see \link{MacroSheds documentation}(EDI link pending).
 }
 \description{
 Download the macrosheds core datasets of stream chemistry, stream

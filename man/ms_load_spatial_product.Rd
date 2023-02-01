@@ -21,13 +21,13 @@ directory, established with \code{\link[=ms_download_core_data]{ms_download_core
 product will be combined across specified networks/domains.}
 
 \item{networks}{character vector. MacroSheds networks to load; optional. To see a catalog of
-networks, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
+networks, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
 
 \item{domains}{character vector. MacroSheds domains to load; optional. To see a catalog of
-networks, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
+networks, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
 
 \item{site_codes}{character vector. MacroSheds networks to load; optional. To see a catalog of
-networks, visit macrosheds.org or see \href{https://doi.org/10.6084/m9.figshare.c.5621740}{MacroSheds documentation}.}
+networks, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
 }
 \value{
 returns an \code{sf} object containing all data belonging to the
