@@ -246,7 +246,7 @@ using nhdplusTools.
 ```r
 ?poudre_ws
 ```
-![poudre_ws](ms_interpolate_precip_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![poudre_ws](files/ms_interpolate_precip_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
 # Calculate basin average precipitation
 
@@ -326,4 +326,4 @@ poudre_plot <- ggplot(pourdre_precip, aes(datetime, val)) +
     geom_line() +
     labs(x = 'Date', y = 'Precipitation (mm)')
 ```
-![poudre_ws](ms_interpolate_precip_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![poudre_ws](files/ms_interpolate_precip_files/figure-markdown_strict/unnamed-chunk-7-1.png)

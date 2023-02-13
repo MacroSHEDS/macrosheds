@@ -390,4 +390,4 @@ coasts of the United States with &gt; 60 years of data. let’s plot it!
           legend.text = element_text(size = 30),
         ) 
 
-![](https://raw.githubusercontent.com/westonslaughter/macrosheds/master/vignettes/files/nitrate_comparison.png)
+![](https://raw.githubusercontent.com/westonslaughter/macrosheds/master/vignettes/files/ms_retrieval_flux_calc/nitrate_comparison.png)
