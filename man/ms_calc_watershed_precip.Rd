@@ -110,8 +110,6 @@ ms_download_core_data(macrosheds_root = ms_root,
 p <- ms_load_product(macrosheds_root = ms_root, 
                      prodname = 'precipitation', 
                      domains = 'hbef')
-                     
-CONTINUE EXAMPLE HERE
 }
 \seealso{
 \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_delineate_watershed]{ms_delineate_watershed()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}

@@ -12,8 +12,8 @@
 #' @param dataset character. This function can download the two types of watershed attribute data
 #'    provided by MacroSheds. "summaries" will download a feather file containing watershed attributes
 #'    summarized across time and space (i.e. one value for each site). "time series" will download 6 feather
-#'    files containing time series of watershed attributes where available. Data from these
-#'    files is loaded with [ms_load_ws_attr()].
+#'    files containing time series of watershed attributes where available. See \code{omit_climate_data} parameter.
+#'    Data from these files is loaded with [ms_load_ws_attr()].
 #' @param quiet logical. If TRUE, some messages will be suppressed.
 #' @param omit_climate_data logical. Ignored if \code{dataset == 'summaries'}. However, if
 #'    \code{dataset == 'time series'}, and you don't care about climate data,
