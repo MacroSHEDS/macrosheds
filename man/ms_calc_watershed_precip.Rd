@@ -103,13 +103,7 @@ Note that this function does not return the imputed watershed grid for each
 timestep--only the watershed-average estimate(s) as tibbles.
 }
 \examples{
-### Load some MacroSheds data:
-ms_root = 'data/macrosheds'
-ms_download_core_data(macrosheds_root = ms_root,
-                      domains = 'hbef')
-p <- ms_load_product(macrosheds_root = ms_root, 
-                     prodname = 'precipitation', 
-                     domains = 'hbef')
+See vignette: https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_interpolate_precip.md
 }
 \seealso{
 \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_delineate_watershed]{ms_delineate_watershed()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}

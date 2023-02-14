@@ -23,12 +23,27 @@ refer to them separately when loading time-series data vs. watershed attribute d
 
 \item{prodname}{character. A MacroSheds product name. Files associated with this
 product name will be read and combined. Available prodnames are (for core time-series products):
-discharge, stream_chemistry, stream_flux_inst, precipitation,
-precip_chemistry, precip_flux_inst, (and for watershed attribute products:)
-ws_attr_summaries, ws_attr_timeseries:climate,
-ws_attr_timeseries:hydrology, ws_attr_timeseries:landcover,
-ws_attr_timeseries:parentmaterial, ws_attr_timeseries:terrain,
-ws_attr_timeseries:vegetation}
+\itemize{
+\item discharge
+\item stream_chemistry
+\item stream_flux_inst
+\item precipitation,
+\item precip_chemistry
+\item precip_flux_inst
+}
+
+(and for watershed attribute products):
+\itemize{
+\item ws_attr_summaries
+\item ws_attr_timeseries:climate
+\item ws_attr_timeseries:hydrology
+\item ws_attr_timeseries:landcover
+\item ws_attr_timeseries:parentmaterial
+\item ws_attr_timeseries:terrain
+\item ws_attr_timeseries:vegetation
+\item ws_attr_CAMELS_summaries
+\item ws_attr_CAMELS_Daymet_forcings
+}}
 
 \item{filter_vars}{character vector. for products like stream_chemistry that include
 multiple variables, this filters to just the ones specified (ignores

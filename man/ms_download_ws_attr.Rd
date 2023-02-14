@@ -16,16 +16,18 @@ ms_download_ws_attr(
 If this directory does not exist, it will be created. Does not have to be the same
 as \code(macrosheds_root) provided to \code{\link[=ms_download_core_data]{ms_download_core_data()}}, but might as well be.}
 
-\item{dataset}{character. This function can download the two types of watershed attribute data
+\item{dataset}{character. This function can download each of the four collections of watershed attribute data
 provided by MacroSheds. "summaries" will download a feather file containing watershed attributes
 summarized across time and space (i.e. one value for each site). "time series" will download 6 feather
-files containing time series of watershed attributes where available. Data from these
-files is loaded with \code{\link[=ms_load_ws_attr]{ms_load_ws_attr()}}.}
+files containing time series of watershed attributes where available. See \code{omit_climate_data} parameter.
+"CAMELS summaries" and "CAMELS Daymet forcings" will download additional watershed
+summary data that conform as closely as possible to the specifications of the
+\href{https://ral.ucar.edu/solutions/products/camels}{CAMELS dataset}. See MacroSheds metadata
+for a list of discrepancies. Once downloaded, data can be loaded into R with \code{\link[=ms_load_product]{ms_load_product()}}.}
 
 \item{quiet}{logical. If TRUE, some messages will be suppressed.}
 
-\item{omit_climate_data}{logical. Ignored if \code{dataset == 'summaries'}. However, if
-\code{dataset == 'time series'}, and you don't care about climate data,
+\item{omit_climate_data}{logical. Ignored unless \code{dataset == 'time series'}. If you don't care about climate data,
 you may use this argument to avoid downloading it (because it's huge), while still downloading
 terrain, vegetation, parent material, land use, and hydrology data (which are tiny).}
 }
@@ -42,7 +44,7 @@ temporally explicit spatial summaries, or summaries across both time and space.
 ms_download_ws_attr(macrosheds_root = 'my/macrosheds/root', dataset = 'time series')
 }
 \seealso{
-\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_ws_attr]{ms_load_ws_attr()}}
+\code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_product]{ms_load_product()}}
 }
 \author{
 Wes Slaughter, \email{wslaughter@berkeley.edu}

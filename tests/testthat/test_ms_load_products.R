@@ -78,10 +78,15 @@ test_that('the correct sites and domains are loaded in', {
                  c('WS77', 'WS78', 'WS79', 'WS80', 'w1', 'w2'))
 })
 
-test_that('directory error is printed', {
+test_that('errors are printed as expected', {
+    
     expect_error(ms_load_product(macrosheds_root = 'fake_dir_test', 
                                  prodname = 'stream_chemistry'),
                  'macrosheds_root does not exist, please ensure correct directory is supplied')
+    
+    expect_error(ms_load_product(macrosheds_root = '~', 
+                                 prodname = 'ws_attr_timeseries:landcover'),
+                 regexp = 'No file found for')
 })
 
 test_that('filter_vars filters the correct vars', {
@@ -104,7 +109,7 @@ test_that('loading ws attr summaries works', {
                     filter_vars = c('PO4_P', 'temp')) #ignored
     
     expect_length(unique(r$domain), 2)
-    
+
     r = macrosheds::ms_load_product(macrosheds_root = wd, 
                     prodname = 'ws_attr_CAMELS_summaries',
                     domains = c('hjandrews', 'hbef'))

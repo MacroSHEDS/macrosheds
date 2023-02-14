@@ -861,10 +861,10 @@ idw_log_var <- function(verbose,
 ms_parallelize <- function(maxcores = Inf){
 
     # check for install of "suggested" package necessary for this function
-    if(!require('parallel')) {
+    if(!require('parallel', quietly = TRUE)) {
       stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
     }
-    if(!require('doParallel')) {
+    if(!require('doParallel', quietly = TRUE)) {
       stop('the package "doParallel" is required to use this function. run install.packages("doParallel") and try again')
     }
 
@@ -911,7 +911,7 @@ shortcut_idw <- function(encompassing_dem,
                          macrosheds_root){
 
     # check for install of "suggested" package necessary for this function
-    if(!require('parallel')) {
+    if(!require('parallel', quietly = TRUE)) {
       stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
     }
 
@@ -1119,7 +1119,7 @@ shortcut_idw <- function(encompassing_dem,
 ms_unparallelize <- function(cluster_object){
 
     # check for install of "suggested" package necessary for this function
-    if(!require('parallel')) {
+    if(!require('parallel', quietly = TRUE)) {
       stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
     }
 
@@ -1757,7 +1757,7 @@ approxjoin_datetime <- function(x,
 
 
     # check for install of "suggested" package necessary for this function
-    if(!require('data.table')) {
+    if(!require('data.table', quietly = TRUE)) {
       stop('the package "data.table" is required to use this function. run install.packages("data.table") and try again')
     }
     
@@ -3266,7 +3266,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                            site_data = NULL, kalman = FALSE,
                            datecol = 'date', minNumObs = 2, minNumUncen = 2, gap_period = 730){
 
-    if(!require('EGRET')) {
+    if(!require('EGRET', quietly = TRUE)) {
       stop('the package "EGRET" is required to use this function. run install.packages("EGRET") and try again')
     }
 

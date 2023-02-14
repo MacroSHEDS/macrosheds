@@ -13,24 +13,24 @@
 #' @param prodname character. A MacroSheds product name. Files associated with this
 #'    product name will be read and combined. Available prodnames are (for core time-series products):
 #'    
-#'     + discharge
-#'     + stream_chemistry
-#'     + stream_flux_inst
-#'     + precipitation,
-#'     + precip_chemistry
-#'     + precip_flux_inst
+#' + discharge
+#' + stream_chemistry
+#' + stream_flux_inst
+#' + precipitation,
+#' + precip_chemistry
+#' + precip_flux_inst
 #'     
-#'    (and for watershed attribute products):
+#' (and for watershed attribute products):
 #'    
-#'     + ws_attr_summaries
-#'     + ws_attr_timeseries:climate
-#'     + ws_attr_timeseries:hydrology
-#'     + ws_attr_timeseries:landcover
-#'     + ws_attr_timeseries:parentmaterial
-#'     + ws_attr_timeseries:terrain
-#'     + ws_attr_timeseries:vegetation
-#'     + ws_attr_CAMELS_summaries
-#'     + ws_attr_CAMELS_Daymet_forcings 
+#' + ws_attr_summaries
+#' + ws_attr_timeseries:climate
+#' + ws_attr_timeseries:hydrology
+#' + ws_attr_timeseries:landcover
+#' + ws_attr_timeseries:parentmaterial
+#' + ws_attr_timeseries:terrain
+#' + ws_attr_timeseries:vegetation
+#' + ws_attr_CAMELS_summaries
+#' + ws_attr_CAMELS_Daymet_forcings 
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
 #'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
@@ -134,6 +134,10 @@ ms_load_product <- function(macrosheds_root,
             msfile <- paste0('spatial_timeseries_', attr_set, '.feather')
         }
         msfile <- file.path(macrosheds_root, msfile)
+        
+        if(! file.exists(msfile)){
+            stop('No file found for ', prodname, '. Download it with ms_download_ws_attr, or check your macrosheds_root.')
+        }
         
         # Create size warning
         file_sizes <- file.info(msfile)$size
