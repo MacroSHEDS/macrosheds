@@ -2,14 +2,11 @@
 title: "Precipitation Interpolation"
 author: Spencer Rhea, Weston Slaughter, Mike Vlah
 subtitle: Using the `macrosheds` package to interpolate rain gauge measurments to a watershed
-output:
-    html_document:
-      toc: true
-      theme: united
-      highlight: zenburn
-      df_print: kable
-editor_options: 
-  chunk_output_type: console
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Precipitation Interpolation}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 
@@ -289,7 +286,12 @@ ms_calc_watershed_precip(precip = ms_noaa_precip_data,
 ```
 
 ```
-##  Accessing raster elevation [-------------------------]   0% Accessing raster elevation [=====>-------------------]  25% Accessing raster elevation [===========>-------------]  50% Accessing raster elevation [==================>------]  75% Accessing raster elevation [=========================] 100%
+## 
+ Accessing raster elevation [-------------------------]   0%
+ Accessing raster elevation [=====>-------------------]  25%
+ Accessing raster elevation [===========>-------------]  50%
+ Accessing raster elevation [==================>------]  75%
+ Accessing raster elevation [=========================] 100%
 ## Mosaicing & Projecting
 ## Clipping DEM to bbox
 ```

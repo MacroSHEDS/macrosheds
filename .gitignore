@@ -23,3 +23,5 @@ tests/testthat/data/
 !data/figshare_id_check.txt
 vignettes/data
 tests/testthat-problems.rds
+/doc/
+/Meta/

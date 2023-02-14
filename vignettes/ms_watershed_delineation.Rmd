@@ -2,12 +2,11 @@
 title: Watershed delineation with the macrosheds package 
 subtitle: Requires only latitude and longitude, and can be done interactively.
 author: Mike Vlah (mail@macrosheds.org)
-output:
-    html_document:
-      toc: true 
-      theme: united
-      highlight: zenburn
-      df_print: kable
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Watershed delineation with the macrosheds package}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 ## Setup
@@ -74,7 +73,7 @@ library(sf)
 st_read('~/my_watershed_boundaries/example_site.shp', quiet = TRUE) %>% 
     plot()
 ```
-![watershed_boundary](ms_watershed_delineation_files/figure-markdown_strict/output-1.png) 
+![watershed_boundary](files/ms_watershed_delineation_files/figure-markdown_strict/output-1.png) 
 
 And here are the contents of `out`:
 ```
