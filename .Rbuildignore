@@ -9,3 +9,5 @@
 ^tester\.R$
 ^roxygen_code\.R$
 tests/testthat/data/test_precip_function
+^doc$
+^Meta$

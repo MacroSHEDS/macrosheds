@@ -64,7 +64,7 @@ library(sf)
 st_read('~/my_watershed_boundaries/example_site.shp', quiet = TRUE) %>% 
     plot()
 ```
-![watershed_boundary](ms_watershed_delineation_files/figure-markdown_strict/output-1.png) 
+![watershed_boundary](files/ms_watershed_delineation_files/figure-markdown_strict/output-1.png) 
 
 And here are the contents of `out`:
 ```

@@ -2,12 +2,11 @@
 title: MacroSheds data retrieval and flux calculation 
 author: Weston Slaughter, Spencer Rhea, Mike Vlah
 subtitle: Using the `macrosheds` package to retrieve discharge and chemistry data for target sites and variables, and to calculate simple stream solute flux
-output:
-    html_document:
-      toc: true 
-      theme: united
-      highlight: zenburn
-      df_print: kable
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MacroSheds data retrieval and flux calculation}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 _See https://eartharxiv.org/repository/view/3499/ for background_
@@ -163,13 +162,13 @@ This same directory should be used when downloading watershed attribute data via
 and it _must_ be used to load data via `ms_load_product`. You can download all core data
 with `domains = 'all'`
 
-``` {r ms-data, eval = FALSE}
+``` {r ms-data, eval = TRUE}
 options(timeout = 600) #default 60 might not be enough if your connection is slow
 
 ms_download_core_data(
     macrosheds_root = my_ms_dir,
     domains = my_domains,
-    quiet = FALSE
+    quiet = TRUE
 )
 ```
 

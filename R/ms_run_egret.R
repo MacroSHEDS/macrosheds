@@ -46,7 +46,11 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
                          site_data = NULL){
 
     library("dplyr", quietly = TRUE)
-    
+
+    if(!require('EGRET')) {
+      stop('the package "EGRET" is required to use this function. run install.packages("EGRET") and try again')
+    }
+
     # Checks 
     if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(stream_chemistry))){
         stop('stream_chemistry must be a data.frame in MacroSheds format with the columns site_code, 
