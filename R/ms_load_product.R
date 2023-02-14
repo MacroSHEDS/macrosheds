@@ -12,12 +12,25 @@
 #'    refer to them separately when loading time-series data vs. watershed attribute data.
 #' @param prodname character. A MacroSheds product name. Files associated with this
 #'    product name will be read and combined. Available prodnames are (for core time-series products):
-#'    discharge, stream_chemistry, stream_flux_inst, precipitation,
-#'    precip_chemistry, precip_flux_inst, (and for watershed attribute products:)
-#'    ws_attr_summaries, ws_attr_timeseries:climate,
-#'    ws_attr_timeseries:hydrology, ws_attr_timeseries:landcover,
-#'    ws_attr_timeseries:parentmaterial, ws_attr_timeseries:terrain,
-#'    ws_attr_timeseries:vegetation
+#'    
+#'     + discharge
+#'     + stream_chemistry
+#'     + stream_flux_inst
+#'     + precipitation,
+#'     + precip_chemistry
+#'     + precip_flux_inst
+#'     
+#'    (and for watershed attribute products):
+#'    
+#'     + ws_attr_summaries
+#'     + ws_attr_timeseries:climate
+#'     + ws_attr_timeseries:hydrology
+#'     + ws_attr_timeseries:landcover
+#'     + ws_attr_timeseries:parentmaterial
+#'     + ws_attr_timeseries:terrain
+#'     + ws_attr_timeseries:vegetation
+#'     + ws_attr_CAMELS_summaries
+#'     + ws_attr_CAMELS_Daymet_forcings 
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
 #'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
@@ -63,7 +76,8 @@ ms_load_product <- function(macrosheds_root,
                          'ws_attr_summaries', 'ws_attr_timeseries:climate',
                          'ws_attr_timeseries:hydrology', 'ws_attr_timeseries:landcover',
                          'ws_attr_timeseries:parentmaterial', 'ws_attr_timeseries:terrain',
-                         'ws_attr_timeseries:vegetation')
+                         'ws_attr_timeseries:vegetation', 'ws_attr_CAMELS_Daymet_forcings',
+                         'ws_attr_CAMELS_summaries')
 
     if(missing(macrosheds_root)){ 
         stop('macrosheds_root must be supplied.')
@@ -112,6 +126,8 @@ ms_load_product <- function(macrosheds_root,
     if(grepl('^ws_attr_', prodname)){
         
         if(prodname == 'ws_attr_summaries') msfile <- 'watershed_summaries.feather'
+        if(prodname == 'ws_attr_CAMELS_Daymet_forcings') msfile <- 'Daymet_forcings_CAMELS.feather'
+        if(prodname == 'ws_attr_CAMELS_summaries') msfile <- 'watershed_summaries_CAMELS.feather'
         
         if(grepl('^ws_attr_timeseries', prodname)){
             attr_set <- stringr::str_extract(prodname, '(?<=ws_attr_timeseries:).*')
@@ -131,7 +147,7 @@ ms_load_product <- function(macrosheds_root,
                                        possible_chars = c('y', 'n'))
             
             if(resp == 'n'){
-                message('Aborting dataset load. Sorry, but there\'s no easy way to make this one smaller. Contact us.')
+                message('Aborting dataset load. Sorry, but there\'s no easy way to make this one smaller. Contact us at mail@macrosheds.org')
                 return(invisible())
             }
         }

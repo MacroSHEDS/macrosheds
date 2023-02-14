@@ -104,6 +104,12 @@ test_that('loading ws attr summaries works', {
                     filter_vars = c('PO4_P', 'temp')) #ignored
     
     expect_length(unique(r$domain), 2)
+    
+    r = macrosheds::ms_load_product(macrosheds_root = wd, 
+                    prodname = 'ws_attr_CAMELS_summaries',
+                    domains = c('hjandrews', 'hbef'))
+    
+    expect_length(unique(r$domain), 2)
 })
 
 test_that('loading ws attr timeseries works', {
