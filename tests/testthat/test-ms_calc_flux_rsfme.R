@@ -1,7 +1,7 @@
 library(macrosheds)
 library(testthat)
 
-# ms_root = '../data/ms/'
+## setwd('./tests/testthat/')
 ms_root = '../../data/ms_test/'
 
 chemistry <- ms_load_product(macrosheds_root = ms_root,

@@ -100,6 +100,17 @@ ms_calc_watershed_precip <- function(precip,
 
     library("dplyr", quietly = TRUE)
 
+    # check for install of "suggested" package necessary for this function
+    if(!require('terra')) {
+      stop('the package "terra" is required to use this function. run install.packages("terra") and try again')
+    }
+    if(!require('elevatr')) {
+      stop('the package "elevatr" is required to use this function. run install.packages("elevatr") and try again')
+    }
+    if(!require('parallel')) {
+      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
+    }
+
     precip_only <- missing(pchem)
     pchem_only <- missing(precip)
 

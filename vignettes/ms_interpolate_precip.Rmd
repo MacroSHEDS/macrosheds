@@ -2,14 +2,11 @@
 title: "Precipitation Interpolation"
 author: Spencer Rhea, Weston Slaughter, Mike Vlah
 subtitle: Using the `macrosheds` package to interpolate rain gauge measurments to a watershed
-output:
-    html_document:
-      toc: true
-      theme: united
-      highlight: zenburn
-      df_print: kable
-editor_options: 
-  chunk_output_type: console
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Precipitation Interpolation}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
 ---
 
 
@@ -246,7 +243,7 @@ using nhdplusTools.
 ```r
 ?poudre_ws
 ```
-![poudre_ws](ms_interpolate_precip_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![poudre_ws](files/ms_interpolate_precip_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
 # Calculate basin average precipitation
 
@@ -289,7 +286,12 @@ ms_calc_watershed_precip(precip = ms_noaa_precip_data,
 ```
 
 ```
-##  Accessing raster elevation [-------------------------]   0% Accessing raster elevation [=====>-------------------]  25% Accessing raster elevation [===========>-------------]  50% Accessing raster elevation [==================>------]  75% Accessing raster elevation [=========================] 100%
+## 
+ Accessing raster elevation [-------------------------]   0%
+ Accessing raster elevation [=====>-------------------]  25%
+ Accessing raster elevation [===========>-------------]  50%
+ Accessing raster elevation [==================>------]  75%
+ Accessing raster elevation [=========================] 100%
 ## Mosaicing & Projecting
 ## Clipping DEM to bbox
 ```
@@ -326,4 +328,4 @@ poudre_plot <- ggplot(pourdre_precip, aes(datetime, val)) +
     geom_line() +
     labs(x = 'Date', y = 'Precipitation (mm)')
 ```
-![poudre_ws](ms_interpolate_precip_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+![poudre_ws](files/ms_interpolate_precip_files/figure-markdown_strict/unnamed-chunk-7-1.png)

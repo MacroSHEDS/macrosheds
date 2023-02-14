@@ -2,14 +2,17 @@ Package: macrosheds
 Title: Tools for interfacing with the MacroSheds dataset
 Version: 1.0.0
 Date: 2023-01-23
-Authors@R: c(person("Spencer", "Rhea", email = "spencerrhea41@gmail.com", role = c("aut")),
+Authors: c(person("Spencer", "Rhea", email = "spencerrhea41@gmail.com", role = c("aut")),
              person("Mike", "Vlah", email = "vlahm13@gmail.com", role = c("aut", "cre")),
              person("Wes", "Slaughter", email = "weston.slaughter@duke.edu", role = c("aut")),
              person("Nick", "Gubbins", email = "gubbinsnick@gmail.com", role = c("ctb")))
 Description: The macrosheds package accompanies the MacroSheds dataset and web portal (macrosheds.org). It provides data access, facilitates proper attribution, and helps with common routines for watershed data analysis.
 Depends: R (>= 3.6.1), dplyr
 Imports:
-    feather, errors, sf, data.table, EGRET, foreach, glue, parallel, dataRetrieval, terra, mapview, elevatr, whitebox, rgdal, doParallel, stringr, purrr, readr, tidyr, lubridate, jsonlite, raster, hydrostats
+    feather, errors, sf, foreach, glue, dataRetrieval, stringr, purrr, readr, tidyr, lubridate, jsonlite
+Suggests:
+    testthat (>= 3.0.0), data.table, EGRET, parallel, terra, mapview, elevatr, whitebox, doParallel, raster, hydrostats, knitr, rmarkdown
+VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 License: MIT
 Encoding: UTF-8
@@ -17,6 +20,4 @@ LazyData: true
 URL: https://github.com/MacroSHEDS/macrosheds
 BugReports: https://github.com/MacroSHEDS/macrosheds/issues
 RoxygenNote: 7.2.3
-Suggests: 
-    testthat (>= 3.0.0)
 Config/testthat/edition: 3

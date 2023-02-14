@@ -22,10 +22,10 @@
 #' @return Returns NULL. Downloads watershed attribute data to the
 #'    directory specified by \code{macrosheds_root}. For documentation, visit
 #'   [EDI](EDI link pending). 
-#' @export
 #' @seealso [ms_download_core_data()], [ms_load_ws_attr()]
 #' @examples
 #' ms_download_ws_attr(macrosheds_root = 'my/macrosheds/root', dataset = 'time series')
+#' @export
 
 ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = FALSE,
                                 omit_climate_data = FALSE){
