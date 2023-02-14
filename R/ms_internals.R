@@ -859,7 +859,15 @@ idw_log_var <- function(verbose,
 }
 
 ms_parallelize <- function(maxcores = Inf){
-    
+
+    # check for install of "suggested" package necessary for this function
+    if(!require('parallel')) {
+      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
+    }
+    if(!require('doParallel')) {
+      stop('the package "doParallel" is required to use this function. run install.packages("doParallel") and try again')
+    }
+
     #maxcores is the maximum number of processor cores to use for R tasks.
     #   you may want to leave a few aside for other processes.
     
@@ -901,7 +909,12 @@ shortcut_idw <- function(encompassing_dem,
                          p_var = NULL,
                          verbose = FALSE,
                          macrosheds_root){
-    
+
+    # check for install of "suggested" package necessary for this function
+    if(!require('parallel')) {
+      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
+    }
+
     #encompassing_dem: RasterLayer must cover the area of wshd_bnd and precip_gauges
     #wshd_bnd: sf polygon with columns site_code and geometry
     #   it represents a single watershed boundary
@@ -1104,7 +1117,12 @@ shortcut_idw <- function(encompassing_dem,
 }
 
 ms_unparallelize <- function(cluster_object){
-    
+
+    # check for install of "suggested" package necessary for this function
+    if(!require('parallel')) {
+      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
+    }
+
     #if cluster_object is NULL, nothing will happen
     
     # tryCatch({print(site_code)},
@@ -1736,6 +1754,12 @@ approxjoin_datetime <- function(x,
     #     '1968-10-09 05:00:00', 'GSWS10', 'GN_alk', set_errors(5.009, 1), 1, 1,
     #     '1968-10-09 05:15:00', 'GSWS10', 'GN_alk', set_errors(6.009, 1), 1, 1) %>%
     #     mutate(datetime = as.POSIXct(datetime, tz = 'UTC'))
+
+
+    # check for install of "suggested" package necessary for this function
+    if(!require('data.table')) {
+      stop('the package "data.table" is required to use this function. run install.packages("data.table") and try again')
+    }
     
     #tests
     if('site_code' %in% colnames(x) && length(unique(x$site_code)) > 1){
@@ -3241,7 +3265,12 @@ get_break_dates <- function(data, gap_period = 730) {
 adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                            site_data = NULL, kalman = FALSE,
                            datecol = 'date', minNumObs = 2, minNumUncen = 2, gap_period = 730){
-  # TODO:  reorder site data args to make fully optional
+
+    if(!require('EGRET')) {
+      stop('the package "EGRET" is required to use this function. run install.packages("EGRET") and try again')
+    }
+
+    # TODO:  reorder site data args to make fully optional
 
     get_MonthSeq <- function(dates){
         ## dates <- Sample_file$Date
