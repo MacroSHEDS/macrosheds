@@ -184,20 +184,21 @@ ms_delineate_watershed <- function(lat,
 
     # check for install of "suggested" package necessary for this function
     if(!require('terra', quietly = TRUE)) {
-      stop('the package "terra" is required to use this function. run install.packages("terra") and try again')
+        stop('the package "terra" is required to use this function. run install.packages("terra") and try again')
     }
     if(!require('mapview', quietly = TRUE)) {
-      stop('the package "mapview" is required to use this function. run install.packages("mapview") and try again')
+        stop('the package "mapview" is required to use this function. run install.packages("mapview") and try again')
     }
     if(!require('elevatr', quietly = TRUE)) {
-      stop('the package "elevatr" is required to use this function. run install.packages("elevatr") and try again')
+        stop('the package "elevatr" is required to use this function. run install.packages("elevatr") and try again')
     }
     if(!require('whitebox', quietly = TRUE)) {
-      stop('the package "whitebox" is required to use this function. run install.packages("whitebox")',
-           ' and then install additional necessary binaries using whitebox::install_whitebox(), and then try again')
+        stop('the package "whitebox" is required to use this function. run install.packages("whitebox")',
+             ' and then install additional necessary binaries using whitebox::install_whitebox(), and then try again')
     } else {
-      warning('for complete functionality make sure you have run whitebox::install_whitebox() in addition to',
-              'normal package install')
+        if(! whitebox::check_whitebox_binary()){
+            stop('The whitebox package is not fully installed. Please run whitebox::install_whitebox()')
+        }
     }
     if(!require('raster', quietly = TRUE)) {
       stop('the package "raster" is required to use this function. run install.packages("raster") and try again')
