@@ -45,7 +45,7 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
                          run_egret = TRUE, kalman = FALSE, quiet = FALSE,
                          site_data = NULL){
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
 
     if(!require('EGRET', quietly = TRUE)) {
       stop('the package "EGRET" is required to use this function. run install.packages("EGRET") and try again')

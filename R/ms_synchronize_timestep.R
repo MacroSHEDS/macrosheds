@@ -54,7 +54,7 @@ ms_synchronize_timestep <- function(d,
                                     summary_fun,
                                     quiet = FALSE){
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
 
     if(!require('data.table', quietly = TRUE)) {
       stop('the package "data.table" is required to use this function. run install.packages("data.table") and try again')

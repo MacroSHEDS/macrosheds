@@ -48,7 +48,7 @@
 
 ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
 
     #### Checks
     if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(chemistry))){

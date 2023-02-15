@@ -33,7 +33,7 @@
 
 ms_identify_usgs_gauges <- function(sites, lat = NULL, long = NULL, radius = 500) {
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
     
     if((is.null(lat) && !is.null(long)) || (!is.null(lat) && is.null(long))) {
         stop('Both lat and long must be provided or the argument to sites must be an sf object.')

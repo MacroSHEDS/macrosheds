@@ -23,7 +23,7 @@
 
 ms_separate_baseflow <- function(discharge, alpha = 0.975, n.reflected = 30) {
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
 
     if(!require('hydrostats', quietly = TRUE)) {
       stop('the package "hydrostats" is required to use this function. run install.packages("hydrostats") and try again')

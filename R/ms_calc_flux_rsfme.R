@@ -53,7 +53,7 @@
 
 ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c('average', 'beale', 'pw', 'rating', 'composite'), aggregation = 'annual', good_year_check = TRUE) {
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
 
     #### Checks
     if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(chemistry))){
