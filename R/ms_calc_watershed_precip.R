@@ -78,15 +78,7 @@
 #' @importFrom data.table ':='
 #' @export
 #' @examples
-#' ### Load some MacroSheds data:
-#' ms_root = 'data/macrosheds'
-#' ms_download_core_data(macrosheds_root = ms_root,
-#'                       domains = 'hbef')
-#' p <- ms_load_product(macrosheds_root = ms_root, 
-#'                      prodname = 'precipitation', 
-#'                      domains = 'hbef')
-#'                      
-#' CONTINUE EXAMPLE HERE
+#' See vignette: https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_interpolate_precip.md
 
 ms_calc_watershed_precip <- function(precip,
                                      ws_boundary,
@@ -101,14 +93,17 @@ ms_calc_watershed_precip <- function(precip,
     library("dplyr", quietly = TRUE)
 
     # check for install of "suggested" package necessary for this function
-    if(!require('terra')) {
+    if(!require('terra', quietly = TRUE)) {
       stop('the package "terra" is required to use this function. run install.packages("terra") and try again')
     }
-    if(!require('elevatr')) {
+    if(!require('elevatr', quietly = TRUE)) {
       stop('the package "elevatr" is required to use this function. run install.packages("elevatr") and try again')
     }
-    if(!require('parallel')) {
+    if(!require('parallel', quietly = TRUE)) {
       stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
+    }
+    if(!require('data.table', quietly = TRUE)) {
+      stop('the package "data.table" is required to use this function. run install.packages("data.table") and try again')
     }
 
     precip_only <- missing(pchem)
@@ -208,7 +203,7 @@ ms_calc_watershed_precip <- function(precip,
     if(! pchem_only){
         if(! all(rg$site_code %in% unique(precip$site_code))){
             missing_gauge <- rg$site_code[! rg$site_code %in% unique(precip$site_code)]
-            stop(paste0('a precip gauge location exists in precip_gauge for the gauge(s): ', 
+            stop(paste0('a precip gauge location exists in precip_gauge for the gauge(s): ',
                               paste0(missing_gauge, collapse = ', '),
                               ', but no corresponding data exist in precip.',
                               ' Either add data to precip for these gauges or',
@@ -221,11 +216,11 @@ ms_calc_watershed_precip <- function(precip,
                          ' Either add these gauge(s) to precip_gauge or remove corresponding data from precip.'))
         }
     }
-    
+
     if(! precip_only){
         if(! all(rg$site_code %in% unique(pchem$site_code))){
             missing_gauge <- rg$site_code[! rg$site_code %in% unique(pchem$site_code)]
-            stop(paste0('a gauge location exists in precip_gauge for the gauge(s): ', 
+            stop(paste0('a gauge location exists in precip_gauge for the gauge(s): ',
                               paste0(missing_gauge, collapse = ', '),
                               ', but no corresponding data exist in pchem',
                               ' Either add data to pchem for these gauges or',
