@@ -90,7 +90,7 @@ ms_calc_watershed_precip <- function(precip,
                                      elevation_agnostic = TRUE,
                                      verbose = TRUE){
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
 
     # check for install of "suggested" package necessary for this function
     if(!require('terra', quietly = TRUE)) {

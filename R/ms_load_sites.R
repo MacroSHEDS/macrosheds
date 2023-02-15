@@ -20,7 +20,7 @@
 
 ms_load_sites <- function(){
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
 
     requireNamespace('macrosheds', quietly = TRUE)
     

@@ -180,7 +180,7 @@ ms_delineate_watershed <- function(lat,
                                    confirm = TRUE,
                                    responses_from_file = NULL){
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
 
     # check for install of "suggested" package necessary for this function
     if(!require('terra', quietly = TRUE)) {

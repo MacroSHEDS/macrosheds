@@ -21,7 +21,7 @@
 
 ms_load_variables <- function(var_set = 'timeseries'){
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
 
     opts <- c('timeseries', 'timeseries_by_site', 'ws_attr')
     if(! var_set %in% opts){

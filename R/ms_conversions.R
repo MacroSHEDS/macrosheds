@@ -84,7 +84,7 @@ ms_conversions <- function(d,
                            convert_units_to,
                            convert_molecules){
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
     
     requireNamespace('macrosheds', quietly = TRUE)
 

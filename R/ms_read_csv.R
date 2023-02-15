@@ -103,7 +103,7 @@ ms_read_csv <- function(filepath,
                             summary_flagcols,
                             sampling_type = NULL){
 
-    library("dplyr", quietly = TRUE)
+    library("dplyr", quietly = TRUE); select <- dplyr::select
     
     #TODO:
     #add a silent = TRUE option. this would hide all warnings
