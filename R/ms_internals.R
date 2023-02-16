@@ -965,7 +965,7 @@ shortcut_idw <- function(encompassing_dem,
     d_status <- data_values$ms_status
     d_interp <- data_values$ms_interp
     d_dt <- data_values$datetime
-    data_matrix <- dplyr::dplyr::select(data_values,
+    data_matrix <- dplyr::select(data_values,
                           -ms_status,
                           -datetime,
                           -ms_interp) %>%
