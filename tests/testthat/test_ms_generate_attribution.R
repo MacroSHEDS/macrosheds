@@ -1,14 +1,13 @@
 
-msroot <- '../../data/ms_test'
-
 library(macrosheds)
 library(testthat)
 library(readr)
 
 o = ms_generate_attribution(abide_by = 'suggestions')
 tmpd = tempdir()
+macrosheds::ms_download_core_data(tmpd, domains = 'hbef')
 d = macrosheds::ms_load_product(
-    macrosheds_root = msroot,
+    macrosheds_root = tmpd,
     prodname = 'discharge',
     domains = 'hbef')
 o2 = ms_generate_attribution(d, chem_source = 'both',

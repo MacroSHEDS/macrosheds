@@ -13,6 +13,7 @@ macrosheds::ms_download_core_data(macrosheds_root = wd,
                                   quiet = TRUE)
 macrosheds::ms_download_ws_attr(macrosheds_root = wd, dataset = 'summaries')
 macrosheds::ms_download_ws_attr(macrosheds_root = wd, dataset = 'time series', omit_climate_data = T)
+macrosheds::ms_download_ws_attr(macrosheds_root = wd, dataset = 'CAMELS summaries')
 
 test_that('the correct domains are loaded in', {
     
@@ -82,7 +83,7 @@ test_that('errors are printed as expected', {
     
     expect_error(ms_load_product(macrosheds_root = 'fake_dir_test', 
                                  prodname = 'stream_chemistry'),
-                 'macrosheds_root does not exist, please ensure correct directory is supplied')
+                 'macrosheds_root does not exist. This should')
     
     expect_error(ms_load_product(macrosheds_root = '~', 
                                  prodname = 'ws_attr_timeseries:landcover'),

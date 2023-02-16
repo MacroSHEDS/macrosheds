@@ -14,7 +14,7 @@ ms_download_ws_attr(
 \arguments{
 \item{macrosheds_root}{character. Directory where watershed attribute files will be downloaded.
 If this directory does not exist, it will be created. Does not have to be the same
-as \code(macrosheds_root) provided to \code{\link[=ms_download_core_data]{ms_download_core_data()}}, but might as well be.}
+as \code{macrosheds_root} provided to \code{\link[=ms_download_core_data]{ms_download_core_data()}}, but might as well be.}
 
 \item{dataset}{character. This function can download each of the four collections of watershed attribute data
 provided by MacroSheds. "summaries" will download a feather file containing watershed attributes

@@ -8,7 +8,7 @@
 #' @author Spencer Rhea
 #' @param macrosheds_root character. Directory where watershed attribute files will be downloaded.
 #'    If this directory does not exist, it will be created. Does not have to be the same
-#'    as \code(macrosheds_root) provided to [ms_download_core_data()], but might as well be.
+#'    as \code{macrosheds_root} provided to [ms_download_core_data()], but might as well be.
 #' @param dataset character. This function can download each of the four collections of watershed attribute data
 #'    provided by MacroSheds. "summaries" will download a feather file containing watershed attributes
 #'    summarized across time and space (i.e. one value for each site). "time series" will download 6 feather
