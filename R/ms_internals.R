@@ -6,12 +6,9 @@
 
 # Function aliases 
 sw <- suppressWarnings
-sm <- suppressWarnings
+sm <- suppressMessages
 `%dopar%` <- foreach::`%dopar%`
 `%do%` <- foreach::`%do%`
-# end function aliases 
-
-
 
 # Unit conversion functions 
 parse_molecular_formulae <- function(formulae){
@@ -860,16 +857,10 @@ idw_log_var <- function(verbose,
 
 ms_parallelize <- function(maxcores = Inf){
 
-    # check for install of "suggested" package necessary for this function
-    if(!require('parallel', quietly = TRUE)) {
-      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
-    }
-    if(!require('doParallel', quietly = TRUE)) {
-      stop('the package "doParallel" is required to use this function. run install.packages("doParallel") and try again')
-    }
-
     #maxcores is the maximum number of processor cores to use for R tasks.
     #   you may want to leave a few aside for other processes.
+    
+    check_suggested_pkgs(c('parallel', 'doParallel'))
     
     clst <- NULL
     ncores <- min(parallel::detectCores(), maxcores)
@@ -910,11 +901,6 @@ shortcut_idw <- function(encompassing_dem,
                          verbose = FALSE,
                          macrosheds_root){
 
-    # check for install of "suggested" package necessary for this function
-    if(!require('parallel', quietly = TRUE)) {
-      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
-    }
-
     #encompassing_dem: RasterLayer must cover the area of wshd_bnd and precip_gauges
     #wshd_bnd: sf polygon with columns site_code and geometry
     #   it represents a single watershed boundary
@@ -941,6 +927,8 @@ shortcut_idw <- function(encompassing_dem,
     #   interpolated too. only useable when output_varname = 'PRECIP SPECIAL CASE'
     #elev_agnostic: logical that determines whether elevation should be
     #   included as a predictor of the variable being interpolated
+    
+    check_suggested_pkgs(c('parallel'))
     
     if(output_varname != 'SPECIAL CASE PRECIP' && save_precip_quickref){
         stop(paste('save_precip_quickref can only be TRUE if output_varname',
@@ -1118,12 +1106,9 @@ shortcut_idw <- function(encompassing_dem,
 
 ms_unparallelize <- function(cluster_object){
 
-    # check for install of "suggested" package necessary for this function
-    if(!require('parallel', quietly = TRUE)) {
-      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
-    }
-
     #if cluster_object is NULL, nothing will happen
+    
+    check_suggested_pkgs(c('parallel'))
     
     # tryCatch({print(site_code)},
     #         error=function(e) print('nope'))
@@ -1755,11 +1740,7 @@ approxjoin_datetime <- function(x,
     #     '1968-10-09 05:15:00', 'GSWS10', 'GN_alk', set_errors(6.009, 1), 1, 1) %>%
     #     mutate(datetime = as.POSIXct(datetime, tz = 'UTC'))
 
-
-    # check for install of "suggested" package necessary for this function
-    if(!require('data.table', quietly = TRUE)) {
-      stop('the package "data.table" is required to use this function. run install.packages("data.table") and try again')
-    }
+    check_suggested_pkgs(c('data.table'))
     
     #tests
     if('site_code' %in% colnames(x) && length(unique(x$site_code)) > 1){
@@ -2696,6 +2677,22 @@ attrib_output_write <- function(attrib, write_to_dir){
                        file.path(write_to_dir, 'ms_bibliography.bib'))
 }
 
+check_suggested_pkgs <- function(pkgs){
+    
+    #pkgs: character vector of package names
+    
+    loaded <- rep(NA, length(pkgs))
+    for(i in seq_along(pkgs)){
+        loaded[i] <- sw(require(pkgs[i], quietly = TRUE, character.only = TRUE))
+    }
+    
+    if(any(! loaded)){
+        stop(glue('Additional packages required to use this function. ',
+                  'Run install.packages(c("{p}")) and try again.',
+                  p = paste(pkgs[! loaded], collapse = '", "')))
+    }
+}
+
 # RSFME stuff
 # rsfme: general helpers
 wtr_yr <- function(dates, start_month = 10) {
@@ -3266,9 +3263,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                            site_data = NULL, kalman = FALSE,
                            datecol = 'date', minNumObs = 2, minNumUncen = 2, gap_period = 730){
 
-    if(!require('EGRET', quietly = TRUE)) {
-      stop('the package "EGRET" is required to use this function. run install.packages("EGRET") and try again')
-    }
+    check_suggested_pkgs(c('EGRET'))
 
     # TODO:  reorder site data args to make fully optional
 

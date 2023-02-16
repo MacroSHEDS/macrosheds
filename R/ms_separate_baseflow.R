@@ -25,9 +25,7 @@ ms_separate_baseflow <- function(discharge, alpha = 0.975, n.reflected = 30) {
 
     library("dplyr", quietly = TRUE)
 
-    if(!require('hydrostats', quietly = TRUE)) {
-      stop('the package "hydrostats" is required to use this function. run install.packages("hydrostats") and try again')
-    }
+    check_suggested_pkgs(c('hydrostats'))
     
     # Checks
     if(!all(c('site_code', 'datetime', 'val', 'var') %in% names(discharge))){

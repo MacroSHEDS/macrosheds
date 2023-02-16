@@ -56,9 +56,7 @@ ms_synchronize_timestep <- function(d,
 
     library("dplyr", quietly = TRUE)
 
-    if(!require('data.table', quietly = TRUE)) {
-      stop('the package "data.table" is required to use this function. run install.packages("data.table") and try again')
-    }
+    check_suggested_pkgs(c('data.table'))
 
     # Checks 
     if(nrow(d) < 2 || sum(! is.na(d$val)) < 2){
