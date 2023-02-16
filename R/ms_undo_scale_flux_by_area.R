@@ -32,7 +32,7 @@
 
 ms_undo_scale_flux_by_area <- function(d){
 
-    library("dplyr", quietly = TRUE); select <- dplyr::select
+    library("dplyr", quietly = TRUE)
     
     requireNamespace('macrosheds', quietly = TRUE)
 

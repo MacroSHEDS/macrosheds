@@ -33,7 +33,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
                                 omit_climate_data = FALSE){
     
     requireNamespace('macrosheds', quietly = TRUE)
-    library('dplyr', quietly = TRUE); select <- dplyr::select
+    library('dplyr', quietly = TRUE)
 
     # figshare basic info handling
     if(inherits(try(macrosheds::file_ids_for_r_package2, silent = TRUE), 'try-error')){

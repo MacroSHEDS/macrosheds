@@ -40,7 +40,7 @@ ms_download_core_data <- function(macrosheds_root,
                                   domains,
                                   quiet = FALSE) {
 
-    library("dplyr", quietly = TRUE); select <- dplyr::select
+    library("dplyr", quietly = TRUE)
     
     requireNamespace('macrosheds', quietly = TRUE)
 

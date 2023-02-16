@@ -57,7 +57,7 @@ ms_fill_missing_precip <- function(precip,
                                    out_path = NULL,
                                    verbose = TRUE){
 
-    library("dplyr", quietly = TRUE); select <- dplyr::select
+    library("dplyr", quietly = TRUE)
     
     requireNamespace('macrosheds', quietly = TRUE)
 

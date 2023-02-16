@@ -189,7 +189,7 @@ get_osm_roads <- function(extent_raster, outfile = NULL){
         sf::st_as_sf() %>%
         rename(geometry = x) %>%
         mutate(FID = 0:(n() - 1)) %>%
-        dplyr::select(FID, geometry)
+        select(FID, geometry)
     
     if(! is.null(outfile)){
         
@@ -243,7 +243,7 @@ get_osm_streams <- function(extent_raster, outfile = NULL){
         sf::st_as_sf() %>%
         rename(geometry = x) %>%
         mutate(FID = 0:(n() - 1)) %>%
-        dplyr::select(FID, geometry)
+        select(FID, geometry)
     
     if(! is.null(outfile)){
         
