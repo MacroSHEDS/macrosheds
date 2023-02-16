@@ -224,7 +224,7 @@ ms_synchronize_timestep <- function(d,
     d <- d_split %>%
         purrr::reduce(bind_rows) %>%
         arrange(site_code, var, datetime) %>%
-        select(datetime, site_code, var, val, ms_status, ms_interp, val_err)
+        dplyr::select(datetime, site_code, var, val, ms_status, ms_interp, val_err)
     
     return(d)
 }

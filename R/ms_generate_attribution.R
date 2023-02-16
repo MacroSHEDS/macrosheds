@@ -169,7 +169,7 @@ ms_generate_attribution <- function(d, chem_source = 'both',
     }
     
     sitevars <- left_join(sitevars,
-                          select(macrosheds::ms_site_data, domain, site_code),
+                          dplyr::select(macrosheds::ms_site_data, domain, site_code),
                           by = 'site_code') %>% 
         filter(! is.na(domain)) %>% 
         distinct(domain, var)

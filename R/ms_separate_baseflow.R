@@ -45,7 +45,7 @@ ms_separate_baseflow <- function(discharge, alpha = 0.975, n.reflected = 30) {
                                           a = alpha,
                                           n.reflected = n.reflected,
                                           ts = 'daily') %>%
-        select(datetime = Date, baseflow = bf)
+        dplyr::select(datetime = Date, baseflow = bf)
     
     bf_final <- discharge %>%
         left_join(., hydro_output, by = 'datetime')

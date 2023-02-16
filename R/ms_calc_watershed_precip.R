@@ -112,7 +112,7 @@ ms_calc_watershed_precip <- function(precip,
     requireNamespace('macrosheds', quietly = TRUE)
     
     ms_vars <- macrosheds::ms_vars_ts %>% 
-        select(variable_code, flux_convertible) %>% 
+        dplyr::select(variable_code, flux_convertible) %>% 
         distinct()
         
     #### Load in data if file path supplied ####
@@ -246,13 +246,13 @@ ms_calc_watershed_precip <- function(precip,
     if(! pchem_only){
         errors::errors(precip$val) <- precip$val_err
         precip <- precip %>%
-            select(-val_err)
+            dplyr::select(-val_err)
     }
     
     if(! precip_only){
         errors::errors(pchem$val) <- pchem$val_err
         pchem <- pchem %>%
-            select(-val_err)
+            dplyr::select(-val_err)
     }
     
     if(pchem_only) precip <- NULL
@@ -298,7 +298,7 @@ ms_calc_watershed_precip <- function(precip,
     if(! pchem_only){
         
         status_cols <- precip %>%
-            select(datetime, ms_status, ms_interp) %>%
+            dplyr::select(datetime, ms_status, ms_interp) %>%
             group_by(datetime) %>%
             summarize(
                 ms_status = numeric_any(ms_status),
@@ -314,7 +314,7 @@ ms_calc_watershed_precip <- function(precip,
         precip$val[is.na(day_durations_byproduct)] <- NA
         
         precip <- precip %>%
-            select(-ms_status, -ms_interp, -var) %>%
+            dplyr::select(-ms_status, -ms_interp, -var) %>%
             tidyr::pivot_wider(names_from = site_code,
                                values_from = val) %>%
             left_join(status_cols, #they get lumped anyway
@@ -343,7 +343,7 @@ ms_calc_watershed_precip <- function(precip,
         
         #this avoids a lot of slow summarizing
         status_cols <- pchem %>%
-            select(datetime, ms_status, ms_interp) %>%
+            dplyr::select(datetime, ms_status, ms_interp) %>%
             group_by(datetime) %>%
             summarize(
                 ms_status = numeric_any(ms_status),
@@ -359,7 +359,7 @@ ms_calc_watershed_precip <- function(precip,
             #clean data and arrange for matrixification
             pchem_setlist[[i]] <- pchem %>%
                 filter(var == v) %>%
-                select(-var, -ms_status, -ms_interp) %>%
+                dplyr::select(-var, -ms_status, -ms_interp) %>%
                 tidyr::pivot_wider(names_from = site_code,
                                    values_from = val) %>%
                 left_join(status_cols,
@@ -496,7 +496,7 @@ ms_calc_watershed_precip <- function(precip,
             # #restore original varnames by site and dt
             # ws_mean_precip <- ws_mean_precip %>%
             #     arrange(datetime) %>%
-            #     select(-var) %>% #just a placeholder
+            #     dplyr::select(-var) %>% #just a placeholder
             #     left_join(precip_varnames,
             #               by = c('datetime', 'site_code'))
             
@@ -632,7 +632,7 @@ ms_calc_watershed_precip <- function(precip,
             if(! pchem_only){
                 
                 ws_mean_pflux <- ws_mean_chemflux %>%
-                    select(-concentration) %>%
+                    dplyr::select(-concentration) %>%
                     rename(val = flux) %>%
                     arrange(var, datetime)
                 
@@ -646,7 +646,7 @@ ms_calc_watershed_precip <- function(precip,
             }
             
             ws_mean_pchem <- ws_mean_chemflux %>%
-                select(-any_of('flux')) %>%
+                dplyr::select(-any_of('flux')) %>%
                 rename(val = concentration) %>%
                 arrange(var, datetime)
             

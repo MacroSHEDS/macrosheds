@@ -307,7 +307,7 @@ ms_read_csv <- function(filepath,
     
     d <- d %>%
         as_tibble() %>%
-        select(one_of(c(names(colnames_all), 'NA.'))) #for NA as in sodium
+        dplyr::select(one_of(c(names(colnames_all), 'NA.'))) #for NA as in sodium
     if('NA.' %in% colnames(d)) class(d$NA.) = 'character'
     
     # Remove any variable flags created by pattern but do not exist in data
@@ -365,7 +365,7 @@ ms_read_csv <- function(filepath,
                        ~ ! is.na(.x)))
     #remove all-NA data columns and rows with NA in all data columns.
     #also remove flag columns for all-NA data columns.
-    all_na_cols_bool <- apply(select(d, ends_with('__|dat')),
+    all_na_cols_bool <- apply(dplyr::select(d, ends_with('__|dat')),
                               MARGIN = 2,
                               function(x) all(is.na(x)))
     all_na_cols <- names(all_na_cols_bool[all_na_cols_bool])
@@ -375,7 +375,7 @@ ms_read_csv <- function(filepath,
                          all_na_cols))
     
     d <- d %>%
-        select(-one_of(all_na_cols)) %>%
+        dplyr::select(-one_of(all_na_cols)) %>%
         filter_at(vars(ends_with('__|dat')),
                   any_vars(! is.na(.)))
     
@@ -386,7 +386,7 @@ ms_read_csv <- function(filepath,
         mutate(NAsum = sum(is.na(c_across(ends_with('__|dat'))))) %>%
         ungroup() %>%
         arrange(datetime, site_code, NAsum) %>%
-        select(-NAsum) %>%
+        dplyr::select(-NAsum) %>%
         distinct(datetime, site_code, .keep_all = TRUE) %>%
         arrange(site_code, datetime)
     

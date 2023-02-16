@@ -177,7 +177,7 @@ ms_load_product <- function(macrosheds_root,
     # List network files  
     if(!missing(networks)){
         netdom <- macrosheds::ms_site_data %>%
-            select(network, domain) %>%
+            dplyr::select(network, domain) %>%
             distinct(domain, .keep_all = TRUE)
         
         network_domains <- netdom %>%

@@ -33,7 +33,7 @@ ms_load_variables <- function(var_set = 'timeseries'){
     
     if(var_set == 'timeseries'){
         
-        return(select(macrosheds::ms_vars_ts, -molecule))
+        return(dplyr::select(macrosheds::ms_vars_ts, -molecule))
         
     } else if(var_set == 'ws_attr'){
         
