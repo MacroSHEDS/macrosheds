@@ -2687,9 +2687,9 @@ check_suggested_pkgs <- function(pkgs){
     }
     
     if(any(! loaded)){
-        stop(glue('Additional packages required to use this function. ',
-                  'Run install.packages(c("{p}")) and try again.',
-                  p = paste(pkgs[! loaded], collapse = '", "')))
+        stop(glue::glue('Additional package(s) required to use this function. ',
+                        'Run install.packages(c("{p}")) and try again.',
+                        p = paste(pkgs[! loaded], collapse = '", "')))
     }
 }
 
