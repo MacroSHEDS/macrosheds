@@ -84,12 +84,12 @@ ms_conversions <- function(d,
                            convert_units_to,
                            convert_molecules){
 
-    library("dplyr", quietly = TRUE); select <- dplyr::select
+    library("dplyr", quietly = TRUE)
     
     requireNamespace('macrosheds', quietly = TRUE)
 
     ms_vars <- macrosheds::ms_vars_ts %>% 
-        select(variable_code, unit, molecule, valence) %>% 
+        dplyr::select(variable_code, unit, molecule, valence) %>% 
         distinct()
     
     #checks

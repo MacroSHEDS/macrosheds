@@ -78,7 +78,7 @@ ms_generate_attribution <- function(d, chem_source = 'both',
                                     abide_by = 'requirements only',
                                     write_to_dir = NULL){
 
-    library("dplyr", quietly = TRUE); select <- dplyr::select
+    library("dplyr", quietly = TRUE)
     
     if(! missing(d) && (! inherits(d, 'data.frame') | ! all(c('site_code', 'datetime', 'var') %in% colnames(d)))){
         stop('d must be a data.frame in MacroSheds format (with at least datetime, site_code, and var columns)')
@@ -169,7 +169,7 @@ ms_generate_attribution <- function(d, chem_source = 'both',
     }
     
     sitevars <- left_join(sitevars,
-                          select(macrosheds::ms_site_data, domain, site_code),
+                          dplyr::select(macrosheds::ms_site_data, domain, site_code),
                           by = 'site_code') %>% 
         filter(! is.na(domain)) %>% 
         distinct(domain, var)

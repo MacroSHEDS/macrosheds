@@ -54,11 +54,9 @@ ms_synchronize_timestep <- function(d,
                                     summary_fun,
                                     quiet = FALSE){
 
-    library("dplyr", quietly = TRUE); select <- dplyr::select
+    library("dplyr", quietly = TRUE)
 
-    if(!require('data.table', quietly = TRUE)) {
-      stop('the package "data.table" is required to use this function. run install.packages("data.table") and try again')
-    }
+    check_suggested_pkgs(c('data.table'))
 
     # Checks 
     if(nrow(d) < 2 || sum(! is.na(d$val)) < 2){
@@ -224,7 +222,7 @@ ms_synchronize_timestep <- function(d,
     d <- d_split %>%
         purrr::reduce(bind_rows) %>%
         arrange(site_code, var, datetime) %>%
-        select(datetime, site_code, var, val, ms_status, ms_interp, val_err)
+        dplyr::select(datetime, site_code, var, val, ms_status, ms_interp, val_err)
     
     return(d)
 }

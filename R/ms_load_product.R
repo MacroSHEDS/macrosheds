@@ -66,7 +66,7 @@ ms_load_product <- function(macrosheds_root,
                             sort_result = FALSE,
                             warn = TRUE){
 
-    library("dplyr", quietly = TRUE); select <- dplyr::select
+    library("dplyr", quietly = TRUE)
 
     requireNamespace('macrosheds', quietly = TRUE)
     
@@ -177,7 +177,7 @@ ms_load_product <- function(macrosheds_root,
     # List network files  
     if(!missing(networks)){
         netdom <- macrosheds::ms_site_data %>%
-            select(network, domain) %>%
+            dplyr::select(network, domain) %>%
             distinct(domain, .keep_all = TRUE)
         
         network_domains <- netdom %>%

@@ -8,7 +8,7 @@
 #' @author Spencer Rhea
 #' @param macrosheds_root character. Directory where watershed attribute files will be downloaded.
 #'    If this directory does not exist, it will be created. Does not have to be the same
-#'    as \code(macrosheds_root) provided to [ms_download_core_data()], but might as well be.
+#'    as \code{macrosheds_root} provided to [ms_download_core_data()], but might as well be.
 #' @param dataset character. This function can download each of the four collections of watershed attribute data
 #'    provided by MacroSheds. "summaries" will download a feather file containing watershed attributes
 #'    summarized across time and space (i.e. one value for each site). "time series" will download 6 feather
@@ -33,7 +33,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
                                 omit_climate_data = FALSE){
     
     requireNamespace('macrosheds', quietly = TRUE)
-    library('dplyr', quietly = TRUE); select <- dplyr::select
+    library('dplyr', quietly = TRUE)
 
     # figshare basic info handling
     if(inherits(try(macrosheds::file_ids_for_r_package2, silent = TRUE), 'try-error')){

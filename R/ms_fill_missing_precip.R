@@ -57,7 +57,7 @@ ms_fill_missing_precip <- function(precip,
                                    out_path = NULL,
                                    verbose = TRUE){
 
-    library("dplyr", quietly = TRUE); select <- dplyr::select
+    library("dplyr", quietly = TRUE)
     
     requireNamespace('macrosheds', quietly = TRUE)
 
@@ -88,7 +88,7 @@ ms_fill_missing_precip <- function(precip,
     if('val_err' %in% names(precip)){
         errors::errors(precip$val) <- precip$val_err
         precip <- precip %>%
-            select(-val_err)
+            dplyr::select(-val_err)
     }
     
 
@@ -127,7 +127,7 @@ ms_fill_missing_precip <- function(precip,
     
     
     status_cols <- precip %>%
-        select(datetime, site_code, ms_status, ms_interp) %>%
+        dplyr::select(datetime, site_code, ms_status, ms_interp) %>%
         group_by(datetime, site_code) %>%
         sm(summarize(
             ms_status = numeric_any(ms_status),
@@ -150,7 +150,7 @@ ms_fill_missing_precip <- function(precip,
     
     precip <- precip %>%
         ungroup() %>%
-        select(-ms_status, -ms_interp, -var) %>%
+        dplyr::select(-ms_status, -ms_interp, -var) %>%
         tidyr::pivot_wider(names_from = site_code,
                            values_from = val) %>%
         arrange(datetime)
@@ -160,7 +160,7 @@ ms_fill_missing_precip <- function(precip,
     precip_final <- precip
 
     just_data <- precip %>%
-        select(-datetime) %>%
+        dplyr::select(-datetime) %>%
         mutate(across(.fns = as.numeric))
         
     missing_data <- just_data
@@ -201,12 +201,12 @@ ms_fill_missing_precip <- function(precip,
                     mutate(distance = as.numeric(distance)/1000) %>%
                     filter(distance <= !!distance_threshold) %>%
                     as.data.frame() %>%
-                    select(-geometry) %>%
+                    dplyr::select(-geometry) %>%
                     filter(site_code !=  !!gauge)
                 
                 fill_dates <- precip %>%
                     filter(is.na(.data[[gauge]])) %>%
-                    select(datetime, !!gauge, !!rg_$site_code)
+                    dplyr::select(datetime, !!gauge, !!rg_$site_code)
                 
                 fill_dates_nrow <- nrow(fill_dates)
                 
@@ -225,7 +225,7 @@ ms_fill_missing_precip <- function(precip,
                         mutate(weight = distance/total_dis)
                     
                     weighted_val <- sm(fill_dates[r,] %>%
-                        select(-datetime) %>%
+                        dplyr::select(-datetime) %>%
                         tidyr::pivot_longer(cols = everything(), names_to = 'site_code') %>%
                         filter(!is.na(value)) %>%
                         left_join(rg_ts, by = 'site_code') %>%
@@ -236,13 +236,13 @@ ms_fill_missing_precip <- function(precip,
                 
                 new_name <- paste0('filled_', gauge)
                 fill_data <- fill_dates %>%
-                    select(datetime, !!gauge)  %>%
+                    dplyr::select(datetime, !!gauge)  %>%
                     rename(!!new_name := !!gauge)
                 
                 precip_final <- precip_final %>%
                     full_join(., fill_data, by = 'datetime') %>%
                     mutate(!!gauge := ifelse(is.na(.data[[gauge]]), .data[[new_name]], .data[[gauge]])) %>%
-                    select(-!!new_name)
+                    dplyr::select(-!!new_name)
                 
                 if(verbose){
                     print(glue::glue('{n} records filled for {g} using gauges: {fg}',
@@ -299,7 +299,7 @@ ms_fill_missing_precip <- function(precip,
             ab <- as.list(mod$coefficients)
             
             data_to_fill <- precip %>%
-                select(datetime, !!gauge, !!fill_gauge) %>%
+                dplyr::select(datetime, !!gauge, !!fill_gauge) %>%
                 filter(is.na(.data[[!!gauge]]))
             
             # Estimate fill values
@@ -315,13 +315,13 @@ ms_fill_missing_precip <- function(precip,
             data_to_fill <- data_to_fill %>%
                 mutate(!!gauge := ifelse(as.numeric(.data[[!!fill_gauge]]) == 0, 0, .data[[!!gauge]])) %>%
                 rename(!!new_name := !!gauge) %>%
-                select(datetime, !!new_name)
+                dplyr::select(datetime, !!new_name)
             
             
             precip_final <- precip_final %>%
                 full_join(., data_to_fill, by = 'datetime') %>%
                 mutate(!!gauge := ifelse(is.na(.data[[gauge]]), .data[[new_name]], .data[[gauge]])) %>%
-                select(-!!new_name)
+                dplyr::select(-!!new_name)
             
             if(verbose){
                 print(glue::glue('{n} records filled for {g} using {fg}',
@@ -366,7 +366,7 @@ ms_fill_missing_precip <- function(precip,
 # 
 # precip_test <- precip %>%
 #     ungroup() %>%
-#     select(-ms_status, -ms_interp, -var) %>%
+#     dplyr::select(-ms_status, -ms_interp, -var) %>%
 #     tidyr::pivot_wider(names_from = site_code,
 #                        values_from = val) %>%
 #     arrange(datetime) 
@@ -392,7 +392,7 @@ ms_fill_missing_precip <- function(precip,
 # 
 # 
 # data_to_fill_test <- data_to_fill %>%
-#     select(datetime, BaronRanch262)
+#     dplyr::select(datetime, BaronRanch262)
 # 
 # look=full_join(precip_test, data_to_fill_test, by = 'datetime')
 # 

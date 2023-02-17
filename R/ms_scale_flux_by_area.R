@@ -33,7 +33,7 @@
 
 ms_scale_flux_by_area <- function(d){
 
-    library("dplyr", quietly = TRUE); select <- dplyr::select
+    library("dplyr", quietly = TRUE)
 
     requireNamespace('macrosheds', quietly = TRUE)
     
@@ -42,14 +42,14 @@ ms_scale_flux_by_area <- function(d){
     sites <- unique(d$site_code)
     
     ws_areas <- site_data %>%
-        select(site_code, ws_area_ha) %>%
+        dplyr::select(site_code, ws_area_ha) %>%
         filter(site_code %in% !!sites)
     
     d <- d %>%
         left_join(ws_areas,
                   by = 'site_code') %>%
         mutate(val = val / ws_area_ha) %>%
-        select(-ws_area_ha)
+        dplyr::select(-ws_area_ha)
 
     return(d)
 }
