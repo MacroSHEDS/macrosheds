@@ -12,6 +12,7 @@
 #'    discharge in MacroSheds format and in units of mm or L/s, respectively.
 #' @param q_type character. Either 'precipitation' or 'discharge'.
 #' @param verbose logical. Default TRUE; prints more information to console.
+#' @param ws_area_scaled logical. Default TRUE; flux values are divided by watershed area.
 #' @return returns a \code{tibble} of stream or precipitation chemical flux for every timestep
 #'    where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep.
 #' @details
@@ -23,7 +24,8 @@
 #' If \code{q_type} is 'discharge', flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
 #' If \code{q_type} is 'precipitation', is calculated as: kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 #' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
-#' [ms_undo_scale_flux_by_area()].
+#' [ms_undo_scale_flux_by_area()], which can also be applied using the ws_area_scaled argument in
+#' this function.
 #'
 #' Before running [ms_calc_flux()], ensure both \code{q} and
 #' \code{chemistry} have the same time interval. See [ms_synchronize_timestep()].
@@ -48,7 +50,7 @@
 #'                      q = q,
 #'                      q_type = 'discharge')
 
-ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE) {
+ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = TRUE) {
 
     library("dplyr", quietly = TRUE)
 
@@ -215,6 +217,11 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE) {
         flux <- chem_split %>%
             purrr::reduce(bind_rows) %>%
             arrange(site_code, var, datetime)
+
+        # user can get unscaled flux if desired
+        if(!ws_area_scaled) {
+          flux <- ms_undo_scale_flux_by_area(flux)
+        }
 
         all_sites_flux <- rbind(all_sites_flux, flux)
 

@@ -64,7 +64,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
     }
 
     if(! grepl('(precipitation|discharge)', q_type)){
-        stop('q_type must be "discharge" or "precipitation"')
+        stop('q_type must be "discharge" or "precipitation for rsfme flux methods"')
     }
 
     if(q_type == 'precipitation' & any(!!method != "simple")) {
