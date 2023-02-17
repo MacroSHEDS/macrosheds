@@ -33,6 +33,8 @@
 
 ms_identify_usgs_gauges <- function(sites, lat = NULL, long = NULL, radius = 500) {
 
+    check_suggested_pkgs(c('dataRetrieval'))
+    
     library("dplyr", quietly = TRUE)
     
     if((is.null(lat) && !is.null(long)) || (!is.null(lat) && is.null(long))) {

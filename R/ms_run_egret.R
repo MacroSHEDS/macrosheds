@@ -47,9 +47,7 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
 
     library("dplyr", quietly = TRUE)
 
-    if(!require('EGRET')) {
-      stop('the package "EGRET" is required to use this function. run install.packages("EGRET") and try again')
-    }
+    check_suggested_pkgs(c('EGRET'))
 
     # Checks 
     if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(stream_chemistry))){
@@ -92,7 +90,7 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
     }
     
     ms_vars <- macrosheds::ms_vars_ts %>% 
-        select(variable_code, unit) %>% 
+        dplyr::select(variable_code, unit) %>% 
         distinct()
     
     site_code <- unique(stream_chemistry$site_code)
@@ -178,7 +176,7 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
         mutate(SinDY = sin(2*pi*DecYear),
                CosDY = cos(2*pi*DecYear))  %>%
         mutate(waterYear = ifelse(Month %in% c(10, 11, 12), lubridate::year(Date) + 1, lubridate::year(Date))) %>%
-        select(Name, Date, ConcLow, ConcHigh, Uncen, ConcAve, Julian, Month, Day,
+        dplyr::select(Name, Date, ConcLow, ConcHigh, Uncen, ConcAve, Julian, Month, Day,
                DecYear, MonthSeq, waterYear, SinDY, CosDY)
     
     # Set up EGRET Daily file 
@@ -211,7 +209,7 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
                LogQ = log(Q)) 
     
     Daily_file <- tibble::rowid_to_column(Daily_file, 'i') %>%
-        select(Name, Date, Q, Julian, Month, Day, DecYear, MonthSeq, Qualifier,
+        dplyr::select(Name, Date, Q, Julian, Month, Day, DecYear, MonthSeq, Qualifier,
                i, LogQ, Q7, Q30)
 
     # Set up INFO table 

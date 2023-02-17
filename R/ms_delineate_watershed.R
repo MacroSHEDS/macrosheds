@@ -182,25 +182,10 @@ ms_delineate_watershed <- function(lat,
 
     library("dplyr", quietly = TRUE)
 
-    # check for install of "suggested" package necessary for this function
-    if(!require('terra')) {
-      stop('the package "terra" is required to use this function. run install.packages("terra") and try again')
-    }
-    if(!require('mapview')) {
-      stop('the package "mapview" is required to use this function. run install.packages("mapview") and try again')
-    }
-    if(!require('elevatr')) {
-      stop('the package "elevatr" is required to use this function. run install.packages("elevatr") and try again')
-    }
-    if(!require('whitebox')) {
-      stop('the package "whitebox" is required to use this function. run install.packages("whitebox")',
-           ' and then install additional necessary binaries using whitebox::install_whitebox(), and then try again')
-    } else {
-      warning('for complete functionality make sure you have run whitebox::install_whitebox() in addition to',
-              'normal package install')
-    }
-    if(!require('raster')) {
-      stop('the package "raster" is required to use this function. run install.packages("raster") and try again')
+    check_suggested_pkgs(c('terra', 'elevatr', 'mapview', 'raster', 'whitebox'))
+    
+    if(! whitebox::check_whitebox_binary()){
+        stop('The whitebox package is not fully installed. Please run whitebox::install_whitebox()')
     }
 
     if(missing(write_dir) || is.null(write_dir)){

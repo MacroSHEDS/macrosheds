@@ -6,12 +6,9 @@
 
 # Function aliases 
 sw <- suppressWarnings
-sm <- suppressWarnings
+sm <- suppressMessages
 `%dopar%` <- foreach::`%dopar%`
 `%do%` <- foreach::`%do%`
-# end function aliases 
-
-
 
 # Unit conversion functions 
 parse_molecular_formulae <- function(formulae){
@@ -268,7 +265,7 @@ populate_implicit_NAs <- function(d,
         #        var = .$var[1]) %>%
         ungroup() %>%
         arrange(site_code, var, datetime) %>%
-        select(datetime, site_code, var, everything())
+        dplyr::select(datetime, site_code, var, everything())
     
     if(! any(is.na(complete_d$fill_marker))) return(d)
     
@@ -290,7 +287,7 @@ populate_implicit_NAs <- function(d,
             filter(values == TRUE) %>%
             # if(nrow(fill_runs) == 0) return(d)
             # midgap_rows <- fill_runs %>%
-            select(starts, stops) %>%
+            dplyr::select(starts, stops) %>%
             {purrr::map2(.x = .$starts,
                          .y = .$stops,
                          ~seq(.x, .y))} %>%
@@ -362,7 +359,7 @@ ms_linear_interpolate <- function(d, interval, max_samples_to_impute){
                 #unless not enough data in group; then do nothing
             } else val_err
         ) %>%
-        select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
+        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
         arrange(site_code, var, datetime)
     
     d_interp$ms_status[is.na(d_interp$ms_status)] = 0
@@ -415,7 +412,7 @@ ms_zero_interpolate <- function(d, interval, max_samples_to_impute){
                 #unless not enough data in group; then do nothing
             } else val
         ) %>%
-        select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
+        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
         arrange(site_code, var, datetime)
     
     d_interp$ms_status[is.na(d_interp$ms_status)] = 0
@@ -477,7 +474,7 @@ ms_nocb_interpolate <- function(d, interval, max_samples_to_impute){
                                   maxgap = max_samples_to_impute)
             } else val_err
         ) %>%
-        select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
+        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
         arrange(site_code, var, datetime)
     
     d_interp$ms_status[is.na(d_interp$ms_status)] = 0
@@ -539,7 +536,7 @@ ms_nocb_mean_interpolate <- function(d, interval, max_samples_to_impute){
                                   maxgap = max_samples_to_impute)
             } else val_err
         ) %>%
-        select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
+        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
         arrange(site_code, var, datetime)
     
     
@@ -556,7 +553,7 @@ ms_nocb_mean_interpolate <- function(d, interval, max_samples_to_impute){
     #use run length encoding to do the division quickly
     vals_new <- rle2(vals_interped) %>%
         mutate(values = values / lengths) %>%
-        select(lengths, values) %>%
+        dplyr::select(lengths, values) %>%
         as.list()
     class(vals_new) <- 'rle'
     vals_new <- inverse.rle(vals_new)
@@ -564,7 +561,7 @@ ms_nocb_mean_interpolate <- function(d, interval, max_samples_to_impute){
     #same for uncertainty
     err_new <- rle2(err_interped) %>%
         mutate(values = values / lengths) %>%
-        select(lengths, values) %>%
+        dplyr::select(lengths, values) %>%
         as.list()
     class(err_new) <- 'rle'
     err_new <- inverse.rle(err_new)
@@ -730,7 +727,7 @@ read_combine_feathers <- function(network,
     
     combined <- combined %>%
         mutate(val = errors::set_errors(val, val_err)) %>%
-        select(-val_err) %>%
+        dplyr::select(-val_err) %>%
         arrange(site_code, var, datetime)
     
     return(combined)
@@ -860,16 +857,10 @@ idw_log_var <- function(verbose,
 
 ms_parallelize <- function(maxcores = Inf){
 
-    # check for install of "suggested" package necessary for this function
-    if(!require('parallel')) {
-      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
-    }
-    if(!require('doParallel')) {
-      stop('the package "doParallel" is required to use this function. run install.packages("doParallel") and try again')
-    }
-
     #maxcores is the maximum number of processor cores to use for R tasks.
     #   you may want to leave a few aside for other processes.
+    
+    check_suggested_pkgs(c('parallel', 'doParallel'))
     
     clst <- NULL
     ncores <- min(parallel::detectCores(), maxcores)
@@ -910,11 +901,6 @@ shortcut_idw <- function(encompassing_dem,
                          verbose = FALSE,
                          macrosheds_root){
 
-    # check for install of "suggested" package necessary for this function
-    if(!require('parallel')) {
-      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
-    }
-
     #encompassing_dem: RasterLayer must cover the area of wshd_bnd and precip_gauges
     #wshd_bnd: sf polygon with columns site_code and geometry
     #   it represents a single watershed boundary
@@ -941,6 +927,8 @@ shortcut_idw <- function(encompassing_dem,
     #   interpolated too. only useable when output_varname = 'PRECIP SPECIAL CASE'
     #elev_agnostic: logical that determines whether elevation should be
     #   included as a predictor of the variable being interpolated
+    
+    check_suggested_pkgs(c('parallel'))
     
     if(output_varname != 'SPECIAL CASE PRECIP' && save_precip_quickref){
         stop(paste('save_precip_quickref can only be TRUE if output_varname',
@@ -1118,12 +1106,9 @@ shortcut_idw <- function(encompassing_dem,
 
 ms_unparallelize <- function(cluster_object){
 
-    # check for install of "suggested" package necessary for this function
-    if(!require('parallel')) {
-      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
-    }
-
     #if cluster_object is NULL, nothing will happen
+    
+    check_suggested_pkgs(c('parallel'))
     
     # tryCatch({print(site_code)},
     #         error=function(e) print('nope'))
@@ -1359,7 +1344,7 @@ shortcut_idw_concflux_v2 <- function(encompassing_dem,
     #matrixify input data so we can use matrix operations
     p_status <- precip_values$ms_status
     p_interp <- precip_values$ms_interp
-    p_matrix <- select(precip_values,
+    p_matrix <- dplyr::select(precip_values,
                        -ms_status,
                        -datetime,
                        -ms_interp) %>%
@@ -1367,7 +1352,7 @@ shortcut_idw_concflux_v2 <- function(encompassing_dem,
     
     c_status <- chem_values$ms_status
     c_interp <- chem_values$ms_interp
-    c_matrix <- select(chem_values,
+    c_matrix <- dplyr::select(chem_values,
                        -ms_status,
                        -datetime,
                        -ms_interp) %>%
@@ -1755,11 +1740,7 @@ approxjoin_datetime <- function(x,
     #     '1968-10-09 05:15:00', 'GSWS10', 'GN_alk', set_errors(6.009, 1), 1, 1) %>%
     #     mutate(datetime = as.POSIXct(datetime, tz = 'UTC'))
 
-
-    # check for install of "suggested" package necessary for this function
-    if(!require('data.table')) {
-      stop('the package "data.table" is required to use this function. run install.packages("data.table") and try again')
-    }
+    check_suggested_pkgs(c('data.table'))
     
     #tests
     if('site_code' %in% colnames(x) && length(unique(x$site_code)) > 1){
@@ -1904,7 +1885,7 @@ approxjoin_datetime <- function(x,
     joined <- tibble::as_tibble(joined) %>%
         mutate(val_x = errors::set_errors(val_x, err_x),
                val_y = errors::set_errors(val_y, err_y)) %>%
-        select(-err_x, -err_y)
+        dplyr::select(-err_x, -err_y)
     # mutate(var = !!varname)
     
     # if(x_is_flowtibble) joined <- rename(joined,
@@ -1920,7 +1901,7 @@ approxjoin_datetime <- function(x,
     #     joined <- rename(joined, val = matches('^val_[xy]$'))
     # }
     
-    joined <- select(joined,
+    joined <- dplyr::select(joined,
                      datetime,
                      # matches('^val_?[xy]?$'),
                      # any_of('flow'),
@@ -1995,7 +1976,7 @@ resolve_datetime <- function(d,
         }
         
         dt_tb <- d %>%
-            select(one_of(datetime_colnames[i])) %>%
+            dplyr::select(one_of(datetime_colnames[i])) %>%
             tidyr::extract(col = !!datetime_colnames[i],
                            into = dt_comps,
                            regex = dt_regex,
@@ -2052,7 +2033,7 @@ resolve_datetime <- function(d,
                    with_tz(tz = 'UTC'))
     d <- d %>%
         bind_cols(dt_tb) %>%
-        select(-one_of(datetime_colnames), datetime) %>% #in case 'datetime' is in datetime_colnames
+        dplyr::select(-one_of(datetime_colnames), datetime) %>% #in case 'datetime' is in datetime_colnames
         relocate(datetime)
     
     return(d)
@@ -2124,7 +2105,7 @@ identify_sampling <- function(df,
         # var_name <- stringr::str_split_fixed(data_cols[p], '__', 2)[1]
         
         # df_var <- df %>%
-        #     select(datetime, !!var_name := .data[[data_cols[p]]], site_code)
+        #     dplyr::select(datetime, !!var_name := .data[[data_cols[p]]], site_code)
         
         all_sites <- tibble()
         for(i in 1:length(site_codes)){
@@ -2473,8 +2454,8 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
     
     custom_acks <- ts_attrib %>% 
         filter(! is.na(IR_acknowledgement_text)) %>% 
-        select(domain, IR_acknowledgement_text) %>% 
-        left_join(select(macrosheds::ms_site_data, domain, network_fullname, domain_fullname),
+        dplyr::select(domain, IR_acknowledgement_text) %>% 
+        left_join(dplyr::select(macrosheds::ms_site_data, domain, network_fullname, domain_fullname),
                   by = 'domain') %>% 
         distinct() %>% 
         mutate(network_fullname = ifelse(network_fullname == domain_fullname, '', network_fullname)) %>% 
@@ -2483,7 +2464,7 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
     
     relevant_deets <- ts_attrib %>% 
         distinct(domain, funding) %>% 
-        left_join(select(macrosheds::ms_site_data, domain, network_fullname, domain_fullname),
+        left_join(dplyr::select(macrosheds::ms_site_data, domain, network_fullname, domain_fullname),
                   by = 'domain') %>% 
         distinct() %>% 
         # bind_rows(tibble(domain='a', domain_fullname = 'a', network_fullname='a', funding='NSF awards: 345, 3535')) %>%
@@ -2542,7 +2523,7 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
                title = stringr::str_extract(citation, '(?<=\\([0-9]{4}[a-z]{0,2}\\)\\. ).{1,999}?(?=(?:\\.| ver |\\},\\\n|$))'),
                title = stringr::str_replace_all(title, '[[[:punct:]] ]', ''),
                title = tolower(title)) %>% 
-        select(authors, pubyr, title)
+        dplyr::select(authors, pubyr, title)
             
     #match records to citations
     matches <- c()
@@ -2587,13 +2568,13 @@ format_IR <- function(ts_attrib, ws_attr = FALSE, abide_by){
     
     noncomm <- ts_attrib %>% 
         filter(grepl('NonCommercial', license_type)) %>% 
-        select(network, domain, macrosheds_prodname) %>% 
+        dplyr::select(network, domain, macrosheds_prodname) %>% 
         distinct()
     
     sharealike <- ts_attrib %>% 
         filter(grepl('ShareAlike', license_type)) %>% 
         mutate(may_disregard_with_permission = ! is.na(license_sharealike) & license_sharealike == 'p') %>% 
-        select(network, domain, macrosheds_prodname, may_disregard_with_permission, contact) %>% 
+        dplyr::select(network, domain, macrosheds_prodname, may_disregard_with_permission, contact) %>% 
         distinct()
     
     if(ws_attr){
@@ -2605,42 +2586,42 @@ format_IR <- function(ts_attrib, ws_attr = FALSE, abide_by){
         
     notify_intent_s <- ts_attrib %>% 
         filter(IR_notify_of_intentions == 's') %>% 
-        select(network, domain, macrosheds_prodname, contact) %>% 
+        dplyr::select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     notify_intent_m <- ts_attrib %>% 
         filter(IR_notify_of_intentions == 'm') %>% 
-        select(network, domain, macrosheds_prodname, contact) %>% 
+        dplyr::select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     notify_dist_s <- ts_attrib %>% 
         filter(IR_notify_on_distribution == 's') %>% 
-        select(network, domain, macrosheds_prodname, contact) %>% 
+        dplyr::select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     notify_dist_m <- ts_attrib %>% 
         filter(IR_notify_on_distribution == 'm') %>% 
-        select(network, domain, macrosheds_prodname, contact) %>% 
+        dplyr::select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     provide_access_s <- ts_attrib %>% 
         filter(IR_provide_online_access == 's') %>% 
-        select(network, domain, macrosheds_prodname, contact) %>% 
+        dplyr::select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     provide_access_m <- ts_attrib %>% 
         filter(IR_provide_online_access == 'm') %>% 
-        select(network, domain, macrosheds_prodname, contact) %>% 
+        dplyr::select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     consult_s <- ts_attrib %>% 
         filter(IR_collaboration_consultation == 's') %>% 
-        select(network, domain, macrosheds_prodname, contact) %>% 
+        dplyr::select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     consult_m <- ts_attrib %>% 
         filter(IR_collaboration_consultation == 'm') %>% 
-        select(network, domain, macrosheds_prodname, contact) %>% 
+        dplyr::select(network, domain, macrosheds_prodname, contact) %>% 
         distinct()
     
     ir <- list()
@@ -2696,6 +2677,22 @@ attrib_output_write <- function(attrib, write_to_dir){
                        file.path(write_to_dir, 'ms_bibliography.bib'))
 }
 
+check_suggested_pkgs <- function(pkgs){
+    
+    #pkgs: character vector of package names
+    
+    loaded <- rep(NA, length(pkgs))
+    for(i in seq_along(pkgs)){
+        loaded[i] <- sw(require(pkgs[i], quietly = TRUE, character.only = TRUE))
+    }
+    
+    if(any(! loaded)){
+        stop(glue::glue('Additional package(s) required to use this function. ',
+                        'Run install.packages(c("{p}")) and try again.',
+                        p = paste(pkgs[! loaded], collapse = '", "')))
+    }
+}
+
 # RSFME stuff
 # rsfme: general helpers
 wtr_yr <- function(dates, start_month = 10) {
@@ -2710,7 +2707,7 @@ interpolate_con_to_q <- function(chem_df, q_df){
  join_df <- full_join(chem_df, q_df, by = 'date') %>%
    arrange(date) %>%
    mutate(interp = 0) %>%
-    select(date, con, q_lps, interp)
+    dplyr::select(date, con, q_lps, interp)
  join_df$interp[is.na(join_df$con)] <- 1
 
  #interpolate chem to match q
@@ -2724,12 +2721,12 @@ prep_usgs_for_riverload <- function(chem_df, q_df){
     conv_q <- q_df %>%
         mutate(site_code = !!site_code,
                flow = Q/35.3147) %>% # convert cfs to cubic meters per second)
-        select(datetime, flow) %>%
+        dplyr::select(datetime, flow) %>%
         data.frame()
 
     conv_c <- chem_df %>%
         mutate(datetime = as.POSIXct(date, format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
-        select(datetime, con) %>%
+        dplyr::select(datetime, con) %>%
         data.frame()
 
     db <- full_join(conv_q, conv_c, by = "datetime") %>%
@@ -2852,7 +2849,7 @@ dt_to_wy_quarter <- function(datetime) {
                     summarize(n_interp = sum(ms_interp == 1),
                               n_no_interp = sum(ms_interp == 0)) %>%
                     mutate(interp_ratio = n_interp/(n_interp+n_no_interp)) %>%
-                    select(month, interp_ratio)
+                    dplyr::select(month, interp_ratio)
 
              return(interp_ratio)
 
@@ -2884,7 +2881,7 @@ dt_to_wy_quarter <- function(datetime) {
                      summarize(n_stat = sum(ms_status == 1),
                                n_no_stat = sum(ms_status == 0)) %>%
                      mutate(status_ratio = n_stat/(n_stat+n_no_stat)) %>%
-                     select(month, status_ratio)
+                     dplyr::select(month, status_ratio)
 
                  return(status_ratio)
 
@@ -2896,7 +2893,7 @@ dt_to_wy_quarter <- function(datetime) {
 
              if(period == 'annual'){
                 present <- trimmed_df %>%
-                    select(val) %>%
+                    dplyr::select(val) %>%
                     na.omit() %>%
                     nrow()
 
@@ -2908,12 +2905,12 @@ dt_to_wy_quarter <- function(datetime) {
                  missing_ratio <- trimmed_df %>%
                      mutate(month = lubridate::month(datetime)) %>%
                      group_by(month) %>%
-                     select(datetime, val) %>%
+                     dplyr::select(datetime, val) %>%
                      na.omit() %>%
                      summarize(n = n()) %>%
                      mutate(full_days = days_in_month(month),
                             missing_ratio = (full_days-n)/full_days) %>%
-                     select(month, missing_ratio)
+                     dplyr::select(month, missing_ratio)
 
                  return(missing_ratio)
 
@@ -2991,7 +2988,7 @@ prep_raw_for_riverload <- function(chem_df, q_df, datecol = 'date'){
     conv_q <- q_df %>%
                 mutate(datetime = as.POSIXct(get(datecol), format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
                 mutate(flow = q_lps*0.001) %>% # convert lps to cubic meters per second)
-                select(datetime, flow) %>%
+                dplyr::select(datetime, flow) %>%
                 arrange(datetime) %>%
                 data.frame()
     if(lubridate::month(conv_q$datetime[1]) == 9 & lubridate::day(conv_q$datetime[1]) == 30){
@@ -3000,7 +2997,7 @@ prep_raw_for_riverload <- function(chem_df, q_df, datecol = 'date'){
 
     conv_c <- chem_df %>%
                 mutate(datetime = as.POSIXct(get(datecol), format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
-                select(datetime, con) %>%
+                dplyr::select(datetime, con) %>%
                 data.frame()
 
     db <- full_join(conv_q, conv_c, by = "datetime") %>%
@@ -3189,9 +3186,9 @@ generate_residual_corrected_con <- function(chem_df, q_df, datecol = 'date', sit
 
         rating_filled_df <- q_df %>%
           mutate(con_reg = 10^(intercept+(slope*log10(q_lps)))) %>%
-          select(all_of(datecol), con_reg, q_lps) %>%
+          dplyr::select(all_of(datecol), con_reg, q_lps) %>%
           full_join(., chem_df, by = datecol) %>%
-          select(site_code, all_of(datecol), con, con_reg, q_lps, wy)  %>%
+          dplyr::select(site_code, all_of(datecol), con, con_reg, q_lps, wy)  %>%
             mutate(res = con_reg-con,
                    res = imputeTS::na_interpolation(res),
                    con_com = con_reg-res,
@@ -3208,7 +3205,7 @@ calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no 
 
         if(is.null(period)){
         flux_from_comp <- rating_filled_df %>%
-            select(datetime, con_com, q_lps, wy) %>%
+            dplyr::select(datetime, con_com, q_lps, wy) %>%
             na.omit() %>%
             mutate(flux = con_com*q_lps*86400*(1/area)*1e-6) %>%
             group_by(wy) %>%
@@ -3232,7 +3229,7 @@ calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no 
 # functions for adapt_ms_egret
 detect_record_break <- function(data) {
     data_time <- data %>%
-      select(Date, Julian) %>%
+      dplyr::select(Date, Julian) %>%
       # how many days between this day and the next
       mutate(days_gap = lead(Julian, 1) - Julian)
     return(data_time)
@@ -3266,9 +3263,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                            site_data = NULL, kalman = FALSE,
                            datecol = 'date', minNumObs = 2, minNumUncen = 2, gap_period = 730){
 
-    if(!require('EGRET')) {
-      stop('the package "EGRET" is required to use this function. run install.packages("EGRET") and try again')
-    }
+    check_suggested_pkgs(c('EGRET'))
 
     # TODO:  reorder site data args to make fully optional
 
@@ -3547,7 +3542,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
             mutate(SinDY = sin(2*pi*DecYear),
                    CosDY = cos(2*pi*DecYear))  %>%
             mutate(waterYear = ifelse(Month %in% c(10, 11, 12), lubridate::year(Date) + 1, lubridate::year(Date))) %>%
-            select(Name, Date, ConcLow, ConcHigh, Uncen, ConcAve, Julian, Month, Day,
+            dplyr::select(Name, Date, ConcLow, ConcHigh, Uncen, ConcAve, Julian, Month, Day,
                    DecYear, MonthSeq, waterYear, SinDY, CosDY)
 
         # Set up EGRET Daily file
@@ -3612,7 +3607,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                    LogQ = log(Q))
 
         Daily_file <- tibble::rowid_to_column(Daily_file, 'i') %>%
-            select(Name, Date, Q, Julian, Month, Day, DecYear, MonthSeq, Qualifier,
+            dplyr::select(Name, Date, Q, Julian, Month, Day, DecYear, MonthSeq, Qualifier,
                    i, LogQ, Q7, Q30)
 
         # Set up INFO table

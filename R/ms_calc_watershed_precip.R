@@ -78,15 +78,7 @@
 #' @importFrom data.table ':='
 #' @export
 #' @examples
-#' ### Load some MacroSheds data:
-#' ms_root = 'data/macrosheds'
-#' ms_download_core_data(macrosheds_root = ms_root,
-#'                       domains = 'hbef')
-#' p <- ms_load_product(macrosheds_root = ms_root, 
-#'                      prodname = 'precipitation', 
-#'                      domains = 'hbef')
-#'                      
-#' CONTINUE EXAMPLE HERE
+#' See vignette: https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_interpolate_precip.md
 
 ms_calc_watershed_precip <- function(precip,
                                      ws_boundary,
@@ -100,16 +92,7 @@ ms_calc_watershed_precip <- function(precip,
 
     library("dplyr", quietly = TRUE)
 
-    # check for install of "suggested" package necessary for this function
-    if(!require('terra')) {
-      stop('the package "terra" is required to use this function. run install.packages("terra") and try again')
-    }
-    if(!require('elevatr')) {
-      stop('the package "elevatr" is required to use this function. run install.packages("elevatr") and try again')
-    }
-    if(!require('parallel')) {
-      stop('the package "parallel" is required to use this function. run install.packages("parallel") and try again')
-    }
+    check_suggested_pkgs(c('terra', 'elevatr', 'parallel', 'data.table', 'raster'))
 
     precip_only <- missing(pchem)
     pchem_only <- missing(precip)
@@ -117,7 +100,7 @@ ms_calc_watershed_precip <- function(precip,
     requireNamespace('macrosheds', quietly = TRUE)
     
     ms_vars <- macrosheds::ms_vars_ts %>% 
-        select(variable_code, flux_convertible) %>% 
+        dplyr::select(variable_code, flux_convertible) %>% 
         distinct()
         
     #### Load in data if file path supplied ####
@@ -208,7 +191,7 @@ ms_calc_watershed_precip <- function(precip,
     if(! pchem_only){
         if(! all(rg$site_code %in% unique(precip$site_code))){
             missing_gauge <- rg$site_code[! rg$site_code %in% unique(precip$site_code)]
-            stop(paste0('a precip gauge location exists in precip_gauge for the gauge(s): ', 
+            stop(paste0('a precip gauge location exists in precip_gauge for the gauge(s): ',
                               paste0(missing_gauge, collapse = ', '),
                               ', but no corresponding data exist in precip.',
                               ' Either add data to precip for these gauges or',
@@ -221,11 +204,11 @@ ms_calc_watershed_precip <- function(precip,
                          ' Either add these gauge(s) to precip_gauge or remove corresponding data from precip.'))
         }
     }
-    
+
     if(! precip_only){
         if(! all(rg$site_code %in% unique(pchem$site_code))){
             missing_gauge <- rg$site_code[! rg$site_code %in% unique(pchem$site_code)]
-            stop(paste0('a gauge location exists in precip_gauge for the gauge(s): ', 
+            stop(paste0('a gauge location exists in precip_gauge for the gauge(s): ',
                               paste0(missing_gauge, collapse = ', '),
                               ', but no corresponding data exist in pchem',
                               ' Either add data to pchem for these gauges or',
@@ -251,13 +234,13 @@ ms_calc_watershed_precip <- function(precip,
     if(! pchem_only){
         errors::errors(precip$val) <- precip$val_err
         precip <- precip %>%
-            select(-val_err)
+            dplyr::select(-val_err)
     }
     
     if(! precip_only){
         errors::errors(pchem$val) <- pchem$val_err
         pchem <- pchem %>%
-            select(-val_err)
+            dplyr::select(-val_err)
     }
     
     if(pchem_only) precip <- NULL
@@ -303,7 +286,7 @@ ms_calc_watershed_precip <- function(precip,
     if(! pchem_only){
         
         status_cols <- precip %>%
-            select(datetime, ms_status, ms_interp) %>%
+            dplyr::select(datetime, ms_status, ms_interp) %>%
             group_by(datetime) %>%
             summarize(
                 ms_status = numeric_any(ms_status),
@@ -319,7 +302,7 @@ ms_calc_watershed_precip <- function(precip,
         precip$val[is.na(day_durations_byproduct)] <- NA
         
         precip <- precip %>%
-            select(-ms_status, -ms_interp, -var) %>%
+            dplyr::select(-ms_status, -ms_interp, -var) %>%
             tidyr::pivot_wider(names_from = site_code,
                                values_from = val) %>%
             left_join(status_cols, #they get lumped anyway
@@ -348,7 +331,7 @@ ms_calc_watershed_precip <- function(precip,
         
         #this avoids a lot of slow summarizing
         status_cols <- pchem %>%
-            select(datetime, ms_status, ms_interp) %>%
+            dplyr::select(datetime, ms_status, ms_interp) %>%
             group_by(datetime) %>%
             summarize(
                 ms_status = numeric_any(ms_status),
@@ -364,7 +347,7 @@ ms_calc_watershed_precip <- function(precip,
             #clean data and arrange for matrixification
             pchem_setlist[[i]] <- pchem %>%
                 filter(var == v) %>%
-                select(-var, -ms_status, -ms_interp) %>%
+                dplyr::select(-var, -ms_status, -ms_interp) %>%
                 tidyr::pivot_wider(names_from = site_code,
                                    values_from = val) %>%
                 left_join(status_cols,
@@ -501,7 +484,7 @@ ms_calc_watershed_precip <- function(precip,
             # #restore original varnames by site and dt
             # ws_mean_precip <- ws_mean_precip %>%
             #     arrange(datetime) %>%
-            #     select(-var) %>% #just a placeholder
+            #     dplyr::select(-var) %>% #just a placeholder
             #     left_join(precip_varnames,
             #               by = c('datetime', 'site_code'))
             
@@ -637,7 +620,7 @@ ms_calc_watershed_precip <- function(precip,
             if(! pchem_only){
                 
                 ws_mean_pflux <- ws_mean_chemflux %>%
-                    select(-concentration) %>%
+                    dplyr::select(-concentration) %>%
                     rename(val = flux) %>%
                     arrange(var, datetime)
                 
@@ -651,7 +634,7 @@ ms_calc_watershed_precip <- function(precip,
             }
             
             ws_mean_pchem <- ws_mean_chemflux %>%
-                select(-any_of('flux')) %>%
+                dplyr::select(-any_of('flux')) %>%
                 rename(val = concentration) %>%
                 arrange(var, datetime)
             

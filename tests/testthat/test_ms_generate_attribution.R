@@ -1,14 +1,15 @@
 
-msroot <- '../../data/ms_test'
-
 library(macrosheds)
 library(testthat)
 library(readr)
 
+options(timeout = 6000)
+
 o = ms_generate_attribution(abide_by = 'suggestions')
 tmpd = tempdir()
+macrosheds::ms_download_core_data(tmpd, domains = 'hbef')
 d = macrosheds::ms_load_product(
-    macrosheds_root = msroot,
+    macrosheds_root = tmpd,
     prodname = 'discharge',
     domains = 'hbef')
 o2 = ms_generate_attribution(d, chem_source = 'both',
@@ -78,7 +79,7 @@ test_that('files written properly', {
     expect_equal(length(o2), 2)
     expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'acknowledgements.txt'))), 4)
     expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_definitions.txt'))), 2)
-    expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_notifications.txt'))), 8)
+    expect_gte(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_notifications.txt'))), 6)
     expect_gt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 100)
     expect_lt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 200)
 })

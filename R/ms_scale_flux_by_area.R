@@ -42,7 +42,7 @@ ms_scale_flux_by_area <- function(d){
     sites <- unique(d$site_code)
     
     ws_areas <- site_data %>%
-        select(site_code, ws_area_ha) %>%
+        dplyr::select(site_code, ws_area_ha) %>%
         filter(site_code %in% !!sites)
     
     d <- d %>%
@@ -50,7 +50,7 @@ ms_scale_flux_by_area <- function(d){
                   by = 'site_code') %>%
         # suppress 'Ops: non-errors' warning
         mutate(val = sw(val / ws_area_ha)) %>%
-        select(-ws_area_ha)
+        dplyr::select(-ws_area_ha)
 
     return(d)
 }

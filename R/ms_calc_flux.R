@@ -117,7 +117,7 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = 
         errors::errors(chemistry$val) <- chemistry$val_err
 
         chemistry <- chemistry %>%
-            select(-val_err)
+            dplyr::select(-val_err)
 
     } else if(all(errors::errors(chemistry$val) == 0)){
         errors::errors(chemistry$val) <- 0
@@ -127,7 +127,7 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = 
         errors::errors(q$val) <- q$val_err
 
         q <- q %>%
-            select(-val_err)
+            dplyr::select(-val_err)
 
     } else if(all(errors::errors(q$val) == 0)){
         errors::errors(q$val) <- 0
@@ -194,7 +194,7 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = 
                            val = val_x * val_y * errors::as.errors(q_interval) / errors::as.errors(1e6),
                            ms_status = numeric_any_v(ms_status_x, ms_status_y),
                            ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
-                    select(-starts_with(c('site_code_', 'var_', 'val_',
+                    dplyr::select(-starts_with(c('site_code_', 'var_', 'val_',
                                           'ms_status_', 'ms_interp_'))) %>%
                     filter(! is.na(val)) %>% #should be redundant
                   arrange(datetime) %>%
@@ -207,7 +207,7 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = 
                            val = val_x * val_y / errors::as.errors(100),
                            ms_status = numeric_any_v(ms_status_x, ms_status_y),
                            ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
-                    select(-starts_with(c('site_code_', 'var_', 'val_',
+                    dplyr::select(-starts_with(c('site_code_', 'var_', 'val_',
                                           'ms_status_', 'ms_interp_'))) %>%
                     filter(! is.na(val)) %>% #should be redundant
                     arrange(datetime)

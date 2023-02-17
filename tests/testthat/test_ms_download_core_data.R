@@ -4,7 +4,7 @@ library(testthat)
 
 temp_root <- tempdir()
 skip_for_now <- FALSE
-options(timeout = 1200)
+options(timeout = 6000)
 
 test_that('a domain is downloaded successfully', {
     

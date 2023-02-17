@@ -12,13 +12,27 @@
 #'    refer to them separately when loading time-series data vs. watershed attribute data.
 #' @param prodname character. A MacroSheds product name. Files associated with this
 #'    product name will be read and combined. Available prodnames are (for core time-series products):
-#'    discharge, stream_chemistry, stream_flux_inst, precipitation,
-#'    precip_chemistry, precip_flux_inst, (and for watershed attribute products:)
-#'    ws_attr_summaries, ws_attr_timeseries:climate,
-#'    ws_attr_timeseries:hydrology, ws_attr_timeseries:landcover,
-#'    ws_attr_timeseries:parentmaterial, ws_attr_timeseries:terrain,
-#'    ws_attr_timeseries:vegetation
-#'    note that all products with flux_inst and flux_inst_scaled suffixes cannot be loaded using
+#'
+#' + discharge
+#' + stream_chemistry
+#' + stream_flux_inst
+#' + precipitation,
+#' + precip_chemistry
+#' + precip_flux_inst
+#'
+#' (and for watershed attribute products):
+#'
+#' + ws_attr_summaries
+#' + ws_attr_timeseries:climate
+#' + ws_attr_timeseries:hydrology
+#' + ws_attr_timeseries:landcover
+#' + ws_attr_timeseries:parentmaterial
+#' + ws_attr_timeseries:terrain
+#' + ws_attr_timeseries:vegetation
+#' + ws_attr_CAMELS_summaries
+#' + ws_attr_CAMELS_Daymet_forcings
+#'
+#'    note that all products with flux_inst suffixes cannot be loaded using
 #'    this function, but can be calculated from component products using [ms_calc_flux()]
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
@@ -67,7 +81,8 @@ ms_load_product <- function(macrosheds_root,
                          'ws_attr_summaries', 'ws_attr_timeseries:climate',
                          'ws_attr_timeseries:hydrology', 'ws_attr_timeseries:landcover',
                          'ws_attr_timeseries:parentmaterial', 'ws_attr_timeseries:terrain',
-                         'ws_attr_timeseries:vegetation')
+                         'ws_attr_timeseries:vegetation', 'ws_attr_CAMELS_Daymet_forcings',
+                         'ws_attr_CAMELS_summaries')
 
     if(missing(macrosheds_root)){
         stop('macrosheds_root must be supplied.')
@@ -125,12 +140,18 @@ ms_load_product <- function(macrosheds_root,
     if(grepl('^ws_attr_', prodname)){
         
         if(prodname == 'ws_attr_summaries') msfile <- 'watershed_summaries.feather'
+        if(prodname == 'ws_attr_CAMELS_Daymet_forcings') msfile <- 'Daymet_forcings_CAMELS.feather'
+        if(prodname == 'ws_attr_CAMELS_summaries') msfile <- 'watershed_summaries_CAMELS.feather'
         
         if(grepl('^ws_attr_timeseries', prodname)){
             attr_set <- stringr::str_extract(prodname, '(?<=ws_attr_timeseries:).*')
             msfile <- paste0('spatial_timeseries_', attr_set, '.feather')
         }
         msfile <- file.path(macrosheds_root, msfile)
+        
+        if(! file.exists(msfile)){
+            stop('No file found for ', prodname, '. Download it with ms_download_ws_attr, or check your macrosheds_root.')
+        }
         
         # Create size warning
         file_sizes <- file.info(msfile)$size
@@ -144,7 +165,7 @@ ms_load_product <- function(macrosheds_root,
                                        possible_chars = c('y', 'n'))
             
             if(resp == 'n'){
-                message('Aborting dataset load. Sorry, but there\'s no easy way to make this one smaller. Contact us.')
+                message('Aborting dataset load. Sorry, but there\'s no easy way to make this one smaller. Contact us at mail@macrosheds.org')
                 return(invisible())
             }
         }
@@ -170,7 +191,7 @@ ms_load_product <- function(macrosheds_root,
     # List network files  
     if(!missing(networks)){
         netdom <- macrosheds::ms_site_data %>%
-            select(network, domain) %>%
+            dplyr::select(network, domain) %>%
             distinct(domain, .keep_all = TRUE)
         
         network_domains <- netdom %>%
