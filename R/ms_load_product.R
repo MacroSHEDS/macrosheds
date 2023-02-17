@@ -86,11 +86,11 @@ ms_load_product <- function(macrosheds_root,
     }
 
     if(grepl('flux', prodname)) {
-      stop(paste0('this flux product is not directly available thru [ms_load_product()] but can be',
-                  ' created using component MacroSheds products and [ms_calc_flux()]. Use load product',
-                  ' to retrieve discharge and chemistry data, and [ms_calc_flux()] to produce instantaneous',
-                  ' flux estimates (scaled or not scaled to watershed area) for your target precipitation or',
-                  ' stream data.'))
+      stop(paste('this flux product is not directly available thru [ms_load_product()] but can be',
+               ' created using component MacroSheds products and [ms_calc_flux()]. Use load product',
+               ' to retrieve discharge and chemistry data, and [ms_calc_flux()] to produce instantaneous',
+               ' flux estimates (scaled or not scaled to watershed area) for the target precipitation or',
+               ' stream data.', sep = "\n"))
     }
 
     if(! missing(networks)){
