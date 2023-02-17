@@ -85,7 +85,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
         ws_attr_fp <- file.path(macrosheds_root, paste0(filename, '.feather'))
 
         if(!quiet){
-            print(glue::glue('Downloading dataset type: {ds} ({ii}/{iN}; Figshare code {rc})',
+            print(glue::glue('Downloading dataset type: {ds} ({ii}/{iN}; download id {rc})',
                              ds = dataset,
                              ii = i,
                              iN = n_downloads,
