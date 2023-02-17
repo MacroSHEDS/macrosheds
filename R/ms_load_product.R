@@ -18,6 +18,8 @@
 #'    ws_attr_timeseries:hydrology, ws_attr_timeseries:landcover,
 #'    ws_attr_timeseries:parentmaterial, ws_attr_timeseries:terrain,
 #'    ws_attr_timeseries:vegetation
+#'    note that all products with flux_inst and flux_inst_scaled suffixes cannot be loaded using
+#'    this function, but can be calculated from component products using [ms_calc_flux()]
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
 #'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
