@@ -57,15 +57,17 @@ ms_load_product <- function(macrosheds_root,
 
     requireNamespace('macrosheds', quietly = TRUE)
     
-    # Checks 
-    avail_prodnames <- c('discharge', 'stream_chemistry', 'stream_flux_inst_scaled',
-                         'precipitation', 'precip_chemistry', 'precip_flux_inst_scaled',
+    # Checks
+    avail_prodnames <- c('discharge', 'stream_chemistry',
+                         'stream_flux_inst', 'stream_flux_inst_scaled',
+                         'precipitation', 'precip_chemistry',
+                         'precip_flux_inst', 'precip_flux_inst_scaled',
                          'ws_attr_summaries', 'ws_attr_timeseries:climate',
                          'ws_attr_timeseries:hydrology', 'ws_attr_timeseries:landcover',
                          'ws_attr_timeseries:parentmaterial', 'ws_attr_timeseries:terrain',
                          'ws_attr_timeseries:vegetation')
 
-    if(missing(macrosheds_root)){ 
+    if(missing(macrosheds_root)){
         stop('macrosheds_root must be supplied.')
     }
     if(! dir.exists(macrosheds_root)){
@@ -82,6 +84,15 @@ ms_load_product <- function(macrosheds_root,
                     paste(avail_prodnames, collapse = '", "'),
                     '".'))
     }
+
+    if(grepl('flux', prodname)) {
+      stop(paste0('this flux product is not directly available thru [ms_load_product()] but can be',
+                  ' created using component MacroSheds products and [ms_calc_flux()]. Use load product',
+                  ' to retrieve discharge and chemistry data, and [ms_calc_flux()] to produce instantaneous',
+                  ' flux estimates (scaled or not scaled to watershed area) for your target precipitation or',
+                  ' stream data.'))
+    }
+
     if(! missing(networks)){
         ntws <- unique(macrosheds::ms_site_data$network)
         if(any(! networks %in% ntws)){
