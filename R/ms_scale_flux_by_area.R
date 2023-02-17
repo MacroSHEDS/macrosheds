@@ -48,7 +48,8 @@ ms_scale_flux_by_area <- function(d){
     d <- d %>%
         left_join(ws_areas,
                   by = 'site_code') %>%
-        mutate(val = val / ws_area_ha) %>%
+        # suppress 'Ops: non-errors' warning
+        mutate(val = sw(val / ws_area_ha)) %>%
         select(-ws_area_ha)
 
     return(d)
