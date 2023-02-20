@@ -37,18 +37,18 @@
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
 #'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
-#'    To see a catalog of variables, visit macrosheds.org or see [MacroSheds documentation](EDI link pending).
+#'    To see a catalog of variables, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
 #' @param networks character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds documentation](EDI link pending).
+#'    networks, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
 #' @param domains character vector. MacroSheds domains to load; optional. To see a catalog of
-#'    domains, visit macrosheds.org or see [MacroSheds documentation](EDI link pending).
+#'    domains, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
 #' @param site_codes character vector. MacroSheds sites to load, optional. To see a catalog of
-#'    site_codes, visit macrosheds.org or see [MacroSheds documentation](EDI link pending).
+#'    site_codes, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
 #' @param sort_result logical. Ignored if requesting watershed attributes.
 #'    If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
 #'    datetime. this may add considerable loading time for large datasets.
 #' @param warn logical. If TRUE, function will not load more than 100 MB without permission.
-#' @return Returns a \code{tibble} in MacroSheds format. See [MacroSheds documentation](EDI link pending) for definitions.
+#' @return Returns a \code{tibble} in MacroSheds format. See [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262) for definitions.
 #' @export
 #' @seealso [ms_download_core_data()], [ms_download_ws_attr()], [ms_load_spatial_product()], [ms_load_variables()], [ms_load_sites()]
 #' @examples

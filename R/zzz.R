@@ -1,4 +1,5 @@
 .onAttach <- function(libname, pkgname) {
+    macrosheds_dataset_link <- "https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262"
       
     # check if user has internet connection
     site <- "http://example.com/"
@@ -46,6 +47,8 @@
         "This package is licensed under MIT, but licensing of MacroSheds data is more complex. See \n",
         "https://docs.google.com/document/d/1CPaQ705QyoWfu6WjA4xHgQooCQ8arq3NZ8DO9tb9jZ0/edit?usp=sharing",
         "\n\n",
-        figshare_message
+        figshare_message,
+        "\n\nthe macrosheds dataset can be downloaded from the Environmental Data Initiative (EDI) here:\n    ",
+        macrosheds_dataset_link
     )
 }

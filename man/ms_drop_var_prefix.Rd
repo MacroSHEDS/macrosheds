@@ -23,7 +23,7 @@ or G for "grab," denoting if this variable was recorded by a continuously
 monitoring piece of equipment, or manually by a human.
 The second position is either S for "sensor" or N for "non-sensor".
 Non-sensor samples are generally measured analytically, in a laboratory.
-For more information, see \link{MacroSheds documentation}(EDI link pending).
+For more information, see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.
 }
 \examples{
 macrosheds_vars <- c('GN_NO3_N', 'GN_Mg', 'IS_discharge')

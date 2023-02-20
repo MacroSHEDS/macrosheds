@@ -4,7 +4,7 @@
 \alias{ms_calc_flux}
 \title{Calculates chemical fluxes}
 \usage{
-ms_calc_flux(chemistry, q, q_type, verbose = TRUE)
+ms_calc_flux(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = TRUE)
 }
 \arguments{
 \item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or
@@ -16,6 +16,8 @@ discharge in MacroSheds format and in units of mm or L/s, respectively.}
 \item{q_type}{character. Either 'precipitation' or 'discharge'.}
 
 \item{verbose}{logical. Default TRUE; prints more information to console.}
+
+\item{ws_area_scaled}{logical. Default TRUE; flux values are divided by watershed area.}
 }
 \value{
 returns a \code{tibble} of stream or precipitation chemical flux for every timestep
@@ -34,7 +36,8 @@ to calculate flux differently because of the different units of discharge and pr
 If \code{q_type} is 'discharge', flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
 If \code{q_type} is 'precipitation', is calculated as: kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 You can convert between kg/ha/T and kg/T using \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}} and
-\code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}.
+\code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}, which can also be applied using the ws_area_scaled argument in
+this function.
 
 Before running \code{\link[=ms_calc_flux]{ms_calc_flux()}}, ensure both \code{q} and
 \code{chemistry} have the same time interval. See \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}.

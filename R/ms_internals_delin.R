@@ -403,7 +403,7 @@ delineate_watershed_apriori_recurse <- function(lat,
                                 layer.name = paste('Candidate watershed', i)) +
             mapview::mapview(temp_point,
                              legend = FALSE,
-                             layer.name = 'Input lat/long') +
+                             layer.name = 'Input lat long') +
             mapview::mapview(sf::st_read(delin_out$unique_snaps_f[i]),
                              legend = FALSE,
                              layer.name = 'Snapped pour point')

@@ -48,7 +48,7 @@ free to change that.
         lat = 44.21013,
         long = -122.2571,
         crs = 4326,
-        write_dir = '~/my_watershed_boundaries',
+        write_dir = '~/testing/my_watershed_boundaries',
         write_name = 'example_site'
     )
 ```
