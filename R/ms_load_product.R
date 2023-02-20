@@ -12,16 +12,16 @@
 #'    refer to them separately when loading time-series data vs. watershed attribute data.
 #' @param prodname character. A MacroSheds product name. Files associated with this
 #'    product name will be read and combined. Available prodnames are (for core time-series products):
-#'    
+#'
 #' + discharge
 #' + stream_chemistry
 #' + stream_flux_inst
 #' + precipitation,
 #' + precip_chemistry
 #' + precip_flux_inst
-#'     
+#'
 #' (and for watershed attribute products):
-#'    
+#'
 #' + ws_attr_summaries
 #' + ws_attr_timeseries:climate
 #' + ws_attr_timeseries:hydrology
@@ -30,7 +30,10 @@
 #' + ws_attr_timeseries:terrain
 #' + ws_attr_timeseries:vegetation
 #' + ws_attr_CAMELS_summaries
-#' + ws_attr_CAMELS_Daymet_forcings 
+#' + ws_attr_CAMELS_Daymet_forcings
+#'
+#'    note that all products with flux_inst suffixes cannot be loaded using
+#'    this function, but can be calculated from component products using [ms_calc_flux()]
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
 #'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
@@ -70,16 +73,18 @@ ms_load_product <- function(macrosheds_root,
 
     requireNamespace('macrosheds', quietly = TRUE)
     
-    # Checks 
-    avail_prodnames <- c('discharge', 'stream_chemistry', 'stream_flux_inst_scaled',
-                         'precipitation', 'precip_chemistry', 'precip_flux_inst_scaled',
+    # Checks
+    avail_prodnames <- c('discharge', 'stream_chemistry',
+                         'stream_flux_inst', 'stream_flux_inst_scaled',
+                         'precipitation', 'precip_chemistry',
+                         'precip_flux_inst', 'precip_flux_inst_scaled',
                          'ws_attr_summaries', 'ws_attr_timeseries:climate',
                          'ws_attr_timeseries:hydrology', 'ws_attr_timeseries:landcover',
                          'ws_attr_timeseries:parentmaterial', 'ws_attr_timeseries:terrain',
                          'ws_attr_timeseries:vegetation', 'ws_attr_CAMELS_Daymet_forcings',
                          'ws_attr_CAMELS_summaries')
 
-    if(missing(macrosheds_root)){ 
+    if(missing(macrosheds_root)){
         stop('macrosheds_root must be supplied.')
     }
     if(! dir.exists(macrosheds_root)){
@@ -96,6 +101,15 @@ ms_load_product <- function(macrosheds_root,
                     paste(avail_prodnames, collapse = '", "'),
                     '".'))
     }
+
+    if(grepl('flux', prodname)) {
+      stop(paste('this flux product is not directly available thru [ms_load_product()] but can be',
+               ' created using component MacroSheds products and [ms_calc_flux()]. Use load product',
+               ' to retrieve discharge and chemistry data, and [ms_calc_flux()] to produce instantaneous',
+               ' flux estimates (scaled or not scaled to watershed area) for the target precipitation or',
+               ' stream data.', sep = "\n"))
+    }
+
     if(! missing(networks)){
         ntws <- unique(macrosheds::ms_site_data$network)
         if(any(! networks %in% ntws)){

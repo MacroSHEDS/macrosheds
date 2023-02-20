@@ -248,11 +248,6 @@ function to pull out discharge data for two sites.
         warn = TRUE
     )
 
-    # The current dataset has duplicates of observations, the new version of the dataset
-    # does not have that issue but is not on figshare yet. Sorry about that! 
-    my_q <- my_q %>%
-        distinct(datetime, site_code, .keep_all = T)
-
 Retrieve stream chemistry data for target sites
 ===============================================
 
@@ -270,11 +265,6 @@ the code for nitrate-nitrogen is ‘NO3\_N’
         sort_result = TRUE,
         warn = TRUE
     )
-
-    # The current dataset has duplicates of observations, the new version of the dataset
-    # does not have that issue but is not on figshare yet. Sorry about that! 
-    my_chem <- my_chem %>%
-        distinct(datetime, site_code, var, .keep_all = T)
 
     head(my_chem)
 

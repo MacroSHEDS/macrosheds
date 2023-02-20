@@ -132,7 +132,7 @@ ms_download_core_data <- function(macrosheds_root,
         fig_call <- paste0(figshare_base, rel_code)
         
         if(! quiet){
-            print(glue::glue('Downloading domain: {rd} ({ii}/{iN}; Figshare code {rc})',
+            print(glue::glue('Downloading domain: {rd} ({ii}/{iN}; download id {rc})',
                              rd = rel_dom,
                              ii = i,
                              iN = n_downloads,
