@@ -43,21 +43,24 @@ product name will be read and combined. Available prodnames are (for core time-s
 \item ws_attr_timeseries:vegetation
 \item ws_attr_CAMELS_summaries
 \item ws_attr_CAMELS_Daymet_forcings
+
+note that all products with flux_inst suffixes cannot be loaded using
+this function, but can be calculated from component products using \code{\link[=ms_calc_flux]{ms_calc_flux()}}
 }}
 
 \item{filter_vars}{character vector. for products like stream_chemistry that include
 multiple variables, this filters to just the ones specified (ignores
 variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
-To see a catalog of variables, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
+To see a catalog of variables, visit macrosheds.org or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.}
 
 \item{networks}{character vector. MacroSheds networks to load; optional. To see a catalog of
-networks, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
+networks, visit macrosheds.org or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.}
 
 \item{domains}{character vector. MacroSheds domains to load; optional. To see a catalog of
-domains, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
+domains, visit macrosheds.org or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.}
 
 \item{site_codes}{character vector. MacroSheds sites to load, optional. To see a catalog of
-site_codes, visit macrosheds.org or see \link{MacroSheds documentation}(EDI link pending).}
+site_codes, visit macrosheds.org or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.}
 
 \item{sort_result}{logical. Ignored if requesting watershed attributes.
 If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
@@ -66,7 +69,7 @@ datetime. this may add considerable loading time for large datasets.}
 \item{warn}{logical. If TRUE, function will not load more than 100 MB without permission.}
 }
 \value{
-Returns a \code{tibble} in MacroSheds format. See \link{MacroSheds documentation}(EDI link pending) for definitions.
+Returns a \code{tibble} in MacroSheds format. See \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI} for definitions.
 }
 \description{
 Loads and optionally filters MacroSheds time-series products (e.g stream_chemistry, discharge, etc.) from a

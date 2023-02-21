@@ -7,12 +7,13 @@
 ms_load_variables(var_set = "timeseries")
 }
 \arguments{
-\item{expanded}{logical. If TRUE, ms_load_variables will load in the complete variable sheet which includes dozens of
-more obscure molecules.}
+\item{var_set}{character. One of "timeseries" (the default), "timeseries_by_site", or "ws_attr".
+If "timeseries", basic metadata for core MacroSheds time-series will be returned. If "timeseries_by_site" a
+Fuller catalog of variable availability per site will be returned. If "ws_attr" metadata for MacroSheds watershed
+attributes will be returned.}
 }
 \value{
-returns a \code{data.frame} of variables, codes,
-and units in MacroSheds format
+returns a \code{data.frame} of variables, codes, units, and other metadata.
 }
 \description{
 Load a data.frame of MacroSheds variables with information on variable codes,
@@ -25,7 +26,7 @@ function simply retrieves a data.frame from the macrosheds namespace and makes i
 in the global environment.
 }
 \examples{
-vars <- ms_load_variables()
+ws_attr_vars <- ms_load_variables(var_set = 'ws_attr')
 }
 \seealso{
 \code{\link[=ms_load_sites]{ms_load_sites()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_load_product]{ms_load_product()}}

@@ -34,7 +34,7 @@ terrain, vegetation, parent material, land use, and hydrology data (which are ti
 \value{
 Returns NULL. Downloads watershed attribute data to the
 directory specified by \code{macrosheds_root}. For documentation, visit
-\link{EDI}(EDI link pending).
+\href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{EDI}.
 }
 \description{
 Download MacroSheds watershed attribute data for all sites. Choose between
