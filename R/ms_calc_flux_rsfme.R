@@ -550,7 +550,10 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
       } else {
         # filter to requested method
         out_frame <- out_frame %>%
-          filter(method %in% !!method)
+          filter(method %in% !!method) %>%
+          # set negative or infinite flux vals in final product to zero
+          mutate(val = ifelse(val < 0, 0, val))
+
         return(out_frame)
       } # method return for siple or rsfme
 
