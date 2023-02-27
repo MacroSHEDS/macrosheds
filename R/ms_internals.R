@@ -2908,7 +2908,7 @@ dt_to_wy_quarter <- function(datetime) {
                      dplyr::select(datetime, val) %>%
                      na.omit() %>%
                      summarize(n = n()) %>%
-                     mutate(full_days = days_in_month(month),
+                     mutate(full_days = lubridate::days_in_month(month),
                             missing_ratio = (full_days-n)/full_days) %>%
                      dplyr::select(month, missing_ratio)
 
@@ -3010,7 +3010,7 @@ prep_raw_for_riverload <- function(chem_df, q_df, datecol = 'date'){
 
 # FLUX CALCS
 ###### calculate period weighted#########
-calculate_pw <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
+calculate_pw <- function(chem_df, q_df, datecol = 'date', area = 1, period = NULL){
   rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
 
   if(is.na(rl_data[1,2])){
@@ -3018,7 +3018,7 @@ calculate_pw <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 
   }
 
   if(is.null(period)){
-  flux_from_pw <- RiverLoad::method6(rl_data, ncomp = 1) %>%
+  flux_from_pw <- method6(rl_data, ncomp = 1) %>%
     sum(.)/(1000*area)
   }else{
 
@@ -3032,13 +3032,13 @@ calculate_pw <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 
               load <- data.frame(interpolation[, 2] * interpolation[,
                                                                     -c(1:2)])
               difference <- matrix(nrow = (nrow(db) - 1), ncol = 1)
-                for (i in 1:(nrow(db) - 1)) {
-                    difference[i] <- difftime(db[i + 1, 1], db[i, 1],
-                                            units = "days")
-            }
+              for (i in 1:(nrow(db) - 1)) {
+                  difference[i] <- difftime(db[i + 1, 1], db[i, 1],
+                                          units = "days")
+              }
 
-              loadtot <- cbind.data.frame(interpolation$datetime[-nrow(interpolation)],
-                                          flux)
+              loadtot <- cbind.data.frame(interpolation$datetime,
+                                          load)
               colnames(loadtot)[1] <- c("datetime")
               loadtot[, 1] <- format(as.POSIXct(loadtot[, 1]), format = "%Y-%m")
               forrow <- aggregate(loadtot[, 2] ~ datetime, loadtot,
