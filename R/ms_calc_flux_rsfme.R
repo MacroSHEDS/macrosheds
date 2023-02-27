@@ -472,8 +472,13 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
               paired_df <- q_df %>%
                   full_join(chem_df, by = c('datetime', 'site_code', 'wy')) %>%
                   na.omit() %>%
-                  filter(q_lps > 0,
-                         is.finite(q_lps))
+                filter(
+                  # no negative flow
+                  q_lps > 0,
+                  is.finite(q_lps),
+                  # no negative concentration
+                  con > 0,
+                  is.finite(con))
 
               q_log <- log10(paired_df$q_lps)
               c_log <- log10(paired_df$con)
