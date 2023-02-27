@@ -472,20 +472,23 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
               chem_df <- errors::drop_errors(chem_df_errors)
               q_df <- errors::drop_errors(q_df_errors)
 
+              ### ad month column, for monthly agg use
+              chem_df <- chem_df %>%
+                         mutate(month = lubridate::month(datetime))
+              q_df <- q_df %>%
+                         mutate(month = lubridate::month(datetime))
+
               # will need: devtools::install_github('https://github.com/cran/RiverLoad.git')
               #### calculate average ####
 
               if(aggregation == "monthly") {
-                flux_annual_average <- raw_data_target_year %>%
+                flux_annual_average <- sw(raw_data_target_year %>%
                   group_by(wy, month) %>%
                   summarize(q_lps = mean(q_lps, na.rm = TRUE),
                             con = mean(con, na.rm = TRUE)) %>%
                   # multiply by seconds in a year, and divide my mg to kg conversion (1M)
                   mutate(flux = con*q_lps*3.154e+7*(1/area)*1e-6) %>%
-                  select(month, flux)
-                if(length(flux_annual_average) != 12) {
-                  warning('number of motnhs not 12, need handling for setting NA to uncalc months')
-                }
+                  select(month, flux))
               } else {
                 flux_annual_average <- raw_data_target_year %>%
                   group_by(wy) %>%
@@ -519,9 +522,48 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
               flux_annual_comp <- calculate_composite_from_rating_filled_df(rating_filled_df,
                                                                             area = area,
                                                                             period = period)
+              if(period == 'month') {
+                # match everything to month order of period weighted
+                months <- sapply(strsplit(flux_annual_pw$date, "-"), `[`, 2)
+                flux_monthly_pw <- flux_annual_pw %>%
+                  mutate(month = months) %>%
+                  select(month, flux)
+
+                if(length(months) != 12) {
+                  warning('DEBUG: number of months in pw not 12, need handling for setting NA to uncalc months')
+                }
+
+                # specific method months
+                months_beale <- sapply(strsplit(flux_annual_beale$date, "-"), `[`, 2)
+                flux_monthly_beale <- flux_annual_beale %>%
+                  mutate(month = as.character(months_beale))
+                flux_monthly_beale <- flux_monthly_beale[match(months, flux_monthly_beale$month),]
+                flux_monthly_beale <- left_join(flux_monthly_pw %>% select(month),
+                                               flux_monthly_beale, by = 'month') %>%
+                  select(month, flux)
+
+                # rating
+                months_rating <- sapply(strsplit(flux_annual_rating$date, "-"), `[`, 2)
+                flux_monthly_rating <- flux_annual_rating %>%
+                  mutate(month = as.character(months_rating))
+                flux_monthly_rating <- flux_monthly_rating[match(months, flux_monthly_rating$month),]
+                flux_monthly_rating <- left_join(flux_monthly_pw %>% select(month),
+                                               flux_monthly_rating, by = 'month') %>%
+                  select(month, flux)
+
+                # comp
+                flux_monthly_comp <- flux_annual_comp[match(as.double(months), flux_annual_comp$month),]
+                flux_monthly_comp <- flux_monthly_comp %>%
+                  mutate(month = sprintf("%02d", month))
+                # make sure all months present, filled w NAs if no value
+                flux_monthly_comp <- left_join(flux_monthly_pw %>% select(month),
+                                               flux_monthly_comp, by = 'month') %>%
+                  select(month, flux)
+
+              }
 
               #### select MS favored ####
-              if(period == 'monthly') {
+              if(period == 'month') {
                 paired_df <- q_df %>%
                   full_join(chem_df, by = c('datetime', 'site_code', 'wy', 'month')) %>%
                   na.omit() %>%
@@ -586,18 +628,13 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
 
               #### congeal fluxes ####
 
-              if(period == 'monthly') {
-                # reorder so all fluxes match pw months
-                months <- sapply(strsplit(flux_annual_pw$date, "-"), `[`, 2)
-                flux_monthly_comp <- flux_annual_comp[match(as.double(months), flux_annual_comp$month),]
-                flux_monthly_average <- flux_annual_average[match(as.double(months), flux_annual_average$month),]
-
+              if(period == 'month') {
                 target_year_out <- tibble(wy = as.character(target_year),
                                           month = rep(months, 5),
                                           val = c(flux_monthly_average$flux,
-                                                  flux_annual_pw$flux,
-                                                  flux_annual_beale$flux,
-                                                  flux_annual_rating$flux,
+                                                  flux_monthly_pw$flux,
+                                                  flux_monthly_beale$flux,
+                                                  flux_monthly_rating$flux,
                                                   ## flux_annual_wrtds,
                                                   flux_monthly_comp$flux
                                                   ),
@@ -670,4 +707,4 @@ ms_root = '../data/ms/'
  flux <- ms_calc_flux_rsfme(chemistry = chemistry,
                       q = q,
                       q_type = 'discharge',
-                      method = c('beale', 'pw'))
+                      aggregation = 'monthly')
