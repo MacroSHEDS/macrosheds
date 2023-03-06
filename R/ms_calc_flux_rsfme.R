@@ -522,6 +522,11 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
               flux_annual_comp <- calculate_composite_from_rating_filled_df(rating_filled_df,
                                                                             area = area,
                                                                             period = period)
+              flux_comp_dq <- FALSE
+              if(any(flux_annual_comp < 0)) {
+                flux_comp_dq <- TRUE
+              }
+
               if(period == 'month') {
                 # match everything to month order of period weighted
                 months <- sapply(strsplit(flux_annual_pw$date, "-"), `[`, 2)
@@ -625,6 +630,11 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
                 ideal_method <- NA
               }
 
+              if(ideal_method == 'composite' & flux_comp_dq) {
+                warning('ideal method was set to composite, but ocmposite has negative value, setting',
+                        'ideal method to period weighted')
+                ideal_method <- 'period weighted'
+              }
 
               #### congeal fluxes ####
 
@@ -693,18 +703,18 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
   # TODO: make handling and make clear that RSFME methods are for q_type discharge only
 }
 
-ms_root = '../data/ms/'
+## ms_root = '../data/ms/'
 
- chemistry <- ms_load_product(macrosheds_root = ms_root,
-                              prodname = 'stream_chemistry',
-                              site_codes = c('w1'),
-                              filter_vars = c('Na'))
+##  chemistry <- ms_load_product(macrosheds_root = ms_root,
+##                               prodname = 'stream_chemistry',
+##                               site_codes = c('w1'),
+##                               filter_vars = c('Na'))
 
- q <- ms_load_product(macrosheds_root = ms_root,
-                      prodname = 'discharge',
-                      site_codes = c('w1'))
+##  q <- ms_load_product(macrosheds_root = ms_root,
+##                       prodname = 'discharge',
+##                       site_codes = c('w1'))
 
- flux <- ms_calc_flux_rsfme(chemistry = chemistry,
-                      q = q,
-                      q_type = 'discharge',
-                      aggregation = 'monthly')
+##  flux <- ms_calc_flux_rsfme(chemistry = chemistry,
+##                       q = q,
+##                       q_type = 'discharge',
+##                       aggregation = 'monthly')
