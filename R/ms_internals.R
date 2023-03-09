@@ -2816,39 +2816,43 @@ dt_to_wy_quarter <- function(datetime) {
       return(xsum)
  }
 
+# run flux by site, year(s), method
+
+## ms_run_flux <- function(site, )
+
 ##### calculate ms_interp #####
 
-carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year = NULL, period = NULL){
+ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year = NULL, period = NULL){
     #### set up ratio functions #####
          # interp ratio
          calc_interp_ratio <- function(trimmed_df, period = NULL){
 
             if(period == 'annual'){
-            no_interp <- trimmed_df %>%
-                filter(ms_interp == 0) %>%
-                count() %>%
-                pull(n)
+                no_interp <- trimmed_df %>%
+                    filter(ms_interp == 0) %>%
+                    count() %>%
+                    pull(n)
 
-            interp <- trimmed_df %>%
-                filter(ms_interp ==1) %>%
-                count() %>%
-                pull(n)
+                interp <- trimmed_df %>%
+                    filter(ms_interp ==1) %>%
+                    count() %>%
+                    pull(n)
 
-            interp_ratio <- interp/(interp+no_interp)
+                interp_ratio <- interp/(interp+no_interp)
 
-            return(interp_ratio)
+                return(interp_ratio)
 
             } else if(period == 'month'){
-             interp_ratio <- trimmed_df %>%
-                    mutate(month = lubridate::month(datetime)) %>%
-                    group_by(month) %>%
-                    summarize(n_interp = sum(ms_interp == 1),
-                              n_no_interp = sum(ms_interp == 0)) %>%
-                    ungroup() %>%
-                    mutate(interp_ratio = n_interp/(n_interp+n_no_interp)) %>%
-                    dplyr::select(month, interp_ratio)
+                interp_ratio <- trimmed_df %>%
+                       mutate(month = lubridate::month(datetime)) %>%
+                       group_by(month) %>%
+                       summarize(n_interp = sum(ms_interp == 1),
+                                 n_no_interp = sum(ms_interp == 0)) %>%
+                       mutate(interp_ratio = n_interp/(n_interp+n_no_interp)) %>%
+                       ungroup() %>%
+                       dplyr::select(month, interp_ratio)
 
-             return(interp_ratio)
+                return(interp_ratio)
 
             }else{print('Specify period as month or annual.')}
 
@@ -2877,8 +2881,8 @@ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year 
                      group_by(month) %>%
                      summarize(n_stat = sum(ms_status == 1),
                                n_no_stat = sum(ms_status == 0)) %>%
-                     ungroup() %>%
                      mutate(status_ratio = n_stat/(n_stat+n_no_stat)) %>%
+                     ungroup() %>%
                      dplyr::select(month, status_ratio)
 
                  return(status_ratio)
@@ -2902,13 +2906,13 @@ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year 
              }else if(period == 'month'){
                  missing_ratio <- trimmed_df %>%
                      mutate(month = lubridate::month(datetime)) %>%
+                     dplyr::select(month, datetime, val) %>%
                      group_by(month) %>%
-                     dplyr::select(datetime, val) %>%
                      na.omit() %>%
                      summarize(n = n()) %>%
-                     ungroup() %>%
                      mutate(full_days = lubridate::days_in_month(month),
                             missing_ratio = (full_days-n)/full_days) %>%
+                     ungroup() %>%
                      dplyr::select(month, missing_ratio)
 
                  return(missing_ratio)
@@ -2948,17 +2952,14 @@ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year 
 
          if(period == 'month'){
 
-            year_con_df <- raw_con_df %>%
+             year_con_df <- raw_con_df %>%
                  mutate(wy = wtr_yr(datetime, start_month = 10)) %>%
                  filter(wy == target_year,
                         target_solute == target_solute)
 
-            ms_interp = calc_interp_ratio(trimmed_df = year_con_df, period = period) %>%
-                  ungroup()
-            ms_status = calc_status_ratio(trimmed_df = year_con_df, period = period) %>%
-                  ungroup()
-            ms_missing = calc_missing_ratio(trimmed_df = year_con_df, period = period) %>%
-                  ungroup()
+            ms_interp = calc_interp_ratio(trimmed_df = year_con_df, period = period)
+            ms_status = calc_status_ratio(trimmed_df = year_con_df, period = period)
+            ms_missing = calc_missing_ratio(trimmed_df = year_con_df, period = period)
 
             con_tbl <- full_join(ms_interp, ms_status, by = 'month') %>%
                 full_join(ms_missing, by = 'month') %>%
@@ -3220,23 +3221,20 @@ calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no 
         }
 
         if(period == 'annual'){
-        flux_from_comp <- rating_filled_df %>%
+          flux_from_comp <- rating_filled_df %>%
             dplyr::select(datetime, con_com, q_lps, wy) %>%
             na.omit() %>%
             mutate(flux = con_com*q_lps*86400*(1/area)*1e-6) %>%
             group_by(wy) %>%
-          summarize(flux = sum(flux)) %>%
+            summarize(flux = sum(flux)) %>%
             mutate(site_code = site_no)
-        }else{
-
-        if(period == 'month'){
+        } else if(period == 'month'){
             flux_from_comp <- rating_filled_df %>%
                 mutate(month = lubridate::month(datetime),
                        flux = con_com*q_lps*86400*(1/area)*1e-6) %>%
                 group_by(wy, month) %>%
                 summarize(date = max(datetime),
                           flux = sum(flux))
-        }
         }
 
         return(flux_from_comp)

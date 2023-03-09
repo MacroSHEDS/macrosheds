@@ -434,15 +434,11 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
                   ungroup()
 
             for(k in 1:n_yrs) {
-              print('0000 here it is 0000')
 
               target_year <- as.numeric(as.character(good_years[k]))
               target_solute <- this_var
 
-              # default, annual agg
-
-
-              # set "period" for other flux calcs argument
+              # set "period" for other flux calc args
               if(aggregation == "monthly") {
                 period <- 'month'
               } else if(aggregation == 'annual') {
@@ -453,20 +449,19 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
 
               if(aggregation == "monthly") {
                 # calculate flag ratios to carry forward
-                flag_df <- sw(carry_flags(raw_q_df = raw_data_q,
+                flag_df <- carry_flags(raw_q_df = raw_data_q,
                                        raw_con_df = raw_data_con_in,
                                        target_year = target_year,
                                        target_solute = target_solute,
-                                       period = period))
+                                       period = period)
               } else {
                 # calculate flag ratios to carry forward
-                flag_df <- sw(carry_flags(raw_q_df = raw_data_q,
+                flag_df <- carry_flags(raw_q_df = raw_data_q,
                                        raw_con_df = raw_data_con_in,
                                        target_year = target_year,
                                        target_solute = target_solute,
-                                       period = period))
+                                       period = period)
               }
-              print('0.5 here it is 0.5')
 
               raw_data_target_year <- raw_data_full %>%
                   mutate(wy = as.numeric(as.character(wy))) %>%
@@ -490,7 +485,6 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
               ### save and then remove errors attribute for calcs
               chem_df <- errors::drop_errors(chem_df_errors) %>% ungroup()
               q_df <- errors::drop_errors(q_df_errors) %>% ungroup()
-              print('1111 here it is 1111')
 
               ### ad month column, for monthly agg use
               chem_df <- chem_df %>%
@@ -520,7 +514,6 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
                   mutate(flux = con*q_lps*3.154e+7*(1/area)*1e-6) %>%
                   pull(flux))
               }
-
 
               #### calculate period weighted #####
               flux_annual_pw <- calculate_pw(chem_df, q_df, datecol = 'datetime',
@@ -653,9 +646,12 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
               }
 
               if(ideal_method == 'composite' & flux_comp_dq) {
-                warning('ideal method was set to composite, but ocmposite has negative value, setting',
-                        'ideal method to period weighted')
                 ideal_method <- 'period weighted'
+
+                if(verbose) {
+                  warning('ideal method was set to composite, but composite has negative value, setting',
+                          'ideal method to period weighted')
+                }
               }
 
               #### congeal fluxes ####
@@ -718,27 +714,105 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
         return(out_frame)
       } # method return for siple or rsfme
 
-  # TODO: allow monthly agg
   # TODO: make logic of simple vs RSFME clearer and articulate
   # TODO: make this work for *any* data in MacroSheds format
   # TODO: WRTDS inclusion
   # TODO: log file option
-  # TODO: allow user select one or all methods?
   # TODO: make handling and make clear that RSFME methods are for q_type discharge only
 }
 
-ms_root = '../data/ms/'
+## ms_root = '../data/ms/'
 
-chemistry <- ms_load_product(macrosheds_root = ms_root,
-                             prodname = 'stream_chemistry',
-                             site_codes = c('w1'),
-                             filter_vars = c('Na'))
+## chemistry <- ms_load_product(macrosheds_root = ms_root,
+##                              prodname = 'stream_chemistry',
+##                              site_codes = c('w1'),
+##                              filter_vars = c('Na'))
 
-q <- ms_load_product(macrosheds_root = ms_root,
-                     prodname = 'discharge',
-                     site_codes = c('w1'))
+## q <- ms_load_product(macrosheds_root = ms_root,
+##                      prodname = 'discharge',
+##                      site_codes = c('w1'))
 
-flux <- ms_calc_flux_rsfme(chemistry = chemistry,
-                     q = q,
-                     q_type = 'discharge',
-                     aggregation = 'monthly')
+## flux_annual <- ms_calc_flux_rsfme(chemistry = chemistry,
+##                      q = q,
+##                      q_type = 'discharge',
+##                      aggregation = 'annual')
+
+## flux_monthly <- ms_calc_flux_rsfme(chemistry = chemistry,
+##                      q = q,
+##                      q_type = 'discharge',
+##                      aggregation = 'monthly')
+
+## # NOTE:  sum of period weiughted monthly is 100,000x the annual flux estimate
+## flux_annual_select <- flux_annual %>%
+##   filter(site_code == 'w1',
+##          method == 'pw',
+##          wy == '1966')
+
+## flux_monthly_select <- flux_monthly %>%
+##   filter(site_code == 'w1',
+##          method == 'pw',
+##          wy == '1966')
+## head(flux_annual_select, 20)
+## head(flux_monthly_select, 20)
+## sum(flux_monthly_select$val)
+## mean(flux_monthly_select$val)
+
+## # NOTE: annual average is approx the mean of the monthly estimates, but well below the sum
+## flux_annual_select <- flux_annual %>%
+##   filter(site_code == 'w1',
+##          method == 'average',
+##          wy == '1966')
+
+## flux_monthly_select <- flux_monthly %>%
+##   filter(site_code == 'w1',
+##          method == 'average',
+##          wy == '1966')
+## head(flux_annual_select, 20)
+## head(flux_monthly_select, 20)
+## sum(flux_monthly_select$val)
+## mean(flux_monthly_select$val)
+
+## # NOTE: sum pretty close
+## flux_annual_select <- flux_annual %>%
+##   filter(site_code == 'w1',
+##          method == 'composite',
+##          wy == '1966')
+
+## flux_monthly_select <- flux_monthly %>%
+##   filter(site_code == 'w1',
+##          method == 'composite',
+##          wy == '1966')
+## head(flux_annual_select, 20)
+## head(flux_monthly_select, 20)
+## sum(flux_monthly_select$val)
+## mean(flux_monthly_select$val)
+
+## # NOTE: sum pretty close
+## flux_annual_select <- flux_annual %>%
+##   filter(site_code == 'w1',
+##          method == 'beale',
+##          wy == '1966')
+
+## flux_monthly_select <- flux_monthly %>%
+##   filter(site_code == 'w1',
+##          method == 'beale',
+##          wy == '1966')
+## head(flux_annual_select, 20)
+## head(flux_monthly_select, 20)
+## sum(flux_monthly_select$val)
+## mean(flux_monthly_select$val)
+
+## # NOTE: sum pretty close
+## flux_annual_select <- flux_annual %>%
+##   filter(site_code == 'w1',
+##          method == 'rating',
+##          wy == '1966')
+
+## flux_monthly_select <- flux_monthly %>%
+##   filter(site_code == 'w1',
+##          method == 'rating',
+##          wy == '1966')
+## head(flux_annual_select, 20)
+## head(flux_monthly_select, 20)
+## sum(flux_monthly_select$val)
+## mean(flux_monthly_select$val)
