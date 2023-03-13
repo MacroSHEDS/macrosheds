@@ -2,10 +2,28 @@ Package: macrosheds
 Title: Tools for interfacing with the MacroSheds dataset
 Version: 1.0.0
 Date: 2023-01-23
-Authors: c(person("Spencer", "Rhea", email = "spencerrhea41@gmail.com", role = c("aut")),
-             person("Mike", "Vlah", email = "vlahm13@gmail.com", role = c("aut", "cre")),
-             person("Wes", "Slaughter", email = "weston.slaughter@duke.edu", role = c("aut")),
-             person("Nick", "Gubbins", email = "gubbinsnick@gmail.com", role = c("ctb")))
+Authors@R: c(
+    person(given = "Spencer",
+           family = "Rhea",
+           email = "spencerrhea41@gmail.com",
+           role = "aut",
+           comment = c(ORCID = "0000-0002-0919-2657")),
+    person(given = "Mike",
+           family = "Vlah",
+           email = "vlahm13@gmail.com",
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-6260-2416")),
+    person(given = "Wes",
+           family = "Slaughter",
+           email = "weston.slaughter@duke.edu",
+           role = "aut",
+           comment = c(ORCID = "0000-0003-4675-5786")),
+    person(given = "Nick",
+           family = "Gubbins",
+           email = "gubbinsnick@gmail.com",
+           role = "aut",
+           comment = c(ORCID = "0000-0003-0688-3767"))
+    )
 Description: The macrosheds package accompanies the MacroSheds dataset and web portal (macrosheds.org). It provides data access, facilitates proper attribution, and helps with common routines for watershed data analysis.
 Depends: R (>= 3.6.1), dplyr
 Imports:
