@@ -743,21 +743,23 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
 ##                      aggregation = 'monthly')
 
 ## # NOTE:  sum of period weiughted monthly is 100,000x the annual flux estimate
-## flux_annual_select <- flux_annual %>%
-##   filter(site_code == 'w1',
-##          method == 'pw',
-##          wy == '1966')
+print('period weighted')
+flux_annual_select <- flux_annual %>%
+  filter(site_code == 'w1',
+         method == 'pw',
+         wy == '1966')
 
-## flux_monthly_select <- flux_monthly %>%
-##   filter(site_code == 'w1',
-##          method == 'pw',
-##          wy == '1966')
-## head(flux_annual_select, 20)
-## head(flux_monthly_select, 20)
-## sum(flux_monthly_select$val)
-## mean(flux_monthly_select$val)
+flux_monthly_select <- flux_monthly %>%
+  filter(site_code == 'w1',
+         method == 'pw',
+         wy == '1966')
+head(flux_annual_select, 20)
+head(flux_monthly_select, 20)
+sum(flux_monthly_select$val)
+mean(flux_monthly_select$val)
 
 ## # NOTE: annual average is approx the mean of the monthly estimates, but well below the sum
+## print('average')
 ## flux_annual_select <- flux_annual %>%
 ##   filter(site_code == 'w1',
 ##          method == 'average',
@@ -772,7 +774,8 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
 ## sum(flux_monthly_select$val)
 ## mean(flux_monthly_select$val)
 
-## # NOTE: sum pretty close
+## ## # NOTE: sum pretty close
+## print('composite')
 ## flux_annual_select <- flux_annual %>%
 ##   filter(site_code == 'w1',
 ##          method == 'composite',
@@ -787,7 +790,8 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
 ## sum(flux_monthly_select$val)
 ## mean(flux_monthly_select$val)
 
-## # NOTE: sum pretty close
+## ## # NOTE: sum pretty close
+## print('beale')
 ## flux_annual_select <- flux_annual %>%
 ##   filter(site_code == 'w1',
 ##          method == 'beale',
