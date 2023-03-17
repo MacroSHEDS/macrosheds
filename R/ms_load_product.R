@@ -11,14 +11,14 @@
 #'    If you specified different locations with each of these functions, you'll need to
 #'    refer to them separately when loading time-series data vs. watershed attribute data.
 #' @param prodname character. A MacroSheds product name. Files associated with this
-#'    product name will be read and combined. Available prodnames are (for core time-series products):
+#'    product name will be read and combined (see * caveat). Available prodnames are (for core time-series products):
 #'
 #' + discharge
 #' + stream_chemistry
-#' + stream_flux_inst
+#' + stream_flux*
 #' + precipitation,
 #' + precip_chemistry
-#' + precip_flux_inst
+#' + precip_flux*
 #'
 #' (and for watershed attribute products):
 #'
@@ -32,8 +32,9 @@
 #' + ws_attr_CAMELS_summaries
 #' + ws_attr_CAMELS_Daymet_forcings
 #'
-#'    note that all products with flux_inst suffixes cannot be loaded using
+#'    *note that flux products cannot be loaded using
 #'    this function, but can be calculated from component products using [ms_calc_flux()]
+#'    and [ms_calc_flux_rsfme()].
 #' @param filter_vars character vector. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
 #'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
@@ -75,9 +76,9 @@ ms_load_product <- function(macrosheds_root,
     
     # Checks
     avail_prodnames <- c('discharge', 'stream_chemistry',
-                         'stream_flux_inst', 'stream_flux_inst_scaled',
+                        # 'stream_flux_inst', 'stream_flux_inst_scaled',
                          'precipitation', 'precip_chemistry',
-                         'precip_flux_inst', 'precip_flux_inst_scaled',
+                        # 'precip_flux_inst', 'precip_flux_inst_scaled',
                          'ws_attr_summaries', 'ws_attr_timeseries:climate',
                          'ws_attr_timeseries:hydrology', 'ws_attr_timeseries:landcover',
                          'ws_attr_timeseries:parentmaterial', 'ws_attr_timeseries:terrain',
@@ -97,6 +98,11 @@ ms_load_product <- function(macrosheds_root,
         stop('prodname must be a character string')
     }
     if(! prodname %in% avail_prodnames){
+
+        if(grepl(prodname, '_flux_')){
+            stop('Use ms_calc_flux_rsfme or ms_calc_flux to generate MacroSheds flux products.')
+        }
+
         stop(paste0('prodname must be one of: "',
                     paste(avail_prodnames, collapse = '", "'),
                     '".'))
