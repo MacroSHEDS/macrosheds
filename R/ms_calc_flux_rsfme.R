@@ -1,7 +1,8 @@
-#' Calculates chemical fluxes
+#' Calculate monthly or annual solute fluxes
 #'
-#' Calculates solute fluxes from Q (discharge
-#' or precipitation) and chemistry data.
+#' Determines solute fluxes from daily Q (stream discharge
+#' or precipitation depth) and corresponding chemistry data using
+#' five available methods.
 #'
 #' @author Wes Slaughter, \email{wslaughter@@berkeley.edu}
 #' @author Nick Gubbins, \email{gubbinsnick@@gmail.com}
@@ -10,8 +11,8 @@
 #'
 #' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or
 #'    stream chemistry data in MacroSheds format and in units of mg/L.
-#' @param q \code{data.frame}. A \code{data.frame} of precipitation or stream
-#'    discharge in MacroSheds format and in units of mm or L/s, respectively.
+#' @param q \code{data.frame}. A \code{data.frame} of stream
+#'    discharge (L/s) or precipitation depth (mm) in MacroSheds format.
 #' @param q_type character. Either 'precipitation' or 'discharge'.
 #' @param verbose logical. Default TRUE; prints more information to console.
 #' @return returns a \code{tibble} of stream or precipitation chemical flux for every timestep
@@ -51,7 +52,9 @@
 #'                      q_type = 'discharge',
 #'                      method = c('beale', 'pw'))
 
-ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c('average', 'beale', 'pw', 'rating', 'composite'), aggregation = 'annual', good_year_check = TRUE) {
+ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
+                               method = c('average', 'beale', 'pw', 'rating', 'composite'),
+                               aggregation = 'annual', good_year_check = TRUE) {
 
     library("dplyr", quietly = TRUE)
 
@@ -99,7 +102,8 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
       stop(glue::glue('at least one flux calculation method supplied is not in accepted list, must be one of the following:\n {list}',
                 list = rsfme_accepted))
     } else {
-      writeLines(glue::glue('calculating flux using method(s): {method}', method = list(method)))
+      print(glue::glue('calculating flux using method(s): {m}',
+                       m = paste(method, collapse = ', ')))
     }
 
     riverload_methods <- c('pw', 'beale', 'rating', 'composite')
@@ -720,103 +724,3 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE, method = c(
   # TODO: log file option
   # TODO: make handling and make clear that RSFME methods are for q_type discharge only
 }
-
-## ms_root = '../data/ms/'
-
-## chemistry <- ms_load_product(macrosheds_root = ms_root,
-##                              prodname = 'stream_chemistry',
-##                              site_codes = c('w1'),
-##                              filter_vars = c('Na'))
-
-## q <- ms_load_product(macrosheds_root = ms_root,
-##                      prodname = 'discharge',
-##                      site_codes = c('w1'))
-
-## flux_annual <- ms_calc_flux_rsfme(chemistry = chemistry,
-##                      q = q,
-##                      q_type = 'discharge',
-##                      aggregation = 'annual')
-
-## flux_monthly <- ms_calc_flux_rsfme(chemistry = chemistry,
-##                      q = q,
-##                      q_type = 'discharge',
-##                      aggregation = 'monthly')
-
-## # NOTE:  sum of period weiughted monthly is 100,000x the annual flux estimate
-print('period weighted')
-flux_annual_select <- flux_annual %>%
-  filter(site_code == 'w1',
-         method == 'pw',
-         wy == '1966')
-
-flux_monthly_select <- flux_monthly %>%
-  filter(site_code == 'w1',
-         method == 'pw',
-         wy == '1966')
-head(flux_annual_select, 20)
-head(flux_monthly_select, 20)
-sum(flux_monthly_select$val)
-mean(flux_monthly_select$val)
-
-## # NOTE: annual average is approx the mean of the monthly estimates, but well below the sum
-## print('average')
-## flux_annual_select <- flux_annual %>%
-##   filter(site_code == 'w1',
-##          method == 'average',
-##          wy == '1966')
-
-## flux_monthly_select <- flux_monthly %>%
-##   filter(site_code == 'w1',
-##          method == 'average',
-##          wy == '1966')
-## head(flux_annual_select, 20)
-## head(flux_monthly_select, 20)
-## sum(flux_monthly_select$val)
-## mean(flux_monthly_select$val)
-
-## ## # NOTE: sum pretty close
-## print('composite')
-## flux_annual_select <- flux_annual %>%
-##   filter(site_code == 'w1',
-##          method == 'composite',
-##          wy == '1966')
-
-## flux_monthly_select <- flux_monthly %>%
-##   filter(site_code == 'w1',
-##          method == 'composite',
-##          wy == '1966')
-## head(flux_annual_select, 20)
-## head(flux_monthly_select, 20)
-## sum(flux_monthly_select$val)
-## mean(flux_monthly_select$val)
-
-## ## # NOTE: sum pretty close
-## print('beale')
-## flux_annual_select <- flux_annual %>%
-##   filter(site_code == 'w1',
-##          method == 'beale',
-##          wy == '1966')
-
-## flux_monthly_select <- flux_monthly %>%
-##   filter(site_code == 'w1',
-##          method == 'beale',
-##          wy == '1966')
-## head(flux_annual_select, 20)
-## head(flux_monthly_select, 20)
-## sum(flux_monthly_select$val)
-## mean(flux_monthly_select$val)
-
-## # NOTE: sum pretty close
-## flux_annual_select <- flux_annual %>%
-##   filter(site_code == 'w1',
-##          method == 'rating',
-##          wy == '1966')
-
-## flux_monthly_select <- flux_monthly %>%
-##   filter(site_code == 'w1',
-##          method == 'rating',
-##          wy == '1966')
-## head(flux_annual_select, 20)
-## head(flux_monthly_select, 20)
-## sum(flux_monthly_select$val)
-## mean(flux_monthly_select$val)

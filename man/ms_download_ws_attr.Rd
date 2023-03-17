@@ -8,7 +8,9 @@ ms_download_ws_attr(
   macrosheds_root,
   dataset = "summaries",
   quiet = FALSE,
-  omit_climate_data = FALSE
+  version = "1.0",
+  omit_climate_data = FALSE,
+  timeout = 10000
 )
 }
 \arguments{
@@ -27,9 +29,14 @@ for a list of discrepancies. Once downloaded, data can be loaded into R with \co
 
 \item{quiet}{logical. If TRUE, some messages will be suppressed.}
 
+\item{version}{character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to
+most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.}
+
 \item{omit_climate_data}{logical. Ignored unless \code{dataset == 'time series'}. If you don't care about climate data,
 you may use this argument to avoid downloading it (because it's huge), while still downloading
 terrain, vegetation, parent material, land use, and hydrology data (which are tiny).}
+
+\item{timeout}{integer. Temporarily overrides getOption(timeout).}
 }
 \value{
 Returns NULL. Downloads watershed attribute data to the

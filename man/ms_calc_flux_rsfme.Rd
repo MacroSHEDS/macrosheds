@@ -18,8 +18,8 @@ ms_calc_flux_rsfme(
 \item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or
 stream chemistry data in MacroSheds format and in units of mg/L.}
 
-\item{q}{\code{data.frame}. A \code{data.frame} of precipitation or stream
-discharge in MacroSheds format and in units of mm or L/s, respectively.}
+\item{q}{\code{data.frame}. A \code{data.frame} of stream
+discharge (L/s) or precipitation depth (mm) in MacroSheds format.}
 
 \item{q_type}{character. Either 'precipitation' or 'discharge'.}
 

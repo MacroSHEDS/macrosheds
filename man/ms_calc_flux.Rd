@@ -2,7 +2,7 @@
 % Please edit documentation in R/ms_calc_flux.R
 \name{ms_calc_flux}
 \alias{ms_calc_flux}
-\title{Calculates chemical fluxes}
+\title{Calculates daily chemical fluxes}
 \usage{
 ms_calc_flux(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = TRUE)
 }
@@ -25,7 +25,7 @@ where discharge/precipitation and chemistry are reported. Output units are kg/ha
 }
 \description{
 Calculates solute fluxes from Q (discharge
-or precipitation) and chemistry data.
+or precipitation) and corresponding chemistry data.
 }
 \details{
 Chemical flux is calculated by multiplying chemical concentration by flow
