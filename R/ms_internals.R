@@ -2828,30 +2828,31 @@ dt_to_wy_quarter <- function(datetime) {
          calc_interp_ratio <- function(trimmed_df, period = NULL){
 
             if(period == 'annual'){
-            no_interp <- trimmed_df %>%
-                filter(ms_interp == 0) %>%
-                count() %>%
-                pull(n)
+                no_interp <- trimmed_df %>%
+                    filter(ms_interp == 0) %>%
+                    count() %>%
+                    pull(n)
 
-            interp <- trimmed_df %>%
-                filter(ms_interp ==1) %>%
-                count() %>%
-                pull(n)
+                interp <- trimmed_df %>%
+                    filter(ms_interp ==1) %>%
+                    count() %>%
+                    pull(n)
 
-            interp_ratio <- interp/(interp+no_interp)
+                interp_ratio <- interp/(interp+no_interp)
 
-            return(interp_ratio)
+                return(interp_ratio)
 
             } else if(period == 'month'){
-             interp_ratio <- trimmed_df %>%
-                    mutate(month = lubridate::month(datetime)) %>%
-                    group_by(month) %>%
-                    summarize(n_interp = sum(ms_interp == 1),
-                              n_no_interp = sum(ms_interp == 0)) %>%
-                    mutate(interp_ratio = n_interp/(n_interp+n_no_interp)) %>%
-                    dplyr::select(month, interp_ratio)
+                interp_ratio <- trimmed_df %>%
+                       mutate(month = lubridate::month(datetime)) %>%
+                       group_by(month) %>%
+                       summarize(n_interp = sum(ms_interp == 1),
+                                 n_no_interp = sum(ms_interp == 0)) %>%
+                       mutate(interp_ratio = n_interp/(n_interp+n_no_interp)) %>%
+                       ungroup() %>%
+                       dplyr::select(month, interp_ratio)
 
-             return(interp_ratio)
+                return(interp_ratio)
 
             }else{print('Specify period as month or annual.')}
 
@@ -2881,6 +2882,7 @@ dt_to_wy_quarter <- function(datetime) {
                      summarize(n_stat = sum(ms_status == 1),
                                n_no_stat = sum(ms_status == 0)) %>%
                      mutate(status_ratio = n_stat/(n_stat+n_no_stat)) %>%
+                     ungroup() %>%
                      dplyr::select(month, status_ratio)
 
                  return(status_ratio)
@@ -2904,12 +2906,13 @@ dt_to_wy_quarter <- function(datetime) {
              }else if(period == 'month'){
                  missing_ratio <- trimmed_df %>%
                      mutate(month = lubridate::month(datetime)) %>%
+                     dplyr::select(month, datetime, val) %>%
                      group_by(month) %>%
-                     dplyr::select(datetime, val) %>%
                      na.omit() %>%
                      summarize(n = n()) %>%
-                     mutate(full_days = days_in_month(month),
+                     mutate(full_days = lubridate::days_in_month(month),
                             missing_ratio = (full_days-n)/full_days) %>%
+                     ungroup() %>%
                      dplyr::select(month, missing_ratio)
 
                  return(missing_ratio)
@@ -3010,19 +3013,22 @@ prep_raw_for_riverload <- function(chem_df, q_df, datecol = 'date'){
 
 # FLUX CALCS
 ###### calculate period weighted#########
-calculate_pw <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
+calculate_pw <- function(chem_df, q_df, datecol = 'date', area = 1, period = NULL){
+  if(is.null(period)) {
+    warning('no period supplied, calculating annual flux')
+    period <- 'annual'
+  }
+
   rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
 
   if(is.na(rl_data[1,2])){
       rl_data <- rl_data[-1,]
   }
 
-  if(is.null(period)){
-  flux_from_pw <- RiverLoad::method6(rl_data, ncomp = 1) %>%
-    sum(.)/(1000*area)
-  }else{
-
-  if(period == 'month'){
+  if(period == 'annual'){
+    flux_from_pw <- RiverLoad::method6(rl_data, ncomp = 1) %>%
+      sum(.)/(1000*area)
+  }else if(period == 'month'){
 
       method6_month <- function (db, ncomp, period){
           if (requireNamespace("imputeTS")) {
@@ -3032,13 +3038,13 @@ calculate_pw <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 
               load <- data.frame(interpolation[, 2] * interpolation[,
                                                                     -c(1:2)])
               difference <- matrix(nrow = (nrow(db) - 1), ncol = 1)
-                for (i in 1:(nrow(db) - 1)) {
-                    difference[i] <- difftime(db[i + 1, 1], db[i, 1],
-                                            units = "days")
-            }
+              for (i in 1:(nrow(db) - 1)) {
+                  difference[i] <- difftime(db[i + 1, 1], db[i, 1],
+                                          units = "days")
+              }
 
-              loadtot <- cbind.data.frame(interpolation$datetime[-nrow(interpolation)],
-                                          flux)
+              loadtot <- cbind.data.frame(interpolation$datetime,
+                                          load)
               colnames(loadtot)[1] <- c("datetime")
               loadtot[, 1] <- format(as.POSIXct(loadtot[, 1]), format = "%Y-%m")
               forrow <- aggregate(loadtot[, 2] ~ datetime, loadtot,
@@ -3065,30 +3071,32 @@ calculate_pw <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 
 
       flux_from_pw <- tibble(date = rownames(flux_from_pw),
                           flux = (flux_from_pw[,1]/(1000*area)))
-}
-}
+  }
+
   return(flux_from_pw)
 }
 
 ###### calculate beale ######
 calculate_beale <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
+    if(is.null(period)) {
+      warning('no period supplied, calculating annual flux')
+      period <- 'annual'
+    }
+
     rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
 
     if(is.na(rl_data[1,2])){
         rl_data <- rl_data[-1,]
     }
 
-    if(is.null(period)){
-    flux_from_beale <- RiverLoad::beale.ratio(rl_data, ncomp = 1) %>%
-      sum(.)/(1000*area)
-    }else{
-
-    if(period == 'month'){
+    if(period == 'annual'){
+      flux_from_beale <- RiverLoad::beale.ratio(rl_data, ncomp = 1) %>%
+        sum(.)/(1000*area)
+    }else if(period == 'month'){
         flux_from_beale <- RiverLoad::beale.ratio(rl_data, ncomp = 1, period = period)
 
         flux_from_beale <- tibble(date = rownames(flux_from_beale),
                                flux = (flux_from_beale[,1]/(1000*area)))
-    }
     }
 
     return(flux_from_beale)
@@ -3096,9 +3104,14 @@ calculate_beale <- function(chem_df, q_df, datecol = 'date', period = NULL, area
 
 ##### calculate rating #####
 calculate_rating <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
+    if(is.null(period)) {
+      warning('no period supplied, calculating annual flux')
+      period <- 'annual'
+    }
+
     rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
 
-    if(is.null(period)){
+    if(period == 'annual'){
     flux_from_reg <- RiverLoad::rating(rl_data, ncomp = 1) %>%
         sum(.)/(1000*area)
     }else{
@@ -3202,25 +3215,26 @@ generate_residual_corrected_con <- function(chem_df, q_df, datecol = 'date', sit
 
 ##### calculate monthly flux from composite ####
 calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no = 'site_no', period = NULL, area = 1){
+        if(is.null(period)) {
+          warning('no period supplied, calculating annual flux')
+          period <- 'annual'
+        }
 
-        if(is.null(period)){
-        flux_from_comp <- rating_filled_df %>%
+        if(period == 'annual'){
+          flux_from_comp <- rating_filled_df %>%
             dplyr::select(datetime, con_com, q_lps, wy) %>%
             na.omit() %>%
             mutate(flux = con_com*q_lps*86400*(1/area)*1e-6) %>%
             group_by(wy) %>%
-          summarize(flux = sum(flux)) %>%
+            summarize(flux = sum(flux)) %>%
             mutate(site_code = site_no)
-        }else{
-
-        if(period == 'month'){
+        } else if(period == 'month'){
             flux_from_comp <- rating_filled_df %>%
                 mutate(month = lubridate::month(datetime),
                        flux = con_com*q_lps*86400*(1/area)*1e-6) %>%
                 group_by(wy, month) %>%
                 summarize(date = max(datetime),
                           flux = sum(flux))
-        }
         }
 
         return(flux_from_comp)
