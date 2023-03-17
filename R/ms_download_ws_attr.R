@@ -17,10 +17,13 @@
 #'    summary data that conform as closely as possible to the specifications of the
 #'    [CAMELS dataset](https://ral.ucar.edu/solutions/products/camels). See MacroSheds metadata
 #'    for a list of discrepancies. Once downloaded, data can be loaded into R with [ms_load_product()].
+#' @param version character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to 
+#'    most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.
 #' @param quiet logical. If TRUE, some messages will be suppressed.
 #' @param omit_climate_data logical. Ignored unless \code{dataset == 'time series'}. If you don't care about climate data,
 #'    you may use this argument to avoid downloading it (because it's huge), while still downloading
 #'    terrain, vegetation, parent material, land use, and hydrology data (which are tiny).
+#' @param timeout integer. Temporarily overrides getOption(timeout).
 #' @return Returns NULL. Downloads watershed attribute data to the
 #'    directory specified by \code{macrosheds_root}. For documentation, visit
 #'   [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262). 
@@ -30,7 +33,8 @@
 #' ms_download_ws_attr(macrosheds_root = 'my/macrosheds/root', dataset = 'time series')
 
 ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = FALSE,
-                                omit_climate_data = FALSE, timeout = 10000){
+                                version = "1.0", omit_climate_data = FALSE,
+                                timeout = 10000){
     
     requireNamespace('macrosheds', quietly = TRUE)
     library('dplyr', quietly = TRUE)

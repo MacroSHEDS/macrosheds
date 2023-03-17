@@ -17,6 +17,8 @@
 #' @param domains character vector. macrosheds domains that will be downloaded. 
 #'    Either a single domain, vector of domains, or 'all'. See \code{ms_downloadsite_data()} 
 #'    for domains available for download.
+#' @param version character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to 
+#'    most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.
 #' @param quiet logical. If TRUE, some messages will be suppressed.
 #' @return Downloads all core data for selected domains to the
 #'    directory specified by \code{macrosheds_root}. Site datasets are arranged according to the following
@@ -38,6 +40,7 @@
 ms_download_core_data <- function(macrosheds_root,
                                   networks,
                                   domains,
+                                  version = "1.0",
                                   quiet = FALSE) {
 
     library("dplyr", quietly = TRUE)
