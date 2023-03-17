@@ -24,31 +24,21 @@
         result <- try(readLines(id_check_url, 1), silent = TRUE)
 
         if(inherits(result, 'try-error') || ! inherits(result, 'character')){
-            figshare_message <- paste(
-                '-- macrosheds version check -- FAIL: could not check whether MacroSheds',
-                'data download IDs are up to date. This should never happen, so please',
-                'notify us at mail@macrosheds.org')
+            figshare_message <- 'Failed to verify version is up to date. No connection?'
         } else if(result == test_id){
-            figshare_message <- paste(
-                '-- macrosheds version check -- SUCCESS: dataset connection tested',
-                'and local macrosheds version has up-to-date data download IDs.')
+            figshare_message <- paste0('Up to date ', enc2native('\U2713'))
         } else {
-            figshare_message <- paste0(
-                '-- macrosheds version check -- FAIL: local data download IDs do ',
-                'not match latest dataset version. Please reinstall macrosheds with:\n',
-                'devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git")')
+            figshare_message <- paste0(enc2native('\U274C'), ' Out of date. Reinstall with ',
+                'devtools::install_github("MacroSheds/macrosheds")')
         }
     } else {
-        figshare_message <- '-- macrosheds version check -- UNKNOWN: no internet connection detected.'
+        figshare_message <- 'Failed to verify version is up to date. No connection.'
     }
   
     packageStartupMessage(
-        "\n\nThis is version ", packageVersion(pkgname), " of ", pkgname, "\n\n",
+        "\nmacrosheds v", packageVersion(pkgname), ": ", figshare_message, "\n\n",
         "This package is licensed under MIT, but licensing of MacroSheds data is more complex. See \n",
         "https://docs.google.com/document/d/1CPaQ705QyoWfu6WjA4xHgQooCQ8arq3NZ8DO9tb9jZ0/edit?usp=sharing",
-        "\n\n",
-        figshare_message,
-        "\n\nthe macrosheds dataset can be downloaded from the Environmental Data Initiative (EDI) here:\n    ",
-        macrosheds_dataset_link
+        "\n\nComplete metadata: ", macrosheds_dataset_link
     )
 }

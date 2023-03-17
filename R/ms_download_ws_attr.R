@@ -17,10 +17,13 @@
 #'    summary data that conform as closely as possible to the specifications of the
 #'    [CAMELS dataset](https://ral.ucar.edu/solutions/products/camels). See MacroSheds metadata
 #'    for a list of discrepancies. Once downloaded, data can be loaded into R with [ms_load_product()].
+#' @param version character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to 
+#'    most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.
 #' @param quiet logical. If TRUE, some messages will be suppressed.
 #' @param omit_climate_data logical. Ignored unless \code{dataset == 'time series'}. If you don't care about climate data,
 #'    you may use this argument to avoid downloading it (because it's huge), while still downloading
 #'    terrain, vegetation, parent material, land use, and hydrology data (which are tiny).
+#' @param timeout integer. Temporarily overrides getOption(timeout).
 #' @return Returns NULL. Downloads watershed attribute data to the
 #'    directory specified by \code{macrosheds_root}. For documentation, visit
 #'   [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262). 
@@ -30,7 +33,8 @@
 #' ms_download_ws_attr(macrosheds_root = 'my/macrosheds/root', dataset = 'time series')
 
 ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = FALSE,
-                                omit_climate_data = FALSE, timeout_val = 10000){
+                                version = "1.0", omit_climate_data = FALSE,
+                                timeout = 10000){
     
     requireNamespace('macrosheds', quietly = TRUE)
     library('dplyr', quietly = TRUE)
@@ -88,8 +92,9 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
     n_downloads <- nrow(rel_download)
     if(! n_downloads) stop('Could not find remote file. Reinstall macrosheds to update remote links.')
 
-    # save user default timeout value
-    default_to <- getOption('timeout')
+    # save user default timeout value and set new
+    default_timeout <- getOption('timeout')
+    options(timeout = timeout)
 
     # loop through figshare IDs and download each data product
     for(i in 1:n_downloads) {
@@ -107,44 +112,14 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
                              rc = rel_code))
         }
 
-        # try normal download
         dl <- try(download.file(url = fig_call,
-                      destfile = ws_attr_fp,
-                      quiet = quiet,
-                      cacheOK = FALSE,
-                      mode = 'wb'))
-
-        # if download fails, it is likely a timeout error
-        if(inherits(dl, 'error')) {
-            # set timeout value to much longer period (timeout_val set in arguments, default 10000)
-            if(!quiet){
-              warning(glue::glue('download failed, likely due to timeout. setting timout to {to} temporarily',
-                                 'will reset to user default timeout, {dto}, after download retry',
-                                 to = timeout_val,
-                                 dto = default_to))
-            }
-            options(timeout = timeout_val)
-
-            # try download gaain with extended timeout
-            dl <- try(download.file(url = fig_call,
-                      destfile = ws_attr_fp,
-                      quiet = quiet,
-                      cacheOK = FALSE,
-                      mode = 'wb'))
-
-            # if it fails again, likely a different error, move on to next download
-            if(inherits(dl, 'error')) {
-                if(!quiet){
-                    warning(glue::glue('\n{fig} \ndownload failed even with extended timeout. skipping to next download',
-                                 fig = fig_call))
-                }
-                next
-            }
-
-            # reset timeout to previous default (usually 60)
-            options(timeout = default_to)
-
+                  destfile = ws_attr_fp,
+                  quiet = quiet,
+                  cacheOK = FALSE,
+                  mode = 'wb'))
         }
+    
+        options(timeout = default_timeout)
 
         if(! quiet) print(glue::glue('{filename}.feather successfully downloaded to {macrosheds_root}'))
     }
