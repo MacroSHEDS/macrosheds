@@ -24,7 +24,6 @@ test_that("dataframe returned with all input sites, input years, and calculated 
 
   # calc flux
   ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q, q_type = 'discharge', method = 'rsfme')
-  ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q, q_type = 'discharge', method = 'average', aggregation = 'monthly')
 
   # output
   output_sites <- sort(unique(ms_flux$site_code))
