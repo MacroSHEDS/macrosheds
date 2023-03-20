@@ -32,7 +32,6 @@
 #' \code{chemistry} have the same time interval. See [ms_synchronize_timestep()].
 #' Also ensure chemistry units are mg/L. See [ms_conversions()].
 #' @seealso [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
-#' @export
 #' @examples
 #' #' ### Load some MacroSheds data:
 #' ms_root = 'data/macrosheds'
