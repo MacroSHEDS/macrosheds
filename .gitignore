@@ -8,6 +8,7 @@ catalog.R
 notes.txt
 ms.org
 tests/testthat/data/
+tests/results.log
 /data/*
 !data/poudre_ws.RData
 !data/attribution_and_intellectual_rights_timeseries.RData
