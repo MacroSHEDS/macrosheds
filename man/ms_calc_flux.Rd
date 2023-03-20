@@ -2,7 +2,7 @@
 % Please edit documentation in R/ms_calc_flux.R
 \name{ms_calc_flux}
 \alias{ms_calc_flux}
-\title{Calculates daily chemical fluxes}
+\title{Calculate daily solute fluxes}
 \usage{
 ms_calc_flux(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = TRUE)
 }
@@ -24,11 +24,13 @@ returns a \code{tibble} of stream or precipitation chemical flux for every times
 where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep.
 }
 \description{
-Calculates solute fluxes from Q (discharge
+Determines solute fluxes from interpolated daily Q (discharge
 or precipitation) and corresponding chemistry data.
 }
 \details{
-Chemical flux is calculated by multiplying chemical concentration by flow
+For monthly and annual fluxes computed by various methods, see \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}.
+
+Here, solute flux is calculated by multiplying solute concentration by flow
 of water (flux = concentration * flow). The output units depend on the time
 interval at which input data are collected. The resulting flux units will always be
 kg/ha/T, where T is the time interval of the input \code{tibble}. \code{q_type} is used
@@ -62,7 +64,7 @@ flux <- ms_calc_flux(chemistry = chemistry,
                      q_type = 'discharge')
 }
 \seealso{
-\code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}, \code{\link[=ms_conversions]{ms_conversions()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}, \code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}
+\code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}, \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}, \code{\link[=ms_conversions]{ms_conversions()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}, \code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}
 }
 \author{
 Spencer Rhea, spencerrhea41@gmail.com
