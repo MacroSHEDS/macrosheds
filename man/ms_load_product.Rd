@@ -22,14 +22,14 @@ If you specified different locations with each of these functions, you'll need t
 refer to them separately when loading time-series data vs. watershed attribute data.}
 
 \item{prodname}{character. A MacroSheds product name. Files associated with this
-product name will be read and combined. Available prodnames are (for core time-series products):
+product name will be read and combined (see * caveat). Available prodnames are (for core time-series products):
 \itemize{
 \item discharge
 \item stream_chemistry
-\item stream_flux_inst
+\item stream_flux*
 \item precipitation,
 \item precip_chemistry
-\item precip_flux_inst
+\item precip_flux*
 }
 
 (and for watershed attribute products):
@@ -44,8 +44,9 @@ product name will be read and combined. Available prodnames are (for core time-s
 \item ws_attr_CAMELS_summaries
 \item ws_attr_CAMELS_Daymet_forcings
 
-note that all products with flux_inst suffixes cannot be loaded using
+*note that flux products cannot be loaded using
 this function, but can be calculated from component products using \code{\link[=ms_calc_flux]{ms_calc_flux()}}
+and \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}.
 }}
 
 \item{filter_vars}{character vector. for products like stream_chemistry that include

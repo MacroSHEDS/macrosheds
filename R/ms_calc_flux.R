@@ -1,7 +1,7 @@
-#' Calculates chemical fluxes
+#' Calculate daily solute fluxes
 #'
-#' Calculates solute fluxes from Q (discharge
-#' or precipitation) and chemistry data.
+#' Determines solute fluxes from interpolated daily Q (discharge
+#' or precipitation) and corresponding chemistry data.
 #'
 #' @author Spencer Rhea, spencerrhea41@@gmail.com
 #' @author Mike Vlah
@@ -16,7 +16,10 @@
 #' @return returns a \code{tibble} of stream or precipitation chemical flux for every timestep
 #'    where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep.
 #' @details
-#' Chemical flux is calculated by multiplying chemical concentration by flow
+#' 
+#' For monthly and annual fluxes computed by various methods, see [ms_calc_flux_rsfme()].
+#' 
+#' Here, solute flux is calculated by multiplying solute concentration by flow
 #' of water (flux = concentration * flow). The output units depend on the time
 #' interval at which input data are collected. The resulting flux units will always be
 #' kg/ha/T, where T is the time interval of the input \code{tibble}. \code{q_type} is used
@@ -30,7 +33,7 @@
 #' Before running [ms_calc_flux()], ensure both \code{q} and
 #' \code{chemistry} have the same time interval. See [ms_synchronize_timestep()].
 #' Also ensure chemistry units are mg/L. See [ms_conversions()].
-#' @seealso [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
+#' @seealso [ms_calc_flux_rsfme()], [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
 #' @export
 #' @examples
 #' #' ### Load some MacroSheds data:

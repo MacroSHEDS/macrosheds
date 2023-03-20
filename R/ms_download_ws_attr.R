@@ -117,7 +117,6 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
                   quiet = quiet,
                   cacheOK = FALSE,
                   mode = 'wb'))
-        }
     
         options(timeout = default_timeout)
 
