@@ -12,10 +12,10 @@
 #' @param macrosheds_root character. Directory where macrosheds data files will be downloaded.
 #'    If this directory does not exist, it will be created.
 #' @param networks character vector. macrosheds networks that will be downloaded. 
-#'    Either a single network, vector of networks, or 'all'. See \code{ms_downloadsite_data()} 
+#'    Either a single network, vector of networks, or 'all'. See \code{ms_load_sites()} 
 #'    for networks available for download.
 #' @param domains character vector. macrosheds domains that will be downloaded. 
-#'    Either a single domain, vector of domains, or 'all'. See \code{ms_downloadsite_data()} 
+#'    Either a single domain, vector of domains, or 'all'. See \code{ms_load_sites()} 
 #'    for domains available for download.
 #' @param version character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to 
 #'    most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.
@@ -51,7 +51,7 @@ ms_download_core_data <- function(macrosheds_root,
     net_missing <- missing(networks)
     
     if(dom_missing && net_missing) {
-        return('At least one domain or network must be listed. Networks and domains can be found in the site data file ms_downloadsite_data()')
+        return('At least one domain or network must be listed. Networks and domains can be retrieved with ms_load_sites()')
     }
     
     if(missing(macrosheds_root)) {
