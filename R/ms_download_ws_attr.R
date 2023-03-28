@@ -10,13 +10,16 @@
 #'    If this directory does not exist, it will be created. Does not have to be the same
 #'    as \code{macrosheds_root} provided to [ms_download_core_data()], but might as well be.
 #' @param dataset character. This function can download each of the four collections of watershed attribute data
-#'    provided by MacroSheds. "summaries" will download a feather file containing watershed attributes
-#'    summarized across time and space (i.e. one value for each site). "time series" will download 6 feather
-#'    files containing time series of watershed attributes where available. See \code{omit_climate_data} parameter. 
-#'    "CAMELS summaries" and "CAMELS Daymet forcings" will download additional watershed
-#'    summary data that conform as closely as possible to the specifications of the
-#'    [CAMELS dataset](https://ral.ucar.edu/solutions/products/camels). See MacroSheds metadata
-#'    for a list of discrepancies. Once downloaded, data can be loaded into R with [ms_load_product()].
+#'    provided by MacroSheds.
+#' * "summaries" will download watershed attributes summarized across time and space (i.e. one value for each site).
+#' * "time series" will download temporally explicit watershed attributes where available. See \code{omit_climate_data} parameter. 
+#' * "CAMELS summaries" and...
+#' * "CAMELS Daymet forcings" will download additional watershed
+#'   summary data that conform as closely as possible to the specifications of the
+#'   [CAMELS dataset](https://ral.ucar.edu/solutions/products/camels). See MacroSheds metadata
+#'   for a list of discrepancies.
+#'
+#' Once downloaded, data can be loaded into R with [ms_load_product()].
 #' @param version character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to 
 #'    most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.
 #' @param quiet logical. If TRUE, some messages will be suppressed.
