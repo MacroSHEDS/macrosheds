@@ -28,6 +28,7 @@ provided by MacroSheds.
 summary data that conform as closely as possible to the specifications of the
 \href{https://ral.ucar.edu/solutions/products/camels}{CAMELS dataset}. See MacroSheds metadata
 for a list of discrepancies.
+\item you may also use "all" to retrieve all four datasets. \code{omit_climate_data} will still be recognized.
 }
 
 Once downloaded, data can be loaded into R with \code{\link[=ms_load_product]{ms_load_product()}}.}

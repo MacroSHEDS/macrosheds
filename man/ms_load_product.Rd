@@ -35,6 +35,7 @@ product name will be read and combined (see * caveat). Available prodnames are (
 (and for watershed attribute products):
 \itemize{
 \item ws_attr_summaries
+\item ws_attr_timeseries:all
 \item ws_attr_timeseries:climate
 \item ws_attr_timeseries:hydrology
 \item ws_attr_timeseries:landcover
@@ -54,14 +55,8 @@ multiple variables, this filters to just the ones specified (ignores
 variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
 To see a catalog of variables, visit macrosheds.org or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.}
 
-\item{networks}{character vector. MacroSheds networks to load; optional. To see a catalog of
-networks, visit macrosheds.org or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.}
-
-\item{domains}{character vector. MacroSheds domains to load; optional. To see a catalog of
-domains, visit macrosheds.org or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.}
-
-\item{site_codes}{character vector. MacroSheds sites to load, optional. To see a catalog of
-site_codes, visit macrosheds.org or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.}
+\item{networks, domains, site_codes}{character vectors of MacroSheds networks/domains/sites to load. Omit to load all. See \code{\link[=ms_load_sites]{ms_load_sites()}},
+or visit \link{macrosheds.org} or \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{EDI}.}
 
 \item{sort_result}{logical. Ignored if requesting watershed attributes.
 If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
@@ -78,12 +73,13 @@ downloaded MacroSheds dataset. For watershed boundaries and gauge locations, see
 }
 \examples{
 ms_root = 'data/macrosheds'
-dir.create(ms_root, recursive = TRUE)
-ms_download_core_data(macrosheds_root = ms_root,
-                      domains = c('niwot', 'hjandrews'))
+ms_download_core_data(macrosheds_root = ms_root, domains = c('niwot', 'hjandrews'))
+ms_download_ws_attr(macrosheds_root = ms_root, dataset = 'time series')
 macrosheds_data <- ms_load_product(macrosheds_root = ms_root, 
                                    prodname = 'stream_chemistry', 
                                    filter_vars = 'NO3_N')
+macrosheds_data <- ms_load_product(macrosheds_root = ms_root, 
+                                   prodname = 'ws_attr_timeseries:all')
 }
 \seealso{
 \code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_download_ws_attr]{ms_download_ws_attr()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_load_variables]{ms_load_variables()}}, \code{\link[=ms_load_sites]{ms_load_sites()}}
