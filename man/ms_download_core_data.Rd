@@ -17,11 +17,11 @@ ms_download_core_data(
 If this directory does not exist, it will be created.}
 
 \item{networks}{character vector. macrosheds networks that will be downloaded.
-Either a single network, vector of networks, or 'all'. See \code{ms_downloadsite_data()}
+Either a single network, vector of networks, or 'all'. See \code{ms_load_sites()}
 for networks available for download.}
 
 \item{domains}{character vector. macrosheds domains that will be downloaded.
-Either a single domain, vector of domains, or 'all'. See \code{ms_downloadsite_data()}
+Either a single domain, vector of domains, or 'all'. See \code{ms_load_sites()}
 for domains available for download.}
 
 \item{version}{character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to

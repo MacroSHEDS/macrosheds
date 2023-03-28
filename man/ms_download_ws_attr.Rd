@@ -19,13 +19,18 @@ If this directory does not exist, it will be created. Does not have to be the sa
 as \code{macrosheds_root} provided to \code{\link[=ms_download_core_data]{ms_download_core_data()}}, but might as well be.}
 
 \item{dataset}{character. This function can download each of the four collections of watershed attribute data
-provided by MacroSheds. "summaries" will download a feather file containing watershed attributes
-summarized across time and space (i.e. one value for each site). "time series" will download 6 feather
-files containing time series of watershed attributes where available. See \code{omit_climate_data} parameter.
-"CAMELS summaries" and "CAMELS Daymet forcings" will download additional watershed
+provided by MacroSheds.
+\itemize{
+\item "summaries" will download watershed attributes summarized across time and space (i.e. one value for each site).
+\item "time series" will download temporally explicit watershed attributes where available. See \code{omit_climate_data} parameter.
+\item "CAMELS summaries" and...
+\item "CAMELS Daymet forcings" will download additional watershed
 summary data that conform as closely as possible to the specifications of the
 \href{https://ral.ucar.edu/solutions/products/camels}{CAMELS dataset}. See MacroSheds metadata
-for a list of discrepancies. Once downloaded, data can be loaded into R with \code{\link[=ms_load_product]{ms_load_product()}}.}
+for a list of discrepancies.
+}
+
+Once downloaded, data can be loaded into R with \code{\link[=ms_load_product]{ms_load_product()}}.}
 
 \item{quiet}{logical. If TRUE, some messages will be suppressed.}
 
