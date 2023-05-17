@@ -51,7 +51,7 @@
 #'                      q_type = 'discharge',
 #'                      method = c('beale', 'pw'))
 
-ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
+ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
                                method = c('average', 'beale', 'pw', 'rating', 'composite'),
                                aggregation = 'annual', good_year_check = TRUE) {
 
@@ -65,18 +65,17 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
         stop('The argument to q must contain precipitation or stream discharge data in MacroSheds format (column names of datetime, site_code, val, var, ms_interp, ms_status at minimum).')
     }
 
-    if(! grepl('^(precipitation|discharge)$', q_type)){
-        stop('q_type must be "discharge" or "precipitation for rsfme flux methods"')
+    q_type = unique(q$var)
+    if(length(q_type) != 1) {
+        stop('ms_calc_flux can only accept one q_type at a time, and this type must be "precipitation" or "discharge"')
+    }
+    if(!grepl('^(([A-Z]{2}_)?precipitation|([A-Z]{2}_)?discharge)$', q_type)){
+        stop('q_type must be "discharge" or "precipitation" for rsfme flux methods')
     }
 
     if(q_type == 'precipitation' & any(method != "simple")) {
       warning('setting flux calculation method to "simple," as RSFME methods are intended only for',
               'surface runoff solute flux estimation.')
-    }
-
-    available_aggs <- c('annual', 'monthly')
-    if(!aggregation %in% c('annual', 'monthly')) {
-      stop('aggregation must be "annual" OR "monthly"')
     }
 
     if(! 'POSIXct' %in% class(q$datetime)){
@@ -101,8 +100,10 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
       stop(glue::glue('at least one flux calculation method supplied is not in accepted list, must be one of the following:\n {list}',
                 list = paste(rsfme_accepted, collapse = ', ')))
     } else {
-      writeLines(glue::glue('calculating flux using method(s): {m}',
-                            m = paste(method, collapse = ', ')))
+      if(verbose) {
+          writeLines(glue::glue('calculating flux using method(s): {m}',
+                                m = paste(method, collapse = ', ')))
+      }
     }
 
     riverload_methods <- c('pw', 'beale', 'rating', 'composite')
@@ -117,17 +118,24 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
       }
     }
 
-    # make sure agg option is annual or monthly if calculating any non-null method
-    # and otherwise timestep is data-res and using simple QC
-    rsfme_aggs <- c('annual', 'monthly', 'simple')
-    if(!aggregation %in% rsfme_aggs) {
-      stop(glue::glue('time aggregation is not in accepted list, must be one of the following:\n {list}',
-                list = paste0(rsfme_aggs, collapse = ', ')))
-    } else if(aggregation == 'simple') {
-      writeLines(glue::glue('aggregating flux at highest possible resolution timestep of ',
-                            'data supplied, using simple Q*C methods'))
+    if(any(method == 'simple')) {
+        method = "simple"
+        aggregation = "simple"
+        warning('"simple" included in user input methods, this function will only return results using simple flux methods.',
+                '\n run again without "simple" if other flux methods desired')
+        writeLines(glue::glue('aggregating flux at highest possible resolution timestep of ',
+                              'data supplied, using simple Q*C methods'))
     } else {
-      writeLines(glue::glue('aggregating flux over: {aggregation}'))
+        # make sure agg option is annual or monthly if calculating any non-null method
+        # and otherwise timestep is data-res and using simple QC
+        rsfme_aggs <- c('annual', 'monthly')
+        if(!aggregation %in% rsfme_aggs) {
+          stop(glue::glue('time aggregation is not in accepted list, must be one of the following:\n {list}',
+                    list = paste0(rsfme_aggs, collapse = ', ')))
+        }
+        if(verbose) {
+            writeLines(glue::glue('aggregating flux over: {aggregation}'))
+        }
     }
 
     # pull in variable data
@@ -158,8 +166,6 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                           q_interval == 300 ~ '5 minute',
                           q_interval == 60 ~ '1 minute')
 
-    # q_interval <- errors::as.errors(q_interval)
-
     flow_is_highres <- Mode(diff(as.numeric(q$datetime))) <= 15 * 60
     if(is.na(flow_is_highres)) flow_is_highres <- FALSE
 
@@ -168,7 +174,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                     ' of: daily, hourly, 30 minute, 15 minute, 10 minute, 5 minute, or 1 minute.',
                     ' See ms_synchronize_timestep() to standardize your intervals.'))
     } else if(verbose) {
-        print(paste0('Input q dataset has a ', interval, ' interval'))
+        print(paste0('input q dataset has a ', interval, ' interval'))
     }
 
     # add errors if they don't exist
@@ -236,7 +242,12 @@ ms_calc_flux_rsfme <- function(chemistry, q, q_type, verbose = TRUE,
                 datetime >= !!daterange[1],
                 datetime <= !!daterange[2])
 
-        if(nrow(site_q) == 0) return()
+        if(nrow(site_q) == 0) {
+            if(verbose) {
+                warning(glue::glue('{site_code} q data empty after initial processing and has been skipped'))
+            }
+            return()
+        }
 
         this_site_info <- filter(site_info, site_code == !!site_code) %>% 
             distinct()
