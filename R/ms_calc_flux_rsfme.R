@@ -53,7 +53,7 @@
 
 ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
                                method = c('average', 'beale', 'pw', 'rating', 'composite'),
-                               aggregation = 'annual', good_year_check = TRUE) {
+                               aggregation = NULL, good_year_check = TRUE) {
 
     library("dplyr", quietly = TRUE)
 
@@ -76,6 +76,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
     if(q_type == 'precipitation' & any(method != "simple")) {
       warning('setting flux calculation method to "simple," as RSFME methods are intended only for',
               'surface runoff solute flux estimation.')
+          mutate(val = ifelse(val < 0, 0, val))
     }
 
     if(! 'POSIXct' %in% class(q$datetime)){
@@ -118,20 +119,36 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
       }
     }
 
+    # make sure agg option is annual or monthly if calculating any non-null method
+    # and otherwise timestep is data-res and using simple QC
+    rsfme_aggs <- c('annual', 'monthly')
+
+    if(length(aggregation) != 1) {
+        stop(glue::glue('if using any method other than "simple" user must choose *only one* aggregation from the following {list}'),
+                  list = paste0(rsfme_aggs, collapse = ', '))
+    }
+
     if(any(method == 'simple')) {
         method = "simple"
-        aggregation = "simple"
+
         warning('"simple" included in user input methods, this function will only return results using simple flux methods.',
                 '\n run again without "simple" if other flux methods desired')
-        writeLines(glue::glue('aggregating flux at highest possible resolution timestep of ',
-                              'data supplied, using simple Q*C methods'))
+
+        if(!is.null(aggregation)) {
+            if(verbose) {
+                writeLines(glue::glue('aggregation does not need to be specified when using "simple" flux method, ignoring aggregation input'))
+            }
+        }
+
+        aggregation = "simple"
+        if(verbose) {
+            writeLines(glue::glue('calculating flux at highest possible resolution timestep of ',
+                                  'data supplied, using simple Q*C methods'))
+        }
     } else {
-        # make sure agg option is annual or monthly if calculating any non-null method
-        # and otherwise timestep is data-res and using simple QC
-        rsfme_aggs <- c('annual', 'monthly')
         if(!aggregation %in% rsfme_aggs) {
-          stop(glue::glue('time aggregation is not in accepted list, must be one of the following:\n {list}',
-                    list = paste0(rsfme_aggs, collapse = ', ')))
+            stop(glue::glue('user aggregation input is not in accepted list, must be one of the following:\n {list}',
+                      list = paste0(rsfme_aggs, collapse = ', ')))
         }
         if(verbose) {
             writeLines(glue::glue('aggregating flux over: {aggregation}'))
@@ -229,32 +246,34 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
 
         site_code <- sites[s]
 
+        # filter q and chem to just this site for calcs
         site_chem <- chemistry %>%
             filter(site_code == !!site_code)
 
+        # get daterange of chem dataset and filter q to match
+        daterange <- as.Date(range(site_chem$datetime))
         site_q <- q %>%
-            filter(site_code == !!site_code)
-
-        daterange <- range(site_chem$datetime)
-
-        site_q <- site_q %>%
-            filter(
-                datetime >= !!daterange[1],
-                datetime <= !!daterange[2])
+            filter(site_code == !!site_code,
+                   datetime >= !!daterange[1] - 14, # two weeks before chem
+                   datetime <= !!daterange[2] + 14) # two weeks after chem
 
         if(nrow(site_q) == 0) {
             if(verbose) {
                 warning(glue::glue('{site_code} q data empty after initial processing and has been skipped'))
             }
-            return()
+            next
         }
 
         this_site_info <- filter(site_info, site_code == !!site_code) %>% 
             distinct()
-        
+
         area <- this_site_info$ws_area_ha
         lat <- this_site_info$latitude
         long <- this_site_info$longitude
+
+        if(!inherits(area, 'errors')){
+            errors::errors(area) <- 0
+        }
 
         chem_split <- site_chem %>%
             group_by(var) %>%
@@ -262,7 +281,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
             dplyr::group_split() %>%
             as.list()
 
-        # Loop though all variables
+        # loop though all variables
         for(i in 1:length(chem_split)) {
 
           chem_chunk <- chem_split[[i]]
@@ -276,7 +295,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
 
           if(any(this_var_info$flux_convertible == 0)) {
             if(verbose) {
-              warning(glue::glue('Cannot determine flux of {v}; skipping', v = this_var))
+              warning(glue::glue('Cannot determine flux-convertability of {v}; skipping', v = this_var))
             }
             next
           }
@@ -397,7 +416,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
                 next
               }
 
-              #join data and cut to good years
+              # join data and cut to good years
               daily_data_con <- raw_data_con %>%
                 mutate(date = lubridate::date(datetime)) %>%
                 group_by(date) %>%
@@ -439,7 +458,8 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
               } else if(aggregation == 'annual') {
                 period <- 'annual'
               } else {
-                stop('invalid aggregation, must be "annual", "monthly", or "simple"')
+                stop('invalid aggregation for advanced flux estimates',
+                     'aggregation must be "annual" or "monthly"')
               }
 
               if(aggregation == "monthly") {
@@ -486,7 +506,6 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
 
               # will need: devtools::install_github('https://github.com/cran/RiverLoad.git')
               #### calculate average ####
-
               if(aggregation == "monthly") {
                 flux_monthly_average <- sw(raw_data_target_year %>%
                   group_by(wy, month) %>%

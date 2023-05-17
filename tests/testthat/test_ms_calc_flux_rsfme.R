@@ -46,7 +46,7 @@ test_that("dataframe gets and checks validity of Q type from input data", {
   input_methods <- c('average', 'beale', 'composite', 'rating')
 
   # calc flux
-  ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q, method = 'rsfme')
+  ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q, method = 'rsfme', aggregation = c('monthly'))
 
   # output
   output_sites <- sort(unique(ms_flux$site_code))
