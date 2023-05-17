@@ -13,21 +13,30 @@
 #'    stream chemistry data in MacroSheds format and in units of mg/L.
 #' @param q \code{data.frame}. A \code{data.frame} of stream
 #'    discharge (L/s) or precipitation depth (mm) in MacroSheds format.
-#' @param q_type character. Either 'precipitation' or 'discharge'.
+#' @param method character. Default 'simple'; options are running 'simple' or a vector including any
+#'    combination of the following "advanced" methods: c('average', 'beale', 'pw', 'rating', 'composite'),
+#'    or supply simply 'rsfme' to run all these methods.
+#' @param aggregation character. Default NULL; if running 'simple' this argument should remain NULL. If using any
+#'    "rsfme" or any of the non-"simple" methods, user must supply an aggregation, either "monthly" or "annual" 
 #' @param verbose logical. Default TRUE; prints more information to console.
 #' @return returns a \code{tibble} of stream or precipitation chemical flux for every timestep
 #'    where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep.
 #' @details
-#' Chemical flux is calculated by multiplying chemical concentration by flow
+#' in the terminology we employ here, "simple" chemical flux is calculated by multiplying chemical concentration by flow
 #' of water (flux = concentration * flow). The output units depend on the time
 #' interval at which input data are collected. The resulting flux units will always be
-#' kg/ha/T, where T is the time interval of the input \code{tibble}. \code{q_type} is used
-#' to calculate flux differently because of the different units of discharge and precipitation.
-#' If \code{q_type} is 'discharge', flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
-#' If \code{q_type} is 'precipitation', is calculated as: kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
+#' kg/ha/T, where T is the time interval of the input \code{tibble}. The type of input water flow data, or \code{q_type} 
+#' as it is referred to often here, is used to calculate flux differently because of the different 
+#' units of discharge and precipitation. If \code{q_type} is 'discharge', flux is calculated as: 
+#' kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
+#' If \code{q_type} is 'precipitation', is calculated as: 
+#' kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 #' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
 #' [ms_undo_scale_flux_by_area()].
-#'
+#' Advanced flux estimation methods, referred to in shorthand here as "rsfme" (short for Riverine Solute Flux Estimation Methods")
+#' are also available through this function. These methods can be used to produce annual or monthly flux estimates
+#' for eligible solutes. You can learn more about all of the available methods ('average', 'beale', 'pw', 'rating', 'composite')
+#' in the MacroSheds documentation. All output units are kg/ha/T for flux, where T is the aggregation period.
 #' Before running [ms_calc_flux()], ensure both \code{q} and
 #' \code{chemistry} have the same time interval. See [ms_synchronize_timestep()].
 #' Also ensure chemistry units are mg/L. See [ms_conversions()].
@@ -51,9 +60,12 @@
 #'                      q_type = 'discharge',
 #'                      method = c('beale', 'pw'))
 
-ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
-                               method = c('average', 'beale', 'pw', 'rating', 'composite'),
-                               aggregation = NULL, good_year_check = TRUE) {
+ms_calc_flux_rsfme <- function(chemistry, 
+                               q, 
+                               method = "simple",
+                               aggregation = NULL, 
+                               verbose = TRUE,
+                               good_year_check = TRUE) {
 
     library("dplyr", quietly = TRUE)
 
@@ -73,10 +85,15 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
         stop('q_type must be "discharge" or "precipitation" for rsfme flux methods')
     }
 
+    if(grepl('^(([A-Z]{2}_)?precipitation)$', q_type)){
+      q_type = 'precipitation'
+    } else {
+      q_type = 'discharge'
+    }
+
     if(q_type == 'precipitation' & any(method != "simple")) {
-      warning('setting flux calculation method to "simple," as RSFME methods are intended only for',
-              'surface runoff solute flux estimation.')
-          mutate(val = ifelse(val < 0, 0, val))
+      stop('RSFME methods are intended only for surface runoff solute flux estimation,',
+           'this function can only compute "simple" flux from precipitation data')
     }
 
     if(! 'POSIXct' %in% class(q$datetime)){
@@ -123,16 +140,19 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
     # and otherwise timestep is data-res and using simple QC
     rsfme_aggs <- c('annual', 'monthly')
 
-    if(length(aggregation) != 1) {
-        stop(glue::glue('if using any method other than "simple" user must choose *only one* aggregation from the following {list}'),
-                  list = paste0(rsfme_aggs, collapse = ', '))
+    if(!is.null(aggregation) & length(aggregation) != 1) {
+        stop(glue::glue('if using any method other than "simple" user must choose *only one* aggregation from the following:\n {list}',
+                  list = paste0(rsfme_aggs, collapse = ', ')))
     }
 
     if(any(method == 'simple')) {
-        method = "simple"
 
-        warning('"simple" included in user input methods, this function will only return results using simple flux methods.',
-                '\n run again without "simple" if other flux methods desired')
+        if(length(method) > 1) {
+            warning('"simple" included in user input methods, this function will only return results using simple flux methods.',
+                    '\n run again without "simple" if other flux methods desired')
+        }
+        
+        method = "simple"
 
         if(!is.null(aggregation)) {
             if(verbose) {
@@ -187,11 +207,11 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
     if(is.na(flow_is_highres)) flow_is_highres <- FALSE
 
     if(is.na(interval)) {
-        stop(paste0('Interval of samples must be one',
+        stop(paste0('interval of samples must be one',
                     ' of: daily, hourly, 30 minute, 15 minute, 10 minute, 5 minute, or 1 minute.',
                     ' See ms_synchronize_timestep() to standardize your intervals.'))
     } else if(verbose) {
-        print(paste0('input q dataset has a ', interval, ' interval'))
+        ## print(paste0('input q dataset has a ', interval, ' interval'))
     }
 
     # add errors if they don't exist
@@ -510,7 +530,7 @@ ms_calc_flux_rsfme <- function(chemistry, q, verbose = TRUE,
                 flux_monthly_average <- sw(raw_data_target_year %>%
                   group_by(wy, month) %>%
                   summarize(q_lps = mean(q_lps, na.rm = TRUE),
-                            con = mean(con, na.rm = TRUE)) %>%
+                            con = mean(con, na.rm = TRUE), .groups = "drop_last") %>%
                   ungroup() %>%
                   # multiply by seconds in a year, and divide by mg to kg conversion (1M)
                   mutate(flux = con*q_lps*3.154e+7*(1/area)*1e-6) %>%
