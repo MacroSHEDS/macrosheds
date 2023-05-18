@@ -524,93 +524,141 @@ ms_calc_flux_rsfme <- function(chemistry,
               q_df <- q_df %>%
                          mutate(month = lubridate::month(datetime))
 
-              # will need: devtools::install_github('https://github.com/cran/RiverLoad.git')
-              #### calculate average ####
-              if(aggregation == "monthly") {
-                flux_monthly_average <- sw(raw_data_target_year %>%
-                  group_by(wy, month) %>%
-                  summarize(q_lps = mean(q_lps, na.rm = TRUE),
-                            con = mean(con, na.rm = TRUE), .groups = "drop_last") %>%
-                  ungroup() %>%
-                  # multiply by seconds in a year, and divide by mg to kg conversion (1M)
-                  mutate(flux = con*q_lps*3.154e+7*(1/area)*1e-6) %>%
-                  select(month, flux))
+              # set up dummy flux values to be replaced if user has chosen to run method
+              if(aggregation == 'annual') {
+                  flux_annual_average = NA
+                  flux_annual_pw = NA
+                  flux_annual_beale = NA
+                  flux_annual_rating = NA
+                  flux_annual_comp = NA
               } else {
-                flux_annual_average <- sw(raw_data_target_year %>%
-                  group_by(wy) %>%
-                  summarize(q_lps = mean(q_lps, na.rm = TRUE),
-                            con = mean(con, na.rm = TRUE)) %>%
-                  ungroup() %>%
-                  # multiply by seconds in a year, and divide by mg to kg conversion (1M)
-                  mutate(flux = con*q_lps*3.154e+7*(1/area)*1e-6) %>%
-                  pull(flux))
+                  flux_monthly_average = c()
+                  flux_monthly_pw = c()
+                  flux_monthly_beale = c()
+                  flux_monthly_rating = c()
+                  flux_monthly_comp = c()
+                  
+                  flux_monthly_average$flux =    rep(NA, 12)
+                  flux_monthly_pw$flux      =    rep(NA, 12) 
+                  flux_monthly_beale$flux   =    rep(NA, 12) 
+                  flux_monthly_rating$flux  =    rep(NA, 12) 
+                  flux_monthly_comp$flux    =    rep(NA, 12) 
+              }
+              
+              # will need: devtools::install_github('https://github.com/cran/RiverLoad.git')
+              
+              if('average' %in% method) {
+                  #### calculate average ####
+                  if(aggregation == "monthly") {
+                    flux_monthly_average <- sw(raw_data_target_year %>%
+                      group_by(wy, month) %>%
+                      summarize(q_lps = mean(q_lps, na.rm = TRUE),
+                                con = mean(con, na.rm = TRUE), .groups = "drop_last") %>%
+                      ungroup() %>%
+                      # multiply by seconds in a year, and divide by mg to kg conversion (1M)
+                      mutate(flux = con*q_lps*3.154e+7*(1/area)*1e-6) %>%
+                      select(month, flux))
+                  } else {
+                    flux_annual_average <- sw(raw_data_target_year %>%
+                      group_by(wy) %>%
+                      summarize(q_lps = mean(q_lps, na.rm = TRUE),
+                                con = mean(con, na.rm = TRUE)) %>%
+                      ungroup() %>%
+                      # multiply by seconds in a year, and divide by mg to kg conversion (1M)
+                      mutate(flux = con*q_lps*3.154e+7*(1/area)*1e-6) %>%
+                      pull(flux))
+                  }
+              }
+              
+              #### calculate period weighted #####
+              if(aggregation == 'annual') {
+                  if('pw' %in% method) {
+                      flux_annual_pw <- calculate_pw(chem_df, q_df, datecol = 'datetime',
+                                                     area = area, period = period)
+                  }
+              } else {
+                 # NOTE: for now, month-order is based off of pw, so this needs to run 
+                 # for monthly flux calcs internals to run (should be fixed)
+                  flux_annual_pw <- calculate_pw(chem_df, q_df, datecol = 'datetime',
+                                                 area = area, period = period)
               }
 
-              #### calculate period weighted #####
-              flux_annual_pw <- calculate_pw(chem_df, q_df, datecol = 'datetime',
-                                             area = area, period = period)
-
               #### calculate beale ######
-              flux_annual_beale <- calculate_beale(chem_df, q_df, datecol = 'datetime',
-                                                   area = area, period = period)
-
+              if('beale' %in% method) {
+                  flux_annual_beale <- calculate_beale(chem_df, q_df, datecol = 'datetime',
+                                                       area = area, period = period)
+              }
               #### calculate rating #####
-              flux_annual_rating <- calculate_rating(chem_df, q_df, datecol = 'datetime',
-                                                     area = area, period = period)
+              if('rating' %in% method) {
+                  flux_annual_rating <- calculate_rating(chem_df, q_df, datecol = 'datetime',
+                                                         area = area, period = period)
+              }
 
               #### calculate composite ######
-              rating_filled_df <- generate_residual_corrected_con(chem_df = chem_df,
-                                                                  q_df = q_df,
-                                                                  datecol = 'datetime',
-                                                                  sitecol = 'site_code')
-
-              # calculate annual flux from composite
-              flux_annual_comp <- calculate_composite_from_rating_filled_df(rating_filled_df,
-                                                                            area = area,
-                                                                            period = period)
-              
-              flux_comp_dq <- FALSE
-              if(any(flux_annual_comp < 0)) {
-                flux_comp_dq <- TRUE
+              if('composite' %in% method) {
+                  rating_filled_df <- generate_residual_corrected_con(chem_df = chem_df,
+                                                                      q_df = q_df,
+                                                                      datecol = 'datetime',
+                                                                      sitecol = 'site_code')
+                  # calculate annual flux from composite
+                  flux_annual_comp <- calculate_composite_from_rating_filled_df(rating_filled_df,
+                                                                                area = area,
+                                                                                period = period)
+                  flux_comp_dq <- FALSE
+                  if(any(flux_annual_comp < 0)) {
+                    flux_comp_dq <- TRUE
+                  }
               }
 
               if(period == 'month') {
-                # match everything to month order of period weighted
+                # NOTE: lots of code with month matching and merging below this is all 
+                # to match everything to month order of period weighted, to account for 
+                # possible worlds where water year rearranges month order, etc.
                 months <- sapply(strsplit(flux_annual_pw$date, "-"), `[`, 2)
                 flux_monthly_pw <- flux_annual_pw %>%
                   mutate(month = months) %>%
                   select(month, flux)
 
                 if(length(months) != 12) {
-                  warning('DEBUG: number of months in pw not 12, need handling for setting NA to uncalc months')
+                  warning('NOTE: number of months in pw not 12, need handling for setting NA to uncalc months')
                 }
 
-                # specific method months
-                months_beale <- sapply(strsplit(flux_annual_beale$date, "-"), `[`, 2)
-                flux_monthly_beale <- flux_annual_beale %>%
-                  mutate(month = as.character(months_beale))
-                flux_monthly_beale <- flux_monthly_beale[match(months, flux_monthly_beale$month),]
-                flux_monthly_beale <- left_join(flux_monthly_pw %>% select(month),
-                                               flux_monthly_beale, by = 'month') %>%
-                  select(month, flux)
+                # beale
+                if('beale' %in% method) {
+                    months_beale <- sapply(strsplit(flux_annual_beale$date, "-"), `[`, 2)
+                    flux_monthly_beale <- flux_annual_beale %>%
+                      mutate(month = as.character(months_beale))
+                    flux_monthly_beale <- flux_monthly_beale[match(months, flux_monthly_beale$month),]
+                    flux_monthly_beale <- left_join(flux_monthly_pw %>% select(month),
+                                                   flux_monthly_beale, by = 'month') %>%
+                      select(month, flux)
+                }
 
                 # rating
-                months_rating <- sapply(strsplit(flux_annual_rating$date, "-"), `[`, 2)
-                flux_monthly_rating <- flux_annual_rating %>%
-                  mutate(month = as.character(months_rating))
-                flux_monthly_rating <- flux_monthly_rating[match(months, flux_monthly_rating$month),]
-                flux_monthly_rating <- left_join(flux_monthly_pw %>% select(month),
-                                               flux_monthly_rating, by = 'month') %>%
-                  select(month, flux)
-
+                if('rating' %in% method) {
+                    months_rating <- sapply(strsplit(flux_annual_rating$date, "-"), `[`, 2)
+                    flux_monthly_rating <- flux_annual_rating %>%
+                      mutate(month = as.character(months_rating))
+                    flux_monthly_rating <- flux_monthly_rating[match(months, flux_monthly_rating$month),]
+                    flux_monthly_rating <- left_join(flux_monthly_pw %>% select(month),
+                                                   flux_monthly_rating, by = 'month') %>%
+                      select(month, flux)
+                }
+                
                 # comp
-                flux_monthly_comp <- flux_annual_comp[match(as.double(months), flux_annual_comp$month),]
-                flux_monthly_comp <- flux_monthly_comp %>%
-                  mutate(month = sprintf("%02d", month))
-                # make sure all months present, filled w NAs if no value
-                flux_monthly_comp <- left_join(flux_monthly_pw %>% select(month),
-                                               flux_monthly_comp, by = 'month') %>%
-                  select(month, flux)
+                if('composite' %in% method) {
+                    flux_monthly_comp <- flux_annual_comp[match(as.double(months), flux_annual_comp$month),]
+                    flux_monthly_comp <- flux_monthly_comp %>%
+                      mutate(month = sprintf("%02d", month))
+                    # make sure all months present, filled w NAs if no value
+                    flux_monthly_comp <- left_join(flux_monthly_pw %>% select(month),
+                                                   flux_monthly_comp, by = 'month') %>%
+                      select(month, flux)
+                }
+                
+                if(!'pw' %in% method) {
+                    flux_monthly_pw <- NA
+                }
 
               }
 
@@ -665,45 +713,50 @@ ms_calc_flux_rsfme <- function(chemistry,
                 recommended_method <- NA
               }
 
-              if(recommended_method == 'composite' & flux_comp_dq) {
-                recommended_method <- 'period weighted'
-
-                if(verbose) {
-                  warning('recommended method was set to composite, but composite has negative value, setting',
-                          'recommended method to period weighted')
-                }
+              if(exists('flux_comp_dq')) {
+                  if(recommended_method == 'composite' & flux_comp_dq) {
+                    recommended_method <- 'period weighted'
+    
+                    if(verbose) {
+                      warning('recommended method was set to composite, but composite has negative value, setting',
+                              'recommended method to period weighted')
+                    }
+                  }
               }
-
+              
               #### congeal fluxes ####
-
               if(period == 'month') {
-                target_year_out <- tibble(
-                        wy = as.character(target_year),
-                        month = rep(months, 5),
-                        val = c(flux_monthly_average$flux,
-                                flux_monthly_pw$flux,
-                                flux_monthly_beale$flux,
-                                flux_monthly_rating$flux,
-                                ## flux_annual_wrtds,
-                                flux_monthly_comp$flux),
-                        site_code = !!site_code,
-                        var = !!target_solute,
-                        method = c(rep('average', 12), rep('pw', 12), rep('beale', 12),
-                                   rep('rating', 12), rep('composite', 12))
-                    ) %>%
-                    mutate(ms_recommended = ifelse(method == !!recommended_method, 1, 0))
+                    target_year_out <- tibble(
+                            wy = as.character(target_year),
+                            month = rep(months, 5),
+                            val = c(flux_monthly_average$flux,
+                                    flux_monthly_pw$flux,
+                                    flux_monthly_beale$flux,
+                                    flux_monthly_rating$flux,
+                                    ## flux_monthly_wrtds,
+                                    flux_monthly_comp$flux),
+                            site_code = !!site_code,
+                            var = !!target_solute,
+                            method = c(rep('average', 12), rep('pw', 12), rep('beale', 12),
+                                       rep('rating', 12), rep('composite', 12))
+                        ) %>%
+                        mutate(ms_recommended = ifelse(method == !!recommended_method, 1, 0))
               } else {
-                target_year_out <- tibble(wy = as.character(target_year),
-                                          val = c(flux_annual_average,
-                                                  flux_annual_pw,
-                                                  flux_annual_beale,
-                                                  flux_annual_rating,
-                                                  ## flux_annual_wrtds,
-                                                  flux_annual_comp$flux[1]),
-                                    site_code = !!site_code,
-                                    var = !!target_solute,
-                                    method = c('average', 'pw', 'beale', 'rating', 'composite')) %>%
-                    mutate(ms_recommended = ifelse(method == !!recommended_method, 1, 0))
+                    # restructure flux annual comp to look like others in outframe creation
+                    if(length(flux_annual_comp) > 1) {
+                      flux_annual_comp <- flux_annual_comp$flux[1]
+                    }
+                    target_year_out <- tibble(wy = as.character(target_year),
+                                              val = c(flux_annual_average,
+                                                      flux_annual_pw,
+                                                      flux_annual_beale,
+                                                      flux_annual_rating,
+                                                      ## flux_annual_wrtds,
+                                                      flux_annual_comp),
+                                        site_code = !!site_code,
+                                        var = !!target_solute,
+                                        method = c('average', 'pw', 'beale', 'rating', 'composite')) %>%
+                        mutate(ms_recommended = ifelse(method == !!recommended_method, 1, 0))
               }
 
               out_frame <- rbind(out_frame, target_year_out)

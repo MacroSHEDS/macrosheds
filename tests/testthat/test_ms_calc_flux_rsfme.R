@@ -54,3 +54,28 @@ test_that("dataframe gets and checks validity of Q type from input data", {
   # check that this produces a dataframe
   expect_true(is.data.frame(ms_flux))
 })
+
+test_that("dataframe returned with correct input methods and aggregation", {
+  # input methods
+  input_methods <- c('average', 'composite', 'pw')
+  # calc flux (annual)
+  ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q, method = input_methods, aggregation = 'annual')
+  # output
+  output_methods <- sort(unique(ms_flux$method))
+  # check only user input methods are present in output "methods" column
+  expect_identical(output_methods, input_methods)
+  # check "month" not in column names
+  expect_false("month" %in% colnames(ms_flux))
+  
+  # input methods
+  input_methods <- c('rating', 'pw', 'beale')
+  # calc flux (monthly)
+  ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q, method = input_methods, aggregation = 'monthly')
+  # output
+  output_methods <- sort(unique(ms_flux$method))
+  # check only user input methods are present in output "methods" column
+  expect_setequal(output_methods, input_methods)
+  # check "month" is in column names
+  expect_true("month" %in% colnames(ms_flux))
+  expect_true("month" %in% colnames(ms_flux))
+})
