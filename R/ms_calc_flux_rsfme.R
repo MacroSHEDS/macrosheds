@@ -649,28 +649,28 @@ ms_calc_flux_rsfme <- function(chemistry,
               if(!is.nan(r_squared)) {
                 if(r_squared > 0.3){
                     if(resid_acf > 0.2){
-                        ideal_method <- 'composite'
+                        recommended_method <- 'composite'
                     }else{
-                        ideal_method <- 'rating'
+                        recommended_method <- 'rating'
                     }
                 }else{
                     if(con_acf > 0.20){
-                        ideal_method <- 'pw'
+                        recommended_method <- 'pw'
                     }else{
-                        ideal_method <- 'average'
+                        recommended_method <- 'average'
                     }
                 }
               } else {
-                writeLines("\n\n ideal method error: r_squared value was NaN; ideal method set to NA\n\n")
-                ideal_method <- NA
+                writeLines("\n\n recommended method error: r_squared value was NaN; recommended method set to NA\n\n")
+                recommended_method <- NA
               }
 
-              if(ideal_method == 'composite' & flux_comp_dq) {
-                ideal_method <- 'period weighted'
+              if(recommended_method == 'composite' & flux_comp_dq) {
+                recommended_method <- 'period weighted'
 
                 if(verbose) {
-                  warning('ideal method was set to composite, but composite has negative value, setting',
-                          'ideal method to period weighted')
+                  warning('recommended method was set to composite, but composite has negative value, setting',
+                          'recommended method to period weighted')
                 }
               }
 
@@ -691,7 +691,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                         method = c(rep('average', 12), rep('pw', 12), rep('beale', 12),
                                    rep('rating', 12), rep('composite', 12))
                     ) %>%
-                    mutate(ms_recommended = ifelse(method == !!ideal_method, 1, 0))
+                    mutate(ms_recommended = ifelse(method == !!recommended_method, 1, 0))
               } else {
                 target_year_out <- tibble(wy = as.character(target_year),
                                           val = c(flux_annual_average,
@@ -703,7 +703,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                                     site_code = !!site_code,
                                     var = !!target_solute,
                                     method = c('average', 'pw', 'beale', 'rating', 'composite')) %>%
-                    mutate(ms_recommended = ifelse(method == !!ideal_method, 1, 0))
+                    mutate(ms_recommended = ifelse(method == !!recommended_method, 1, 0))
               }
 
               out_frame <- rbind(out_frame, target_year_out)
