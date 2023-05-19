@@ -55,7 +55,7 @@ test_that("dataframe gets and checks validity of Q type from input data", {
   expect_true(is.data.frame(ms_flux))
 })
 
-test_that("dataframe returned with correct input methods and aggregation", {
+test_that("dataframe returned with correct input methods and aggregation, multiple combinations", {
   # input methods
   input_methods <- c('average', 'composite', 'pw')
   # calc flux (annual)

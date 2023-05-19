@@ -37,6 +37,8 @@
 #' are also available through this function. These methods can be used to produce annual or monthly flux estimates
 #' for eligible solutes. You can learn more about all of the available methods ('average', 'beale', 'pw', 'rating', 'composite')
 #' in the MacroSheds documentation. All output units are kg/ha/T for flux, where T is the aggregation period.
+#' References:
+#  Aulenbach, B.T. and Hooper, R.P. (2006), The composite method: an improved method for stream-water solute load estimation. Hydrol. Process., 20: 3029-3047. https://doi.org/10.1002/hyp.6147
 #' Before running [ms_calc_flux()], ensure both \code{q} and
 #' \code{chemistry} have the same time interval. See [ms_synchronize_timestep()].
 #' Also ensure chemistry units are mg/L. See [ms_conversions()].
@@ -704,12 +706,16 @@ ms_calc_flux_rsfme <- function(chemistry,
                 }else{
                     if(con_acf > 0.20){
                         recommended_method <- 'pw'
-                    }else{
+                    } else {
                         recommended_method <- 'average'
                     }
                 }
               } else {
-                writeLines("\n\n recommended method error: r_squared value was NaN; recommended method set to NA\n\n")
+                if(verbose) {
+                  warning(glue::glue('recommended method warning:  {site_code}, {target_solute}, {target_year}\n',
+                                      'during application of Aulenbach et al. 2016 procedure for choosing reccomended load estimation method',
+                                      ' concentration:discharge log-log linear regression r_squared value was NaN; recommended method set to NA\n\n'))
+                          }
                 recommended_method <- NA
               }
 
@@ -718,8 +724,10 @@ ms_calc_flux_rsfme <- function(chemistry,
                     recommended_method <- 'period weighted'
     
                     if(verbose) {
-                      warning('recommended method was set to composite, but composite has negative value, setting',
-                              'recommended method to period weighted')
+                      warning(glue::glue('recommended method warning:  {site_code}, {target_solute}, {target_year}\n',
+                                         'the recommended method was set to composite',
+                                         ' using procedure from Aulenbach et al. 2016, but that method results in illegal values.',
+                                         ' Setting reccomended method to period-weighting instead.'))
                     }
                   }
               }
