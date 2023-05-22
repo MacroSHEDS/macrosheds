@@ -2,7 +2,7 @@
 % Please edit documentation in R/ms_calc_flux_rsfme.R
 \name{ms_calc_flux_rsfme}
 \alias{ms_calc_flux_rsfme}
-\title{Calculates chemical fluxes}
+\title{Calculate daily, monthly or annual solute fluxes}
 \usage{
 ms_calc_flux_rsfme(
   chemistry,
@@ -30,8 +30,9 @@ returns a \code{tibble} of stream or precipitation chemical flux for every times
 where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep.
 }
 \description{
-Calculates solute fluxes from Q (discharge
-or precipitation) and chemistry data.
+Determines solute fluxes from daily Q (stream discharge
+or precipitation depth) and corresponding chemistry data using
+six available methods.
 }
 \details{
 Chemical flux is calculated by multiplying chemical concentration by flow

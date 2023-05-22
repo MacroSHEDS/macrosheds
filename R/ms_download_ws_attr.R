@@ -10,13 +10,17 @@
 #'    If this directory does not exist, it will be created. Does not have to be the same
 #'    as \code{macrosheds_root} provided to [ms_download_core_data()], but might as well be.
 #' @param dataset character. This function can download each of the four collections of watershed attribute data
-#'    provided by MacroSheds. "summaries" will download a feather file containing watershed attributes
-#'    summarized across time and space (i.e. one value for each site). "time series" will download 6 feather
-#'    files containing time series of watershed attributes where available. See \code{omit_climate_data} parameter. 
-#'    "CAMELS summaries" and "CAMELS Daymet forcings" will download additional watershed
-#'    summary data that conform as closely as possible to the specifications of the
-#'    [CAMELS dataset](https://ral.ucar.edu/solutions/products/camels). See MacroSheds metadata
-#'    for a list of discrepancies. Once downloaded, data can be loaded into R with [ms_load_product()].
+#'    provided by MacroSheds.
+#' * "summaries" will download watershed attributes summarized across time and space (i.e. one value for each site).
+#' * "time series" will download temporally explicit watershed attributes where available. See \code{omit_climate_data} parameter. 
+#' * "CAMELS summaries" and...
+#' * "CAMELS Daymet forcings" will download additional watershed
+#'   summary data that conform as closely as possible to the specifications of the
+#'   [CAMELS dataset](https://ral.ucar.edu/solutions/products/camels). See MacroSheds metadata
+#'   for a list of discrepancies.
+#' * you may also use "all" to retrieve all four datasets. \code{omit_climate_data} will still be recognized.
+#'
+#' Once downloaded, data can be loaded into R with [ms_load_product()].
 #' @param version character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to 
 #'    most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.
 #' @param quiet logical. If TRUE, some messages will be suppressed.
@@ -45,8 +49,8 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
            'User may need to re-install macrosheds to use this function.')
     }
     
-    if(! dataset %in% c('summaries', 'time series', 'CAMELS summaries', 'CAMELS Daymet forcings')){
-        stop('dataset must be one of "summaries", "time series", "CAMELS summaries", "CAMELS Daymet forcings". See help files.')
+    if(! dataset %in% c('summaries', 'time series', 'CAMELS summaries', 'CAMELS Daymet forcings', 'all')){
+        stop('dataset must be one of "summaries", "time series", "CAMELS summaries", "CAMELS Daymet forcings", "all". See help files.')
     }
 
     figshare_base <- 'https://figshare.com/ndownloader/files/'
@@ -87,6 +91,15 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
         
         rel_download <- figshare_codes %>%
             filter(grepl('Daymet_forcings_CAMELS', ut))
+    } else if(dataset == 'all') {
+
+        rel_download <- figshare_codes %>%
+            filter(! grepl('README|POLICY', ut))
+
+        if(omit_climate_data){
+            if(! quiet) print('omitting temporally explicit climate data from download')
+            rel_download <- filter(rel_download, ut != 'spatial_timeseries_climate')
+        }
     }
 
     n_downloads <- nrow(rel_download)

@@ -3425,7 +3425,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
 
         # Get var and site info
         if(is.null(site_data)){
-            site_data <- macrosheds::ms_download_site_data()
+            site_data <- macrosheds::ms_load_sites()
 
             if(! unique(stream_chemistry$site_code) %in% site_data$site_code){
                 stop('This site is not in the MacroSheds dataset, provide a site_data table with the names: site_code, ws_area_ha, latitude, longitude')
@@ -3439,7 +3439,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
         }
 
         ## ms_vars <- read.csv('data/ms/macrosheds_vardata.csv')
-        ms_vars <- macrosheds::ms_download_variables()
+        ms_vars <- macrosheds::ms_load_variables()
         site_code <- unique(stream_chemistry$site_code)
 
         #### Prep Files ####

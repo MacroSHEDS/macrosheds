@@ -23,6 +23,7 @@
 #' (and for watershed attribute products):
 #'
 #' + ws_attr_summaries
+#' + ws_attr_timeseries:all
 #' + ws_attr_timeseries:climate
 #' + ws_attr_timeseries:hydrology
 #' + ws_attr_timeseries:landcover
@@ -39,12 +40,8 @@
 #'    multiple variables, this filters to just the ones specified (ignores
 #'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
 #'    To see a catalog of variables, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
-#' @param networks character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
-#' @param domains character vector. MacroSheds domains to load; optional. To see a catalog of
-#'    domains, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
-#' @param site_codes character vector. MacroSheds sites to load, optional. To see a catalog of
-#'    site_codes, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
+#' @param networks,domains,site_codes character vectors of MacroSheds networks/domains/sites to load. Omit to load all. See [ms_load_sites()],
+#'    or visit [macrosheds.org] or [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
 #' @param sort_result logical. Ignored if requesting watershed attributes.
 #'    If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
 #'    datetime. this may add considerable loading time for large datasets.
@@ -54,12 +51,13 @@
 #' @seealso [ms_download_core_data()], [ms_download_ws_attr()], [ms_load_spatial_product()], [ms_load_variables()], [ms_load_sites()]
 #' @examples
 #' ms_root = 'data/macrosheds'
-#' dir.create(ms_root, recursive = TRUE)
-#' ms_download_core_data(macrosheds_root = ms_root,
-#'                       domains = c('niwot', 'hjandrews'))
+#' ms_download_core_data(macrosheds_root = ms_root, domains = c('niwot', 'hjandrews'))
+#' ms_download_ws_attr(macrosheds_root = ms_root, dataset = 'time series')
 #' macrosheds_data <- ms_load_product(macrosheds_root = ms_root, 
 #'                                    prodname = 'stream_chemistry', 
 #'                                    filter_vars = 'NO3_N')
+#' macrosheds_data <- ms_load_product(macrosheds_root = ms_root, 
+#'                                    prodname = 'ws_attr_timeseries:all')
 
 ms_load_product <- function(macrosheds_root, 
                             prodname,
@@ -80,6 +78,7 @@ ms_load_product <- function(macrosheds_root,
                          'precipitation', 'precip_chemistry',
                         # 'precip_flux_inst', 'precip_flux_inst_scaled',
                          'ws_attr_summaries', 'ws_attr_timeseries:climate',
+                         'ws_attr_timeseries:all',
                          'ws_attr_timeseries:hydrology', 'ws_attr_timeseries:landcover',
                          'ws_attr_timeseries:parentmaterial', 'ws_attr_timeseries:terrain',
                          'ws_attr_timeseries:vegetation', 'ws_attr_CAMELS_Daymet_forcings',
@@ -109,32 +108,30 @@ ms_load_product <- function(macrosheds_root,
     }
 
     if(grepl('flux', prodname)) {
-      stop(paste('this flux product is not directly available thru [ms_load_product()] but can be',
-               ' created using component MacroSheds products and [ms_calc_flux()]. Use load product',
-               ' to retrieve discharge and chemistry data, and [ms_calc_flux()] to produce instantaneous',
-               ' flux estimates (scaled or not scaled to watershed area) for the target precipitation or',
-               ' stream data.', sep = "\n"))
+      stop(paste('this flux product is not directly available through ms_load_product but can be',
+               ' created using component MacroSheds products and ms_calc_flux. Use load product',
+               ' to retrieve discharge and chemistry data, followed by ms_calc_flux.'))
     }
 
     if(! missing(networks)){
         ntws <- unique(macrosheds::ms_site_data$network)
         if(any(! networks %in% ntws)){
             illeg <- Filter(function(x) ! x %in% ntws, networks)
-            stop('illegal network names: ', paste(illeg, collapse = ', '), '. see ms_load_sites().')
+            stop('illegal network codes: ', paste(illeg, collapse = ', '), '. see ms_load_sites().')
         }
     }
     if(! missing(domains)){
         dmns <- unique(macrosheds::ms_site_data$domain)
         if(any(! domains %in% dmns)){
             illeg <- Filter(function(x) ! x %in% dmns, domains)
-            stop('illegal network names: ', paste(illeg, collapse = ', '), '. see ms_load_sites().')
+            stop('illegal domain codes: ', paste(illeg, collapse = ', '), '. see ms_load_sites().')
         }
     }
     if(! missing(site_codes)){
         sits <- unique(macrosheds::ms_site_data$site_code)
         if(any(! site_codes %in% sits)){
             illeg <- Filter(function(x) ! x %in% sits, site_codes)
-            stop('illegal network names: ', paste(illeg, collapse = ', '), '. see ms_load_sites().')
+            stop('illegal site codes: ', paste(illeg, collapse = ', '), '. see ms_load_sites().')
         }
     }
     
@@ -150,22 +147,40 @@ ms_load_product <- function(macrosheds_root,
         if(prodname == 'ws_attr_CAMELS_summaries') msfile <- 'watershed_summaries_CAMELS.feather'
         
         if(grepl('^ws_attr_timeseries', prodname)){
+            
             attr_set <- stringr::str_extract(prodname, '(?<=ws_attr_timeseries:).*')
+            
+            if(attr_set == 'all'){
+                attr_set <- c('terrain', 'landcover', 'parentmaterial',
+                              'vegetation', 'hydrology', 'climate')
+                prodname <- paste0('ws_attr_timeseries:', attr_set)
+            }
+
             msfile <- paste0('spatial_timeseries_', attr_set, '.feather')
         }
         msfile <- file.path(macrosheds_root, msfile)
         
-        if(! file.exists(msfile)){
-            stop('No file found for ', prodname, '. Download it with ms_download_ws_attr, or check your macrosheds_root.')
+        filecheck <- file.exists(msfile)
+        if(! all(filecheck)){
+            
+            if(length(filecheck) > 1){
+                prodname_err <- prodname[filecheck]
+            } else {
+                prodname_err <- prodname
+            }
+            
+            stop('No file found for ',
+                 paste(prodname_err, collapse = ', '),
+                 '. Download with ms_download_ws_attr, or check your macrosheds_root.')
         }
         
         # Create size warning
-        file_sizes <- file.info(msfile)$size
+        file_sizes <- sum(file.info(msfile)$size)
         file_sizes <- round(sum(file_sizes, na.rm = TRUE)/1000000, 1)
         
         if(warn && file_sizes > 100){
             
-            resp <- get_response_1char(msg = paste0('This dataset will occupy about ',
+            resp <- get_response_1char(msg = paste0('Unfiltered, this dataset would occupy about ',
                                                     file_sizes,
                                                     ' MB in memory. Do you want to continue? (y/n) > '),
                                        possible_chars = c('y', 'n'))
@@ -176,17 +191,19 @@ ms_load_product <- function(macrosheds_root,
             }
         }
         
-        o <- feather::read_feather(msfile)
+        ntw_filt <- ! missing(networks)
+        dmn_filt <- ! missing(domains)
+        sit_filt <- ! missing(site_codes)
         
-        if(! missing(networks)){
-            o <- filter(o, network %in% networks)
-        }
-        if(! missing(domains)){
-            o <- filter(o, domain %in% domains)
-        }
-        if(! missing(site_codes)){
-            o <- filter(o, site_code %in% site_codes)
-        }
+        o <- purrr::map_dfr(msfile, function(x){
+                o_ <- feather::read_feather(x)
+                
+                if(ntw_filt) o_ <- filter(o_, network %in% networks)
+                if(dmn_filt) o_ <- filter(o_, domain %in% domains)
+                if(sit_filt) o_ <- filter(o_, site_code %in% site_codes)
+                
+                return(o_)
+            })
         
         return(o)
     }
