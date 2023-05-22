@@ -33,7 +33,7 @@
 #' kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 #' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
 #' [ms_undo_scale_flux_by_area()].
-#' Advanced flux estimation methods, referred to in shorthand here as "rsfme" (short for Riverine Solute Flux Estimation Methods")
+#' Advanced flux estimation methods, referred to in shorthand here as "rsfme" (short for Riverine Solute Flux Method Evaluation")
 #' are also available through this function. These methods can be used to produce annual or monthly flux estimates
 #' for eligible solutes. You can learn more about all of the available methods ('average', 'beale', 'pw', 'rating', 'composite')
 #' in the MacroSheds documentation. All output units are kg/ha/T for flux, where T is the aggregation period.
@@ -525,6 +525,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                          mutate(month = lubridate::month(datetime))
               q_df <- q_df %>%
                          mutate(month = lubridate::month(datetime))
+              # browser()
 
               # set up dummy flux values to be replaced if user has chosen to run method
               if(aggregation == 'annual') {
@@ -659,7 +660,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                 }
                 
                 if(!'pw' %in% method) {
-                    flux_monthly_pw <- NA
+                    flux_monthly_pw$flux <- rep(NA, 12)
                 }
 
               }
