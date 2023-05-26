@@ -197,3 +197,4 @@ test_that("testing all methods and aggregations permutations", {
       }
   }
 })
+
