@@ -11,7 +11,7 @@
 #'    as \code{macrosheds_root} provided to [ms_download_core_data()], but might as well be.
 #' @param dataset character. This function can download each of the four collections of watershed attribute data
 #'    provided by MacroSheds.
-#' * "summaries" will download watershed attributes summarized across time and space (i.e. one value for each site).
+#' * "summaries" will download watershed attributes summarized across time and space (i.e. one value for each site-attribute).
 #' * "time series" will download temporally explicit watershed attributes where available. See \code{omit_climate_data} parameter. 
 #' * "CAMELS summaries" and...
 #' * "CAMELS Daymet forcings" will download additional watershed

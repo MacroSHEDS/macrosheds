@@ -7,8 +7,8 @@
 #' @author Mike Vlah
 #' @author Spencer Rhea
 #' @param var_set character. One of "timeseries" (the default), "timeseries_by_site", or "ws_attr".
-#'    If "timeseries", basic metadata for core MacroSheds time-series will be returned. If "timeseries_by_site" a
-#'    Fuller catalog of variable availability per site will be returned. If "ws_attr" metadata for MacroSheds watershed
+#'    If "timeseries", basic metadata for core MacroSheds time series will be returned. If "timeseries_by_site", a
+#'    Fuller catalog of variable availability per site will be returned. If "ws_attr", metadata for MacroSheds watershed
 #'    attributes will be returned.
 #' @return returns a \code{data.frame} of variables, codes, units, and other metadata.
 #' @details Variable metadata are included as an .RData file with the macrosheds package, and
