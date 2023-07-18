@@ -3225,14 +3225,14 @@ calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no 
             dplyr::select(datetime, con_com, q_lps, wy) %>%
             na.omit() %>%
             mutate(flux = con_com*q_lps*86400*(1/area)*1e-6) %>%
-            group_by(wy) %>%
+            group_by(wy, .groups = "drop_last") %>%
             summarize(flux = sum(flux)) %>%
             mutate(site_code = site_no)
         } else if(period == 'month'){
             flux_from_comp <- rating_filled_df %>%
                 mutate(month = lubridate::month(datetime),
                        flux = con_com*q_lps*86400*(1/area)*1e-6) %>%
-                group_by(wy, month) %>%
+                group_by(wy, month, .groups = "drop_last") %>%
                 summarize(date = max(datetime),
                           flux = sum(flux))
         }
@@ -3946,7 +3946,7 @@ mean_or_x <- function(x, na.rm = FALSE) {
 
     if(length(x) == 1) return(x)
 
-    x <- mean(var(x, na.rm = na.rm))
+    x <- mean(x, na.rm = na.rm)
     print('multiple values meaned')
     return(x)
 }
