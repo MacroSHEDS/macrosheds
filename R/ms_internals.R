@@ -3562,7 +3562,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
         # Set up EGRET Daily file
         # make sure dischagre is daily aggregated
         discharge_daily <- discharge %>%
-          mutate(datetime = date(datetime)) %>%
+          mutate(datetime = lubridate::date(datetime)) %>%
           group_by(datetime, site_code, var, ms_status, ms_interp, year, month) %>%
           summarise(val = mean(val))
 
