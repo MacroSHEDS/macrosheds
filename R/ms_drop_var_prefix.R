@@ -2,7 +2,7 @@
 #'
 #' Remove the two-letter prefixes from MacroSheds variable codes. See details.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param x character MacroSheds variable code with a prefix.

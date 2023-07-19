@@ -4,7 +4,7 @@
 #' This function converts chemical flux to kg/d. If You generated precipitation chemical
 #' flux yourself with [ms_calc_watershed_precip()], it is in kg/d and this function may be needed.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param d \code{data.frame}. A \code{data.frame} in MacroSheds format (see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)

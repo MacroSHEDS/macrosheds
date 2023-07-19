@@ -3,7 +3,7 @@
 #' Calculates stream discharge and precipitation fluxes of chemicals from Q (discharge
 #' or precipitation) and chemistry data.
 #'
-#' @author Spencer Rhea, spencerrhea41@@gmail.com
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or

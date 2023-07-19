@@ -5,7 +5,7 @@
 #' greater than or less than the desired output interval, this function either aggregates
 #' records (by mean or sum), or interpolates them by one of four methods.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param d \code{data.frame}. A \code{data.frame} in MacroSheds format (see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)

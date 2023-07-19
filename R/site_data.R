@@ -1,6 +1,6 @@
 #' MacroSheds site metadata
 #'
 #' @docType data
-#' @author Mike Vlah \email{vlahm13@@gmail.com}
+#' @author Mike Vlah 
 #' @keywords data
 "ms_site_data"

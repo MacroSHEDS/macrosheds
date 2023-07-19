@@ -2,7 +2,7 @@
 #'
 #' Fill precipitation gauges based on relationship to surrounding gauges.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param precip \code{data.frame}. A \code{data.frame} or path to \code{data.frame} 

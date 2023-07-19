@@ -6,7 +6,7 @@
 #' precip_gauge_locations. Not all products are available at all sites, but 
 #' all products available for the selected domains will be downloaded.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param macrosheds_root character. Directory where macrosheds data files will be downloaded.

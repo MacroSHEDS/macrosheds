@@ -10,7 +10,7 @@
 #' is intended to be used interactively in Rstudio. If you'd like to use it in some
 #' other fashion, let us know. See details.
 #' 
-#' @author Mike Vlah, \email{vlahm13@@gmail.com}
+#' @author Mike Vlah
 #' @author Spencer Rhea
 #' @author Wes Slaughter
 #' @param lat numeric. Represents the latitude of the pour point in decimal degrees

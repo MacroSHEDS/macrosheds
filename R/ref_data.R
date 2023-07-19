@@ -1,7 +1,7 @@
 #' MacroSheds references as BibTeX strings
 #'
 #' @docType data
-#' @author Mike Vlah \email{vlahm13@@gmail.com}
+#' @author Mike Vlah 
 #' @keywords data
 "ts_bib"
 "ws_bib"

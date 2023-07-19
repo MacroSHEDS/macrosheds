@@ -3,7 +3,7 @@
 #' Determines solute fluxes from interpolated daily Q (discharge
 #' or precipitation) and corresponding chemistry data.
 #'
-#' @author Spencer Rhea, spencerrhea41@@gmail.com
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or

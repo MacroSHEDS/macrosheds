@@ -8,7 +8,7 @@
 #' If precipitation chemistry is supplied in addition to depth, then watershed-average
 #' precipitation depth, chemistry, and chemical flux estimates will all be generated.
 #' 
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param precip optional \code{data.frame} or path to a directory containing feather files.

@@ -3,7 +3,7 @@
 #' ms_run_egret prepares data for the EGRET package and runs the Weighted Regression
 #' on Time, Discharge, and Season (WRTDS) model.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param stream_chemistry \code{data.frame} in MacroSheds format (see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)

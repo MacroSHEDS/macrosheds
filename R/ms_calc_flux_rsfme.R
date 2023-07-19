@@ -6,7 +6,7 @@
 #'
 #' @author Wes Slaughter, \email{wslaughter@@berkeley.edu}
 #' @author Nick Gubbins, \email{gubbinsnick@@gmail.com}
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #'
 #' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or

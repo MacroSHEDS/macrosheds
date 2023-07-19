@@ -2,7 +2,7 @@
 #'
 #' Use the Lynne-Hollick baseflow filter, via hydrostats, to perform baseflow separation 
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
+#' @author Spencer Rhea 
 #' @author Mike Vlah
 #' @author Wes Slaughter
 #' @param discharge \code{data.frame}. A MacroSheds discharge table of one site
