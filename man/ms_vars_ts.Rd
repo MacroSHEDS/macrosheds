@@ -14,6 +14,6 @@ ms_vars_ts
 MacroSheds variable metadata
 }
 \author{
-Mike Vlah \email{vlahm13@gmail.com}
+Mike Vlah, \email{vlahm13@gmail.com}
 }
 \keyword{data}

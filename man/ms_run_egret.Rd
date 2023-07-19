@@ -65,9 +65,9 @@ and remove datetimes when there is chemistry but no discharge data reported.
 \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_conversions]{ms_conversions()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }

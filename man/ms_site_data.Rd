@@ -14,6 +14,6 @@ ms_site_data
 MacroSheds site metadata
 }
 \author{
-Mike Vlah \email{vlahm13@gmail.com}
+Mike Vlah, \email{vlahm13@gmail.com}
 }
 \keyword{data}

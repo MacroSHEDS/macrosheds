@@ -21,7 +21,7 @@ as \code{macrosheds_root} provided to \code{\link[=ms_download_core_data]{ms_dow
 \item{dataset}{character. This function can download each of the four collections of watershed attribute data
 provided by MacroSheds.
 \itemize{
-\item "summaries" will download watershed attributes summarized across time and space (i.e. one value for each site).
+\item "summaries" will download watershed attributes summarized across time and space (i.e. one value for each site-attribute).
 \item "time series" will download temporally explicit watershed attributes where available. See \code{omit_climate_data} parameter.
 \item "CAMELS summaries" and...
 \item "CAMELS Daymet forcings" will download additional watershed
@@ -62,7 +62,7 @@ ms_download_ws_attr(macrosheds_root = 'my/macrosheds/root', dataset = 'time seri
 \author{
 Wes Slaughter, \email{wslaughter@berkeley.edu}
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Spencer Rhea
 }

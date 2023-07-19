@@ -15,7 +15,7 @@ this function has been retired, and replaced with \code{ms_load_variables}, plea
 \author{
 Wes Slaughter, \email{wslaughter@berkeley.edu}
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Spencer Rhea
 }

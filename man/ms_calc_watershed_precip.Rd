@@ -109,9 +109,9 @@ See vignette: https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_
 \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_delineate_watershed]{ms_delineate_watershed()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }

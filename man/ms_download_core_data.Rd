@@ -58,9 +58,9 @@ ms_download_core_data(macrosheds_root = 'data/macrosheds',
 \code{\link[=ms_load_sites]{ms_load_sites()}}, \code{\link[=ms_load_variables]{ms_load_variables()}}, \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }

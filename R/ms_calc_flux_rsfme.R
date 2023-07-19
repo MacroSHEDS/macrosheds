@@ -1,4 +1,4 @@
-#' Calculate daily, monthly or annual solute fluxes
+#' Calculate daily, monthly or annual solute fluxes (loads)
 #'
 #' Determines solute fluxes from daily Q (stream discharge
 #' or precipitation depth) and corresponding chemistry data using
@@ -9,37 +9,56 @@
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #'
-#' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or
-#'    stream chemistry data in MacroSheds format and in units of mg/L.
-#' @param q \code{data.frame}. A \code{data.frame} of stream
-#'    discharge (L/s) or precipitation depth (mm) in MacroSheds format.
-#' @param method character. Default 'simple'; options are running 'simple' or a vector including any
-#'    combination of the following "advanced" methods: c('average', 'beale', 'pw', 'rating', 'composite'),
-#'    or supply simply 'rsfme' to run all these methods.
-#' @param aggregation character. Default NULL; if running 'simple' this argument should remain NULL. If using any
-#'    "rsfme" or any of the non-"simple" methods, user must supply an aggregation, either "monthly" or "annual" 
-#' @param verbose logical. Default TRUE; prints more information to console.
-#' @return returns a \code{tibble} of stream or precipitation chemical flux for every timestep
-#'    where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep.
+#' @param chemistry A \code{data.frame} or \code{tibble} of precipitation or
+#'    stream chemistry data in MacroSheds format (see details) and in units of mg/L.
+#' @param q A \code{data.frame} or \code{tibble} of stream
+#'    discharge (L/s) or precipitation depth (mm) in MacroSheds format (see detaails).
+#' @param method character either 'simple' for for daily flux, or a vector including any
+#'    combination of the following for computing monthly or annual cumulative flux, AKA load: 'pw', 'rating', 'composite', 'beale', 'average'. See details.
+#' @param aggregation character. For method='simple', this argument should remain NULL. If using any
+#'    other method(s), specify either "monthly" or "annual". 
+#' @param good_year_check logical. definition forthcoming
+#' @param verbose logical. control the level of informational printing.
+#' @return a \code{tibble} of stream or precipitation solute flux (if method="simple") or monthly or annual load. Output units are kg/ha/timestep.
 #' @details
-#' in the terminology we employ here, "simple" chemical flux is calculated by multiplying chemical concentration by flow
-#' of water (flux = concentration * flow). The output units depend on the time
+#'
+#' The \code{chemistry} and \code{q} parameters require inputs in MacroSheds format, which is the format returned by ms_load_product for core time-series data. MacroSheds format is:
+#' | header value  | column_definition |
+#' | ------------- | ----------------- |
+#' | datetime      | Date and time in UTC. Time is specified in order to accommodate subdaily time-series data in future updates, though at present all time components are 00:00:00. |
+#' | site_code     | A unique identifier for each MacroSheds site. Identical to primary source site code where possible. See sites.csv metadata on EDI or run ms_load_sites() from the macrosheds package for more information. |
+#' | var           | Variable code, including sample type prefix (described in "Tracking of Sampling Methods for Each Record" section). see variables_timeseries.csv on EDI or run ms_load_variables() from the macrosheds package for more information. |
+#' | val           | The data value. |
+#' | ms_status     | QC flag. See "Technical Validation" section. Lowercase "ms" here stands for "MacroSheds." |
+#' | ms_interp     | Imputation flag, described in "Temporal Imputation and Aggregation" section. |
+#' | val_err       | The combined standard uncertainty associated with the corresponding data point, if estimable. See “Detection Limits and Propagation of Uncertainty” section for details. |
+#'
+#' `method` = 'simple' computes flux by multiplying solute concentration by discharge at each timestep.
+#' The output units depend on the time
 #' interval at which input data are collected. The resulting flux units will always be
-#' kg/ha/T, where T is the time interval of the input \code{tibble}. The type of input water flow data, or \code{q_type} 
-#' as it is referred to often here, is used to calculate flux differently because of the different 
-#' units of discharge and precipitation. If \code{q_type} is 'discharge', flux is calculated as: 
+#' kg/ha/T, where T is the time interval of the input (as of MacroSheds version 1, all time-series data are provided at a daily interval).
+#' For stream_chemistry and discharge, flux is calculated as: 
 #' kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
-#' If \code{q_type} is 'precipitation', is calculated as: 
+#' For precipitation chemistry and precip depth, flux is calculated as: 
 #' kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 #' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
 #' [ms_undo_scale_flux_by_area()].
-#' Advanced flux estimation methods, referred to in shorthand here as "rsfme" (short for Riverine Solute Flux Method Evaluation")
-#' are also available through this function. These methods can be used to produce annual or monthly flux estimates
-#' for eligible solutes. You can learn more about all of the available methods ('average', 'beale', 'pw', 'rating', 'composite')
-#' in the MacroSheds documentation. All output units are kg/ha/T for flux, where T is the aggregation period.
+#'
+#' Annual/monthly cumulative flux, or load, can also be estimated with this function, using one of five `method`s detailed below. Consult Figure 10 in Aulenbach et al. 2016 for guidance on method selection. See Figure 1 for some intuition.
+#'  + 'pw': period-weighted method, described in Aulenbach et al. 2016. Here, C is linearly interpolated. This option uses package RiverLoad.
+#'  + 'rating': AKA regression-model method, described in Aulenbach et al. 2016. This option uses package RiverLoad.
+#'  + 'composite': composite method, described in Aulenbach et al. 2016. This option uses package RiverLoad.
+#'  + 'beale': Beale ratio estimator, described in Meals et al. 2013. This option uses package RiverLoad.
+#'  + 'average': mean Q over the aggregation period times mean C over the aggregation period
+#'
+#' All output units are kg/ha/T, where T is the aggregation period.
+#'
 #' References:
-#  Aulenbach, B.T. and Hooper, R.P. (2006), The composite method: an improved method for stream-water solute load estimation. Hydrol. Process., 20: 3029-3047. https://doi.org/10.1002/hyp.6147
-#' Before running [ms_calc_flux()], ensure both \code{q} and
+#'
+#'  + Aulenbach, B. T., Burns, D. A., Shanley, J. B., Yanai, R. D., Bae, K., Wild, A. D., ... & Yi, D. (2016). Approaches to stream solute load estimation for solutes with varying dynamics from five diverse small watersheds. Ecosphere, 7(6), e01298.
+#'  +Meals, D. W., Richards, R. P., & Dressing, S. A. (2013). Pollutant load estimation for water quality monitoring projects. Tech Notes, 8, 1-21.
+#'
+#' Before running [ms_calc_flux_rsfme()], ensure both \code{q} and
 #' \code{chemistry} have the same time interval. See [ms_synchronize_timestep()].
 #' Also ensure chemistry units are mg/L. See [ms_conversions()].
 #' @seealso [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]

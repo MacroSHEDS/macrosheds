@@ -8,8 +8,8 @@ ms_load_variables(var_set = "timeseries")
 }
 \arguments{
 \item{var_set}{character. One of "timeseries" (the default), "timeseries_by_site", or "ws_attr".
-If "timeseries", basic metadata for core MacroSheds time-series will be returned. If "timeseries_by_site" a
-Fuller catalog of variable availability per site will be returned. If "ws_attr" metadata for MacroSheds watershed
+If "timeseries", basic metadata for core MacroSheds time series will be returned. If "timeseries_by_site", a
+Fuller catalog of variable availability per site will be returned. If "ws_attr", metadata for MacroSheds watershed
 attributes will be returned.}
 }
 \value{
@@ -34,7 +34,7 @@ ws_attr_vars <- ms_load_variables(var_set = 'ws_attr')
 \author{
 Wes Slaughter, \email{weston.slaughter@duke.edu}
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Spencer Rhea
 }

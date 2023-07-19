@@ -99,9 +99,9 @@ converted_data <- ms_conversions(d = d,
 \code{\link[=ms_load_product]{ms_load_product()}}, \code{\link[=ms_drop_variable_prefix]{ms_drop_variable_prefix()}}, \code{\link[=ms_load_variables]{ms_load_variables()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }

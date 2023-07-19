@@ -68,9 +68,9 @@ ms_synchronize_timestep(d, '15 min', 96)
 ms_synchronize_timestep(d, '1 week', 3, summary_fun = 'mean')
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }

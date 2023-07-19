@@ -1,9 +1,8 @@
 #' Aggregate or interpolate MacroSheds data to specified time intervals
 #'
-#' This function is used to set the time interval of a \code{data.frame} in MacroSheds
-#' format (see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
-#' greater than or less than the desired output interval, this function either aggregates
-#' records (by mean or sum), or interpolates them by one of four methods.
+#' Set the sample interval of a \code{data.frame} in MacroSheds
+#' format (see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262))
+#' by interpolation (for upsampling) or aggregation (for downsampling).
 #'
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}

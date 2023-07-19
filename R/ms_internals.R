@@ -2539,15 +2539,17 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     
     #include the entry for MacroSheds itself
     ms_bib <- paste0(
-    "@article{vlah_etal_macrosheds_2023,\n\ttitle = {MacroSheds: a synthesis of long-term ",
-    "biogeochemical, hydroclimatic, and geospatial data from small watershed ecosystem studies},\n\tauthor = ",
-    "{Vlah, M.J. and Rhea, S. and Bernhardt, E.S. and Slaughter, W. and Gubbins, N. and DelVecchia, A.G. and ",
-    "Thellman, A. and Ross, M.R.V.},\n\tyear = {2023},\n\tjournal = {Limnology and Oceanography Letters},\n\t",
-    "    %    volume = {},
-        %    number = {},
-        %    pages = {5--18},
-        %    publisher = {Elsevier},\n}")
-    
+    "@article{vlah_etal_macrosheds_2023,\n\t",
+    "author = {Vlah, Michael J. and Rhea, Spencer and Bernhardt, Emily S. and Slaughter, Weston and Gubbins, Nick and DelVecchia, Amanda G. and Thellman, Audrey and Ross, Matthew R. V.},\n\t",
+    "title = {MacroSheds: A synthesis of long-term biogeochemical, hydroclimatic, and geospatial data from small watershed ecosystem studies},\n\t",
+    "journal = {Limnology and Oceanography Letters},\n\t"
+    "volume = {8},\n\t"
+    "number = {3},\n\t"
+    "pages = {419-452},\n\t"
+    "doi = {https://doi.org/10.1002/lol2.10325},\n\t"
+    "url = {https://aslopubs.onlinelibrary.wiley.com/doi/abs/10.1002/lol2.10325},"
+    "year = {2023},\n}")
+
     #retrieve bibtex for any matches
     bibtex_out <- bts[matches]
     bibtex_out <- c(ms_bib, bibtex_out)

@@ -42,9 +42,9 @@ d <- ms_undo_scale_flux_by_area(d)
 \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }

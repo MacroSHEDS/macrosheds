@@ -85,9 +85,9 @@ macrosheds_data <- ms_load_product(macrosheds_root = ms_root,
 \code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_download_ws_attr]{ms_download_ws_attr()}}, \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}, \code{\link[=ms_load_variables]{ms_load_variables()}}, \code{\link[=ms_load_sites]{ms_load_sites()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }
