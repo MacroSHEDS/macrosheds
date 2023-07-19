@@ -3,7 +3,7 @@
 #' Fill precipitation gauges based on relationship to surrounding gauges.
 #'
 #' @author Spencer Rhea 
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param precip \code{data.frame}. A \code{data.frame} or path to \code{data.frame} 
 #'    in macrosheds format of precipitation gauge data 

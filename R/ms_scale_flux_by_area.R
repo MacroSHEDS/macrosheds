@@ -5,7 +5,7 @@
 #' flux yourself with [ms_calc_watershed_precip()], it is in kg/d and this function may be needed.
 #'
 #' @author Spencer Rhea 
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param d \code{data.frame}. A \code{data.frame} in MacroSheds format (see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
 #'    containing stream or precipitation flux data. A \code{data.frame} in

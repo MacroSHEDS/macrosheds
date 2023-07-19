@@ -4,7 +4,7 @@
 #'  location of stream gauges, and more.
 #'
 #' @author Wes Slaughter, \email{weston.slaughter@duke.edu}
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Spencer Rhea
 #' @return returns a \code{data.frame} of all sites in the MacroSheds dataset
 #'    with their corresponding network, domain, latitude, longitude, area, and

@@ -3,7 +3,7 @@
 #' Search for USGS gauges within a radius of a location specified by latitude and longitude
 #'
 #' @author Spencer Rhea 
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param sites Either an \code{sf} object with locations of interest or a \code{data.frame}
 #'    containing latitude and longitude information.

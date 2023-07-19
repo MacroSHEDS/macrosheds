@@ -4,7 +4,7 @@
 #' downloaded MacroSheds dataset. For watershed boundaries and gauge locations, see [ms_load_spatial_product()].
 #'
 #' @author Spencer Rhea 
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param macrosheds_root character. The path to the MacroSheds dataset's parent
 #'    directory, established with [ms_download_core_data()] and/or [ms_download_ws_attr()].

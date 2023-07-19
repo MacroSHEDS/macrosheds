@@ -7,7 +7,7 @@
 #' @author Wes Slaughter, \email{wslaughter@@berkeley.edu}
 #' @author Nick Gubbins, \email{gubbinsnick@@gmail.com}
 #' @author Spencer Rhea 
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #'
 #' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or
 #'    stream chemistry data in MacroSheds format and in units of mg/L.

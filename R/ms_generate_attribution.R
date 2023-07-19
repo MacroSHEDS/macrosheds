@@ -3,7 +3,7 @@
 #' Also returns contact information, URLs, DOIs, and intellectual rights
 #' details, all based on an input data.frame in MacroSheds format.
 #'
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param d \code{data.frame}. A \code{data.frame} in MacroSheds format (i.e. with
 #'   at least columns datetime, site_code, var.). If omitted, all attribution

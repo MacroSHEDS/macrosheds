@@ -5,7 +5,7 @@
 #' [ms_load_product()] for time-series data.
 #'
 #' @author Spencer Rhea 
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param macrosheds_root character. The path to the macrosheds dataset's parent
 #'    directory, established with [ms_download_core_data()].

@@ -9,7 +9,7 @@
 #' precipitation depth, chemistry, and chemical flux estimates will all be generated.
 #' 
 #' @author Spencer Rhea 
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param precip optional \code{data.frame} or path to a directory containing feather files.
 #'    File or directory must represent a dataset in MacroSheds format (see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262) for definitions),

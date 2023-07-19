@@ -3,7 +3,7 @@
 #' Use the Lynne-Hollick baseflow filter, via hydrostats, to perform baseflow separation 
 #'
 #' @author Spencer Rhea 
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param discharge \code{data.frame}. A MacroSheds discharge table of one site
 #' @param alpha Numeric. Default 0.975, alpha value for the Lynne-Hollick baseflow filter. See 
