@@ -386,7 +386,7 @@ delineate_watershed_apriori_recurse <- function(lat,
     #                     pf = temp_point) %>%
     #     paste(collapse = '\n\n')
     
-    msg <- glue::glue('\n\nVisually inspect the watershed boundary candidates.\n',
+    msg <- glue::glue('\n\nVisually inspect the watershed boundary candidate(s).\n',
                 # 'by pasting the mapview lines below into a separate instance of R.\n\n{hc}\n\n',
                 'Enter the number corresponding to the ',
                 'one that looks best, or select one or more tuning ',

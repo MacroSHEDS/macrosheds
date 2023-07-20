@@ -194,7 +194,7 @@ ms_delineate_watershed <- function(lat,
     if(missing(write_name) || is.null(write_name)){
         stop('write_name must be provided')
     }
-    if(missing(crs) || is.null(crs)){
+    if(is.null(crs)){
         stop('crs must be provided')
     }
     

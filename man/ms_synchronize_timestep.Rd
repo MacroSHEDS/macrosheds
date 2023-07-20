@@ -46,10 +46,9 @@ returns a \code{tibble} with data in the new desired_interval with a
 ms_interp column indicating if a value was interpolated.
 }
 \description{
-This function is used to set the time interval of a \code{data.frame} in MacroSheds
-format (see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}
-greater than or less than the desired output interval, this function either aggregates
-records (by mean or sum), or interpolates them by one of four methods.
+Set the sample interval of a \code{data.frame} in MacroSheds
+format (see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI})
+by interpolation (for upsampling) or aggregation (for downsampling).
 }
 \examples{
 ### Load some MacroSheds data:

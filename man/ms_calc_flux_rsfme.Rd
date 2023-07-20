@@ -20,13 +20,15 @@ stream chemistry data in MacroSheds format (see details) and in units of mg/L.}
 \item{q}{A \code{data.frame} or \code{tibble} of stream
 discharge (L/s) or precipitation depth (mm) in MacroSheds format (see detaails).}
 
-\item{method}{string. either 'simple' for for daily flux, or a vector including any
-combination of the following for computing monthly or annual cumulative flux, AKA load: 'average', 'beale', 'pw', 'rating', 'composite'. See details.}
+\item{method}{character either 'simple' for for daily flux, or a vector including any
+combination of the following for computing monthly or annual cumulative flux, AKA load: 'pw', 'rating', 'composite', 'beale', 'average'. See details.}
 
 \item{aggregation}{character. For method='simple', this argument should remain NULL. If using any
 other method(s), specify either "monthly" or "annual".}
 
 \item{verbose}{logical. control the level of informational printing.}
+
+\item{good_year_check}{logical. definition forthcoming}
 }
 \value{
 a \code{tibble} of stream or precipitation solute flux (if method="simple") or monthly or annual load. Output units are kg/ha/timestep.
@@ -62,19 +64,20 @@ You can convert between kg/ha/T and kg/T using \code{\link[=ms_scale_flux_by_are
 
 Annual/monthly cumulative flux, or load, can also be estimated with this function, using one of five \code{method}s detailed below. Consult Figure 10 in Aulenbach et al. 2016 for guidance on method selection. See Figure 1 for some intuition.
 \itemize{
+\item 'pw': period-weighted method, described in Aulenbach et al. 2016. Here, C is linearly interpolated. This option uses package RiverLoad.
+\item 'rating': AKA regression-model method, described in Aulenbach et al. 2016. This option uses package RiverLoad.
+\item 'composite': composite method, described in Aulenbach et al. 2016. This option uses package RiverLoad.
+\item 'beale': Beale ratio estimator, described in Meals et al. 2013. This option uses package RiverLoad.
 \item 'average': mean Q over the aggregation period times mean C over the aggregation period
-\item 'beale': Beale ratio estimator, described in Meals et al. 2013
-\item 'pw': period-weighted method, described in Aulenbach et al. 2016
-\item 'rating': AKA regression-model method, described in Aulenbach et al. 2016
-\item 'composite': composite method, described in Aulenbach et al. 2016
 }
 
 All output units are kg/ha/T, where T is the aggregation period.
 
 References:
-
-Aulenbach, B. T., Burns, D. A., Shanley, J. B., Yanai, R. D., Bae, K., Wild, A. D., ... & Yi, D. (2016). Approaches to stream solute load estimation for solutes with varying dynamics from five diverse small watersheds. Ecosphere, 7(6), e01298.
-Meals, D. W., Richards, R. P., & Dressing, S. A. (2013). Pollutant load estimation for water quality monitoring projects. Tech Notes, 8, 1-21.
+\itemize{
+\item Aulenbach, B. T., Burns, D. A., Shanley, J. B., Yanai, R. D., Bae, K., Wild, A. D., ... & Yi, D. (2016). Approaches to stream solute load estimation for solutes with varying dynamics from five diverse small watersheds. Ecosphere, 7(6), e01298.
++Meals, D. W., Richards, R. P., & Dressing, S. A. (2013). Pollutant load estimation for water quality monitoring projects. Tech Notes, 8, 1-21.
+}
 
 Before running \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}, ensure both \code{q} and
 \code{chemistry} have the same time interval. See \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}.
