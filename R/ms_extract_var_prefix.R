@@ -2,8 +2,8 @@
 #'
 #' Isolate the two-letter prefixes from MacroSheds variable codes. See details.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
-#' @author Mike Vlah
+#' @author Spencer Rhea 
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param x character. MacroSheds variable code with a prefix.
 #' @return Returns a vector of two-character prefixes. If x is not

@@ -67,9 +67,9 @@ flux <- ms_calc_flux(chemistry = chemistry,
 \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}, \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}, \code{\link[=ms_conversions]{ms_conversions()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}, \code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}
 }
 \author{
-Spencer Rhea, spencerrhea41@gmail.com
+Spencer Rhea
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }

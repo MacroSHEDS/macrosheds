@@ -33,9 +33,9 @@ macrosheds_prefixs <- extract_var_prefix(x = macrosheds_vars)
 \code{\link[=ms_drop_var_prefix]{ms_drop_var_prefix()}}
 }
 \author{
-Spencer Rhea, \email{spencerrhea41@gmail.com}
+Spencer Rhea
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }

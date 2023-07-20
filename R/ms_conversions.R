@@ -6,8 +6,8 @@
 #' or to convert between molecular and atomic representations for some elements and compounds.
 #' For example, nitrate (NO3) can be converted to nitrate-N and vice versa.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
-#' @author Mike Vlah
+#' @author Spencer Rhea 
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param d \code{data.frame}. A \code{data.frame} in MacroSheds format (see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262) for definitions),
 #'    containing stream_chemistry or precip_chemistry data. A \code{tibble} in

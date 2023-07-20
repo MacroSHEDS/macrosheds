@@ -19,6 +19,7 @@ sink()
 
 #run individual tests, or groups of tests via regex (though lookarounds not implemented)
 devtools::test(filter='ms_calc_flux')
+devtools::test(filter='ms_calc_flux_rsfme')
 devtools::test(filter='ms_calc_watershed_precip')
 devtools::test(filter='ms_conversions')
 devtools::test(filter='ms_delineate_watershed')

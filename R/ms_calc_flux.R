@@ -3,8 +3,8 @@
 #' Determines solute fluxes from interpolated daily Q (discharge
 #' or precipitation) and corresponding chemistry data.
 #'
-#' @author Spencer Rhea, spencerrhea41@@gmail.com
-#' @author Mike Vlah
+#' @author Spencer Rhea 
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param chemistry \code{data.frame}. A \code{data.frame} of precipitation or
 #'    stream chemistry data in MacroSheds format and in units of mg/L.

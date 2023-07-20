@@ -5,7 +5,7 @@
 #'
 #'
 #' @author Wes Slaughter \email{weston.slaughter@@duke.edu}
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Spencer Rhea
 #' 
 #' @param filepath character. path to local CSV.

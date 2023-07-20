@@ -112,7 +112,7 @@ as possible to heterogeneous data formats and contents.
 \author{
 Wes Slaughter \email{weston.slaughter@duke.edu}
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Spencer Rhea
 }

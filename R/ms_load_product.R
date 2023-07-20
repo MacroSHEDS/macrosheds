@@ -3,8 +3,8 @@
 #' Loads and optionally filters MacroSheds time-series products (e.g stream_chemistry, discharge, etc.) from a 
 #' downloaded MacroSheds dataset. For watershed boundaries and gauge locations, see [ms_load_spatial_product()].
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
-#' @author Mike Vlah
+#' @author Spencer Rhea 
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param macrosheds_root character. The path to the MacroSheds dataset's parent
 #'    directory, established with [ms_download_core_data()] and/or [ms_download_ws_attr()].

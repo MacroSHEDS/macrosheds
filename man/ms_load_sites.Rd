@@ -30,7 +30,7 @@ site_data <- ms_load_sites()
 \author{
 Wes Slaughter, \email{weston.slaughter@duke.edu}
 
-Mike Vlah
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Spencer Rhea
 }

@@ -6,8 +6,8 @@
 #' precip_gauge_locations. Not all products are available at all sites, but 
 #' all products available for the selected domains will be downloaded.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
-#' @author Mike Vlah
+#' @author Spencer Rhea 
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param macrosheds_root character. Directory where macrosheds data files will be downloaded.
 #'    If this directory does not exist, it will be created.

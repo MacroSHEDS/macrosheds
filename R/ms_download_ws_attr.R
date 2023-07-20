@@ -4,7 +4,7 @@
 #' temporally explicit spatial summaries, or summaries across both time and space.
 #'
 #' @author Wes Slaughter, \email{wslaughter@@berkeley.edu}
-#' @author Mike Vlah
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Spencer Rhea
 #' @param macrosheds_root character. Directory where watershed attribute files will be downloaded.
 #'    If this directory does not exist, it will be created. Does not have to be the same

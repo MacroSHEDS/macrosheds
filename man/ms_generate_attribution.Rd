@@ -97,7 +97,7 @@ ms_generate_attribution(d, chem_source = 'precip',
 \code{\link[=ms_download_core_data]{ms_download_core_data()}}
 }
 \author{
-Mike Vlah, vlahm13@gmail.com
+Mike Vlah, \email{vlahm13@gmail.com}
 
 Wes Slaughter
 }

@@ -4,8 +4,8 @@
 #' or stream_gauge_locations) from a downloaded MacroSheds dataset. See 
 #' [ms_load_product()] for time-series data.
 #'
-#' @author Spencer Rhea, \email{spencerrhea41@@gmail.com}
-#' @author Mike Vlah
+#' @author Spencer Rhea 
+#' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter
 #' @param macrosheds_root character. The path to the macrosheds dataset's parent
 #'    directory, established with [ms_download_core_data()].
