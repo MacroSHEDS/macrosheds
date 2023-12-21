@@ -51,11 +51,11 @@ ms_download_core_data <- function(macrosheds_root,
     net_missing <- missing(networks)
     
     if(dom_missing && net_missing) {
-        return('At least one domain or network must be listed. Networks and domains can be retrieved with ms_load_sites()')
+        stop('At least one domain or network must be listed. Networks and domains can be retrieved with ms_load_sites()')
     }
     
     if(missing(macrosheds_root)) {
-        return('The directory to where the files will be saved must be supplied')
+        stop('macrosheds_root must be supplied.')
     }
 
     figshare_base <- 'https://figshare.com/ndownloader/files/'
@@ -148,17 +148,31 @@ ms_download_core_data <- function(macrosheds_root,
                                              cacheOK = FALSE,
                                              mode = 'wb'))
         
-        if(inherits(download_status, 'try-error')) next
+        fails <- c()
+        if(inherits(download_status, 'try-error')){
+            fails <- c(fails, pull(rel_dom))
+            next
+        }
         
         unzip_status <- try(unzip(zipfile = temp_file_dom,
                                   exdir = macrosheds_root))
         
-        if(inherits(unzip_status, 'try-error')) next
+        if(inherits(unzip_status, 'try-error')){
+            fails <- c(fails, pull(rel_dom))
+            next
+        }
         
         if(! quiet) print(paste(rel_dom, 'successfully downloaded and unzipped.'))
     }
     
-    return(invisible())
+    report <- 'All downloads succeeded'
+    if(length(fails)){
+        report <- paste0('These domains failed to download: ',
+                        paste(fails, collapse = ', '),
+                        '.\nDo you need to increase timeout limit with e.g. `options(timeout = 3600)`?')
+    }
+    
+    cat(report)
 }
 
 
