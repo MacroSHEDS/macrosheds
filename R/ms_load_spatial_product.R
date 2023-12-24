@@ -12,12 +12,12 @@
 #' @param spatial_product character. Either "ws_boundary" for watershed boundary,
 #'    "stream_gauge_locations", or "precip_gauge_locations". Files associated with this
 #'    product will be combined across specified networks/domains.
-#' @param networks character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
-#' @param domains character vector. MacroSheds domains to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
-#' @param site_codes character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
+#' @param networks character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. To see a catalog of 
+#'    networks, use ms_load_sites(), visit macrosheds.org, or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
+#' @param domains character vector. MacroSheds domains to load; optional. Omit networks, domains, and site_codes to load all. To see a catalog of 
+#'    networks, use ms_load_sites(), visit macrosheds.org, or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
+#' @param site_codes character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. To see a catalog of 
+#'    networks, use ms_load_sites(), visit macrosheds.org, or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
 #' @return returns an \code{sf} object containing all data belonging to the 
 #'    selected spatial product in the \code{macrosheds_root} directory.
 #' @export

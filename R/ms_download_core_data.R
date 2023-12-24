@@ -51,7 +51,7 @@ ms_download_core_data <- function(macrosheds_root,
     net_missing <- missing(networks)
     
     if(dom_missing && net_missing) {
-        stop('At least one domain or network must be listed. Networks and domains can be retrieved with ms_load_sites()')
+        stop('At least one domain or network must be specified. Networks and domains can be retrieved with ms_load_sites()')
     }
     
     if(missing(macrosheds_root)) {
@@ -118,8 +118,9 @@ ms_download_core_data <- function(macrosheds_root,
         }
     }
     
-    if(!dir.exists(macrosheds_root)) {
-        print('Creating macrosheds_root becuase it does not currently exist')
+    if(! dir.exists(macrosheds_root)) {
+        print(paste0('Creating macrosheds_root at ',
+            file.path(getwd(), macrosheds_root)))
         dir.create(macrosheds_root, recursive = TRUE)
     }
     
