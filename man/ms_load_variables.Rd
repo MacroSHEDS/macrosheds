@@ -7,9 +7,9 @@
 ms_load_variables(var_set = "timeseries")
 }
 \arguments{
-\item{var_set}{character. One of "timeseries" (the default), "timeseries_by_site", or "ws_attr".
-If "timeseries", basic metadata for core MacroSheds time series will be returned. If "timeseries_by_site", a
-Fuller catalog of variable availability per site will be returned. If "ws_attr", metadata for MacroSheds watershed
+\item{var_set}{character. One of "timeseries", "timeseries_by_site", or "ws_attr".
+If "timeseries", basic metadata for core MacroSheds time series variables will be returned. If "timeseries_by_site", a
+more complete catalog of variable availability per site will be returned. If "ws_attr", metadata for MacroSheds watershed
 attributes will be returned.}
 }
 \value{
