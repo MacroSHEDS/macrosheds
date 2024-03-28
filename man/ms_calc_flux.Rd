@@ -4,7 +4,7 @@
 \alias{ms_calc_flux}
 \title{Calculate daily solute fluxes}
 \usage{
-ms_calc_flux(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = TRUE)
+ms_calc_flux(chemistry, q, verbose = TRUE, ws_area_scaled = TRUE)
 }
 \arguments{
 \item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or
@@ -12,8 +12,6 @@ stream chemistry data in MacroSheds format and in units of mg/L.}
 
 \item{q}{\code{data.frame}. A \code{data.frame} of precipitation or stream
 discharge in MacroSheds format and in units of mm or L/s, respectively.}
-
-\item{q_type}{character. Either 'precipitation' or 'discharge'.}
 
 \item{verbose}{logical. Default TRUE; prints more information to console.}
 
@@ -33,12 +31,12 @@ For monthly and annual fluxes computed by various methods, see \code{\link[=ms_c
 Here, solute flux is calculated by multiplying solute concentration by flow
 of water (flux = concentration * flow). The output units depend on the time
 interval at which input data are collected. The resulting flux units will always be
-kg/ha/T, where T is the time interval of the input \code{tibble}. \code{q_type} is used
-to calculate flux differently because of the different units of discharge and precipitation.
-If \code{q_type} is 'discharge', flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
-If \code{q_type} is 'precipitation', is calculated as: kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
+kg/ha/T, where T is the time interval of the input.
+Stream and precipitation flux are calculated differently. For stream flux (stream chemistry * discharge),
+flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
+For precipitation flux (precip chemistry * precip depth over the watershed) is calculated as: kg/ha/T = mg/L * mm/T / 100.
 You can convert between kg/ha/T and kg/T using \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}} and
-\code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}, which can also be applied using the ws_area_scaled argument in
+\code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}, which can also be applied using the ws_area_scaled parameter to
 this function.
 
 Before running \code{\link[=ms_calc_flux]{ms_calc_flux()}}, ensure both \code{q} and
@@ -60,8 +58,7 @@ q <- ms_load_product(macrosheds_root = ms_root,
                      site_codes = c('w1', 'w3', 'w6'))
 
 flux <- ms_calc_flux(chemistry = chemistry,
-                     q = q,
-                     q_type = 'discharge')
+                     q = q)
 }
 \seealso{
 \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}, \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}, \code{\link[=ms_conversions]{ms_conversions()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}, \code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}

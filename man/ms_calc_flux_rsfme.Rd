@@ -110,7 +110,7 @@ Wes Slaughter, \email{wslaughter@berkeley.edu}
 
 Nick Gubbins, \email{gubbinsnick@gmail.com}
 
-Spencer Rhea
-
 Mike Vlah, \email{vlahm13@gmail.com}
+
+Spencer Rhea
 }

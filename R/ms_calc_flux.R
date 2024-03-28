@@ -72,7 +72,7 @@ ms_calc_flux <- function(chemistry, q, verbose = TRUE, ws_area_scaled = TRUE) {
 
     requireNamespace('macrosheds', quietly = TRUE)
 
-	q_type <- macrosheds::ms_drop_var_prefixif(q$var[1])
+	q_type <- macrosheds::ms_drop_var_prefix(q$var[1])
 	if(! q_type %in% c('precipitation', 'discharge')){
 		stop('q must contain either precipitation or stream discharge data')
 	}
@@ -91,7 +91,9 @@ ms_calc_flux <- function(chemistry, q, verbose = TRUE, ws_area_scaled = TRUE) {
     sites <- sites_chem
 
     # Check the intervals are the same in both chemistry and q
-    q_interval <- Mode(diff(as.numeric(q$datetime)))
+    qdiff <- diff(as.numeric(q$datetime))
+    qdiff <- qdiff[qdiff != 0]
+    q_interval <- Mode(qdiff)
 
     interval <- case_when(q_interval == 86400 ~ 'daily',
                           q_interval == 3600 ~ 'hourly',
