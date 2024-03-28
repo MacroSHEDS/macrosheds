@@ -10,7 +10,6 @@
 #'    stream chemistry data in MacroSheds format and in units of mg/L.
 #' @param q \code{data.frame}. A \code{data.frame} of precipitation or stream
 #'    discharge in MacroSheds format and in units of mm or L/s, respectively.
-#' @param q_type character. Either 'precipitation' or 'discharge'.
 #' @param verbose logical. Default TRUE; prints more information to console.
 #' @param ws_area_scaled logical. Default TRUE; flux values are divided by watershed area.
 #' @return returns a \code{tibble} of stream or precipitation chemical flux for every timestep
@@ -22,12 +21,12 @@
 #' Here, solute flux is calculated by multiplying solute concentration by flow
 #' of water (flux = concentration * flow). The output units depend on the time
 #' interval at which input data are collected. The resulting flux units will always be
-#' kg/ha/T, where T is the time interval of the input \code{tibble}. \code{q_type} is used
-#' to calculate flux differently because of the different units of discharge and precipitation.
-#' If \code{q_type} is 'discharge', flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
-#' If \code{q_type} is 'precipitation', is calculated as: kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
+#' kg/ha/T, where T is the time interval of the input. 
+#' Stream and precipitation flux are calculated differently. For stream flux (stream chemistry * discharge),
+#' flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
+#' For precipitation flux (precip chemistry * precip depth over the watershed) is calculated as: kg/ha/T = mg/L * mm/T / 100.
 #' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
-#' [ms_undo_scale_flux_by_area()], which can also be applied using the ws_area_scaled argument in
+#' [ms_undo_scale_flux_by_area()], which can also be applied using the ws_area_scaled parameter to
 #' this function.
 #'
 #' Before running [ms_calc_flux()], ensure both \code{q} and
@@ -50,10 +49,9 @@
 #'                      site_codes = c('w1', 'w3', 'w6'))
 #'
 #' flux <- ms_calc_flux(chemistry = chemistry,
-#'                      q = q,
-#'                      q_type = 'discharge')
+#'                      q = q)
 
-ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = TRUE) {
+ms_calc_flux <- function(chemistry, q, verbose = TRUE, ws_area_scaled = TRUE) {
 
     library("dplyr", quietly = TRUE)
 
@@ -64,9 +62,6 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = 
     if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(q))){
         stop('The argument to q must contain precipitation or stream discharge data in MacroSheds format (column names of site_code, val, var, datetime, ms_interp, ms_status at minimum).')
     }
-    if(! grepl('(precipitation|discharge)', q_type)){
-        stop('q_type must be "discharge" or "precipitation"')
-    }
     if(! 'POSIXct' %in% class(q$datetime)){
         q$datetime <- as.POSIXct(q$datetime)
 
@@ -76,6 +71,11 @@ ms_calc_flux <- function(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = 
     }
 
     requireNamespace('macrosheds', quietly = TRUE)
+
+	q_type <- macrosheds::ms_drop_var_prefixif(q$var[1])
+	if(! q_type %in% c('precipitation', 'discharge')){
+		stop('q must contain either precipitation or stream discharge data')
+	}
 
     site_info <- macrosheds::ms_site_data
     site_info$ws_area_ha <- errors::set_errors(site_info$ws_area_ha, 0)

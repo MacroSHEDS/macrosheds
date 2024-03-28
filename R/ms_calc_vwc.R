@@ -18,14 +18,14 @@
 #' Chemical Volume Weighted Concentration (VWC) is 'traditionally' calculated as
 #' VWC = sum(concentrations * volumes) / sum(volumes) over a given period. Because we have discharge
 #' (a rate), rather than volume, we could scale it to the sample interval and then use the equation
-#' above. For simplicity, I use this instead, which works out the same:
+#' above. For simplicity, we use this instead, which works out the same:
 #' VWC = mean(concentrations * discharges) / mean(discharges)
 #' Note also that we're starting from flux here, for computational efficiency, so the "concentrations * volumes"
 #' part is already computed, and it's a rate too. That means the modified equation is:
 #' VWC = mean(fluxes) / mean(discharges). There are two minor introductions of
 #' error. The first is that we don't omit discharge values from the denominator that lack a corresponding
 #' flux value (this is expensive, and not doing it should rarely skew the results). The second is that a "month"
-#' is considered 30 days here, which only affects coverage filtering.
+#' is considered 30 days here, which only affects filtering by coverage.
 #' @seealso [ms_calc_flux], [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
 #' @examples
 #' #' ### Load some MacroSheds data:

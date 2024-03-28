@@ -87,8 +87,8 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Project Link: [https://github.com/MacroSHEDS/macrosheds/](https://github.com/MacroSHEDS/macrosheds)
 
+  - Mike Vlah, vlahm13@gmail.com
   - Spencer Rhea, spencerrhea41@gmail.com
-  - Mike Vlah, michael.vlah@duke.edu
   - Wes Slaughter, weston.slaughter@duke.edu
 
 <br><br>
