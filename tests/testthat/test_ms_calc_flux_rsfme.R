@@ -3,22 +3,23 @@ library(testthat)
 
 # setwd('./tests/testthat/')
 ms_root = '../../data/ms_test/'
+# ms_root = '../data_acquisition/macrosheds_figshare_v2/macrosheds_files_by_domain/'
 
 chemistry <- ms_load_product(macrosheds_root = ms_root,
                              prodname = 'stream_chemistry',
                              site_codes = c('w1', 'w3', 'w6'),
                              filter_vars = c('NO3_N', 'Cl', 'Na')) %>%
-    filter(datetime > "2016-01-01")
+    filter(date > as.Date('2016-01-01'))
 
 q <- ms_load_product(macrosheds_root = ms_root,
                      prodname = 'discharge',
                      site_codes = c('w1', 'w3', 'w6')) %>%
-    filter(datetime > "2016-01-01")
+    filter(date > as.Date('2016-01-01'))
 
 ppt <- ms_load_product(macrosheds_root = ms_root,
                      prodname = 'precipitation',
                      site_codes = c('w1', 'w3', 'w6')) %>%
-    filter(datetime > "2016-01-01")
+    filter(date > as.Date('2016-01-01'))
 
 flux_fp <- 'data/ms_test/ms_flux_gubbins_12162022'
 flux_gubbins <- feather::read_feather(file.path(flux_fp, 'baltimore/stream_flux/BARN.feather')) %>%
@@ -31,11 +32,14 @@ test_that("dataframe returned with all input sites, input years, and calculated 
 
   # input data
   input_sites <- sort(unique(chemistry$site_code))
-  input_vars <- sort(unique(ms_drop_var_prefix(chemistry$var)))
+  input_vars <- sort(unique(chemistry$var))
   input_methods <- c('average', 'beale', 'composite', 'pw', 'rating')
 
   # calc flux
-  ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q, method = input_methods, aggregation = 'annual')
+  ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry,
+                                q = q,
+                                method = input_methods,
+                                aggregation = 'annual')
 
   # output
   output_sites <- sort(unique(ms_flux$site_code))
@@ -197,4 +201,3 @@ test_that("testing all methods and aggregations permutations", {
       }
   }
 })
-

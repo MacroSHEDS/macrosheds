@@ -10,7 +10,7 @@ sm <- suppressMessages
 `%dopar%` <- foreach::`%dopar%`
 `%do%` <- foreach::`%do%`
 
-# Unit conversion functions 
+# Unit conversion helpers ####
 parse_molecular_formulae <- function(formulae){
     
     #`formulae` is a vector
@@ -209,381 +209,13 @@ convert_unit <- function(x, input_unit, output_unit){
     
     return(new_val)
 }
-# End unit converstion
-sd_or_0 <- function(x, na.rm = FALSE){
-    
-    #Only used to bypass the tyranny of the errors package not letting
-    #me take the mean of an errors object of length 1 without setting the
-    #uncertainty to 0
-    
-    x <- if(is.vector(x) || is.factor(x)) x else as.double(x)
-    
-    if(length(x) == 1) return(0)
-    
-    x <- sqrt(var(x, na.rm = na.rm))
-}
 
-
-populate_implicit_NAs <- function(d,
-                                  interval,
-                                  val_fill = NA,
-                                  edges_only = FALSE){
-    
-    #TODO: this would be more flexible if we could pass column names as
-    #   positional args and use them in group_by and mutate
-    
-    #d: a ms tibble with at minimum datetime, site_code, and var columns
-    #interval: the interval along which to populate missing values. (must be
-    #   either '15 min' or '1 day'.
-    #val_fill: character or NA. the token with which to populate missing
-    #   elements of the `val` column. All other columns will be populated
-    #   invariably with NA or 0. See details.
-    #edges_only: logical. if TRUE, only two filler rows will be inserted into each
-    #   gap, one just after the gap begins and the other just before the gap ends.
-    #   If FALSE (the default), the gap will be fully populated according to
-    #   the methods outlined in the details section.
-    
-    #this function makes implicit missing timeseries records explicit,
-    #   by populating rows so that the datetime column is complete
-    #   with respect to the sampling interval. In other words, if
-    #   samples are taken every 15 minutes, but some samples are skipped
-    #   (rows not present), this will create those rows. If ms_status or
-    #   ms_interp columns are present, their new records will be populated
-    #   with 0s. The val column will be populated with whatever is passed to
-    #   val_fill. Any other columns will be populated with NAs.
-    
-    #returns d, complete with new rows, sorted by site_code, then var, then datetime
-
-    
-    complete_d <- d %>%
-        mutate(fill_marker = 1) %>%
-        group_by(site_code, var) %>%
-        tidyr::complete(datetime = seq(min(datetime),
-                                       max(datetime),
-                                       by = interval)) %>%
-        # mutate(site_code = .$site_code[1],
-        #        var = .$var[1]) %>%
-        ungroup() %>%
-        arrange(site_code, var, datetime) %>%
-        dplyr::select(datetime, site_code, var, everything())
-    
-    if(! any(is.na(complete_d$fill_marker))) return(d)
-    
-    if(! is.na(val_fill)){
-        complete_d$val[is.na(complete_d$fill_marker)] <- val_fill
-    }
-    
-    if('ms_status' %in% colnames(complete_d)){
-        complete_d$ms_status[is.na(complete_d$ms_status)] <- 0
-    }
-    
-    if('ms_interp' %in% colnames(complete_d)){
-        complete_d$ms_interp[is.na(complete_d$ms_interp)] <- 0
-    }
-    
-    if(edges_only){
-        
-        midgap_rows <- rle2(is.na(complete_d$fill_marker)) %>%
-            filter(values == TRUE) %>%
-            # if(nrow(fill_runs) == 0) return(d)
-            # midgap_rows <- fill_runs %>%
-            dplyr::select(starts, stops) %>%
-            {purrr::map2(.x = .$starts,
-                         .y = .$stops,
-                         ~seq(.x, .y))} %>%
-            purrr::map(~( if(length(.x) <= 2)
-            {
-                return(NULL)
-            } else {
-                return(.x[2:(length(.x) - 1)])
-            }
-            )) %>%
-            unlist()
-        if(! is.null(midgap_rows)){
-            complete_d <- slice(complete_d,
-                                -midgap_rows)
-        }
-    }
-    
-    complete_d$fill_marker <- NULL
-    
-    return(complete_d)
-}
-
-ms_linear_interpolate <- function(d, interval, max_samples_to_impute){
-    
-    #d: a ms tibble with no ms_interp column (this will be created)
-    
-    #TODO: prefer imputeTS::na_seadec when there are >=2 non-NA datapoints.
-    #   There are commented sections that begin this work, but we still would
-    #   need to calculate start and end when creating a ts() object. we'd
-    #   also need to separate uncertainty from the val column before converting
-    #   to ts. here is the line that could be added to this documentation
-    #   if we ever implement na_seadec:
-    #For linear interpolation with
-    #   seasonal decomposition, interval will also be used to determine
-    #   the fraction of the sampling period between samples.
-    
-    if(length(unique(d$site_code)) > 1){
-        stop(paste('ms_linear_interpolate is not designed to handle datasets',
-                   'with more than one site.'))
-    }
-    
-    if(length(unique(d$var)) > 1){
-        stop(paste('ms_linear_interpolate is not designed to handle datasets',
-                   'with more than one variable'))
-    }
-    
-    var <- macrosheds::ms_drop_var_prefix(d$var[1])
-    
-    d <- arrange(d, datetime)
-    ms_interp_column <- is.na(d$val)
-    
-    d_interp <- d %>%
-        mutate(
-            #carry ms_status to any rows that have just been populated (probably
-            #redundant now, but can't hurt)
-            ms_status <- imputeTS::na_locf(ms_status,
-                                           na_remaining = 'rev',
-                                           maxgap = max_samples_to_impute),
-            val = if(sum(! is.na(val)) > 1){
-                #linear interp NA vals
-                imputeTS::na_interpolation(val,
-                                           maxgap = max_samples_to_impute)
-                #unless not enough data in group; then do nothing
-            } else val,
-            val_err = if(sum(! is.na(val_err)) > 1){
-                #linear interp NA vals
-                imputeTS::na_interpolation(val_err,
-                                           maxgap = max_samples_to_impute)
-                #unless not enough data in group; then do nothing
-            } else val_err
-        ) %>%
-        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
-        arrange(site_code, var, datetime)
-    
-    d_interp$ms_status[is.na(d_interp$ms_status)] = 0
-    ms_interp_column <- ms_interp_column & ! is.na(d_interp$val)
-    d_interp$ms_interp <- as.numeric(ms_interp_column)
-    d_interp <- filter(d_interp,
-                       ! is.na(val))
-    
-    return(d_interp)
-}
-
-ms_zero_interpolate <- function(d, interval, max_samples_to_impute){
-    
-    #d: a ms tibble with no ms_interp column (this will be created)
-    #interval: the sampling interval (either '15 min' or '1 day').
-    
-    #for precip only, and only relevant at konza (so far)
-    
-    #fills gaps up to maxgap (determined automatically), then removes missing values
-    
-    if(length(unique(d$site_code)) > 1){
-        stop(paste('ms_zero_interpolate is not designed to handle datasets',
-                   'with more than one site.'))
-    }
-    
-    if(length(unique(d$var)) > 1){
-        stop(paste('ms_zero_interpolate is not designed to handle datasets',
-                   'with more than one variable'))
-    }
-    
-    var <- macrosheds::ms_drop_var_prefix(d$var[1])
-    
-    d <- arrange(d, datetime)
-    ms_interp_column <- is.na(d$val)
-    
-    d_interp <- d %>%
-        mutate(
-            
-            ms_status = imputeTS::na_replace(ms_status,
-                                             fill = 1,
-                                             maxgap = max_samples_to_impute),
-            
-            val = if(sum(! is.na(val)) > 1){
-                
-                #nocb interp NA vals
-                imputeTS::na_replace(val,
-                                     fill = 0,
-                                     maxgap = max_samples_to_impute)
-                
-                #unless not enough data in group; then do nothing
-            } else val
-        ) %>%
-        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
-        arrange(site_code, var, datetime)
-    
-    d_interp$ms_status[is.na(d_interp$ms_status)] = 0
-    ms_interp_column <- ms_interp_column & ! is.na(d_interp$val)
-    d_interp$ms_interp <- as.numeric(ms_interp_column)
-    d_interp <- filter(d_interp,
-                       ! is.na(val))
-    
-    return(d_interp)
-}
-
-ms_nocb_interpolate <- function(d, interval, max_samples_to_impute){
-    
-    #d: a ms tibble with no ms_interp column (this will be created)
-    #interval: the sampling interval (either '15 min' or '1 day').
-    
-    #for pchem only, where measured concentrations represent aggregated
-    #concentration over the measurement period.
-    
-    #fills gaps up to maxgap (determined automatically), then removes missing values
-    
-    
-    if(length(unique(d$site_code)) > 1){
-        stop(paste('ms_nocb_interpolate is not designed to handle datasets',
-                   'with more than one site.'))
-    }
-    
-    if(length(unique(d$var)) > 1){
-        stop(paste('ms_nocb_interpolate is not designed to handle datasets',
-                   'with more than one variable'))
-    }
-    
-    var <- macrosheds::ms_drop_var_prefix(d$var[1])
-    
-    d <- arrange(d, datetime)
-    ms_interp_column <- is.na(d$val)
-    
-    d_interp <- d %>%
-        mutate(
-            #carry ms_status to any rows that have just been populated (probably
-            #redundant now, but can't hurt)
-            ms_status <- imputeTS::na_locf(ms_status,
-                                           option = 'nocb',
-                                           na_remaining = 'rev',
-                                           maxgap = max_samples_to_impute),
-            val = if(sum(! is.na(val)) > 1){
-                #nocb interp NA vals
-                imputeTS::na_locf(val,
-                                  option = 'nocb',
-                                  na_remaining = 'keep',
-                                  maxgap = max_samples_to_impute)
-                #unless not enough data in group; then do nothing
-            } else val,
-            val_err = if(sum(! is.na(val_err)) > 1){
-                #do the same for uncertainty
-                imputeTS::na_locf(val_err,
-                                  option = 'nocb',
-                                  na_remaining = 'keep',
-                                  maxgap = max_samples_to_impute)
-            } else val_err
-        ) %>%
-        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
-        arrange(site_code, var, datetime)
-    
-    d_interp$ms_status[is.na(d_interp$ms_status)] = 0
-    ms_interp_column <- ms_interp_column & ! is.na(d_interp$val)
-    d_interp$ms_interp <- as.numeric(ms_interp_column)
-    d_interp <- filter(d_interp,
-                       ! is.na(val))
-    
-    return(d_interp)
-}
-
-ms_nocb_mean_interpolate <- function(d, interval, max_samples_to_impute){
-    
-    #d: a ms tibble with no ms_interp column (this will be created)
-    #interval: the sampling interval (either '15 min' or '1 day').
-    
-    #for pchem only, where measured concentrations represent aggregated
-    #concentration over the measurement period.
-    
-    #fills gaps up to maxgap (determined automatically), then removes missing values
-    
-    
-    if(length(unique(d$site_code)) > 1){
-        stop(paste('ms_nocb_mean_interpolate is not designed to handle datasets',
-                   'with more than one site.'))
-    }
-    
-    if(length(unique(d$var)) > 1){
-        stop(paste('ms_nocb_mean_interpolate is not designed to handle datasets',
-                   'with more than one variable'))
-    }
-    
-    var <- macrosheds::ms_drop_var_prefix(d$var[1])
-    
-    d <- arrange(d, datetime)
-    ms_interp_column <- is.na(d$val)
-    
-    d_interp <- d %>%
-        mutate(
-            #carry ms_status to any rows that have just been populated (probably
-            #redundant now, but can't hurt)
-            ms_status <- imputeTS::na_locf(ms_status,
-                                           option = 'nocb',
-                                           na_remaining = 'rev',
-                                           maxgap = max_samples_to_impute),
-            val = if(sum(! is.na(val)) > 1){
-                #nocb interp NA vals
-                imputeTS::na_locf(val,
-                                  option = 'nocb',
-                                  na_remaining = 'keep',
-                                  maxgap = max_samples_to_impute)
-                #unless not enough data in group; then do nothing
-            } else val,
-            val_err = if(sum(! is.na(val_err)) > 1){
-                #do the same for uncertainty
-                imputeTS::na_locf(val_err,
-                                  option = 'nocb',
-                                  na_remaining = 'keep',
-                                  maxgap = max_samples_to_impute)
-            } else val_err
-        ) %>%
-        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
-        arrange(site_code, var, datetime)
-    
-    
-    #identify series of records that need to be divided by their n
-    laginterp <- lag(d_interp$ms_interp)
-    laginterp[1] <- d_interp$ms_interp[1]
-    laginterp <- as.numeric(laginterp | d_interp$ms_interp)
-    
-    # err_ <- errors::errors(d_interp$val)
-    # d_interp$val <- d_interp$val
-    vals_interped <- d_interp$val * laginterp
-    err_interped <- d_interp$val_err * laginterp
-    
-    #use run length encoding to do the division quickly
-    vals_new <- rle2(vals_interped) %>%
-        mutate(values = values / lengths) %>%
-        dplyr::select(lengths, values) %>%
-        as.list()
-    class(vals_new) <- 'rle'
-    vals_new <- inverse.rle(vals_new)
-    
-    #same for uncertainty
-    err_new <- rle2(err_interped) %>%
-        mutate(values = values / lengths) %>%
-        dplyr::select(lengths, values) %>%
-        as.list()
-    class(err_new) <- 'rle'
-    err_new <- inverse.rle(err_new)
-    
-    real_vals_new <- vals_new != 0
-    d_interp$val[real_vals_new] <- vals_new[real_vals_new]
-    d_interp$val_err <- err_new
-    
-    d_interp$ms_status[is.na(d_interp$ms_status)] = 0
-    
-    return(d_interp)
-}
-
-numeric_any <- function(num_vec){
-    return(as.numeric(any(as.logical(num_vec))))
-}
-
-# EGRET stuff 
+# EGRET helpers ####
 get_days_since_1850 <- function(dates){
     return_dates <- as.numeric(as_date(dates)-lubridate::ymd('1850-01-01'))
     return(return_dates)
 }
+
 get_DecYear <- function(dates){
     
     year <- lubridate::year(dates)
@@ -610,6 +242,7 @@ get_DecYear <- function(dates){
     
     return(DecYear)
 }
+
 get_MonthSeq <- function(dates){
     
     years <- lubridate::year(dates)-1850
@@ -620,6 +253,7 @@ get_MonthSeq <- function(dates){
     
     return(MonthSeq)
 }
+
 get_start_end <- function(d){
     start_date <- min(d$datetime)
     start_year <- lubridate::year(start_date)
@@ -635,13 +269,14 @@ get_start_end <- function(d){
     return(fin_dates)
     
 }
+
 drop_var_prefix <- function(x){
     
     unprefixed <- substr(x, 4, nchar(x))
     
     return(unprefixed)
 }
-# From EGRET
+
 decimalDate <- function(rawData){
     
     dateTime <- as.POSIXlt(rawData)
@@ -653,10 +288,8 @@ decimalDate <- function(rawData){
     DecYear <- year + as.numeric(difftime(dateTime, startYear, units = "secs"))/as.numeric(difftime(endYear, startYear, units = "secs"))
     return(DecYear)
 }
-# End EGRET stuff
 
-
-# Precip interpolation stuff 
+# precip interpolation helpers ####
 read_combine_shapefiles <- function(network, domain, prodname_ms){
     
     #TODO: sometimes multiple locations are listed for the same rain gauge.
@@ -1914,7 +1547,274 @@ approxjoin_datetime <- function(x,
     return(joined)
 }
 
-# ms_read_csv internals
+# general interp helpers ####
+
+ms_linear_interpolate <- function(d, interval, max_samples_to_impute){
+    
+    #d: a ms tibble with no ms_interp column (this will be created)
+    
+    #TODO: prefer imputeTS::na_seadec when there are >=2 non-NA datapoints.
+    #   There are commented sections that begin this work, but we still would
+    #   need to calculate start and end when creating a ts() object. we'd
+    #   also need to separate uncertainty from the val column before converting
+    #   to ts. here is the line that could be added to this documentation
+    #   if we ever implement na_seadec:
+    #For linear interpolation with
+    #   seasonal decomposition, interval will also be used to determine
+    #   the fraction of the sampling period between samples.
+    
+    if(length(unique(d$site_code)) > 1){
+        stop(paste('ms_linear_interpolate is not designed to handle datasets',
+                   'with more than one site.'))
+    }
+    
+    if(length(unique(d$var)) > 1){
+        stop(paste('ms_linear_interpolate is not designed to handle datasets',
+                   'with more than one variable'))
+    }
+    
+    var <- macrosheds::ms_drop_var_prefix(d$var[1])
+    
+    d <- arrange(d, datetime)
+    ms_interp_column <- is.na(d$val)
+    
+    d_interp <- d %>%
+        mutate(
+            #carry ms_status to any rows that have just been populated (probably
+            #redundant now, but can't hurt)
+            ms_status <- imputeTS::na_locf(ms_status,
+                                           na_remaining = 'rev',
+                                           maxgap = max_samples_to_impute),
+            val = if(sum(! is.na(val)) > 1){
+                #linear interp NA vals
+                imputeTS::na_interpolation(val,
+                                           maxgap = max_samples_to_impute)
+                #unless not enough data in group; then do nothing
+            } else val,
+            val_err = if(sum(! is.na(val_err)) > 1){
+                #linear interp NA vals
+                imputeTS::na_interpolation(val_err,
+                                           maxgap = max_samples_to_impute)
+                #unless not enough data in group; then do nothing
+            } else val_err
+        ) %>%
+        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
+        arrange(site_code, var, datetime)
+    
+    d_interp$ms_status[is.na(d_interp$ms_status)] = 0
+    ms_interp_column <- ms_interp_column & ! is.na(d_interp$val)
+    d_interp$ms_interp <- as.numeric(ms_interp_column)
+    d_interp <- filter(d_interp,
+                       ! is.na(val))
+    
+    return(d_interp)
+}
+
+ms_zero_interpolate <- function(d, interval, max_samples_to_impute){
+    
+    #d: a ms tibble with no ms_interp column (this will be created)
+    #interval: the sampling interval (either '15 min' or '1 day').
+    
+    #for precip only, and only relevant at konza (so far)
+    
+    #fills gaps up to maxgap (determined automatically), then removes missing values
+    
+    if(length(unique(d$site_code)) > 1){
+        stop(paste('ms_zero_interpolate is not designed to handle datasets',
+                   'with more than one site.'))
+    }
+    
+    if(length(unique(d$var)) > 1){
+        stop(paste('ms_zero_interpolate is not designed to handle datasets',
+                   'with more than one variable'))
+    }
+    
+    var <- macrosheds::ms_drop_var_prefix(d$var[1])
+    
+    d <- arrange(d, datetime)
+    ms_interp_column <- is.na(d$val)
+    
+    d_interp <- d %>%
+        mutate(
+            
+            ms_status = imputeTS::na_replace(ms_status,
+                                             fill = 1,
+                                             maxgap = max_samples_to_impute),
+            
+            val = if(sum(! is.na(val)) > 1){
+                
+                #nocb interp NA vals
+                imputeTS::na_replace(val,
+                                     fill = 0,
+                                     maxgap = max_samples_to_impute)
+                
+                #unless not enough data in group; then do nothing
+            } else val
+        ) %>%
+        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
+        arrange(site_code, var, datetime)
+    
+    d_interp$ms_status[is.na(d_interp$ms_status)] = 0
+    ms_interp_column <- ms_interp_column & ! is.na(d_interp$val)
+    d_interp$ms_interp <- as.numeric(ms_interp_column)
+    d_interp <- filter(d_interp,
+                       ! is.na(val))
+    
+    return(d_interp)
+}
+
+ms_nocb_interpolate <- function(d, interval, max_samples_to_impute){
+    
+    #d: a ms tibble with no ms_interp column (this will be created)
+    #interval: the sampling interval (either '15 min' or '1 day').
+    
+    #for pchem only, where measured concentrations represent aggregated
+    #concentration over the measurement period.
+    
+    #fills gaps up to maxgap (determined automatically), then removes missing values
+    
+    
+    if(length(unique(d$site_code)) > 1){
+        stop(paste('ms_nocb_interpolate is not designed to handle datasets',
+                   'with more than one site.'))
+    }
+    
+    if(length(unique(d$var)) > 1){
+        stop(paste('ms_nocb_interpolate is not designed to handle datasets',
+                   'with more than one variable'))
+    }
+    
+    var <- macrosheds::ms_drop_var_prefix(d$var[1])
+    
+    d <- arrange(d, datetime)
+    ms_interp_column <- is.na(d$val)
+    
+    d_interp <- d %>%
+        mutate(
+            #carry ms_status to any rows that have just been populated (probably
+            #redundant now, but can't hurt)
+            ms_status <- imputeTS::na_locf(ms_status,
+                                           option = 'nocb',
+                                           na_remaining = 'rev',
+                                           maxgap = max_samples_to_impute),
+            val = if(sum(! is.na(val)) > 1){
+                #nocb interp NA vals
+                imputeTS::na_locf(val,
+                                  option = 'nocb',
+                                  na_remaining = 'keep',
+                                  maxgap = max_samples_to_impute)
+                #unless not enough data in group; then do nothing
+            } else val,
+            val_err = if(sum(! is.na(val_err)) > 1){
+                #do the same for uncertainty
+                imputeTS::na_locf(val_err,
+                                  option = 'nocb',
+                                  na_remaining = 'keep',
+                                  maxgap = max_samples_to_impute)
+            } else val_err
+        ) %>%
+        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
+        arrange(site_code, var, datetime)
+    
+    d_interp$ms_status[is.na(d_interp$ms_status)] = 0
+    ms_interp_column <- ms_interp_column & ! is.na(d_interp$val)
+    d_interp$ms_interp <- as.numeric(ms_interp_column)
+    d_interp <- filter(d_interp,
+                       ! is.na(val))
+    
+    return(d_interp)
+}
+
+ms_nocb_mean_interpolate <- function(d, interval, max_samples_to_impute){
+    
+    #d: a ms tibble with no ms_interp column (this will be created)
+    #interval: the sampling interval (either '15 min' or '1 day').
+    
+    #for pchem only, where measured concentrations represent aggregated
+    #concentration over the measurement period.
+    
+    #fills gaps up to maxgap (determined automatically), then removes missing values
+    
+    
+    if(length(unique(d$site_code)) > 1){
+        stop(paste('ms_nocb_mean_interpolate is not designed to handle datasets',
+                   'with more than one site.'))
+    }
+    
+    if(length(unique(d$var)) > 1){
+        stop(paste('ms_nocb_mean_interpolate is not designed to handle datasets',
+                   'with more than one variable'))
+    }
+    
+    var <- macrosheds::ms_drop_var_prefix(d$var[1])
+    
+    d <- arrange(d, datetime)
+    ms_interp_column <- is.na(d$val)
+    
+    d_interp <- d %>%
+        mutate(
+            #carry ms_status to any rows that have just been populated (probably
+            #redundant now, but can't hurt)
+            ms_status <- imputeTS::na_locf(ms_status,
+                                           option = 'nocb',
+                                           na_remaining = 'rev',
+                                           maxgap = max_samples_to_impute),
+            val = if(sum(! is.na(val)) > 1){
+                #nocb interp NA vals
+                imputeTS::na_locf(val,
+                                  option = 'nocb',
+                                  na_remaining = 'keep',
+                                  maxgap = max_samples_to_impute)
+                #unless not enough data in group; then do nothing
+            } else val,
+            val_err = if(sum(! is.na(val_err)) > 1){
+                #do the same for uncertainty
+                imputeTS::na_locf(val_err,
+                                  option = 'nocb',
+                                  na_remaining = 'keep',
+                                  maxgap = max_samples_to_impute)
+            } else val_err
+        ) %>%
+        dplyr::select(any_of(c('datetime', 'site_code', 'var', 'val', 'ms_status', 'ms_interp', 'val_err'))) %>%
+        arrange(site_code, var, datetime)
+    
+    
+    #identify series of records that need to be divided by their n
+    laginterp <- lag(d_interp$ms_interp)
+    laginterp[1] <- d_interp$ms_interp[1]
+    laginterp <- as.numeric(laginterp | d_interp$ms_interp)
+    
+    # err_ <- errors::errors(d_interp$val)
+    # d_interp$val <- d_interp$val
+    vals_interped <- d_interp$val * laginterp
+    err_interped <- d_interp$val_err * laginterp
+    
+    #use run length encoding to do the division quickly
+    vals_new <- rle2(vals_interped) %>%
+        mutate(values = values / lengths) %>%
+        dplyr::select(lengths, values) %>%
+        as.list()
+    class(vals_new) <- 'rle'
+    vals_new <- inverse.rle(vals_new)
+    
+    #same for uncertainty
+    err_new <- rle2(err_interped) %>%
+        mutate(values = values / lengths) %>%
+        dplyr::select(lengths, values) %>%
+        as.list()
+    class(err_new) <- 'rle'
+    err_new <- inverse.rle(err_new)
+    
+    real_vals_new <- vals_new != 0
+    d_interp$val[real_vals_new] <- vals_new[real_vals_new]
+    d_interp$val_err <- err_new
+    
+    d_interp$ms_status[is.na(d_interp$ms_status)] = 0
+    
+    return(d_interp)
+}
+
+# ms_read_csv helpers ####
 gsub_v <- function(pattern, replacement_vec, x){
     
     #just like the first three arguments to gsub, except that
@@ -2257,6 +2157,111 @@ numeric_any_v <- function(...){ #attack of the ellipses
     if(is.null(out)) out <- numeric()
     
     return(out)
+}
+
+# misc helpers ####
+
+sd_or_0 <- function(x, na.rm = FALSE){
+    
+    #Only used to bypass the tyranny of the errors package not letting
+    #me take the mean of an errors object of length 1 without setting the
+    #uncertainty to 0
+    
+    x <- if(is.vector(x) || is.factor(x)) x else as.double(x)
+    
+    if(length(x) == 1) return(0)
+    
+    x <- sqrt(var(x, na.rm = na.rm))
+}
+
+populate_implicit_NAs <- function(d,
+                                  interval,
+                                  val_fill = NA,
+                                  edges_only = FALSE){
+    
+    #TODO: this would be more flexible if we could pass column names as
+    #   positional args and use them in group_by and mutate
+    
+    #d: a ms tibble with at minimum datetime, site_code, and var columns
+    #interval: the interval along which to populate missing values. (must be
+    #   either '15 min' or '1 day'.
+    #val_fill: character or NA. the token with which to populate missing
+    #   elements of the `val` column. All other columns will be populated
+    #   invariably with NA or 0. See details.
+    #edges_only: logical. if TRUE, only two filler rows will be inserted into each
+    #   gap, one just after the gap begins and the other just before the gap ends.
+    #   If FALSE (the default), the gap will be fully populated according to
+    #   the methods outlined in the details section.
+    
+    #this function makes implicit missing timeseries records explicit,
+    #   by populating rows so that the datetime column is complete
+    #   with respect to the sampling interval. In other words, if
+    #   samples are taken every 15 minutes, but some samples are skipped
+    #   (rows not present), this will create those rows. If ms_status or
+    #   ms_interp columns are present, their new records will be populated
+    #   with 0s. The val column will be populated with whatever is passed to
+    #   val_fill. Any other columns will be populated with NAs.
+    
+    #returns d, complete with new rows, sorted by site_code, then var, then datetime
+    
+    
+    complete_d <- d %>%
+        mutate(fill_marker = 1) %>%
+        group_by(site_code, var) %>%
+        tidyr::complete(datetime = seq(min(datetime),
+                                       max(datetime),
+                                       by = interval)) %>%
+        # mutate(site_code = .$site_code[1],
+        #        var = .$var[1]) %>%
+        ungroup() %>%
+        arrange(site_code, var, datetime) %>%
+        dplyr::select(datetime, site_code, var, everything())
+    
+    if(! any(is.na(complete_d$fill_marker))) return(d)
+    
+    if(! is.na(val_fill)){
+        complete_d$val[is.na(complete_d$fill_marker)] <- val_fill
+    }
+    
+    if('ms_status' %in% colnames(complete_d)){
+        complete_d$ms_status[is.na(complete_d$ms_status)] <- 0
+    }
+    
+    if('ms_interp' %in% colnames(complete_d)){
+        complete_d$ms_interp[is.na(complete_d$ms_interp)] <- 0
+    }
+    
+    if(edges_only){
+        
+        midgap_rows <- rle2(is.na(complete_d$fill_marker)) %>%
+            filter(values == TRUE) %>%
+            # if(nrow(fill_runs) == 0) return(d)
+            # midgap_rows <- fill_runs %>%
+            dplyr::select(starts, stops) %>%
+            {purrr::map2(.x = .$starts,
+                         .y = .$stops,
+                         ~seq(.x, .y))} %>%
+            purrr::map(~( if(length(.x) <= 2)
+            {
+                return(NULL)
+            } else {
+                return(.x[2:(length(.x) - 1)])
+            }
+            )) %>%
+            unlist()
+        if(! is.null(midgap_rows)){
+            complete_d <- slice(complete_d,
+                                -midgap_rows)
+        }
+    }
+    
+    complete_d$fill_marker <- NULL
+    
+    return(complete_d)
+}
+
+numeric_any <- function(num_vec){
+    return(as.numeric(any(as.logical(num_vec))))
 }
 
 get_response_1char <- function(msg,
@@ -2695,15 +2700,15 @@ check_suggested_pkgs <- function(pkgs){
     }
 }
 
-# RSFME stuff
-# rsfme: general helpers
+# RSFME helpers ####
+
 wtr_yr <- function(dates, start_month = 10) {
   d1 = as.Date(dates)
   offset = ifelse(as.integer(format(d1, '%m')) < start_month, 0, 1)
   adj.year = as.integer(format(d1, '%Y')) + offset
   return(adj.year)
 }
-# simple linear interpolation between con samples at frequency of q
+
 interpolate_con_to_q <- function(chem_df, q_df){
  # Join chem and q
  join_df <- full_join(chem_df, q_df, by = 'date') %>%
@@ -2718,7 +2723,6 @@ interpolate_con_to_q <- function(chem_df, q_df){
  return(interp_df)
 }
 
-# take usgs data and make it ready for riverload functions
 prep_usgs_for_riverload <- function(chem_df, q_df){
     conv_q <- q_df %>%
         mutate(site_code = !!site_code,
@@ -2738,8 +2742,6 @@ prep_usgs_for_riverload <- function(chem_df, q_df){
     return(db)
 }
 
-
-# datetime to water year quarters
 dt_to_wy_quarter <- function(datetime) {
   tryCatch(
     expr = {
@@ -2764,8 +2766,7 @@ dt_to_wy_quarter <- function(datetime) {
   )
 }
 
-
- old_warn_sum <- function(x) {
+old_warn_sum <- function(x) {
    # use to sitll get data with NAs and Infs
    # length of record
    n_x <- length(x)
@@ -2799,7 +2800,7 @@ dt_to_wy_quarter <- function(datetime) {
    return(xsum)
  }
 
- warn_sum <- function(x) {
+warn_sum <- function(x) {
    # length of record
    n_x <- length(x)
 
@@ -2818,13 +2819,7 @@ dt_to_wy_quarter <- function(datetime) {
       return(xsum)
  }
 
-# run flux by site, year(s), method
-
-## ms_run_flux <- function(site, )
-
-##### calculate ms_interp #####
-
- carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year = NULL, period = NULL){
+carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year = NULL, period = NULL){
     #### set up ratio functions #####
          # interp ratio
          calc_interp_ratio <- function(trimmed_df, period = NULL){
@@ -2987,8 +2982,6 @@ dt_to_wy_quarter <- function(datetime) {
 
  }
 
-# rsfme: flux methods helpers
-### Riverload conversion function #####
 prep_raw_for_riverload <- function(chem_df, q_df, datecol = 'date'){
     conv_q <- q_df %>%
                 mutate(datetime = as.POSIXct(get(datecol), format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
@@ -3012,9 +3005,6 @@ prep_raw_for_riverload <- function(chem_df, q_df, datecol = 'date'){
     return(db)
 }
 
-
-# FLUX CALCS
-###### calculate period weighted#########
 calculate_pw <- function(chem_df, q_df, datecol = 'date', area = 1, period = NULL){
   if(is.null(period)) {
     warning('no period supplied, calculating annual flux')
@@ -3078,7 +3068,6 @@ calculate_pw <- function(chem_df, q_df, datecol = 'date', area = 1, period = NUL
   return(flux_from_pw)
 }
 
-###### calculate beale ######
 calculate_beale <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
     if(is.null(period)) {
       warning('no period supplied, calculating annual flux')
@@ -3104,7 +3093,6 @@ calculate_beale <- function(chem_df, q_df, datecol = 'date', period = NULL, area
     return(flux_from_beale)
 }
 
-##### calculate rating #####
 calculate_rating <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
     if(is.null(period)) {
       warning('no period supplied, calculating annual flux')
@@ -3129,9 +3117,8 @@ calculate_rating <- function(chem_df, q_df, datecol = 'date', period = NULL, are
     return(flux_from_reg)
 }
 
-
-##### calculate WRTDS #####
-calculate_wrtds <- function(chem_df, q_df, ws_size, lat, long, datecol = 'date', agg = 'default', minNumObs = 2, minNumUncen =2, gap_period = 730) {
+calculate_wrtds <- function(chem_df, q_df, ws_size, lat, long, datecol = 'date',
+                            agg = 'default', minNumObs = 2, minNumUncen = 2, gap_period = 730) {
   tryCatch(
     expr = {
       # default sums all daily flux values in df
@@ -3215,7 +3202,6 @@ generate_residual_corrected_con <- function(chem_df, q_df, datecol = 'date', sit
         }
         }
 
-##### calculate monthly flux from composite ####
 calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no = 'site_no', period = NULL, area = 1){
         if(is.null(period)) {
           warning('no period supplied, calculating annual flux')
@@ -3242,7 +3228,6 @@ calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no 
         return(flux_from_comp)
         }
 
-# functions for adapt_ms_egret
 detect_record_break <- function(data) {
     data_time <- data %>%
       dplyr::select(Date, Julian) %>%
@@ -3274,7 +3259,6 @@ get_break_dates <- function(data, gap_period = 730) {
     return(break_dates)
   }
 
-# wrapper for WRTDS in EGRET
 adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                            site_data = NULL, kalman = FALSE,
                            datecol = 'date', minNumObs = 2, minNumUncen = 2, gap_period = 730){
@@ -3828,71 +3812,6 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
     return(egret_results)
 }
 
-# WRTDS DeBugging ShortCut argument defs
-# run_output <- adapt_ms_egret(chem_df = ocon_chem, q_df = ocon_q, ws_size = ocon_ws_area_ha)
-## EGRET::plotConcHist(egret_results)
-## EGRET::plotConcTime(egret_results)
-## EGRET::plotFluxQ(egret_results)
-## EGRET::plotConcPred(egret_results)
-
-# re-run defnitions cheatsheet
-
-## # mas adapt egret
-## chem_df = chem_df
-## q_df = q_df
-## ws_size = area
-## lat = lat
-## long = long
-
-## ## pre egret
-##   ms_chem <- chem_df %>%
-##     mutate(site_code = 'none',
-##            var = 'IS_NO3',
-##            ms_status = 0,
-##            ms_interp = 0) %>%
-##       rename(val = con,
-##              datetime = all_of(datecol))
-
-##     ms_q <- q_df %>%
-##       mutate(site_code = 'none',
-##              var = 'IS_discharge',
-##              ms_status = 0,
-##              ms_interp = 0) %>%
-##       rename(val = q_lps,
-##              datetime = all_of(datecol))
-
-## site_data <- tibble(site_code = 'none',
-##   ws_area_ha = ws_size,
-##   latitude = lat,
-##   longitude = long,
-##   site_type = 'stream_gauge')
-
-## stream_chemistry = ms_chem
-## discharge = ms_q
-## prep_data = TRUE
-## site_data = site_data
-## kalman = FALSE
-## run_egret = TRUE
-## quiet = FALSE
-
-## minNumObs = 100
-## minNumUncen = 50
-## gap_period = 730
-
-## verbose = TRUE
-
-## windowY = 7
-## windowQ = 2
-## windowS = 0.5
-## edgeAdjust = TRUE
-## verbose = TRUE
-## run.parallel = FALSE
-
-# surfaces
-## surfaceStart=NA
-## surfaceEnd=NA
-## localSample=NA
-
 report_on_df <- function(data) {
   water_years <- unique(data$wy)
   for(watyr in water_years) {
@@ -3952,5 +3871,3 @@ mean_or_x <- function(x, na.rm = FALSE) {
     print('multiple values meaned')
     return(x)
 }
-
-# end RSFME stuff

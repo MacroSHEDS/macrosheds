@@ -68,7 +68,7 @@ ms_load_product <- function(macrosheds_root,
                             sort_result = FALSE,
                             warn = TRUE){
 
-    library("dplyr", quietly = TRUE)
+    library('dplyr', quietly = TRUE)
 
     requireNamespace('macrosheds', quietly = TRUE)
     
@@ -288,7 +288,7 @@ ms_load_product <- function(macrosheds_root,
         
     if(!is.null(filter_vars)) {
         
-        fv_in_d <- filter_vars %in% ms_drop_var_prefix(d$var)
+        fv_in_d <- filter_vars %in% d$var
         if(! any(fv_in_d)){
             stop(paste('None of filter_vars is present in this dataset'))
         }
@@ -298,8 +298,7 @@ ms_load_product <- function(macrosheds_root,
         }
         filter_vars <- filter_vars[fv_in_d]
         
-        d <- dplyr::filter(d,
-                           ms_drop_var_prefix(var) %in% filter_vars)
+        d <- dplyr::filter(d, var %in% filter_vars)
     }
     
     if(sort_result){
