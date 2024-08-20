@@ -132,8 +132,9 @@ ms_calc_flux_rsfme <- function(chemistry,
         stop(glue::glue('Unrecognized flux method: {setdiff(method, rsfme_accepted)}'))
     } else {
         if(verbose){
-            cat(glue::glue('calculating flux using method(s): {m}\n',
-                           m = paste(method, collapse = ', ')))
+            cat(glue::glue('calculating flux using method(s): {m}',
+                           m = paste(method, collapse = ', ')),
+                '\n')
         }
     }
     
@@ -204,35 +205,10 @@ ms_calc_flux_rsfme <- function(chemistry,
         errors::errors(q$val) <- 0
     }
     
-    # calc flux 'simple' dataframe
-    all_sites_flux <- tibble()
-    
-    # calc flux 'rsfme' dataframe, to populate with annual flux values by method
-    out_frame <- tibble(wy = as.integer(),
-                        site_code = as.character(),
-                        var = as.character(),
-                        val = as.numeric(),
-                        method = as.character(),
-                        ms_recommended = as.integer(),
-                        ms_interp_ratio = as.numeric(),
-                        ms_status_ratio = as.numeric(),
-                        ms_missing_ratio = as.numeric())
-    
-    if(aggregation == 'monthly'){
+    flux_out <- tibble()
+    for(s in seq_along(sites)){
         
-        out_frame <- tibble(wy = as.integer(),
-                            month = as.integer(),
-                            site_code = as.character(),
-                            var = as.character(),
-                            val = as.numeric(),
-                            method = as.character(),
-                            ms_recommended = as.integer(),
-                            ms_interp_ratio = as.numeric(),
-                            ms_status_ratio = as.numeric(),
-                            ms_missing_ratio = as.numeric())
-    }
-    
-    for(s in 1:length(sites)){
+        if(verbose) cat('Working on site', s, 'of', length(sites), '\n')
         
         site_code <- sites[s]
         
@@ -260,71 +236,66 @@ ms_calc_flux_rsfme <- function(chemistry,
         area <- this_site_info$ws_area_ha
         # area <- errors::set_errors(this_site_info$ws_area_ha, 0)
         
-        site_chem_split <- site_chem %>%
-            group_by(var) %>%
-            arrange(date) %>%
-            dplyr::group_split() %>%
-            as.list()
+        vars_ <- unique(site_chem$var)
         
-        for(i in seq_along(site_chem_split)){
+        flux_site <- tibble()
+        for(i in seq_along(vars_)){
             
-            chem_var <- site_chem_split[[i]]
+            # if(verbose) cat('\tWorking on var', vars_[i], '\n')
+            
+            chem_var <- site_chem %>% 
+                filter(var == !!vars_[i]) %>% 
+                arrange(date)
             
             fluxable <- var_info %>%
-                filter(variable_code == !!ms_drop_var_prefix(unique(chem_var$var))) %>% 
+                filter(variable_code == !!ms_drop_var_prefix(vars_[i])) %>% 
                 pull(flux_convertible)
             
             if(any(fluxable == 0)){
-                warning(glue::glue('Flux methods not yet defined for {this_var}; skipping'))
+                warning(glue::glue('Flux methods not yet defined for {vars_[i]}; skipping'))
                 next
             }
             
             if(any(method == 'simple')){
                 
-                site_chem_split[[i]] <- calc_simple_flux(chem = chem_var,
-                                                         q = site_q)
+                flux_site <- calc_simple_flux(chem = chem_var,
+                                              q = site_q) %>% 
+                    bind_rows(flux_site)
                 
             } else {
                 
-                calc_load(chem = chem_var,
-                          q = site_q,
-                          site_code = site_code,
-                          area = area,
-                          method = method,
-                          aggregation = aggregation,
-                          good_year_check = good_year_check)
+                flux_site <- calc_load(
+                    chem = chem_var,
+                    q = site_q,
+                    site_code = site_code,
+                    area = area,
+                    method = method,
+                    aggregation = aggregation,
+                    good_year_check = good_year_check
+                ) %>% 
+                    bind_rows(flux_site)
             }
         }
         
-        all_sites_flux <- site_chem_split %>%
-            purrr::reduce(bind_rows) %>%
-            arrange(site_code, var, date) %>% 
-            bind_rows(all_sites_flux)
+        flux_out <- bind_rows(flux_site, flux_out)
     }
     
-    if(any(method == 'simple')){
-        
-        if(nrow(all_sites_flux) > 0){
-            all_sites_flux$val_err <- errors::errors(all_sites_flux$val)
-            all_sites_flux$val <- errors::drop_errors(all_sites_flux$val)
-        }
-        
-        return(all_sites_flux)
-        
-    } else {
-        
-        # filter to requested method
-        out_frame <- out_frame %>%
-            filter(method %in% !!method) %>%
-            # set negative or infinite flux vals in final product to zero
-            mutate(val = if_else(val < 0, 0, val))
-        
-        return(out_frame)
+    if(any(method == 'simple') && nrow(flux_out) > 0){
+        flux_out$val_err <- errors::errors(flux_out$val)
+        flux_out$val <- errors::drop_errors(flux_out$val)
     }
     
-    # TODO: make logic of simple vs RSFME clearer and articulate
-    # TODO: make this work for *any* data in MacroSheds format
-    # TODO: WRTDS inclusion
-    # TODO: log file option
-    # TODO: make clear that RSFME methods are for q_type discharge only
+    if(! 'simple' %in% method){
+        
+        flux_out <- flux_out %>% 
+            relocate(site_code, var, wy) %>% 
+            rename(water_year = wy, load = val) %>% 
+            arrange(site_code, var, water_year) %>% 
+            filter(! is.na(load))
+        
+        # flux_out <- mutate(flux_out, val = if_else(val < 0, 0, val))
+        if(any(flux_out$load < 0) || any(is.infinite(flux_out$load))) warning('negative/infinite load values detected')
+    }
+    
+    return(flux_out)
 }

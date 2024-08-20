@@ -39,7 +39,7 @@ combine_atomic_masses <- function(molecular_constituents){
     #`molecular_constituents` is a vector
     
     xmat = stringr::str_match(molecular_constituents,
-                     '([A-Z][a-z]?)([0-9]+)?')[, -1, drop=FALSE]
+                              '([A-Z][a-z]?)([0-9]+)?')[, -1, drop=FALSE]
     elems = xmat[,1]
     mults = as.numeric(xmat[,2])
     mults[is.na(mults)] = 1
@@ -306,10 +306,10 @@ read_combine_shapefiles <- function(network, domain, prodname_ms){
                     'munged')
     
     prodpaths <- list.files(glue::glue('data/{n}/{d}/{l}/{p}',
-                                 n = network,
-                                 d = domain,
-                                 l = level,
-                                 p = prodname_ms),
+                                       n = network,
+                                       d = domain,
+                                       l = level,
+                                       p = prodname_ms),
                             recursive = TRUE,
                             full.names = TRUE,
                             pattern = '*.shp')
@@ -475,13 +475,13 @@ idw_log_var <- function(verbose,
                    paste0('[', note, ']'))
     
     msg <- glue::glue('site: {s}; var: {vv} ({jj}/{nv}) {f}; timesteps: {nt}; {n}',
-                s = site_code,
-                vv = v,
-                jj = j,
-                nv = nvars,
-                nt = ntimesteps,
-                f = flux_calc_msg,
-                n = note)
+                      s = site_code,
+                      vv = v,
+                      jj = j,
+                      nv = nvars,
+                      nt = ntimesteps,
+                      f = flux_calc_msg,
+                      n = note)
     
     print(msg)
     
@@ -489,7 +489,7 @@ idw_log_var <- function(verbose,
 }
 
 ms_parallelize <- function(maxcores = Inf){
-
+    
     #maxcores is the maximum number of processor cores to use for R tasks.
     #   you may want to leave a few aside for other processes.
     
@@ -533,7 +533,7 @@ shortcut_idw <- function(encompassing_dem,
                          p_var = NULL,
                          verbose = FALSE,
                          macrosheds_root){
-
+    
     #encompassing_dem: RasterLayer must cover the area of wshd_bnd and precip_gauges
     #wshd_bnd: sf polygon with columns site_code and geometry
     #   it represents a single watershed boundary
@@ -587,9 +587,9 @@ shortcut_idw <- function(encompassing_dem,
     d_interp <- data_values$ms_interp
     d_dt <- data_values$datetime
     data_matrix <- dplyr::select(data_values,
-                          -ms_status,
-                          -datetime,
-                          -ms_interp) %>%
+                                 -ms_status,
+                                 -datetime,
+                                 -ms_interp) %>%
         err_df_to_matrix()
     
     #clean dem and get elevation values
@@ -723,7 +723,7 @@ shortcut_idw <- function(encompassing_dem,
                           val = ws_mean,
                           ms_status = d_status,
                           ms_interp = d_interp)
-
+        
     } else {
         
         ws_mean <- tibble(datetime = d_dt,
@@ -738,7 +738,7 @@ shortcut_idw <- function(encompassing_dem,
 }
 
 ms_unparallelize <- function(cluster_object){
-
+    
     #if cluster_object is NULL, nothing will happen
     
     check_suggested_pkgs(c('parallel'))
@@ -810,9 +810,9 @@ write_ms_file <- function(d,
     if(shapefile){
         
         site_dir = glue::glue('{ms}/{p}/{s}',
-                        ms = macrosheds_root,
-                        p = prodname_ms,
-                        s = site_code)
+                              ms = macrosheds_root,
+                              p = prodname_ms,
+                              s = site_code)
         
         dir.create(site_dir,
                    showWarnings = FALSE,
@@ -830,16 +830,16 @@ write_ms_file <- function(d,
     } else {
         
         prod_dir = glue::glue('{ms}/{p}',
-                        ms = macrosheds_root,
-                        p = prodname_ms)
+                              ms = macrosheds_root,
+                              p = prodname_ms)
         
         dir.create(prod_dir,
                    showWarnings = FALSE,
                    recursive = TRUE)
         
         site_file = glue::glue('{pd}/{s}.feather',
-                         pd = prod_dir,
-                         s = site_code)
+                               pd = prod_dir,
+                               s = site_code)
         
         if(sep_errors) {
             
@@ -850,12 +850,12 @@ write_ms_file <- function(d,
                 d$val <- errors::drop_errors(d$val)
             } else {
                 warning(glue::glue('Uncertainty missing from val column ({n}-{d}-{s}-{p}). ',
-                             'That means this dataset has not passed through ',
-                             'carry_uncertainty yet. it should have.',
-                             n = network,
-                             d = domain,
-                             s = site_code,
-                             p = prodname_ms))
+                                   'That means this dataset has not passed through ',
+                                   'carry_uncertainty yet. it should have.',
+                                   n = network,
+                                   d = domain,
+                                   s = site_code,
+                                   p = prodname_ms))
             }
         }
         #make sure feather::write_feather will omit attrib by def (with no artifacts)
@@ -978,17 +978,17 @@ shortcut_idw_concflux_v2 <- function(encompassing_dem,
     p_status <- precip_values$ms_status
     p_interp <- precip_values$ms_interp
     p_matrix <- dplyr::select(precip_values,
-                       -ms_status,
-                       -datetime,
-                       -ms_interp) %>%
+                              -ms_status,
+                              -datetime,
+                              -ms_interp) %>%
         err_df_to_matrix()
     
     c_status <- chem_values$ms_status
     c_interp <- chem_values$ms_interp
     c_matrix <- dplyr::select(chem_values,
-                       -ms_status,
-                       -datetime,
-                       -ms_interp) %>%
+                              -ms_status,
+                              -datetime,
+                              -ms_interp) %>%
         err_df_to_matrix()
     
     rm(precip_values, chem_values); gc()
@@ -1372,7 +1372,7 @@ approxjoin_datetime <- function(x,
     #     '1968-10-09 05:00:00', 'GSWS10', 'GN_alk', set_errors(5.009, 1), 1, 1,
     #     '1968-10-09 05:15:00', 'GSWS10', 'GN_alk', set_errors(6.009, 1), 1, 1) %>%
     #     mutate(datetime = as.POSIXct(datetime, tz = 'UTC'))
-
+    
     check_suggested_pkgs(c('data.table'))
     
     #tests
@@ -1423,29 +1423,29 @@ approxjoin_datetime <- function(x,
     #to be separated into its own column. also give same-name columns suffixes
     
     if('val' %in% colnames(x)){
-
+        
         x <- x %>%
             mutate(err = errors::errors(val),
                    val = errors::drop_errors(val)) %>%
             rename_with(.fn = ~paste0(., '_x'),
                         .cols = everything()) %>%
             data.table::as.data.table()
-
+        
         y <- y %>%
             mutate(err = errors::errors(val),
                    val = errors::drop_errors(val)) %>%
             rename_with(.fn = ~paste0(., '_y'),
                         .cols = everything()) %>%
             data.table::as.data.table()
-
+        
     } else {
-
+        
         if(indices_only){
             x <- rename(x, datetime_x = datetime) %>%
                 mutate(across(where(~inherits(., 'errors')),
                               ~errors::drop_errors(.))) %>%
                 data.table::as.data.table()
-
+            
             y <- rename(y, datetime_y = datetime) %>%
                 mutate(across(where(~inherits(., 'errors')),
                               ~errors::drop_errors(.))) %>%
@@ -1453,7 +1453,7 @@ approxjoin_datetime <- function(x,
         } else {
             stop('this case not yet handled')
         }
-
+        
     }
     
     #alternative implementation of the "on" argument in data.table joins...
@@ -1535,14 +1535,14 @@ approxjoin_datetime <- function(x,
     # }
     
     joined <- dplyr::select(joined,
-                     datetime,
-                     # matches('^val_?[xy]?$'),
-                     # any_of('flow'),
-                     starts_with('site_code'),
-                     any_of(c(starts_with('var_'), matches('^var$'))),
-                     any_of(c(starts_with('val_'), matches('^val$'))),
-                     starts_with('ms_status_'),
-                     starts_with('ms_interp_'))
+                            datetime,
+                            # matches('^val_?[xy]?$'),
+                            # any_of('flow'),
+                            starts_with('site_code'),
+                            any_of(c(starts_with('var_'), matches('^var$'))),
+                            any_of(c(starts_with('val_'), matches('^val$'))),
+                            starts_with('ms_status_'),
+                            starts_with('ms_interp_'))
     
     return(joined)
 }
@@ -1854,7 +1854,7 @@ resolve_datetime <- function(d,
     dt_tb <- tibble(basecol = rep(NA, nrow(d)))
     for(i in 1:length(datetime_colnames)){
         dt_comps <- stringr::str_match_all(string = datetime_formats[i],
-                                  pattern = '%([a-zA-Z])')[[1]][,2]
+                                           pattern = '%([a-zA-Z])')[[1]][,2]
         dt_regex <- dt_format_to_regex(datetime_formats[i],
                                        optional = optional)
         
@@ -1971,12 +1971,12 @@ identify_sampling <- function(df,
     
     #set up directory system to store sample regimen metadata
     sampling_dir <- glue::glue('data/{n}/{d}',
-                         n = network,
-                         d = domain)
+                               n = network,
+                               d = domain)
     
     sampling_file <- glue::glue('data/{n}/{d}/sampling_type.json',
-                          n = network,
-                          d = domain)
+                                n = network,
+                                d = domain)
     
     master <- try(jsonlite::fromJSON(readr::read_file(sampling_file)),
                   silent = TRUE)
@@ -2076,15 +2076,15 @@ identify_sampling <- function(df,
             }
             
             var_name_base <- stringr::str_split(string = data_cols[p],
-                                       pattern = '__\\|')[[1]][1]
+                                                pattern = '__\\|')[[1]][1]
             
             g_a <- g_a %>%
                 mutate(
                     type = paste0(type,
                                   !!is_sensor[var_name_base]),
                     var = as.character(glue::glue('{ty}_{vb}',
-                                            ty = type,
-                                            vb = var_name_base)))
+                                                  ty = type,
+                                                  vb = var_name_base)))
             
             master[[prodname_ms]][[var_name_base]][[site_codes[i]]] <-
                 list('startdt' = g_a$starts,
@@ -2268,12 +2268,12 @@ get_response_1char <- function(msg,
                                possible_chars,
                                subsequent_prompt = FALSE,
                                response_from_file = NULL){
-
+    
     #msg: character. a message that will be used to prompt the user
     #possible_chars: character vector of acceptable single-character responses
     #subsequent prompt: not to be set directly. This is handled by
     #   get_response_mchar during recursion.
-
+    
     if(subsequent_prompt){
         cat(paste('Please choose one of:',
                   paste(possible_chars,
@@ -2282,7 +2282,7 @@ get_response_1char <- function(msg,
     } else {
         cat(msg)
     }
-
+    
     if(! is.null(response_from_file)){
         ch <- as.character(readLines(con = response_from_file, 1))
         rsps <- readLines(con = response_from_file)
@@ -2291,7 +2291,7 @@ get_response_1char <- function(msg,
     } else {
         ch <- as.character(readLines(con = stdin(), 1))
     }
-
+    
     if(length(ch) == 1 && ch %in% possible_chars){
         return(ch)
     } else {
@@ -2411,8 +2411,8 @@ get_response_int <- function(msg,
     
     if(subsequent_prompt){
         cat(glue::glue('Please choose an integer in the range [{minv}, {maxv}].',
-                 minv = min_val,
-                 maxv = max_val))
+                       minv = min_val,
+                       maxv = max_val))
     } else {
         cat(msg)
     }
@@ -2475,11 +2475,11 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
         # bind_rows(tibble(domain='a', domain_fullname = 'a', network_fullname='a', funding='NSF awards: 345, 3535')) %>%
         mutate(network_fullname = ifelse(stringr::str_detect(domain_fullname, network_fullname), '', network_fullname)) %>% 
         mutate(txt = paste0(domain_fullname, ' ', network_fullname, ' (', funding, ')'),
-        txt = stringr::str_extract(txt, '.+?(?=(?: \\(NA\\)|$))')) %>%
+               txt = stringr::str_extract(txt, '.+?(?=(?: \\(NA\\)|$))')) %>%
         pull(txt)
     
     ndeets <- length(relevant_deets)
-                                          
+    
     relevant_deets <- paste0(1:ndeets, '. ', relevant_deets)
     
     ack <- glue::glue('Primary data were provided by the following sources:\n{ack_ls}.',
@@ -2529,7 +2529,7 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
                title = stringr::str_replace_all(title, '[[[:punct:]] ]', ''),
                title = tolower(title)) %>% 
         dplyr::select(authors, pubyr, title)
-            
+    
     #match records to citations
     matches <- c()
     for(i in seq_len(nrow(extracts))){
@@ -2544,17 +2544,17 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     
     #include the entry for MacroSheds itself
     ms_bib <- paste0(
-    "@article{vlah_etal_macrosheds_2023,\n\t",
-    "author = {Vlah, Michael J. and Rhea, Spencer and Bernhardt, Emily S. and Slaughter, Weston and Gubbins, Nick and DelVecchia, Amanda G. and Thellman, Audrey and Ross, Matthew R. V.},\n\t",
-    "title = {MacroSheds: A synthesis of long-term biogeochemical, hydroclimatic, and geospatial data from small watershed ecosystem studies},\n\t",
-    "journal = {Limnology and Oceanography Letters},\n\t",
-    "volume = {8},\n\t",
-    "number = {3},\n\t",
-    "pages = {419-452},\n\t",
-    "doi = {https://doi.org/10.1002/lol2.10325},\n\t",
-    "url = {https://aslopubs.onlinelibrary.wiley.com/doi/abs/10.1002/lol2.10325},\n\t",
-    "year = {2023},\n}")
-
+        "@article{vlah_etal_macrosheds_2023,\n\t",
+        "author = {Vlah, Michael J. and Rhea, Spencer and Bernhardt, Emily S. and Slaughter, Weston and Gubbins, Nick and DelVecchia, Amanda G. and Thellman, Audrey and Ross, Matthew R. V.},\n\t",
+        "title = {MacroSheds: A synthesis of long-term biogeochemical, hydroclimatic, and geospatial data from small watershed ecosystem studies},\n\t",
+        "journal = {Limnology and Oceanography Letters},\n\t",
+        "volume = {8},\n\t",
+        "number = {3},\n\t",
+        "pages = {419-452},\n\t",
+        "doi = {https://doi.org/10.1002/lol2.10325},\n\t",
+        "url = {https://aslopubs.onlinelibrary.wiley.com/doi/abs/10.1002/lol2.10325},\n\t",
+        "year = {2023},\n}")
+    
     #retrieve bibtex for any matches
     bibtex_out <- bts[matches]
     bibtex_out <- c(ms_bib, bibtex_out)
@@ -2567,7 +2567,7 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     }
     
     bibtex_out <- paste0(bibtex_out, '\n')
-
+    
     return(bibtex_out)
 }
 
@@ -2590,7 +2590,7 @@ format_IR <- function(ts_attrib, ws_attr = FALSE, abide_by){
             tibble(network = NA, domain = NA, macrosheds_prodname = 'tcw (watershed attribute)',
                    may_disregard_with_permission = FALSE, contact = 'https://www.bdi.ox.ac.uk/research/malaria-atlas-project'))
     }
-        
+    
     notify_intent_s <- ts_attrib %>% 
         filter(IR_notify_of_intentions == 's') %>% 
         dplyr::select(network, domain, macrosheds_prodname, contact) %>% 
@@ -2700,461 +2700,407 @@ check_suggested_pkgs <- function(pkgs){
     }
 }
 
+list_all_product_dirs <- function(macrosheds_root, prodname){
+    
+    prodname_dirs <- list.dirs(path = macrosheds_root,
+                               full.names = TRUE,
+                               recursive = TRUE)
+    
+    prodname_dirs <- grep(pattern = paste0(prodname),
+                          x = prodname_dirs,
+                          value = TRUE)
+    
+    return(prodname_dirs)
+}
+
+Mode <- function(x, na.rm = TRUE){
+    
+    if(na.rm){
+        x <- na.omit(x)
+    }
+    
+    ux <- unique(x)
+    mode_out <- ux[which.max(tabulate(match(x, ux)))]
+    return(mode_out)
+    
+}
+
+mean_or_x <- function(x, na.rm = FALSE){
+    
+    # used to bypass the tyranny of the errors package not letting
+    # someone take the mean of an errors object of length 1. this func returns the
+    # original value if the group is length one, and the mean otherwise
+    
+    if(length(x) == 1) return(x)
+    
+    x <- mean(x, na.rm = na.rm)
+    return(x)
+}
+
 # flux helpers ####
 
 wtr_yr <- function(dates, start_month = 10){
     
-  d1 <- as.Date(dates)
-  offset <- ifelse(as.integer(format(d1, '%m')) < start_month, 0, 1)
-  adj_year <- as.integer(format(d1, '%Y')) + offset
-  return(adj_year)
+    d1 <- as.Date(dates)
+    offset <- ifelse(as.integer(format(d1, '%m')) < start_month, 0, 1)
+    adj_year <- as.integer(format(d1, '%Y')) + offset
+    return(adj_year)
 }
-
-interpolate_conc_to_q <- function(chem_df, q_df){
- # Join chem and q
- join_df <- full_join(chem_df, q_df, by = 'date') %>%
-   arrange(date) %>%
-   mutate(interp = 0) %>%
-    dplyr::select(date, conc, q_lps, interp)
- join_df$interp[is.na(join_df$conc)] <- 1
-
- #interpolate chem to match q
- interp_df <- na_interpolation(join_df, option = "linear", maxgap = Inf) %>%
-     mutate(wy = water_year(date, origin = 'usgs'))
- return(interp_df)
-}
-
-prep_usgs_for_riverload <- function(chem_df, q_df){
-    conv_q <- q_df %>%
-        mutate(site_code = !!site_code,
-               flow = Q/35.3147) %>% # convert cfs to cubic meters per second)
-        dplyr::select(datetime, flow) %>%
-        data.frame()
-
-    conv_c <- chem_df %>%
-        mutate(datetime = as.POSIXct(date, format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
-        dplyr::select(datetime, conc) %>%
-        data.frame()
-
-    db <- full_join(conv_q, conv_c, by = "datetime") %>%
-        #filter(!is.na(flow)) %>%
-        arrange(datetime)
-
-    return(db)
-}
-
-dt_to_wy_quarter <- function(datetime){
-  tryCatch(
-    expr = {
-      date <- date(as.Date(datetime))
-
-      # divide WY into quarters
-      m <- as.integer(format(date, "%m"))
-
-      if(m %in% c(10, 11, 12)) {
-        return("Q1")
-      } else if(m %in% c(1, 2, 3)) {
-        return("Q2")
-      } else if(m %in% c(4, 5, 6)) {
-        return("Q3")
-      } else if(m %in% c(7, 8, 9)) {
-        return("Q4")
-      }
-    },
-    error = function(e) {
-      print("something went wrong in dt_to_wy_quarter() conversion")
-    }
-  )
-}
-
-old_warn_sum <- function(x) {
-   # use to sitll get data with NAs and Infs
-   # length of record
-   n_x <- length(x)
-
-   if(TRUE %in% is.na(x)) {
-     # number of NAs in record
-     n_na <- length(x[is.na(x)])
-
-    if(TRUE %in% is.infinite(x)) {
-      # number of inf values in record
-      n_inf <- length(x[is.infinite(x)])
-
-      # warn user
-      writeLines(paste("WARNING: infinite values found in flux record, ignoring during SUM",
-                       "\n count NA:", n_na,
-                       "\n count Inf:", n_inf))
-
-
-      xsum <- sum(x[!is.infinite(x)], na.rm = TRUE)
-      return(xsum)
-    }
-
-    xsum <- sum(x, na.rm = TRUE)
-
-    writeLines(paste('NAs found in flux record, ignoring during SUM. \n count NA:',
-                 n_na,
-                 '\n percent NA:', (n_na/n_x) * 100))
-   } else {
-     xsum <- sum(x)
-   }
-   return(xsum)
- }
 
 warn_sum <- function(x) {
-   # length of record
-   n_x <- length(x)
-
-     # number of NAs in record
-     n_na <- length(x[is.na(x)])
-      # number of inf values in record
-      n_inf <- length(x[is.infinite(x)])
-
-      # warn user
-      writeLines(paste("WARNING: infinite values found in flux record, ignoring during SUM",
-                       "\n count NA:", n_na,
-                       "\n count Inf:", n_inf))
-
-
-      xsum <- sum(x[!is.infinite(x)], na.rm = TRUE)
-      return(xsum)
- }
+    # length of record
+    n_x <- length(x)
+    
+    # number of NAs in record
+    n_na <- length(x[is.na(x)])
+    # number of inf values in record
+    n_inf <- length(x[is.infinite(x)])
+    
+    # warn user
+    writeLines(paste("WARNING: infinite values found in flux record, ignoring during SUM",
+                     "\n count NA:", n_na,
+                     "\n count Inf:", n_inf))
+    
+    
+    xsum <- sum(x[!is.infinite(x)], na.rm = TRUE)
+    return(xsum)
+}
 
 carry_flags <- function(raw_q_df, raw_conc_df, target_solute = NULL, target_year = NULL, period = NULL){
     #### set up ratio functions #####
-         # interp ratio
-         calc_interp_ratio <- function(trimmed_df, period = NULL){
-
-            if(period == 'annual'){
-                no_interp <- trimmed_df %>%
-                    filter(ms_interp == 0) %>%
-                    count() %>%
-                    pull(n)
-
-                interp <- trimmed_df %>%
-                    filter(ms_interp ==1) %>%
-                    count() %>%
-                    pull(n)
-
-                interp_ratio <- interp/(interp+no_interp)
-
-                return(interp_ratio)
-
-            } else if(period == 'month'){
-                interp_ratio <- trimmed_df %>%
-                       mutate(month = lubridate::month(date)) %>%
-                       group_by(month) %>%
-                       summarize(n_interp = sum(ms_interp == 1),
-                                 n_no_interp = sum(ms_interp == 0)) %>%
-                       mutate(interp_ratio = n_interp/(n_interp+n_no_interp)) %>%
-                       ungroup() %>%
-                       dplyr::select(month, interp_ratio)
-
-                return(interp_ratio)
-
-            }else{print('Specify period as month or annual.')}
-
-         }
-
-         # status ratio
-         calc_status_ratio <- function(trimmed_df, period = NULL){
-
-             if(period == 'annual'){
-             no_status <- trimmed_df %>%
-                 filter(ms_status == 0) %>%
-                 count() %>%
-                 pull(n)
-
-             status <- trimmed_df %>%
-                 filter(ms_interp == 1) %>%
-                 count() %>%
-                 pull(n)
-
-             status_ratio <- status/(status+no_status)
-
-             return(status_ratio)}
-             else if (period == 'month'){
-                 status_ratio <- trimmed_df %>%
-                     mutate(month = lubridate::month(date)) %>%
-                     group_by(month) %>%
-                     summarize(n_stat = sum(ms_status == 1),
-                               n_no_stat = sum(ms_status == 0)) %>%
-                     mutate(status_ratio = n_stat/(n_stat+n_no_stat)) %>%
-                     ungroup() %>%
-                     dplyr::select(month, status_ratio)
-
-                 return(status_ratio)
-
-             }else{print('Specify period as month or annual.')}
-         }
-
-         # missing ratio
-         calc_missing_ratio <- function(trimmed_df, period = NULL){
-
-             if(period == 'annual'){
-                present <- trimmed_df %>%
-                    dplyr::select(val) %>%
-                    na.omit() %>%
-                    nrow()
-
-                missing_ratio <- (365-present)/365
-
-                return(missing_ratio)
-
-             }else if(period == 'month'){
-                 missing_ratio <- trimmed_df %>%
-                     mutate(month = lubridate::month(date)) %>%
-                     dplyr::select(month, date, val) %>%
-                     group_by(month) %>%
-                     na.omit() %>%
-                     summarize(n = n()) %>%
-                     mutate(full_days = lubridate::days_in_month(month),
-                            missing_ratio = (full_days-n)/full_days) %>%
-                     ungroup() %>%
-                     dplyr::select(month, missing_ratio)
-
-                 return(missing_ratio)
-
-             }else{
-                 print('Specify period as month or annual.')
-             }
-
-         }
+    # interp ratio
+    calc_interp_ratio <- function(trimmed_df, period = NULL){
+        
+        if(period == 'annual'){
+            no_interp <- trimmed_df %>%
+                filter(ms_interp == 0) %>%
+                count() %>%
+                pull(n)
+            
+            interp <- trimmed_df %>%
+                filter(ms_interp ==1) %>%
+                count() %>%
+                pull(n)
+            
+            interp_ratio <- interp/(interp+no_interp)
+            
+            return(interp_ratio)
+            
+        } else if(period == 'month'){
+            interp_ratio <- trimmed_df %>%
+                mutate(month = lubridate::month(date)) %>%
+                group_by(month) %>%
+                summarize(n_interp = sum(ms_interp == 1),
+                          n_no_interp = sum(ms_interp == 0)) %>%
+                mutate(interp_ratio = n_interp/(n_interp+n_no_interp)) %>%
+                ungroup() %>%
+                dplyr::select(month, interp_ratio)
+            
+            return(interp_ratio)
+            
+        }else{print('Specify period as month or annual.')}
+        
+    }
+    
+    # status ratio
+    calc_status_ratio <- function(trimmed_df, period = NULL){
+        
+        if(period == 'annual'){
+            no_status <- trimmed_df %>%
+                filter(ms_status == 0) %>%
+                count() %>%
+                pull(n)
+            
+            status <- trimmed_df %>%
+                filter(ms_interp == 1) %>%
+                count() %>%
+                pull(n)
+            
+            status_ratio <- status/(status+no_status)
+            
+            return(status_ratio)}
+        else if (period == 'month'){
+            status_ratio <- trimmed_df %>%
+                mutate(month = lubridate::month(date)) %>%
+                group_by(month) %>%
+                summarize(n_stat = sum(ms_status == 1),
+                          n_no_stat = sum(ms_status == 0)) %>%
+                mutate(status_ratio = n_stat/(n_stat+n_no_stat)) %>%
+                ungroup() %>%
+                dplyr::select(month, status_ratio)
+            
+            return(status_ratio)
+            
+        }else{print('Specify period as month or annual.')}
+    }
+    
+    # missing ratio
+    calc_missing_ratio <- function(trimmed_df, period = NULL){
+        
+        if(period == 'annual'){
+            present <- trimmed_df %>%
+                dplyr::select(val) %>%
+                na.omit() %>%
+                nrow()
+            
+            missing_ratio <- (365-present)/365
+            
+            return(missing_ratio)
+            
+        }else if(period == 'month'){
+            missing_ratio <- trimmed_df %>%
+                mutate(month = lubridate::month(date)) %>%
+                dplyr::select(month, date, val) %>%
+                group_by(month) %>%
+                na.omit() %>%
+                summarize(n = n()) %>%
+                mutate(full_days = lubridate::days_in_month(month),
+                       missing_ratio = (full_days-n)/full_days) %>%
+                ungroup() %>%
+                dplyr::select(month, missing_ratio)
+            
+            return(missing_ratio)
+            
+        }else{
+            print('Specify period as month or annual.')
+        }
+        
+    }
     ### run functions on data ####
-         if(period == 'annual'){
-
-             year_conc_df <- raw_conc_df %>%
-                 mutate(wy = wtr_yr(date, start_month = 10)) %>%
-                 filter(wy == target_year,
-                        target_solute == target_solute)
-
-             conc_tbl <- tibble(wy = target_year, var = target_solute,
-                               ms_interp = calc_interp_ratio(trimmed_df = year_conc_df, period = period),
-                               ms_status = calc_status_ratio(trimmed_df = year_conc_df, period = period),
-                               ms_missing = calc_missing_ratio(trimmed_df = year_conc_df, period = period),
-                               )
-
-             year_q_df <- raw_q_df %>%
-                 mutate(wy = wtr_yr(date, start_month = 10)) %>%
-                 filter(wy == target_year)
-
-             q_tbl <- tibble(wy = target_year, var = unique(year_q_df$var)[1],
-                               ms_interp = calc_interp_ratio(trimmed_df = year_q_df, period = period),
-                               ms_status = calc_status_ratio(trimmed_df = year_q_df, period = period),
-                               ms_missing = calc_missing_ratio(trimmed_df = year_q_df, period = period)
-                             )
-
-             out_frame <- rbind(conc_tbl, q_tbl)
-            return(out_frame)
-         } else
-
-         if(period == 'month'){
-
-             year_conc_df <- raw_conc_df %>%
-                 mutate(wy = wtr_yr(date, start_month = 10)) %>%
-                 filter(wy == target_year,
-                        target_solute == target_solute)
-
+    if(period == 'annual'){
+        
+        year_conc_df <- raw_conc_df %>%
+            mutate(wy = wtr_yr(date, start_month = 10)) %>%
+            filter(wy == target_year,
+                   target_solute == target_solute)
+        
+        conc_tbl <- tibble(wy = target_year, var = target_solute,
+                           ms_interp = calc_interp_ratio(trimmed_df = year_conc_df, period = period),
+                           ms_status = calc_status_ratio(trimmed_df = year_conc_df, period = period),
+                           ms_missing = calc_missing_ratio(trimmed_df = year_conc_df, period = period),
+        )
+        
+        year_q_df <- raw_q_df %>%
+            mutate(wy = wtr_yr(date, start_month = 10)) %>%
+            filter(wy == target_year)
+        
+        q_tbl <- tibble(wy = target_year, var = unique(year_q_df$var)[1],
+                        ms_interp = calc_interp_ratio(trimmed_df = year_q_df, period = period),
+                        ms_status = calc_status_ratio(trimmed_df = year_q_df, period = period),
+                        ms_missing = calc_missing_ratio(trimmed_df = year_q_df, period = period)
+        )
+        
+        out_frame <- rbind(conc_tbl, q_tbl)
+        return(out_frame)
+    } else
+        
+        if(period == 'month'){
+            
+            year_conc_df <- raw_conc_df %>%
+                mutate(wy = wtr_yr(date, start_month = 10)) %>%
+                filter(wy == target_year,
+                       target_solute == target_solute)
+            
             ms_interp = calc_interp_ratio(trimmed_df = year_conc_df, period = period)
             ms_status = calc_status_ratio(trimmed_df = year_conc_df, period = period)
             ms_missing = calc_missing_ratio(trimmed_df = year_conc_df, period = period)
-
+            
             conc_tbl <- full_join(ms_interp, ms_status, by = 'month') %>%
                 full_join(ms_missing, by = 'month') %>%
                 mutate(wy = target_year,
                        var = target_solute)
-
-             year_q_df <- raw_q_df %>%
-                 mutate(wy = wtr_yr(date, start_month = 10)) %>%
-                 filter(wy == target_year)
-
-             ms_interp = calc_interp_ratio(trimmed_df = year_q_df, period = period)
-             ms_status = calc_status_ratio(trimmed_df = year_q_df, period = period)
-             ms_missing = calc_missing_ratio(trimmed_df = year_q_df, period = period)
-
-             q_tbl <- full_join(ms_interp, ms_status, by = 'month') %>%
-                 full_join(ms_missing, by = 'month') %>%
-                 mutate(wy = target_year,
-                        var = unique(year_q_df$var)[1])
-
-             out_frame <- rbind(conc_tbl, q_tbl)
-             return(out_frame)
-         }
-
- }
+            
+            year_q_df <- raw_q_df %>%
+                mutate(wy = wtr_yr(date, start_month = 10)) %>%
+                filter(wy == target_year)
+            
+            ms_interp = calc_interp_ratio(trimmed_df = year_q_df, period = period)
+            ms_status = calc_status_ratio(trimmed_df = year_q_df, period = period)
+            ms_missing = calc_missing_ratio(trimmed_df = year_q_df, period = period)
+            
+            q_tbl <- full_join(ms_interp, ms_status, by = 'month') %>%
+                full_join(ms_missing, by = 'month') %>%
+                mutate(wy = target_year,
+                       var = unique(year_q_df$var)[1])
+            
+            out_frame <- rbind(conc_tbl, q_tbl)
+            return(out_frame)
+        }
+    
+}
 
 prep_raw_for_riverload <- function(chem_df, q_df, datecol = 'date'){
     conv_q <- q_df %>%
-                mutate(datetime = as.POSIXct(get(datecol), format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
-                mutate(flow = q_lps*0.001) %>% # convert lps to cubic meters per second)
-                dplyr::select(datetime, flow) %>%
-                arrange(datetime) %>%
-                data.frame()
+        mutate(datetime = as.POSIXct(get(datecol), format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
+        mutate(flow = q_lps*0.001) %>% # convert lps to cubic meters per second)
+        dplyr::select(datetime, flow) %>%
+        arrange(datetime) %>%
+        data.frame()
     if(lubridate::month(conv_q$datetime[1]) == 9 & lubridate::day(conv_q$datetime[1]) == 30){
         conv_q = conv_q[-1,]
     }
-
+    
     conv_c <- chem_df %>%
-                mutate(datetime = as.POSIXct(get(datecol), format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
-                dplyr::select(datetime, conc) %>%
-                data.frame()
-
+        mutate(datetime = as.POSIXct(get(datecol), format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
+        dplyr::select(datetime, conc) %>%
+        data.frame()
+    
     db <- full_join(conv_q, conv_c, by = "datetime") %>%
-                #filter(!is.na(flow)) %>%
-                arrange(datetime)
-
+        #filter(!is.na(flow)) %>%
+        arrange(datetime)
+    
     return(db)
 }
 
 calculate_pw <- function(chem_df, q_df, datecol = 'date', area = 1, period = NULL){
-  if(is.null(period)) {
-    warning('no period supplied, calculating annual flux')
-    period <- 'annual'
-  }
-
-  rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
-
-  if(is.na(rl_data[1,2])){
-      rl_data <- rl_data[-1,]
-  }
-
-  if(period == 'annual'){
-    flux_from_pw <- sm(RiverLoad::method6(rl_data, ncomp = 1)) %>%
-      sum(.)/(1000*area)
-  }else if(period == 'month'){
-
-      method6_month <- function (db, ncomp, period){
-          if (requireNamespace("imputeTS")) {
-              n <- nrow(db)
-              interpolation <- data.frame(imputeTS::na_interpolation(db,
-                                                                     "linear"))
-              load <- data.frame(interpolation[, 2] * interpolation[,
-                                                                    -c(1:2)])
-              difference <- matrix(nrow = (nrow(db) - 1), ncol = 1)
-              for (i in 1:(nrow(db) - 1)) {
-                  difference[i] <- difftime(db[i + 1, 1], db[i, 1],
-                                          units = "days")
-              }
-
-              loadtot <- cbind.data.frame(interpolation$datetime,
-                                          load)
-              colnames(loadtot)[1] <- c("datetime")
-              loadtot[, 1] <- format(as.POSIXct(loadtot[, 1]), format = "%Y-%m")
-              forrow <- aggregate(loadtot[, 2] ~ datetime, loadtot,
-                                  sum)
-              agg.dataC <- matrix(nrow = nrow(forrow), ncol = (ncomp))
-              for (i in 1:ncomp) {
-                  agg.data <- aggregate(loadtot[, i + 1] ~ datetime,
-                                        loadtot, sum)
-                  agg.dataC[, i] <- as.matrix(agg.data[, 2])
-              }
-              colnames(agg.dataC) <- c(names(db)[3:(ncomp + 2)])
-              rownames(agg.dataC) <- forrow$datetime
-              return(agg.dataC)
-          }
-
-              colnames(agg.dataC) <- c(names(db)[3:(ncomp + 2)])
-              rownames(agg.dataC) <- forrow$datetime
-              return(agg.dataC)
-      }
-
-      ##### apply #####
-
-      flux_from_pw <- method6_month(rl_data, ncomp = 1, period = period)
-
-      flux_from_pw <- tibble(date = rownames(flux_from_pw),
-                          flux = (flux_from_pw[,1]/(1000*area)))
-  }
-
-  return(flux_from_pw)
+    if(is.null(period)) {
+        warning('no period supplied, calculating annual flux')
+        period <- 'annual'
+    }
+    
+    rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
+    
+    if(is.na(rl_data[1,2])){
+        rl_data <- rl_data[-1,]
+    }
+    
+    if(period == 'annual'){
+        flux_from_pw <- sm(RiverLoad::method6(rl_data, ncomp = 1)) %>%
+            sum(.)/(1000*area)
+    }else if(period == 'month'){
+        
+        method6_month <- function (db, ncomp, period){
+            if (requireNamespace("imputeTS")) {
+                n <- nrow(db)
+                interpolation <- data.frame(imputeTS::na_interpolation(db,
+                                                                       "linear"))
+                load <- data.frame(interpolation[, 2] * interpolation[,
+                                                                      -c(1:2)])
+                difference <- matrix(nrow = (nrow(db) - 1), ncol = 1)
+                for (i in 1:(nrow(db) - 1)) {
+                    difference[i] <- difftime(db[i + 1, 1], db[i, 1],
+                                              units = "days")
+                }
+                
+                loadtot <- cbind.data.frame(interpolation$datetime,
+                                            load)
+                colnames(loadtot)[1] <- c("datetime")
+                loadtot[, 1] <- format(as.POSIXct(loadtot[, 1]), format = "%Y-%m")
+                forrow <- aggregate(loadtot[, 2] ~ datetime, loadtot,
+                                    sum)
+                agg.dataC <- matrix(nrow = nrow(forrow), ncol = (ncomp))
+                for (i in 1:ncomp) {
+                    agg.data <- aggregate(loadtot[, i + 1] ~ datetime,
+                                          loadtot, sum)
+                    agg.dataC[, i] <- as.matrix(agg.data[, 2])
+                }
+                colnames(agg.dataC) <- c(names(db)[3:(ncomp + 2)])
+                rownames(agg.dataC) <- forrow$datetime
+                return(agg.dataC)
+            }
+            
+            colnames(agg.dataC) <- c(names(db)[3:(ncomp + 2)])
+            rownames(agg.dataC) <- forrow$datetime
+            return(agg.dataC)
+        }
+        
+        ##### apply #####
+        
+        flux_from_pw <- method6_month(rl_data, ncomp = 1, period = period)
+        
+        flux_from_pw <- tibble(date = rownames(flux_from_pw),
+                               flux = (flux_from_pw[,1]/(1000*area)))
+    }
+    
+    return(flux_from_pw)
 }
 
 calculate_beale <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
     if(is.null(period)) {
-      warning('no period supplied, calculating annual flux')
-      period <- 'annual'
+        warning('no period supplied, calculating annual flux')
+        period <- 'annual'
     }
-
+    
     rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
-
+    
     if(is.na(rl_data[1,2])){
         rl_data <- rl_data[-1,]
     }
-
+    
     if(period == 'annual'){
-      flux_from_beale <- RiverLoad::beale.ratio(rl_data, ncomp = 1) %>%
-        sum(.)/(1000*area)
+        flux_from_beale <- RiverLoad::beale.ratio(rl_data, ncomp = 1) %>%
+            sum(.)/(1000*area)
     }else if(period == 'month'){
         flux_from_beale <- RiverLoad::beale.ratio(rl_data, ncomp = 1, period = period)
-
+        
         flux_from_beale <- tibble(date = rownames(flux_from_beale),
-                               flux = (flux_from_beale[,1]/(1000*area)))
+                                  flux = (flux_from_beale[,1]/(1000*area)))
     }
-
+    
     return(flux_from_beale)
 }
 
 calculate_rating <- function(chem_df, q_df, datecol = 'date', period = NULL, area = 1){
     if(is.null(period)) {
-      warning('no period supplied, calculating annual flux')
-      period <- 'annual'
+        warning('no period supplied, calculating annual flux')
+        period <- 'annual'
     }
-
+    
     rl_data <- prep_raw_for_riverload(chem_df = chem_df, q_df = q_df, datecol = datecol)
-
+    
     if(period == 'annual'){
-    flux_from_reg <- RiverLoad::rating(rl_data, ncomp = 1) %>%
-        sum(.)/(1000*area)
+        flux_from_reg <- RiverLoad::rating(rl_data, ncomp = 1) %>%
+            sum(.)/(1000*area)
     }else{
-
-    if(period == 'month'){
-        flux_from_reg <- RiverLoad::rating(rl_data, ncomp = 1, period = period)
-
-        flux_from_reg <- tibble(date = rownames(flux_from_reg),
-                                  flux = (flux_from_reg[,1]/(1000*area)))
+        
+        if(period == 'month'){
+            flux_from_reg <- RiverLoad::rating(rl_data, ncomp = 1, period = period)
+            
+            flux_from_reg <- tibble(date = rownames(flux_from_reg),
+                                    flux = (flux_from_reg[,1]/(1000*area)))
+        }
     }
-    }
-
+    
     return(flux_from_reg)
 }
 
 calculate_wrtds <- function(chem_df, q_df, ws_size, lat, long, datecol = 'date',
                             agg = 'default', minNumObs = 2, minNumUncen = 2, gap_period = 730) {
-  tryCatch(
-    expr = {
-      # default sums all daily flux values in df
-      egret_results <- adapt_ms_egret(chem_df, q_df, ws_size,
-                                      lat, long,
-                                      datecol = datecol,
-                                      minNumObs = minNumObs,
-                                      minNumUncen = minNumUncen,
-                                      gap_period = gap_period)
-
-      if(agg == 'default') {
-        flux_from_egret <- egret_results$Daily$FluxDay %>%
-          warn_sum(.)/(area)
-      } else if(agg == 'annual') {
-        flux_from_egret <- egret_results$Daily %>%
+    tryCatch(
+        expr = {
+            # default sums all daily flux values in df
+            egret_results <- adapt_ms_egret(chem_df, q_df, ws_size,
+                                            lat, long,
+                                            datecol = datecol,
+                                            minNumObs = minNumObs,
+                                            minNumUncen = minNumUncen,
+                                            gap_period = gap_period)
+            
+            if(agg == 'default') {
+                flux_from_egret <- egret_results$Daily$FluxDay %>%
+                    warn_sum(.)/(area)
+            } else if(agg == 'annual') {
+                flux_from_egret <- egret_results$Daily %>%
                     mutate(
-                      wy = water_year(Date)
+                        wy = water_year(Date)
                     ) %>%
-          group_by(wy) %>%
-          summarize(
-            flux = warn_sum(FluxDay)/(area)
-          )
-      } else if(agg == 'monthly') {
-        flux_from_egret <- egret_results$Daily %>%
+                    group_by(wy) %>%
+                    summarize(
+                        flux = warn_sum(FluxDay)/(area)
+                    )
+            } else if(agg == 'monthly') {
+                flux_from_egret <- egret_results$Daily %>%
                     mutate(
-                      wy = water_year(Date),
-                      month = lubridate::month(Date)
+                        wy = water_year(Date),
+                        month = lubridate::month(Date)
                     ) %>%
-          group_by(wy, month) %>%
-          summarize(
-            flux = warn_sum(FluxDay)/(area)
-          )
-      }
+                    group_by(wy, month) %>%
+                    summarize(
+                        flux = warn_sum(FluxDay)/(area)
+                    )
+            }
         },
-    error = function(e) {
+        error = function(e){
             print('ERROR: WRTDS failed to run')
             return(NA)
         })
@@ -3239,191 +3185,189 @@ calculate_composite_from_resid_corrected <- function(rating_filled_df,
     return(flux_from_comp)
 }
 
-detect_record_break <- function(data) {
+detect_record_break <- function(data){
     data_time <- data %>%
-      dplyr::select(Date, Julian) %>%
-      # how many days between this day and the next
-      mutate(days_gap = lead(Julian, 1) - Julian)
+        dplyr::select(Date, Julian) %>%
+        # how many days between this day and the next
+        mutate(days_gap = lead(Julian, 1) - Julian)
     return(data_time)
-  }
+}
 
 get_break_dates <- function(data, gap_period = 730) {
-  start = list()
-  end = list()
-
-  index = 1
-  # default 730 bc USGS says breaks below 2 years probably fine
-  for(i in 1:nrow(data)) {
-    gap <- data$days_gap[i]
-
-    if(!is.na(gap)) {
-
-    if(gap > gap_period) {
-      start[[index]] = c(data$Date[i])
-      end[[index]] = c(data$Date[i+1])
-      index = index + 1
+    start = list()
+    end = list()
+    
+    index = 1
+    # default 730 bc USGS says breaks below 2 years probably fine
+    for(i in 1:nrow(data)) {
+        gap <- data$days_gap[i]
+        
+        if(!is.na(gap)) {
+            
+            if(gap > gap_period) {
+                start[[index]] = c(data$Date[i])
+                end[[index]] = c(data$Date[i+1])
+                index = index + 1
+            }
+        }
     }
-    }
-  }
-
+    
     break_dates = list('start' = start, 'end'= end)
     return(break_dates)
-  }
+}
 
 adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                            site_data = NULL, kalman = FALSE,
                            datecol = 'date', minNumObs = 2, minNumUncen = 2, gap_period = 730){
-
+    
     check_suggested_pkgs(c('EGRET'))
-
+    
     # TODO:  reorder site data args to make fully optional
-
+    
     get_MonthSeq <- function(dates){
         ## dates <- Sample_file$Date
         years <- lubridate::year(dates)-1850
-
+        
         MonthSeq <- years*12
-
+        
         MonthSeq <- MonthSeq + lubridate::month(dates)
-
+        
         return(MonthSeq)
     }
-
-
+    
     decimalDate <- function(rawData){
-
+        
         dateTime <- as.POSIXlt(rawData)
         year <- dateTime$year + 1900
-
+        
         startYear <- as.POSIXct(paste0(year,"-01-01 00:00"))
         endYear <- as.POSIXct(paste0(year+1,"-01-01 00:00"))
-
+        
         DecYear <- year + as.numeric(difftime(dateTime, startYear, units = "secs"))/as.numeric(difftime(endYear, startYear, units = "secs"))
         return(DecYear)
     }
-
+    
     wyday <- function(dates, wy_type = 'usgs') {
         # get earliest and latest date from series
         start_date <- min(dates)
         end_date <- max(dates)
-
+        
         # get the normal year, and make the start of WY date from that year
         year_firsthalf <- year(start_date)
         wy_start <- paste0(year_firsthalf, '-10-01')
         wy_end <- paste0(year_firsthalf+1, '-09-30')
-
+        
         # gap between start WY and end of normal year, always 91 days
         correction_val <- yday('2021-12-31') - yday('2021-10-01')
-
-
+        
+        
         # adjust yday from start of gregorian year to (usgs) WY year
         wy_firsthalf <- yday(dates[lubridate::month(dates) %in% c(10, 11, 12)]) - yday(wy_start) + 1
         wy_secondhalf <- yday(dates[!lubridate::month(dates) %in% c(10, 11, 12)]) + correction_val + 1
-
+        
         wydays <- c(wy_firsthalf, wy_secondhalf)
-
-      return(wydays)
+        
+        return(wydays)
     }
-
+    
     decimalDateWY <- function(dates, wy_type = 'usgs') {
         # get earliest and latest date from series
         start_date <- min(dates)
         end_date <- max(dates)
-
+        
         # get the normal year, and make the start of WY date from that year
         year_firsthalf <- year(start_date)
         wy_start <- paste0(year_firsthalf, '-10-01')
         wy_end <- paste0(year_firsthalf+1, '-09-30')
         wy_seq <- seq(as.Date(wy_start), as.Date(wy_end), by = 1)
-
+        
         wydays <- wyday(dates) - 1
         wylength <- length(wy_seq)
-
+        
         ydec <- as.integer(as.character(water_year(dates, wy_type))) + wydays/wylength
-
-      return(ydec)
+        
+        return(ydec)
     }
-
+    
     # TODO: rename with real descriptive name
     enlightened_yday <- function(dates, wy_type = 'usgs') {
         # get earliest and latest date from series
         start_date <- min(dates)
         end_date <- max(dates)
-
+        
         # get the normal year, and make the start of WY date from that year
         wy_first <- year(start_date)
         wy_start <- paste0(wy_first, '-10-01')
         wy_end <- paste0(wy_first+1, '-09-30')
-
+        
         # unenlightened yday of date vector
         wy_firsthalf <- yday(dates[lubridate::month(dates) %in% c(10, 11, 12)])
         wy_secondhalf <- yday(dates[!lubridate::month(dates) %in% c(10, 11, 12)])
-
+        
         # if first half of WY is a leap year,
         if(366 %in% wy_firsthalf) {
-          ## print('first half of WY is leap year, adjusting')
-          wy_firsthalf = wy_firsthalf - 1
+            ## print('first half of WY is leap year, adjusting')
+            wy_firsthalf = wy_firsthalf - 1
         } else if(366 %in% wy_secondhalf) {
-          ## print('second half of WY is leap year, no action')
+            ## print('second half of WY is leap year, no action')
         } else {
-          ## print('neither side of water year is a leap year')
-          invisible()
+            ## print('neither side of water year is a leap year')
+            invisible()
         }
-
+        
         # adjust yday from start of gregorian year to (usgs) WY year
         wy_ydays <- c(wy_firsthalf, wy_secondhalf)
-
-      return(wy_ydays)
+        
+        return(wy_ydays)
     }
-
+    
     get_start_end <- function(d){
         start_date <- min(d$datetime)
         start_year <- lubridate::year(start_date)
         start_wy <- ifelse(lubridate::month(start_date) %in% c(10, 11, 12), start_year+1, start_year)
         filter_start_date <- lubridate::ymd(paste0(start_wy-1, '-10-01'))
-
+        
         end_date <- max(d$datetime)
         end_year <- lubridate::year(end_date)
         end_wy <- ifelse(lubridate::month(end_date) %in% c(10, 11, 12), end_year+1, end_year)
         filter_end_date <- lubridate::ymd(paste0(end_wy, '-10-01'))
-
+        
         fin_dates <- c(filter_start_date, filter_end_date)
         return(fin_dates)
-
+        
     }
-
-
+    
     ms_run_egret_adapt <- function(stream_chemistry, discharge, prep_data = TRUE,
-             run_egret = TRUE, kalman = FALSE, quiet = FALSE,
-             site_data = NULL, min_q_method = 'USGS', minNumObs = 2, minNumUncen = 2, gap_period = 730){
-
+                                   run_egret = TRUE, kalman = FALSE, quiet = FALSE,
+                                   site_data = NULL, min_q_method = 'USGS', minNumObs = 2, minNumUncen = 2, gap_period = 730){
+        
         # Checks
         if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(stream_chemistry))){
             stop('stream_chemistry must be a data.frame in MacroSheds format with the columns site_code,
              datetime, var, and, val')
         }
-
+        
         if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(discharge))){
             stop('discharge must be a data.frame in MacroSheds format with the columns site_code,
              datetime, var, and, val')
         }
-
+        
         if(! length(unique(macrosheds::ms_drop_var_prefix(stream_chemistry$var))) == 1){
             stop('Only one chemistry variable can be run at a time.')
         }
-
+        
         if((! length(unique(stream_chemistry$site_code)) == 1) || (! length(unique(discharge$site_code)) == 1)){
             stop('Only one site can be run in EGRET at a time')
         }
-
+        
         if(! unique(stream_chemistry$site_code) == unique(discharge$site_code)){
             stop('stream_chemistry and discharge must contain the same site_code')
         }
-
+        
         # Get var and site info
         if(is.null(site_data)){
             site_data <- macrosheds::ms_load_sites()
-
+            
             if(! unique(stream_chemistry$site_code) %in% site_data$site_code){
                 stop('This site is not in the MacroSheds dataset, provide a site_data table with the names: site_code, ws_area_ha, latitude, longitude')
             }
@@ -3434,20 +3378,20 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
             site_data <- site_data %>%
                 mutate(site_type = 'stream_gauge')
         }
-
+        
         ## ms_vars <- read.csv('data/ms/macrosheds_vardata.csv')
         ms_vars <- macrosheds::ms_load_variables()
         site_code <- unique(stream_chemistry$site_code)
-
+        
         #### Prep Files ####
-
+        
         if(prep_data){
             # EGRET does not like NAs
             stream_chemistry <- stream_chemistry %>%
                 filter(!is.na(val))
             discharge <- discharge %>%
                 filter(!is.na(val))
-
+            
             # Egret can't accept 0s in the column for min val (either hack egret or do this or
             # look for detection limits)
             # TODO: use DL system to replace min vals, get_hdl()
@@ -3460,22 +3404,22 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
             ##   pull(val) %>%
             ##     # NOTE: upsettingly, use of errors package makes min() now return NA instead of Inf
             ##   min()
-
+            
             min_chem <- min(as.numeric(stream_chemistry[!is.infinite(stream_chemistry$val) & !is.na(stream_chemistry$val),]$val))
-
+            
             # NOTE: changed so now we are forced to have a real number minimum value
             # NOTE: change to no conditional- min chem should never be infinite
             ## if(!is.infinite(min_chem)){
             ## }
             stream_chemistry <- stream_chemistry %>%
                 mutate(val = ifelse(val == 0, !!min_chem, val))
-
+            
             # Filter so there is only Q going into the model that also has chem
             stream_chemistry <- stream_chemistry %>%
                 mutate(year = lubridate::year(datetime),
                        month = lubridate::month(datetime)) %>%
                 mutate(waterYear = ifelse(month %in% c(10, 11, 12), year+1, year))
-
+            
             # TODO: filter isn't even active... and why 6?
             # Get years with at least 6 chemistry samples (bi-monthly sampling is a
             # reasonable requirement?)
@@ -3484,60 +3428,60 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                 summarize(n = n()) %>%
                 # filter(n >= 6) %>%
                 pull(waterYear)
-
+            
             # Filter Q and chem to overlap in a water-year
             chem_dates <- get_start_end(stream_chemistry)
             q_dates <- get_start_end(discharge)
-
+            
             start_date <- if(chem_dates[1] > q_dates[1]) { chem_dates[1] } else{ q_dates[1] }
             end_date <- if(chem_dates[2] < q_dates[2]) { chem_dates[2] } else{ q_dates[2] }
-
+            
             discharge <- discharge %>%
                 filter(datetime >= !!start_date,
                        datetime <= !!end_date)
             stream_chemistry <- stream_chemistry %>%
                 filter(datetime >= !!start_date,
                        datetime <= !!end_date)
-
+            
             # Filter discharge to only include water years with chemistry sampling
             discharge <- discharge %>%
                 mutate(year = lubridate::year(datetime),
                        month = lubridate::month(datetime)) %>%
                 mutate(waterYear = ifelse(month %in% c(10, 11, 12), year+1, year)) %>%
                 filter(waterYear %in% !!years_with_data)
-
+            
             # Remove times when there is a chem sample and no Q reported
             samples_to_remove <- left_join(stream_chemistry, discharge, by = 'datetime') %>%
                 filter(is.na(val.y)) %>%
                 pull(datetime)
-
+            
             stream_chemistry <- stream_chemistry %>%
                 filter(!datetime %in% samples_to_remove)
         }
-
-      # last redundant assurance of no NA, Inf, or 0 values
-      stream_chemistry <- stream_chemistry %>%
-        filter(!is.na(val),
-               !is.infinite(val),
-               !is.null(val),
-               val > 0)
-
-      n_records <- length(stream_chemistry$val)
-      n_years <- length(unique(stream_chemistry$wy))
-
-      # if n_records < 100, change minNumObs accordingly
-      if(n_records < 100) {
-        minNumObs = n_records - ceiling(n_records*0.1)
-        minNumUncen = ceiling(minNumObs/2)
-        warning(paste('number of samples less than 100, modifying WRTDS arguments',
-                      '\n     minNumObs:', minNumObs,
-                      '\n     minNumUncen', minNumUncen))
-      }
-
-
-      writeLines(paste('stream chemistry dataframe being passed into EGRET sample, \nfile has:',
-                       n_records, 'samples over ', n_years, 'water years'))
-
+        
+        # last redundant assurance of no NA, Inf, or 0 values
+        stream_chemistry <- stream_chemistry %>%
+            filter(!is.na(val),
+                   !is.infinite(val),
+                   !is.null(val),
+                   val > 0)
+        
+        n_records <- length(stream_chemistry$val)
+        n_years <- length(unique(stream_chemistry$wy))
+        
+        # if n_records < 100, change minNumObs accordingly
+        if(n_records < 100) {
+            minNumObs = n_records - ceiling(n_records*0.1)
+            minNumUncen = ceiling(minNumObs/2)
+            warning(paste('number of samples less than 100, modifying WRTDS arguments',
+                          '\n     minNumObs:', minNumObs,
+                          '\n     minNumUncen', minNumUncen))
+        }
+        
+        
+        writeLines(paste('stream chemistry dataframe being passed into EGRET sample, \nfile has:',
+                         n_records, 'samples over ', n_years, 'water years'))
+        
         # Set up EGRET Sample file
         Sample_file <- tibble(Name = site_code,
                               Date = as.Date(stream_chemistry$datetime),
@@ -3554,15 +3498,15 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                    CosDY = cos(2*pi*DecYear))  %>%
             mutate(waterYear = ifelse(Month %in% c(10, 11, 12), lubridate::year(Date) + 1, lubridate::year(Date))) %>%
             dplyr::select(Name, Date, ConcLow, ConcHigh, Uncen, ConcAve, Julian, Month, Day,
-                   DecYear, MonthSeq, waterYear, SinDY, CosDY)
-
+                          DecYear, MonthSeq, waterYear, SinDY, CosDY)
+        
         # Set up EGRET Daily file
         # make sure dischagre is daily aggregated
         discharge_daily <- discharge %>%
-          mutate(datetime = lubridate::date(datetime)) %>%
-          group_by(datetime, site_code, var, ms_status, ms_interp, year, month) %>%
-          summarize(val = mean(val))
-
+            mutate(datetime = lubridate::date(datetime)) %>%
+            group_by(datetime, site_code, var, ms_status, ms_interp, year, month) %>%
+            summarize(val = mean(val))
+        
         Daily_file <- tibble(Name = site_code,
                              Date = as.Date(discharge_daily$datetime),
                              # converting lps to m^3/s
@@ -3573,65 +3517,65 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                              DecYear = decimalDate(discharge_daily$datetime),
                              MonthSeq = get_MonthSeq(discharge_daily$datetime),
                              Qualifier = discharge_daily$ms_status)
-
+        
         if(prep_data){
             # Egret can't handle 0 in Q, setting 0 to the minimum Q ever reported seem reasonable
             no_flow_days <- Daily_file %>%
                 filter(Q == 0) %>%
                 pull(Date)
-
+            
             n_nfd <- length(no_flow_days)
             n_record <- length(Daily_file$Date)
             percent_no_flow <- n_nfd/n_record
-
+            
             writeLines(paste('days with no flow, percent of record:', percent_no_flow))
-
-
-          # trying USGS WRTDS flow min method,
-          # also NOTE: USGS WRTDS manual says no flow > %0.2 of days is an issue
-          if(min_q_method == 'USGS'){
-            print('using USGS reccomended no flow replacement method')
-            mean_flow <- mean(Daily_file$Q[Daily_file$Q > 0], na.rm = TRUE)
-
-            Daily_file <- Daily_file %>%
-                mutate(Q = ifelse(Q <= 0, !!mean_flow, Q))
-          } else {
-            # NOTE: could this be where Inf shows up too? like in min_chem?
-            min_flow <- min(Daily_file$Q[Daily_file$Q > 0], na.rm = TRUE)
-
-            Daily_file <- Daily_file %>%
-                mutate(Q = ifelse(Q <= 0, !!min_flow, Q))
-          }
-
-          # TODO: record zero flow days, and set flux for those days to zero
-          # TODO: USGS WRTDS manual says method for replacing 0 and negative flow
-          # is to set all 0 and neg to 0, then replace with 0.1% of mean flow
-          # and they say final results should have this small flow increment
-          # subtracted from Q and flux results (pg 6, manual)
+            
+            
+            # trying USGS WRTDS flow min method,
+            # also NOTE: USGS WRTDS manual says no flow > %0.2 of days is an issue
+            if(min_q_method == 'USGS'){
+                print('using USGS reccomended no flow replacement method')
+                mean_flow <- mean(Daily_file$Q[Daily_file$Q > 0], na.rm = TRUE)
+                
+                Daily_file <- Daily_file %>%
+                    mutate(Q = ifelse(Q <= 0, !!mean_flow, Q))
+            } else {
+                # NOTE: could this be where Inf shows up too? like in min_chem?
+                min_flow <- min(Daily_file$Q[Daily_file$Q > 0], na.rm = TRUE)
+                
+                Daily_file <- Daily_file %>%
+                    mutate(Q = ifelse(Q <= 0, !!min_flow, Q))
+            }
+            
+            # TODO: record zero flow days, and set flux for those days to zero
+            # TODO: USGS WRTDS manual says method for replacing 0 and negative flow
+            # is to set all 0 and neg to 0, then replace with 0.1% of mean flow
+            # and they say final results should have this small flow increment
+            # subtracted from Q and flux results (pg 6, manual)
         }
-
+        
         Daily_file <- Daily_file %>%
             # 'extend' rollmean NOTE: cpuld rollmean args cause mischief
             # tho right align i believe is correct based off of egret docs``
             mutate(Q7 = zoo::rollmean(Q, 7, fill = 'extend', align = 'right'),
                    Q30 = zoo::rollmean(Q, 30, fill = 'extend', align = 'right'),
                    LogQ = log(Q))
-
+        
         Daily_file <- tibble::rowid_to_column(Daily_file, 'i') %>%
             dplyr::select(Name, Date, Q, Julian, Month, Day, DecYear, MonthSeq, Qualifier,
-                   i, LogQ, Q7, Q30)
-
+                          i, LogQ, Q7, Q30)
+        
         # Set up INFO table
         var <- macrosheds::ms_drop_var_prefix(unique(stream_chemistry$var))
         var_unit <- ms_vars %>%
             filter(variable_code == !!var) %>%
             pull(unit)
-
-      if(length(var_unit) == 0) {
-        print("length of var_unit for this flux calc is zero, setting var_unit to NA")
-        var_unit <- NA
-      }
-
+        
+        if(length(var_unit) == 0) {
+            print("length of var_unit for this flux calc is zero, setting var_unit to NA")
+            var_unit <- NA
+        }
+        
         site_lat <- site_data %>%
             filter(site_code == !!site_code) %>%
             pull('latitude')
@@ -3642,13 +3586,13 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
             filter(site_code == !!site_code,
                    site_type == 'stream_gauge') %>%
             pull('ws_area_ha')
-
+        
         # ws area change?
         site_ws_area <- site_ws_area / 100
-
+        
         new_point <- sf::st_sfc(sf::st_point(c(site_lon, site_lat)), crs = 4326) %>%
             sf::st_transform(., crs = 4267)
-
+        
         # NOTE: question- should we allow interpolating back to Oct 1st from a
         # record where first ever sample is Oct 26th? (as example of issue)
         INFO_file <- tibble(agency_cd = 'macrosheds',
@@ -3704,16 +3648,16 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                             constitAbbrev = var,
                             paStart = 10,
                             paLong = 12)
-
+        
         eList <- EGRET::mergeReport(INFO_file,
-                                  Daily_file,
-                                  Sample_file,
-                                  verbose = TRUE)
-
+                                    Daily_file,
+                                    Sample_file,
+                                    verbose = TRUE)
+        
         if(! run_egret){
             return(eList)
         }
-
+        
         # TODO: print stats on the record being calculated,
         # particularly what the nuber of obs truly is (helps contextualize absurd results)
         # keeping in mind EGRET says that anything less than n=60 is "dangerous"
@@ -3724,14 +3668,14 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                                      windowQ = 2,
                                      windowS = 0.5,
                                      verbose = TRUE))
-
+        
         if(inherits(eList, 'try-error')){
             stop('EGRET failed while running WRTDS. See https://github.com/USGS-R/EGRET for reasons data may not be compatible with the WRTDS model.')
         }
-
+        
         if(kalman){
             eList <- EGRET::WRTDSKalman(eList, verbose = !quiet)
-
+            
             if(prep_data){
                 # Set flux and Q to 0 and conc to NA on no flow days
                 eList$Daily <- eList$Daily %>%
@@ -3758,129 +3702,68 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                        FNConc = ifelse(Date %in% !!no_flow_days, NA, FNConc),
                        FNFlux = ifelse(Date %in% !!no_flow_days, 0, FNFlux))
         }
-
+        
         # find any 'breaks' in record
         sample_rec <- detect_record_break(Sample_file)
         sample_breaks <- get_break_dates(sample_rec)
-
+        
         # TODO: make dynamic in case of multiple long breaks
-      if(length(sample_breaks['start'][[1]]) < 1) {
-        writeLines(paste('no gap in record detected larger than', gap_period, 'days'))
-      } else {
-
-        for(i in length(sample_breaks['start'])) {
-          # set period
-          startBlank = sample_breaks['start'][[1]][[i]]
-          endBlank = sample_breaks['end'][[1]][[i]]
-
-          writeLines(paste('\n\nfound gap in record greater than', gap_period, 'days\n',
-                           'between', startBlank, 'and', endBlank, 'masking this period',
-                           'with EGRET blankTime()'))
-
-          eList <- blankTime(eList,
-                           startBlank = startBlank,
-                           endBlank = endBlank
-                           )
+        if(length(sample_breaks['start'][[1]]) < 1) {
+            writeLines(paste('no gap in record detected larger than', gap_period, 'days'))
+        } else {
+            
+            for(i in length(sample_breaks['start'])) {
+                # set period
+                startBlank = sample_breaks['start'][[1]][[i]]
+                endBlank = sample_breaks['end'][[1]][[i]]
+                
+                writeLines(paste('\n\nfound gap in record greater than', gap_period, 'days\n',
+                                 'between', startBlank, 'and', endBlank, 'masking this period',
+                                 'with EGRET blankTime()'))
+                
+                eList <- blankTime(eList,
+                                   startBlank = startBlank,
+                                   endBlank = endBlank)
+            }
         }
-      }
-
+        
         return(eList)
     }
-
+    
     ms_chem <- chem_df %>%
-      mutate(site_code = 'none',
-        # TODO: variable handling
-           var = 'variable_chem',
-           ms_status = 0,
-           ms_interp = 0) %>%
-      rename(val = conc,
-             datetime = all_of(datecol))
-
+        mutate(site_code = 'none',
+               # TODO: variable handling
+               var = 'variable_chem',
+               ms_status = 0,
+               ms_interp = 0) %>%
+        rename(val = conc,
+               datetime = all_of(datecol))
+    
     ms_q <- q_df %>%
-      mutate(site_code = 'none',
-             var = 'variable_q',
-             ms_status = 0,
-             ms_interp = 0) %>%
-      rename(val = q_lps,
-             datetime = all_of(datecol))
-
+        mutate(site_code = 'none',
+               var = 'variable_q',
+               ms_status = 0,
+               ms_interp = 0) %>%
+        rename(val = q_lps,
+               datetime = all_of(datecol))
+    
     site_data <- tibble(site_code = 'none',
                         ws_area_ha = ws_size,
                         latitude = lat,
                         longitude = long,
                         site_type = 'stream_gauge')
-
-  egret_results <- ms_run_egret_adapt(stream_chemistry = ms_chem,
-                                      discharge = ms_q,
-                                      prep_data = TRUE,
-                                      site_data = site_data,
-                                      kalman = kalman,
-                                      run_egret = TRUE,
-                                      minNumObs = minNumObs,
-                                      minNumUncen = minNumUncen,
-                                      gap_period = gap_period)
-
-    return(egret_results)
-}
-
-report_on_df <- function(data) {
-  water_years <- unique(data$wy)
-  for(watyr in water_years) {
-    data_wy <- data %>%
-      filter(wy == watyr)
-    nsamples <- nrow(data_wy)
-
-    writeLines(paste('Water Year:', watyr,
-                     '\n     number of samples:', nsamples))
-  }
-}
-
-flux_na_reporter <- function(data) {
-      print('rows with NA flux day values:')
-      print(data[is.na(data$FluxDay),])
-      print('rows with Inf flux day values:')
-      print(data[is.infinite(data$FluxDay),])
-
-      print('returning DF of all Inf and NA rows')
-      data_error <- data[is.infinite(data$FluxDay) | is.na(data$FluxDay),]
-      return(data_error)
-}
-
-list_all_product_dirs <- function(macrosheds_root, prodname){
-
-    prodname_dirs <- list.dirs(path = macrosheds_root,
-                               full.names = TRUE,
-                               recursive = TRUE)
-
-    prodname_dirs <- grep(pattern = paste0(prodname),
-                          x = prodname_dirs,
-                          value = TRUE)
-
-    return(prodname_dirs)
-}
-
-Mode <- function(x, na.rm = TRUE){
-
-    if(na.rm){
-        x <- na.omit(x)
-    }
-
-    ux <- unique(x)
-    mode_out <- ux[which.max(tabulate(match(x, ux)))]
-    return(mode_out)
-
-}
-
-mean_or_x <- function(x, na.rm = FALSE){
     
-    # used to bypass the tyranny of the errors package not letting
-    # someone take the mean of an errors object of length 1. this func returns the
-    # original value if the group is length one, and the mean otherwise
-
-    if(length(x) == 1) return(x)
-
-    x <- mean(x, na.rm = na.rm)
-    return(x)
+    egret_results <- ms_run_egret_adapt(stream_chemistry = ms_chem,
+                                        discharge = ms_q,
+                                        prep_data = TRUE,
+                                        site_data = site_data,
+                                        kalman = kalman,
+                                        run_egret = TRUE,
+                                        minNumObs = minNumObs,
+                                        minNumUncen = minNumUncen,
+                                        gap_period = gap_period)
+    
+    return(egret_results)
 }
 
 calc_simple_flux <- function(chem, q){
@@ -3917,7 +3800,7 @@ calc_simple_flux <- function(chem, q){
             dplyr::select(-starts_with(c('site_code_', 'var_', 'val_',
                                          'ms_status_', 'ms_interp_'))) %>%
             filter(! is.na(val)) %>% #should be redundant
-            arrange(datetime)
+            arrange(date)
     }
     
     return(d)
@@ -4029,7 +3912,7 @@ calc_load <- function(chem, q, site_code, area, method,
             flux_annual_comp <- NA
             
         } else {
-
+            
             flux_monthly_average <- list(flux = rep(NA, 12))
             flux_monthly_pw <- list(flux = rep(NA, 12))
             flux_monthly_beale <- list(flux = rep(NA, 12))
@@ -4084,7 +3967,7 @@ calc_load <- function(chem, q, site_code, area, method,
             flux_annual_pw <- calculate_pw(
                 chem_df = chem_yr,
                 q_df = q_yr,
-                datecol = 'datetime',
+                datecol = 'date',
                 area = area,
                 period = aggregation
             )
@@ -4238,8 +4121,8 @@ calc_load <- function(chem, q, site_code, area, method,
         } else {
             if(verbose){
                 warning(glue::glue('Invalid C-Q regression for: {site_code}, {fvar}, {target_year}'))
-                                   # 'during application of Aulenbach et al. 2016 procedure for choosing recommended load estimation method',
-                                   # ' concentration:discharge log-log linear regression r_squared value was NaN; recommended method set to NA\n\n'))
+                # 'during application of Aulenbach et al. 2016 procedure for choosing recommended load estimation method',
+                # ' concentration:discharge log-log linear regression r_squared value was NaN; recommended method set to NA\n\n'))
             }
             recommended_method <- NA
         }
@@ -4248,9 +4131,9 @@ calc_load <- function(chem, q, site_code, area, method,
             if(verbose){
                 warning(glue::glue('Composite method invalid for: {site_code}, {fvar}, {target_year}. ',
                                    'Using period-weighting instead.'))
-                                   # 'the recommended method was set to composite',
-                                   # ' using procedure from Aulenbach et al. 2016, but that method results in illegal values.',
-                                   # ' Setting recommended method to period-weighting instead.'))
+                # 'the recommended method was set to composite',
+                # ' using procedure from Aulenbach et al. 2016, but that method results in illegal values.',
+                # ' Setting recommended method to period-weighting instead.'))
             }
             recommended_method <- 'period weighted'
         }
