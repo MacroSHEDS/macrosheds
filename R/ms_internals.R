@@ -2700,22 +2700,23 @@ check_suggested_pkgs <- function(pkgs){
     }
 }
 
-# RSFME helpers ####
+# flux helpers ####
 
-wtr_yr <- function(dates, start_month = 10) {
-  d1 = as.Date(dates)
-  offset = ifelse(as.integer(format(d1, '%m')) < start_month, 0, 1)
-  adj.year = as.integer(format(d1, '%Y')) + offset
-  return(adj.year)
+wtr_yr <- function(dates, start_month = 10){
+    
+  d1 <- as.Date(dates)
+  offset <- ifelse(as.integer(format(d1, '%m')) < start_month, 0, 1)
+  adj_year <- as.integer(format(d1, '%Y')) + offset
+  return(adj_year)
 }
 
-interpolate_con_to_q <- function(chem_df, q_df){
+interpolate_conc_to_q <- function(chem_df, q_df){
  # Join chem and q
  join_df <- full_join(chem_df, q_df, by = 'date') %>%
    arrange(date) %>%
    mutate(interp = 0) %>%
-    dplyr::select(date, con, q_lps, interp)
- join_df$interp[is.na(join_df$con)] <- 1
+    dplyr::select(date, conc, q_lps, interp)
+ join_df$interp[is.na(join_df$conc)] <- 1
 
  #interpolate chem to match q
  interp_df <- na_interpolation(join_df, option = "linear", maxgap = Inf) %>%
@@ -2732,7 +2733,7 @@ prep_usgs_for_riverload <- function(chem_df, q_df){
 
     conv_c <- chem_df %>%
         mutate(datetime = as.POSIXct(date, format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
-        dplyr::select(datetime, con) %>%
+        dplyr::select(datetime, conc) %>%
         data.frame()
 
     db <- full_join(conv_q, conv_c, by = "datetime") %>%
@@ -2742,7 +2743,7 @@ prep_usgs_for_riverload <- function(chem_df, q_df){
     return(db)
 }
 
-dt_to_wy_quarter <- function(datetime) {
+dt_to_wy_quarter <- function(datetime){
   tryCatch(
     expr = {
       date <- date(as.Date(datetime))
@@ -2761,7 +2762,7 @@ dt_to_wy_quarter <- function(datetime) {
       }
     },
     error = function(e) {
-      print("something went wrong in dt_to_wy_quarters() conversion")
+      print("something went wrong in dt_to_wy_quarter() conversion")
     }
   )
 }
@@ -2819,7 +2820,7 @@ warn_sum <- function(x) {
       return(xsum)
  }
 
-carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year = NULL, period = NULL){
+carry_flags <- function(raw_q_df, raw_conc_df, target_solute = NULL, target_year = NULL, period = NULL){
     #### set up ratio functions #####
          # interp ratio
          calc_interp_ratio <- function(trimmed_df, period = NULL){
@@ -2841,7 +2842,7 @@ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year 
 
             } else if(period == 'month'){
                 interp_ratio <- trimmed_df %>%
-                       mutate(month = lubridate::month(datetime)) %>%
+                       mutate(month = lubridate::month(date)) %>%
                        group_by(month) %>%
                        summarize(n_interp = sum(ms_interp == 1),
                                  n_no_interp = sum(ms_interp == 0)) %>%
@@ -2874,7 +2875,7 @@ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year 
              return(status_ratio)}
              else if (period == 'month'){
                  status_ratio <- trimmed_df %>%
-                     mutate(month = lubridate::month(datetime)) %>%
+                     mutate(month = lubridate::month(date)) %>%
                      group_by(month) %>%
                      summarize(n_stat = sum(ms_status == 1),
                                n_no_stat = sum(ms_status == 0)) %>%
@@ -2902,8 +2903,8 @@ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year 
 
              }else if(period == 'month'){
                  missing_ratio <- trimmed_df %>%
-                     mutate(month = lubridate::month(datetime)) %>%
-                     dplyr::select(month, datetime, val) %>%
+                     mutate(month = lubridate::month(date)) %>%
+                     dplyr::select(month, date, val) %>%
                      group_by(month) %>%
                      na.omit() %>%
                      summarize(n = n()) %>%
@@ -2922,19 +2923,19 @@ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year 
     ### run functions on data ####
          if(period == 'annual'){
 
-             year_con_df <- raw_con_df %>%
-                 mutate(wy = wtr_yr(datetime, start_month = 10)) %>%
+             year_conc_df <- raw_conc_df %>%
+                 mutate(wy = wtr_yr(date, start_month = 10)) %>%
                  filter(wy == target_year,
                         target_solute == target_solute)
 
-             con_tbl <- tibble(wy = target_year, var = target_solute,
-                               ms_interp = calc_interp_ratio(trimmed_df = year_con_df, period = period),
-                               ms_status = calc_status_ratio(trimmed_df = year_con_df, period = period),
-                               ms_missing = calc_missing_ratio(trimmed_df = year_con_df, period = period),
+             conc_tbl <- tibble(wy = target_year, var = target_solute,
+                               ms_interp = calc_interp_ratio(trimmed_df = year_conc_df, period = period),
+                               ms_status = calc_status_ratio(trimmed_df = year_conc_df, period = period),
+                               ms_missing = calc_missing_ratio(trimmed_df = year_conc_df, period = period),
                                )
 
              year_q_df <- raw_q_df %>%
-                 mutate(wy = wtr_yr(datetime, start_month = 10)) %>%
+                 mutate(wy = wtr_yr(date, start_month = 10)) %>%
                  filter(wy == target_year)
 
              q_tbl <- tibble(wy = target_year, var = unique(year_q_df$var)[1],
@@ -2943,28 +2944,28 @@ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year 
                                ms_missing = calc_missing_ratio(trimmed_df = year_q_df, period = period)
                              )
 
-             out_frame <- rbind(con_tbl, q_tbl)
+             out_frame <- rbind(conc_tbl, q_tbl)
             return(out_frame)
          } else
 
          if(period == 'month'){
 
-             year_con_df <- raw_con_df %>%
-                 mutate(wy = wtr_yr(datetime, start_month = 10)) %>%
+             year_conc_df <- raw_conc_df %>%
+                 mutate(wy = wtr_yr(date, start_month = 10)) %>%
                  filter(wy == target_year,
                         target_solute == target_solute)
 
-            ms_interp = calc_interp_ratio(trimmed_df = year_con_df, period = period)
-            ms_status = calc_status_ratio(trimmed_df = year_con_df, period = period)
-            ms_missing = calc_missing_ratio(trimmed_df = year_con_df, period = period)
+            ms_interp = calc_interp_ratio(trimmed_df = year_conc_df, period = period)
+            ms_status = calc_status_ratio(trimmed_df = year_conc_df, period = period)
+            ms_missing = calc_missing_ratio(trimmed_df = year_conc_df, period = period)
 
-            con_tbl <- full_join(ms_interp, ms_status, by = 'month') %>%
+            conc_tbl <- full_join(ms_interp, ms_status, by = 'month') %>%
                 full_join(ms_missing, by = 'month') %>%
                 mutate(wy = target_year,
                        var = target_solute)
 
              year_q_df <- raw_q_df %>%
-                 mutate(wy = wtr_yr(datetime, start_month = 10)) %>%
+                 mutate(wy = wtr_yr(date, start_month = 10)) %>%
                  filter(wy == target_year)
 
              ms_interp = calc_interp_ratio(trimmed_df = year_q_df, period = period)
@@ -2976,7 +2977,7 @@ carry_flags <- function(raw_q_df, raw_con_df, target_solute = NULL, target_year 
                  mutate(wy = target_year,
                         var = unique(year_q_df$var)[1])
 
-             out_frame <- rbind(con_tbl, q_tbl)
+             out_frame <- rbind(conc_tbl, q_tbl)
              return(out_frame)
          }
 
@@ -2995,7 +2996,7 @@ prep_raw_for_riverload <- function(chem_df, q_df, datecol = 'date'){
 
     conv_c <- chem_df %>%
                 mutate(datetime = as.POSIXct(get(datecol), format = "%Y-%m-%d %H:%M:%S", tz = 'UTC')) %>%
-                dplyr::select(datetime, con) %>%
+                dplyr::select(datetime, conc) %>%
                 data.frame()
 
     db <- full_join(conv_q, conv_c, by = "datetime") %>%
@@ -3018,7 +3019,7 @@ calculate_pw <- function(chem_df, q_df, datecol = 'date', area = 1, period = NUL
   }
 
   if(period == 'annual'){
-    flux_from_pw <- RiverLoad::method6(rl_data, ncomp = 1) %>%
+    flux_from_pw <- sm(RiverLoad::method6(rl_data, ncomp = 1)) %>%
       sum(.)/(1000*area)
   }else if(period == 'month'){
 
@@ -3160,73 +3161,83 @@ calculate_wrtds <- function(chem_df, q_df, ws_size, lat, long, datecol = 'date',
     return(flux_from_egret)
 }
 
-generate_residual_corrected_con <- function(chem_df, q_df, datecol = 'date', sitecol = 'site_no'){
-        # first make c:q rating
-        paired_df <- q_df %>%
-            full_join(chem_df, by = c(datecol, sitecol, 'wy')) %>%
-            na.omit() %>%
-            filter(q_lps > 0,
-                   is.finite(q_lps))
+generate_residual_corrected_conc <- function(chem_df, q_df, datecol = 'date', sitecol = 'site_no'){
+    
+    # first make c:q rating
+    paired_df <- q_df %>%
+        full_join(chem_df, by = c(datecol, sitecol, 'wy')) %>%
+        na.omit() %>%
+        filter(q_lps > 0,
+               is.finite(q_lps))
+    
+    if(nrow(paired_df) <= 2) return(NA)
+    
+    q_log <- log10(paired_df$q_lps)
+    c_log <- log10(paired_df$conc)
+    model_data <- tibble(c_log, q_log) %>%
+        filter(is.finite(c_log),
+               is.finite(q_log))%>%
+        na.omit()
+    
+    rating <- summary(lm(model_data$c_log ~ model_data$q_log,
+                         singular.ok = TRUE))
+    
+    # extract model info
+    intercept <- rating$coefficients[1]
+    slope <- rating$coefficients[2]
+    
+    # create modeled c, calc residuals, adjust modeled c by interpolated residuals
+    site_code <- paired_df$site_code[[1]]
+    
+    rating_filled_df <- q_df %>%
+        mutate(conc_reg = 10^(intercept + (slope * log10(q_lps)))) %>%
+        dplyr::select(all_of(datecol), conc_reg, q_lps) %>%
+        full_join(chem_df, by = datecol) %>%
+        dplyr::select(site_code, all_of(datecol), conc, conc_reg, q_lps, wy)  %>%
+        mutate(res = conc_reg - conc,
+               res = imputeTS::na_interpolation(res),
+               conc_com = conc_reg - res,
+               site_code = !!site_code,
+               wy = wtr_yr(get(datecol), start_month = 10))
+    
+    rating_filled_df$conc_com[! is.finite(rating_filled_df$conc_com)] <- 0
+    return(rating_filled_df)
+}
 
-        if(nrow(paired_df) <= 2){return(NA)}else{
-
-        q_log <- log10(paired_df$q_lps)
-        c_log <- log10(paired_df$con)
-        model_data <- tibble(c_log, q_log) %>%
-            filter(is.finite(c_log),
-                   is.finite(q_log))%>%
-            na.omit()
-
-        rating <- summary(lm(model_data$c_log ~ model_data$q_log, singular.ok = T))
-
-        # extract model info
-        intercept <- rating$coefficients[1]
-        slope <- rating$coefficients[2]
-
-        # create modeled c, calc residuals, adjust modeled c by interpolated residuals
-        site_code <- paired_df$site_code[[1]]
-
-        rating_filled_df <- q_df %>%
-          mutate(con_reg = 10^(intercept+(slope*log10(q_lps)))) %>%
-          dplyr::select(all_of(datecol), con_reg, q_lps) %>%
-          full_join(., chem_df, by = datecol) %>%
-          dplyr::select(site_code, all_of(datecol), con, con_reg, q_lps, wy)  %>%
-            mutate(res = con_reg-con,
-                   res = imputeTS::na_interpolation(res),
-                   con_com = con_reg-res,
-                   site_code = !!site_code,
-                   wy = wtr_yr(get(datecol), start_month = 10))
-
-        rating_filled_df$con_com[!is.finite(rating_filled_df$con_com)] <- 0
-        return(rating_filled_df)
-        }
-        }
-
-calculate_composite_from_rating_filled_df <- function(rating_filled_df, site_no = 'site_no', period = NULL, area = 1){
-        if(is.null(period)) {
-          warning('no period supplied, calculating annual flux')
-          period <- 'annual'
-        }
-
-        if(period == 'annual'){
-          flux_from_comp <- rating_filled_df %>%
-            dplyr::select(datetime, con_com, q_lps, wy) %>%
-            na.omit() %>%
-            mutate(flux = con_com*q_lps*86400*(1/area)*1e-6) %>%
-            group_by(wy, .groups = "drop_last") %>%
-            summarize(flux = sum(flux)) %>%
+calculate_composite_from_resid_corrected <- function(rating_filled_df,
+                                                     site_no = 'site_no',
+                                                     period = NULL,
+                                                     area = 1){
+    
+    if(is.null(period)){
+        warning('no period supplied, calculating annual flux')
+        period <- 'annual'
+    }
+    
+    if(period == 'annual'){
+        
+        flux_from_comp <- rating_filled_df %>%
+            dplyr::select(date, conc_com, q_lps, wy) %>%
+            tidyr::drop_na() %>%
+            mutate(flux = conc_com * q_lps * 86400 * (1 / area) * 1e-6) %>%
+            group_by(wy) %>%
+            summarize(flux = sum(flux),
+                      .groups = 'drop') %>%
             mutate(site_code = site_no)
-        } else if(period == 'month'){
-            flux_from_comp <- rating_filled_df %>%
-                mutate(month = lubridate::month(datetime),
-                       flux = con_com*q_lps*86400*(1/area)*1e-6) %>%
-                group_by(wy, month, .groups = "drop_last") %>%
-                summarize(date = max(datetime),
-                          flux = sum(flux))
-        }
-
-        return(flux_from_comp)
-        }
+        
+    } else if(period == 'month'){
+        
+        flux_from_comp <- rating_filled_df %>%
+            mutate(month = lubridate::month(date),
+                   flux = conc_com * q_lps * 86400 * (1 / area) * 1e-6) %>%
+            group_by(wy, month) %>%
+            summarize(date = max(date),
+                      flux = sum(flux),
+                      .droups = 'drop')
+    }
+    
+    return(flux_from_comp)
+}
 
 detect_record_break <- function(data) {
     data_time <- data %>%
@@ -3470,7 +3481,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
             # reasonable requirement?)
             years_with_data <- stream_chemistry %>%
                 group_by(waterYear) %>%
-                summarise(n = n()) %>%
+                summarize(n = n()) %>%
                 # filter(n >= 6) %>%
                 pull(waterYear)
 
@@ -3550,7 +3561,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
         discharge_daily <- discharge %>%
           mutate(datetime = lubridate::date(datetime)) %>%
           group_by(datetime, site_code, var, ms_status, ms_interp, year, month) %>%
-          summarise(val = mean(val))
+          summarize(val = mean(val))
 
         Daily_file <- tibble(Name = site_code,
                              Date = as.Date(discharge_daily$datetime),
@@ -3782,7 +3793,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
            var = 'variable_chem',
            ms_status = 0,
            ms_interp = 0) %>%
-      rename(val = con,
+      rename(val = conc,
              datetime = all_of(datecol))
 
     ms_q <- q_df %>%
@@ -3860,14 +3871,431 @@ Mode <- function(x, na.rm = TRUE){
 
 }
 
-mean_or_x <- function(x, na.rm = FALSE) {
-    # also used to bypass the tyranny of the errors package not letting
+mean_or_x <- function(x, na.rm = FALSE){
+    
+    # used to bypass the tyranny of the errors package not letting
     # someone take the mean of an errors object of length 1. this func returns the
     # original value if the group is length one, and the mean otherwise
 
     if(length(x) == 1) return(x)
 
     x <- mean(x, na.rm = na.rm)
-    print('multiple values meaned')
     return(x)
+}
+
+calc_simple_flux <- function(chem, q){
+    
+    q_type <- q$var[1]
+    
+    d <- left_join(
+        chem,
+        select(q, date, val, starts_with('ms_')),
+        by = 'date',
+        suffix = c('_x', '_y')
+    )
+    
+    if(q_type == 'discharge'){
+        
+        d <- d %>%
+            mutate(# kg/d = mg/L *  L/s  * s / 1e6
+                val = val_x * val_y * errors::as.errors(86400) / errors::as.errors(1e6),
+                ms_status = numeric_any_v(ms_status_x, ms_status_y),
+                ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
+            dplyr::select(-starts_with(c('site_code_', 'var_', 'val_',
+                                         'ms_status_', 'ms_interp_'))) %>%
+            filter(! is.na(val)) %>% #should be redundant
+            arrange(date) %>%
+            ms_scale_flux_by_area()
+        
+    } else {
+        
+        d <- d %>%
+            mutate(# kg/ha/d = mg/L *  mm/d * ha/100
+                val = val_x * val_y / errors::as.errors(100),
+                ms_status = numeric_any_v(ms_status_x, ms_status_y),
+                ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
+            dplyr::select(-starts_with(c('site_code_', 'var_', 'val_',
+                                         'ms_status_', 'ms_interp_'))) %>%
+            filter(! is.na(val)) %>% #should be redundant
+            arrange(datetime)
+    }
+    
+    return(d)
+}
+
+calc_load <- function(chem, q, site_code, area, method,
+                      aggregation, good_year_check){
+    
+    fvar <- chem$var[1]
+    
+    chem_filt <- chem %>%
+        filter(ms_interp == 0,
+               errors::drop_errors(val) > 0) %>%
+        dplyr::select(date, val) %>%
+        sw(tidyr::drop_na(date, val))
+    
+    chunk_daterange <- sw(range(chem_filt$date))
+    
+    q_filt <- filter(q,
+                     date >= !!chunk_daterange[1],
+                     date <= !!chunk_daterange[2])
+    
+    # check for "good years", where Q and Chem data both meet min requirements
+    if(good_year_check){
+        
+        q_check <- q_filt %>%
+            filter(ms_interp == 0) %>%
+            distinct(date, .keep_all = TRUE) %>%
+            mutate(water_year = wtr_yr(date, start_month = 10)) %>%
+            group_by(water_year) %>%
+            summarize(n = n(),
+                      .groups = 'drop') %>%
+            filter(n >= 311)
+        
+        conc_check <- chem_filt %>%
+            distinct(date, .keep_all = TRUE) %>%
+            mutate(water_year = wtr_yr(date, start_month = 10),
+                   quart = lubridate::quarter(date)) %>%
+            group_by(water_year) %>%
+            summarize(count = n_distinct(quart),
+                      n = n(),
+                      .groups = 'drop') %>%
+            filter(n >= 4,
+                   count > 3)
+        
+        good_years <- intersect(q_check$water_year, conc_check$water_year)
+        n_yrs <- length(good_years)
+    }
+    
+    if(n_yrs == 0){
+        warning(glue::glue('Not enough overlap between {fvar} and discharge to calculate flux.'))
+        next
+    }
+    
+    daily_data_conc <- chem_filt %>%
+        group_by(date) %>%
+        summarize(val = mean_or_x(val),
+                  .groups = 'drop') %>%
+        mutate(site_code = !!site_code) %>%
+        dplyr::select(site_code, date, conc = val)
+    
+    daily_data_q <- q_filt %>%
+        group_by(date) %>%
+        summarize(val = mean_or_x(val, na.rm = TRUE),
+                  .groups = 'drop') %>%
+        mutate(site_code = !!site_code) %>%
+        dplyr::select(site_code, date, q_lps = val)
+    
+    raw_data_full <- full_join(daily_data_conc, daily_data_q,
+                               by = c('site_code', 'date')) %>%
+        mutate(wy = wtr_yr(date, start_month = 10),
+               month = lubridate::month(date)) %>%
+        filter(wy %in% good_years)
+    
+    out_frame <- tibble()
+    for(k in seq_along(n_yrs)){
+        
+        target_year <- good_years[k]
+        aggregation <- ifelse(aggregation == 'monthly', 'month', aggregation)
+        
+        # flag_df <- carry_flags(raw_q_df = q_filt,
+        #                        raw_con_df = chem,
+        #                        target_year = target_year,
+        #                        target_solute = fvar,
+        #                        period = aggregation)
+        
+        q_chem_yr <- raw_data_full %>%
+            mutate(conc = errors::drop_errors(conc),
+                   q_lps = errors::drop_errors(q_lps)) %>% 
+            filter(wy == !!target_year)
+        
+        q_yr <- q_chem_yr %>%
+            dplyr::select(site_code, date, q_lps, wy) %>%
+            tidyr::drop_na() %>% 
+            mutate(month = lubridate::month(date))
+        
+        chem_yr <- q_chem_yr %>%
+            dplyr::select(site_code, date, conc, wy) %>%
+            tidyr::drop_na() %>% 
+            mutate(month = lubridate::month(date))
+        
+        # set up dummy flux values to be replaced if user has chosen to run method
+        if(aggregation == 'annual'){
+            
+            flux_annual_average <- NA
+            flux_annual_pw <- NA
+            flux_annual_beale <- NA
+            flux_annual_rating <- NA
+            flux_annual_comp <- NA
+            
+        } else {
+
+            flux_monthly_average <- list(flux = rep(NA, 12))
+            flux_monthly_pw <- list(flux = rep(NA, 12))
+            flux_monthly_beale <- list(flux = rep(NA, 12))
+            flux_monthly_rating <- list(flux = rep(NA, 12))
+            flux_monthly_comp <- list(flux = rep(NA, 12))
+        }
+        
+        #### calculate average #####
+        if('average' %in% method){
+            if(aggregation == 'month'){
+                
+                flux_monthly_average <- q_chem_yr %>%
+                    group_by(wy, month) %>%
+                    summarize(q_lps = mean(q_lps, na.rm = TRUE),
+                              conc = mean(conc, na.rm = TRUE),
+                              .groups = 'drop') %>%
+                    # multiply by seconds in a year, and divide by mg to kg conversion (1M)
+                    mutate(flux = conc * q_lps * 31557600 * (1 / area) * 1e-6) %>%
+                    select(month, flux)
+                
+            } else {
+                
+                flux_annual_average <- q_chem_yr %>%
+                    group_by(wy) %>%
+                    summarize(q_lps = mean(q_lps, na.rm = TRUE),
+                              conc = mean(conc, na.rm = TRUE),
+                              .groups = 'drop') %>%
+                    # multiply by seconds in a year, and divide by mg to kg conversion (1M)
+                    mutate(flux = conc * q_lps * 31557600 * (1 / area) * 1e-6) %>%
+                    pull(flux)
+            }
+        }
+        
+        #### calculate period weighted #####
+        
+        if(aggregation == 'annual'){
+            if('pw' %in% method){
+                
+                flux_annual_pw <- calculate_pw(
+                    chem_df = chem_yr,
+                    q_df = q_yr,
+                    datecol = 'date',
+                    area = area,
+                    period = aggregation
+                )
+            }
+            
+        } else {
+            
+            # NOTE: for now, month-order is based off of pw, so this needs to run 
+            # for monthly flux calcs internals to run (should be fixed)
+            flux_annual_pw <- calculate_pw(
+                chem_df = chem_yr,
+                q_df = q_yr,
+                datecol = 'datetime',
+                area = area,
+                period = aggregation
+            )
+        }
+        
+        #### calculate beale ######
+        
+        if('beale' %in% method){
+            flux_annual_beale <- calculate_beale(
+                chem_df = chem_yr,
+                q_df = q_yr,
+                datecol = 'date',
+                area = area,
+                period = aggregation
+            )
+        }
+        
+        #### calculate rating #####
+        
+        if('rating' %in% method){
+            flux_annual_rating <- calculate_rating(
+                chem_df = chem_yr,
+                q_df = q_yr,
+                datecol = 'date',
+                area = area,
+                period = aggregation
+            )
+        }
+        
+        #### calculate composite ######
+        
+        comp_violation <- FALSE
+        if('composite' %in% method){
+            
+            rating_filled_df <- generate_residual_corrected_conc(
+                chem_df = chem_yr,
+                q_df = q_yr,
+                datecol = 'date',
+                sitecol = 'site_code'
+            )
+            
+            flux_annual_comp <- calculate_composite_from_resid_corrected(
+                rating_filled_df = rating_filled_df,
+                area = area,
+                period = aggregation
+            ) %>% pull(flux)
+            
+            comp_violation <- flux_annual_comp < 0
+        }
+        
+        if(aggregation == 'month'){
+            
+            # NOTE: lots of code with month matching and merging below this is all 
+            # to match everything to month order of period weighted, to account for 
+            # possible worlds where water year rearranges month order, etc.
+            months <- sapply(strsplit(flux_annual_pw$date, '-'), `[`, 2)
+            flux_monthly_pw <- flux_annual_pw %>%
+                mutate(month = months) %>%
+                select(month, flux)
+            
+            if(length(months) != 12){
+                warning('NOTE: number of months in pw not 12, need handling for setting NA to uncalc months')
+            }
+            
+            # beale
+            if('beale' %in% method){
+                months_beale <- sapply(strsplit(flux_annual_beale$date, '-'), `[`, 2)
+                flux_monthly_beale <- flux_annual_beale %>%
+                    mutate(month = as.character(months_beale))
+                flux_monthly_beale <- flux_monthly_beale[match(months, flux_monthly_beale$month),]
+                flux_monthly_beale <- left_join(flux_monthly_pw %>% select(month),
+                                                flux_monthly_beale, by = 'month') %>%
+                    select(month, flux)
+            }
+            
+            # rating
+            if('rating' %in% method){
+                months_rating <- sapply(strsplit(flux_annual_rating$date, '-'), `[`, 2)
+                flux_monthly_rating <- flux_annual_rating %>%
+                    mutate(month = as.character(months_rating))
+                flux_monthly_rating <- flux_monthly_rating[match(months, flux_monthly_rating$month),]
+                flux_monthly_rating <- left_join(flux_monthly_pw %>% select(month),
+                                                 flux_monthly_rating, by = 'month') %>%
+                    select(month, flux)
+            }
+            
+            # comp
+            if('composite' %in% method){
+                flux_monthly_comp <- flux_annual_comp[match(as.double(months), flux_annual_comp$month),]
+                flux_monthly_comp <- flux_monthly_comp %>%
+                    mutate(month = sprintf('%02d', month))
+                # make sure all months present, filled w NAs if no value
+                flux_monthly_comp <- left_join(flux_monthly_pw %>% select(month),
+                                               flux_monthly_comp, by = 'month') %>%
+                    select(month, flux)
+            }
+            
+            if(!'pw' %in% method){
+                flux_monthly_pw$flux <- rep(NA, 12)
+            }
+            
+        }
+        
+        #### select MS favored ####
+        
+        if(aggregation == 'month'){
+            paired_df <- full_join(q_yr, chem_yr,
+                                   by = c('date', 'site_code', 'wy', 'month'))
+        } else {
+            paired_df <- q_yr %>% 
+                select(-month) %>% 
+                full_join(select(chem_yr, -month),
+                          by = c('date', 'site_code', 'wy'))
+        }
+        
+        paired_df <- paired_df %>% 
+            tidyr::drop_na() %>% 
+            filter(q_lps > 0,
+                   is.finite(q_lps),
+                   conc > 0,
+                   is.finite(conc))
+        
+        model_data <- tibble(c_log = log10(paired_df$conc),
+                             q_log = log10(paired_df$q_lps))
+        
+        # `model_data` is the site-variable-year dataframe of Q and concentration
+        # log-log rating curve of C by Q
+        rating <- summary(lm(model_data$c_log ~ model_data$q_log,
+                             singular.ok = TRUE))
+        r_squared <- rating$r.squared
+        # auto-correlation of residuals of rating curve
+        resid_acf <- abs(acf(rating$residuals, lag.max = 1, plot = FALSE)$acf[2])
+        # auto-correlation of concentration data
+        con_acf <- abs(acf(paired_df$conc, lag.max = 1, plot = FALSE)$acf[2])
+        
+        # modified from figure 10 of Aulenbach et al 2016
+        if(! is.nan(r_squared)){
+            if(r_squared > 0.3){
+                if(resid_acf > 0.2){
+                    recommended_method <- 'composite'
+                } else {
+                    recommended_method <- 'rating'
+                }
+            } else {
+                if(con_acf > 0.20){
+                    recommended_method <- 'pw'
+                } else {
+                    recommended_method <- 'average'
+                }
+            }
+        } else {
+            if(verbose){
+                warning(glue::glue('Invalid C-Q regression for: {site_code}, {fvar}, {target_year}'))
+                                   # 'during application of Aulenbach et al. 2016 procedure for choosing recommended load estimation method',
+                                   # ' concentration:discharge log-log linear regression r_squared value was NaN; recommended method set to NA\n\n'))
+            }
+            recommended_method <- NA
+        }
+        
+        if(recommended_method == 'composite' && comp_violation){
+            if(verbose){
+                warning(glue::glue('Composite method invalid for: {site_code}, {fvar}, {target_year}. ',
+                                   'Using period-weighting instead.'))
+                                   # 'the recommended method was set to composite',
+                                   # ' using procedure from Aulenbach et al. 2016, but that method results in illegal values.',
+                                   # ' Setting recommended method to period-weighting instead.'))
+            }
+            recommended_method <- 'period weighted'
+        }
+        
+        #### collect fluxes ####
+        
+        if(aggregation == 'month'){
+            
+            target_year_out <- tibble(
+                wy = as.character(target_year),
+                month = rep(months, 5),
+                val = c(flux_monthly_average$flux,
+                        flux_monthly_pw$flux,
+                        flux_monthly_beale$flux,
+                        flux_monthly_rating$flux,
+                        ## flux_monthly_wrtds,
+                        flux_monthly_comp$flux),
+                site_code = !!site_code,
+                var = !!fvar,
+                method = c(rep('average', 12), rep('pw', 12), rep('beale', 12),
+                           rep('rating', 12), rep('composite', 12))
+            ) %>%
+                mutate(ms_recommended = ifelse(method == !!recommended_method, 1, 0))
+            
+        } else {
+            
+            target_year_out <- tibble(
+                wy = target_year,
+                val = c(flux_annual_average,
+                        flux_annual_pw,
+                        flux_annual_beale,
+                        flux_annual_rating,
+                        ## flux_annual_wrtds,
+                        flux_annual_comp),
+                site_code = site_code,
+                var = fvar,
+                method = c('average', 'pw', 'beale', 'rating', 'composite')
+            ) %>%
+                mutate(ms_recommended = ifelse(method == !!recommended_method,
+                                               TRUE,
+                                               FALSE))
+        }
+        
+        out_frame <- bind_rows(out_frame, target_year_out)
+    }
+    
+    return(out_frame)
 }
