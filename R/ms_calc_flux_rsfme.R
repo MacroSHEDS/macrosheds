@@ -83,7 +83,7 @@
 
 ms_calc_flux_rsfme <- function(chemistry, 
                                q, 
-                               method = "simple",
+                               method = 'simple',
                                aggregation = NULL, 
                                verbose = TRUE,
                                good_year_check = TRUE){
@@ -106,7 +106,7 @@ ms_calc_flux_rsfme <- function(chemistry,
         stop('`q$var` must be entirely "discharge" or "precipitation".')
     }
     
-    if(q_type == 'precipitation' & any(method != "simple")){
+    if(q_type == 'precipitation' & any(method != 'simple')){
         stop('Only method = "simple" is appropriate for precipitation data.')
     }
     
@@ -199,44 +199,39 @@ ms_calc_flux_rsfme <- function(chemistry,
         stop('"chemistry" and "q" must have the same sites.')
     }
     
-    # verify that the intervals are the same in both chemistry and q
-    q_interval <- Mode(diff(as.numeric(q$date)))
-    
-    interval <- case_when(q_interval == 86400 ~ 'daily',
-                          q_interval == 3600 ~ 'hourly',
-                          q_interval == 1800 ~ '30 minute',
-                          q_interval == 960 ~ '15 minute',
-                          q_interval == 600 ~ '10 minute',
-                          q_interval == 300 ~ '5 minute',
-                          q_interval == 60 ~ '1 minute')
-    
-    flow_is_highres <- Mode(diff(as.numeric(q$datetime))) <= 15 * 60
-    if(is.na(flow_is_highres)) flow_is_highres <- FALSE
-    
-    if(is.na(interval)){
-        stop(paste0('interval of samples must be one',
-                    ' of: daily, hourly, 30 minute, 15 minute, 10 minute, 5 minute, or 1 minute.',
-                    ' See ms_synchronize_timestep() to standardize your intervals.'))
-    } else if(verbose){
-        ## print(paste0('input q dataset has a ', interval, ' interval'))
-    }
+    # # verify that the intervals are the same in both chemistry and q
+    # q_interval <- Mode(diff(as.numeric(q$date)))
+    # 
+    # interval <- case_when(q_interval == 86400 ~ 'daily',
+    #                       q_interval == 3600 ~ 'hourly',
+    #                       q_interval == 1800 ~ '30 minute',
+    #                       q_interval == 960 ~ '15 minute',
+    #                       q_interval == 600 ~ '10 minute',
+    #                       q_interval == 300 ~ '5 minute',
+    #                       q_interval == 60 ~ '1 minute')
+    # 
+    # if(is.na(interval)){
+    #     stop(paste0('interval of samples must be one',
+    #                 ' of: daily, hourly, 30-minute, 15-minute, 10-minute, 5-minute, or 1-minute.',
+    #                 ' See ms_synchronize_timestep() to standardize your intervals.'))
+    # } else if(verbose){
+    #     print(paste0('Input `q` dataset has a ', interval, ' interval.'))
+    # }
     
     # add errors if they don't exist
-    if('val_err' %in% names(chemistry)){
-        errors::errors(chemistry$val) <- chemistry$val_err
+    if('val_err' %in% colnames(chemistry)){
         
-        chemistry <- chemistry %>%
-            dplyr::select(-val_err)
+        errors::errors(chemistry$val) <- chemistry$val_err
+        chemistry <- dplyr::select(chemistry, -val_err)
         
     } else if(! inherits(chemistry$val, 'errors')){
         errors::errors(chemistry$val) <- 0
     }
     
-    if('val_err' %in% names(q)){
-        errors::errors(q$val) <- q$val_err
+    if('val_err' %in% colnames(q)){
         
-        q <- q %>%
-            dplyr::select(-val_err)
+        errors::errors(q$val) <- q$val_err
+        q <- dplyr::select(q, -val_err)
         
     } else if(! inherits(q$val, 'errors')){
         errors::errors(q$val) <- 0
@@ -256,7 +251,8 @@ ms_calc_flux_rsfme <- function(chemistry,
                         ms_status_ratio = as.numeric(),
                         ms_missing_ratio = as.numeric())
     
-    if(aggregation == "monthly"){
+    if(aggregation == 'monthly'){
+        
         out_frame <- tibble(wy = as.integer(),
                             month = as.integer(),
                             site_code = as.character(),
@@ -278,33 +274,31 @@ ms_calc_flux_rsfme <- function(chemistry,
             filter(site_code == !!site_code)
         
         # get daterange of chem dataset and filter q to match
-        daterange <- as.Date(range(site_chem$datetime))
+        daterange <- as.Date(range(site_chem$date))
         site_q <- q %>%
             filter(site_code == !!site_code,
-                   datetime >= !!daterange[1] - 14, # two weeks before chem
-                   datetime <= !!daterange[2] + 14) # two weeks after chem
+                   date >= !!daterange[1] - 14, # two weeks before chem
+                   date <= !!daterange[2] + 14) # two weeks after chem
         
         if(nrow(site_q) == 0){
-            if(verbose){
-                warning(glue::glue('{site_code} q data empty after initial processing and has been skipped'))
-            }
+            warning(glue::glue('Site {site_code} has no Q-C overlap; skipping.'))
             next
         }
         
-        this_site_info <- filter(site_info, site_code == !!site_code) %>% 
+        this_site_info <- site_info %>% 
+            filter(site_code == !!site_code,
+                   site_type == 'stream_gauge') %>% 
             distinct()
         
         area <- this_site_info$ws_area_ha
         lat <- this_site_info$latitude
         long <- this_site_info$longitude
         
-        if(!inherits(area, 'errors')){
-            errors::errors(area) <- 0
-        }
+        errors::errors(area) <- 0
         
         chem_split <- site_chem %>%
             group_by(var) %>%
-            arrange(datetime) %>%
+            arrange(date) %>%
             dplyr::group_split() %>%
             as.list()
         
@@ -339,6 +333,8 @@ ms_calc_flux_rsfme <- function(chemistry,
                 #   gap should be 7.5 mins so that there isn't enormous duplication of
                 #   timestamps where multiple high-res values can be snapped to the
                 #   same low-res value
+                flow_is_highres <- q_interval <= 15 * 60
+                if(is.na(flow_is_highres)) flow_is_highres <- FALSE
                 if(! chem_is_highres && ! flow_is_highres){
                     join_distance <- c('12:00:00')#, '%H:%M:%S')
                 } else {
@@ -480,7 +476,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                         target_solute <- this_var
                         
                         # set "period" for other flux calc args
-                        if(aggregation == "monthly"){
+                        if(aggregation == 'monthly'){
                             period <- 'month'
                         } else if(aggregation == 'annual'){
                             period <- 'annual'
@@ -489,7 +485,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                                  'aggregation must be "annual" or "monthly"')
                         }
                         
-                        if(aggregation == "monthly"){
+                        if(aggregation == 'monthly'){
                             # calculate flag ratios to carry forward
                             flag_df <- carry_flags(raw_q_df = raw_data_q,
                                                    raw_con_df = raw_data_con_in,
@@ -557,11 +553,11 @@ ms_calc_flux_rsfme <- function(chemistry,
                         
                         if('average' %in% method){
                             #### calculate average ####
-                            if(aggregation == "monthly"){
+                            if(aggregation == 'monthly'){
                                 flux_monthly_average <- sw(raw_data_target_year %>%
                                                                group_by(wy, month) %>%
                                                                summarize(q_lps = mean(q_lps, na.rm = TRUE),
-                                                                         con = mean(con, na.rm = TRUE), .groups = "drop_last") %>%
+                                                                         con = mean(con, na.rm = TRUE), .groups = 'drop_last') %>%
                                                                ungroup() %>%
                                                                # multiply by seconds in a year, and divide by mg to kg conversion (1M)
                                                                mutate(flux = con*q_lps*3.154e+7*(1/area)*1e-6) %>%
@@ -622,7 +618,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                             # NOTE: lots of code with month matching and merging below this is all 
                             # to match everything to month order of period weighted, to account for 
                             # possible worlds where water year rearranges month order, etc.
-                            months <- sapply(strsplit(flux_annual_pw$date, "-"), `[`, 2)
+                            months <- sapply(strsplit(flux_annual_pw$date, '-'), `[`, 2)
                             flux_monthly_pw <- flux_annual_pw %>%
                                 mutate(month = months) %>%
                                 select(month, flux)
@@ -633,7 +629,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                             
                             # beale
                             if('beale' %in% method){
-                                months_beale <- sapply(strsplit(flux_annual_beale$date, "-"), `[`, 2)
+                                months_beale <- sapply(strsplit(flux_annual_beale$date, '-'), `[`, 2)
                                 flux_monthly_beale <- flux_annual_beale %>%
                                     mutate(month = as.character(months_beale))
                                 flux_monthly_beale <- flux_monthly_beale[match(months, flux_monthly_beale$month),]
@@ -644,7 +640,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                             
                             # rating
                             if('rating' %in% method){
-                                months_rating <- sapply(strsplit(flux_annual_rating$date, "-"), `[`, 2)
+                                months_rating <- sapply(strsplit(flux_annual_rating$date, '-'), `[`, 2)
                                 flux_monthly_rating <- flux_annual_rating %>%
                                     mutate(month = as.character(months_rating))
                                 flux_monthly_rating <- flux_monthly_rating[match(months, flux_monthly_rating$month),]
@@ -657,7 +653,7 @@ ms_calc_flux_rsfme <- function(chemistry,
                             if('composite' %in% method){
                                 flux_monthly_comp <- flux_annual_comp[match(as.double(months), flux_annual_comp$month),]
                                 flux_monthly_comp <- flux_monthly_comp %>%
-                                    mutate(month = sprintf("%02d", month))
+                                    mutate(month = sprintf('%02d', month))
                                 # make sure all months present, filled w NAs if no value
                                 flux_monthly_comp <- left_join(flux_monthly_pw %>% select(month),
                                                                flux_monthly_comp, by = 'month') %>%
