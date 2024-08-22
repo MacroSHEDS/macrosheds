@@ -80,6 +80,7 @@
 #'                      q = q,
 #'                      q_type = 'discharge',
 #'                      method = c('beale', 'pw'))
+#' @export
 
 ms_calc_flux_rsfme <- function(chemistry, 
                                q, 

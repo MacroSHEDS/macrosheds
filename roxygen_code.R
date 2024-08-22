@@ -4,8 +4,8 @@ setwd('~/git/macrosheds/r_package/')
 #regenerate package docs
 devtools::document() #preview won't render markdown-style Rd formatting
 
-#reload funcs that have been modified (either way is fine)
-devtools::load_all()
+#reload funcs that have been introduced or modified
+devtools::load_all() # OR
 devtools::install(quick = TRUE)
 
 #full install of package (and even beefier install that includes running vignette code)

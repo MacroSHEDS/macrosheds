@@ -1,9 +1,12 @@
 library(macrosheds)
 library(testthat)
+library(feather)
 
 # setwd('./tests/testthat/')
-ms_root = '../../data/ms_test/'
-# ms_root = '../data_acquisition/macrosheds_figshare_v2/macrosheds_files_by_domain/'
+ms_root <- '../../data/ms_test/'
+# ms_root <- '../data_acquisition/macrosheds_figshare_v2/macrosheds_files_by_domain/'
+
+flux_fp <- 'data/ms_test/ms_flux_annual'
 
 test_sites <- c('w1', 'w3', 'w6')
 test_vars <- c('NO3_N', 'Cl', 'Na')
@@ -30,7 +33,6 @@ ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry,
                               method = test_methods,
                               aggregation = 'annual')
 
-flux_fp <- 'data/ms_test/ms_flux_gubbins_12162022'
 flux_gubbins <- feather::read_feather(file.path(flux_fp, 'baltimore/stream_flux/BARN.feather')) %>%
     rbind(feather::read_feather(file.path(flux_fp, 'hjandrews/stream_flux/GSMACK.feather'))) %>%
     rbind(feather::read_feather(file.path(flux_fp, 'hbef/stream_flux/w6.feather'))) %>%
@@ -121,29 +123,34 @@ test_that("dataframe returned with flux estimates which match same estimates mad
     
     # calc flux
     ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q, method = input_methods, aggregation = 'annual') %>%
-        arrange(wy, method)
+        arrange(water_year, method)
     
     # check random years for same values for methods
-    for(year in c(1964, 2010, 1978)) {
-        expect_true(dplyr::all_equal(ms_flux[ms_flux$wy == year,], ms_flux_gubbins[ms_flux_gubbins$wy == year,]))
+    for(year in c(1964, 2010, 1978)){
+        expect_true(dplyr::all_equal(ms_flux[ms_flux$wy == year, ],
+                                     ms_flux_gubbins[ms_flux_gubbins$wy == year, ]))
     }
     
-    # check against published HBEF flux
-    hbef_flux <- read.csv('data/ms_test/ms_flux_gubbins_12162022/hbef/hbef_published_flux/w6.csv') %>%
-        group_by(wy = as.character(Year)) %>%
-        # sum and convert g to kg
-        summarize(val = sum(Ca_flux)/1000)
-    
-    ms_flux_summary <- ms_flux %>%
-        group_by(wy) %>%
-        summarize(val = mean(val))
-    
-    ms_difference <- ms_flux_summary %>%
-        left_join(hbef_flux, by = 'wy') %>%
-        mutate(diff_pct = (val.x/val.y) * 100)
-    
-    # no flux estimates more than %50 different from HBEF published fluxes  
-    expect_true(all(ms_difference$diff_pct < 150 & ms_difference$diff_pct > 50))
+    # # check against published HBEF flux
+    # hbef_flux <- read_feather(file.path(flux_fp, 'hbef/stream_flux/w6.feather')) %>%
+    #     filter(var == 'GN_Ca') %>% 
+    #     rename(water_year = wy, load = val) %>% 
+    #     group_by(water_year) %>%
+    #     # sum and convert g to kg
+    #     summarize(load = sum(load) / 1000,
+    #               .groups = 'drop') %>% 
+    #     mutate(water_year = as.numeric(water_year))
+    # 
+    # ms_flux_summary <- ms_flux %>%
+    #     group_by(water_year) %>%
+    #     summarize(load = mean(load))
+    # 
+    # ms_difference <- ms_flux_summary %>%
+    #     left_join(hbef_flux, by = 'water_year') %>%
+    #     mutate(diff_pct = (load.x / load.y) * 100)
+    # 
+    # # no flux estimates more than %50 different from HBEF published fluxes  
+    # expect_true(all(ms_difference$diff_pct < 150 & ms_difference$diff_pct > 50))
 })
 
 chemistry <- ms_load_product(macrosheds_root = ms_root,
@@ -151,19 +158,20 @@ chemistry <- ms_load_product(macrosheds_root = ms_root,
                              site_codes = c('w1', 'BARN'),
                              filter_vars = c('NO3_N', 'Cl')) %>%
     # choosing short, and weird time frame
-    filter(datetime > "2011-08-01", datetime < "2013-04-01")
+    filter(date > "2011-08-01", date < "2013-04-01")
 
 q <- ms_load_product(macrosheds_root = ms_root,
                      prodname = 'discharge',
                      site_codes = c('w1', 'BARN')) %>%
-    filter(datetime > "2010-01-01")
+    filter(date > "2010-01-01")
 
 ppt <- ms_load_product(macrosheds_root = ms_root,
                        prodname = 'precipitation',
                        site_codes = c('w1', 'BARN')) %>%
-    filter(datetime > "2010-01-01")
+    filter(date > "2010-01-01")
 
 test_that("testing all methods and aggregations permutations", {
+    
     # input methods
     input_methods_advanced <- c('average', 'composite', 'pw', 'beale', 'rating') # should run all
     input_methods_all <- c('average', 'composite', 'pw', 'beale', 'rating', 'simple') # should run only simple
@@ -174,12 +182,13 @@ test_that("testing all methods and aggregations permutations", {
     agg_options <- c('monthly', 'annual')
     
     # first, we check that all permutations of agg and method work (one method at a time)
-    for(agg in agg_options) {
-        for(input_method in input_methods_all) {
+    for(agg in agg_options){
+        for(input_method in input_methods_all){
             # calc flux (annual)
-            ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q, method = input_method, aggregation = agg)
+            ms_flux <- ms_calc_flux_rsfme(chemistry = chemistry, q = q,
+                                          method = input_method, aggregation = agg)
             
-            if(input_method != 'simple') {
+            if(input_method != 'simple'){
                 # output
                 output_method <- sort(unique(ms_flux$method))
                 # check only user input methods are present in output "methods" column

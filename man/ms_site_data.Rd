@@ -5,7 +5,7 @@
 \alias{ms_site_data}
 \title{MacroSheds site metadata}
 \format{
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 340 rows and 18 columns.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 383 rows and 18 columns.
 }
 \usage{
 ms_site_data
