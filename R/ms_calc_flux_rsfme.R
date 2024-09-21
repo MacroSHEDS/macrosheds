@@ -22,6 +22,8 @@
 #' @return a \code{tibble} of stream or precipitation solute flux (if method="simple") or monthly or annual load. Output units are kg/ha/timestep.
 #' @details
 #'
+#' NEED TO MENTION WATER YEAR OUTPUT AND HOW IT'S DEFINED (and that it's in kg/ha/yr)
+#'
 #' The \code{chemistry} and \code{q} parameters require inputs in MacroSheds format, which is the format returned by ms_load_product for core time-series data. MacroSheds format is:
 #' | header value  | column_definition |
 #' | ------------- | ----------------- |
@@ -206,7 +208,7 @@ ms_calc_flux_rsfme <- function(chemistry,
         errors::errors(q$val) <- 0
     }
     
-    flux_out <- tibble()
+    flux_out <- diag_out <- tibble()
     for(s in seq_along(sites)){
         
         if(verbose) cat('Working on site', s, 'of', length(sites), '\n')
@@ -235,11 +237,14 @@ ms_calc_flux_rsfme <- function(chemistry,
             distinct()
         
         area <- this_site_info$ws_area_ha
+        if(is.na(area)){
+            warning('Watershed area for site "', site_code, '" is unknown')
+        }
         # area <- errors::set_errors(this_site_info$ws_area_ha, 0)
         
         vars_ <- unique(site_chem$var)
         
-        flux_site <- tibble()
+        flux_site <- diag_site <- tibble()
         for(i in seq_along(vars_)){
             
             # if(verbose) cat('\tWorking on var', vars_[i], '\n')
@@ -265,19 +270,23 @@ ms_calc_flux_rsfme <- function(chemistry,
                 
             } else {
                 
-                flux_site <- calc_load(
+                load_out <- calc_load(
                     chem = chem_var,
                     q = site_q,
                     site_code = site_code,
                     area = area,
                     method = method,
                     aggregation = aggregation,
-                    good_year_check = good_year_check
-                ) %>% 
-                    bind_rows(flux_site)
+                    good_year_check = good_year_check,
+                    verbose = verbose
+                )
+                
+                diag_site <- bind_rows(load_out$diag, diag_site)
+                flux_site <- bind_rows(load_out$load, flux_site)
             }
         }
         
+        diag_out <- bind_rows(diag_site, diag_out)
         flux_out <- bind_rows(flux_site, flux_out)
     }
     
@@ -288,15 +297,41 @@ ms_calc_flux_rsfme <- function(chemistry,
     
     if(! 'simple' %in% method){
         
-        flux_out <- flux_out %>% 
-            relocate(site_code, var, wy) %>% 
-            rename(water_year = wy, load = val) %>% 
-            arrange(site_code, var, water_year) %>% 
-            filter(! is.na(load))
+        if(nrow(flux_out)){
+            
+            flux_out <- flux_out %>% 
+                relocate(site_code, var, wy) %>% 
+                rename(water_year = wy, load = val) %>% 
+                arrange(site_code, var, water_year) %>% 
+                filter(! is.na(load))
+            
+            diag_out <- arrange(diag_out, site_code, var, water_year)
+            
+        } else {
+            
+            flux_out <- tibble(site_code = character(),
+                               var = character(),
+                               water_year = numeric(),
+                               load = numeric(),
+                               method = character(),
+                               ms_recommended = logical())
+            
+            diag_out <- tibble(site_code = character(),
+                               var = character(),
+                               water_year = numeric(),
+                               cq_rsquared = numeric(),
+                               cq_resid_acf = numeric(),
+                               c_acf = numeric(),
+                               n_c_obs = numeric(),
+                               n_q_obs = numeric(),
+                               n_paired_cq_obs = numeric(),
+                               ws_area_ha = numeric())
+        }
         
         # flux_out <- mutate(flux_out, val = if_else(val < 0, 0, val))
         if(any(flux_out$load < 0) || any(is.infinite(flux_out$load))) warning('negative/infinite load values detected')
     }
     
-    return(flux_out)
+    return(list(load = flux_out,
+                diagnostics = diag_out))
 }

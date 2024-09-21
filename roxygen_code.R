@@ -1,5 +1,7 @@
 
 setwd('~/git/macrosheds/r_package/')
+devtools::load_all()
+# setwd('~/git/macrosheds/data_acquisition/')
 
 #regenerate package docs
 devtools::document() #preview won't render markdown-style Rd formatting

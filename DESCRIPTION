@@ -29,7 +29,7 @@ Depends: R (>= 3.6.1), dplyr
 Imports:
     feather, errors, sf, foreach, glue, stringr, purrr, readr, tidyr, lubridate, jsonlite, PeriodicTable
 Suggests:
-    testthat (>= 3.0.0), data.table, EGRET, parallel, terra, mapview, elevatr, whitebox, doParallel, raster, hydrostats, dataRetrieval, knitr, rmarkdown
+    testthat (>= 3.0.0), data.table, EGRET, parallel, terra, mapview, elevatr, whitebox, doParallel, raster, hydrostats, dataRetrieval, knitr, rmarkdown, imputeTS
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
 License: MIT
