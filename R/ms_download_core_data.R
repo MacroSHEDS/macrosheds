@@ -17,8 +17,7 @@
 #' @param domains character vector. macrosheds domains that will be downloaded. 
 #'    Either a single domain, vector of domains, or 'all'. See \code{ms_load_sites()} 
 #'    for domains available for download.
-#' @param version character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to 
-#'    most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.
+#' @param version numeric or "latest". The MacroSheds dataset version to download.
 #' @param quiet logical. If TRUE, some messages will be suppressed.
 #' @return Downloads all core data for selected domains to the
 #'    directory specified by \code{macrosheds_root}. Site datasets are arranged according to the following
@@ -40,8 +39,8 @@
 ms_download_core_data <- function(macrosheds_root,
                                   networks,
                                   domains,
-                                  version = "1.0",
-                                  quiet = FALSE) {
+                                  version = "latest",
+                                  quiet = FALSE){
 
     library("dplyr", quietly = TRUE)
     
@@ -59,22 +58,27 @@ ms_download_core_data <- function(macrosheds_root,
     }
 
     figshare_base <- 'https://figshare.com/ndownloader/files/'
-    
     figshare_codes <- macrosheds::file_ids_for_r_package #loaded in R/sysdata.rda, which is written in postprocessing
-    #figshare_codes <- data.frame(network = c('krycklan', 'walker_branch', 'usgs', 'usfs', 'usfs',
-    #                                         'usfs', 'usfs', 'neon', 'lter', 'lter', 'lter', 'lter',
-    #                                         'lter', 'lter', 'lter', 'lter', 'lter', 'lter', 'lter',
-    #                                         'doe', 'czo', 'czo', 'czo', 'czo'),
-    #                             domain = c('krycklan', 'walker_branch', 'usgs', 'suef', 'santee',
-    #                                        'krew', 'fernow', 'neon', 'santa_barbara', 'plum', 'niwot',
-    #                                        'mcmurdo', 'luquillo', 'konza', 'hjandrews', 'hbef', 'bonanza',
-    #                                        'baltimore', 'arctic', 'east_river', 'shale_hills',
-    #                                        'catalina_jemez', 'calhoun', 'boulder'),
-    #                             fig_code = c(30829555, 30829456, 30829453, 30829441, 30829432,
-    #                                          30829426, 30829408, 30829393, 30829387, 30829375,
-    #                                          30829372, 30829369, 30829333, 30829318, 30829240,
-    #                                          30828991, 30828985, 30828979, 30828922, 30827524,
-    #                                          30827185, 30824872, 30824785, 30824707))
+    
+    version <- as.character(version)
+    
+    avail_vsns <- figshare_codes %>% 
+        select(starts_with('fig_code_')) %>% 
+        rename_with(~sub('fig_code_v', '', .)) %>% 
+        colnames()
+    
+    if(! version %in% c(avail_vsns, 'latest')){
+        stop('Unknown `version`. Available versions are: ',
+             paste(avail_vsns, collapse = ', '),
+             '. Or use "latest".')
+    }
+    
+    avail_vsns <- as.numeric(avail_vsns)
+    
+    if(version == 'latest') version <- max(avail_vsns)
+    
+    figshare_codes <- figshare_codes %>% 
+        select(network, domain, fig_code = !!paste0('fig_code_v', version))
     
     if(net_missing){
         networks <- 'none'
@@ -85,12 +89,14 @@ ms_download_core_data <- function(macrosheds_root,
     }
 
     sited <- macrosheds::ms_load_sites()
+    
     ntw_in <- networks %in% c(unique(sited$network), 'all', 'none')
     if(any(! ntw_in)){
         stop('Not MacroSheds network(s): ',
              paste(networks[! ntw_in], collapse = ', '),
              '.\nSee ms_load_sites()')
     }
+    
     dmn_in <- domains %in% c(unique(sited$domain), 'all', 'none')
     if(any(! dmn_in)){
         stop('Not MacroSheds domain(s): ',
@@ -98,15 +104,14 @@ ms_download_core_data <- function(macrosheds_root,
              '.\nSee ms_load_sites()')
     }
     
-    
     if((length(domains) == 1 && domains == 'all') ||
-       (length(networks) == 1 && networks == 'all')) {
+       (length(networks) == 1 && networks == 'all')){
         rel_download <- figshare_codes
-    } else{
-        if(!dom_missing && !net_missing){
+    } else {
+        if(! dom_missing && ! net_missing){
             rel_download <- figshare_codes %>%
                 dplyr::filter(domain %in% !!domains | network %in% !!networks)
-        } else{
+        } else {
             if(net_missing){
                 rel_download <- figshare_codes %>%
                     dplyr::filter(domain %in% !!domains)
@@ -118,7 +123,20 @@ ms_download_core_data <- function(macrosheds_root,
         }
     }
     
-    if(! dir.exists(macrosheds_root)) {
+    unavail_vsn <- is.na(rel_download$fig_code)
+    if(any(unavail_vsn)){
+        
+        unavail_ntw_dmn <- rel_download %>% 
+            filter(unavail_vsn) %>% 
+            mutate(ntw_dmn = paste(network, domain, sep = '-')) %>% 
+            pull(ntw_dmn)
+        
+        stop('The requested version (', version,
+             ') is not available for the following network-domains:\n\t',
+             paste(sort(unavail_ntw_dmn), collapse = ', '))
+    }
+    
+    if(! dir.exists(macrosheds_root)){
         print(paste0('Creating macrosheds_root at ',
             file.path(getwd(), macrosheds_root)))
         dir.create(macrosheds_root, recursive = TRUE)
@@ -126,11 +144,11 @@ ms_download_core_data <- function(macrosheds_root,
     
     n_downloads <- nrow(rel_download)
     
-    for(i in 1:n_downloads) {
+    for(i in seq_len(n_downloads)){
         
         temp_dir <- tempdir()
-        rel_dom <- rel_download[i,2]
-        rel_code <- rel_download[i,3]
+        rel_dom <- rel_download$domain[i]
+        rel_code <- rel_download$fig_code[i]
         temp_file_dom <- paste0(temp_dir, '/', rel_dom, '.zip')
         
         fig_call <- paste0(figshare_base, rel_code)
@@ -166,14 +184,14 @@ ms_download_core_data <- function(macrosheds_root,
         if(! quiet) print(paste(rel_dom, 'successfully downloaded and unzipped.'))
     }
     
-    report <- 'All downloads succeeded'
     if(length(fails)){
         report <- paste0('These domains failed to download: ',
                         paste(fails, collapse = ', '),
-                        '.\nDo you need to increase timeout limit with e.g. `options(timeout = 3600)`?')
+                        '. Do you need to increase timeout limit with e.g. `options(timeout = 3600)`?')
+        warning(report)
+    } else {
+        cat('All downloads succeeded\n')
     }
-    
-    cat(report)
 }
 
 

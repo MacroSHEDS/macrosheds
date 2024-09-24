@@ -7,9 +7,11 @@ options(timeout = 6000)
 
 o = ms_generate_attribution(abide_by = 'suggestions')
 tmpd = tempdir()
-macrosheds::ms_download_core_data(tmpd, domains = 'hbef')
+# macrosheds::ms_download_core_data(tmpd, domains = 'hbef')
+macrosheds::ms_download_core_data('data/macrosheds', domains = 'hbef')
 d = macrosheds::ms_load_product(
-    macrosheds_root = tmpd,
+    macrosheds_root = 'data/macrosheds',
+    # macrosheds_root = tmpd,
     prodname = 'discharge',
     domains = 'hbef')
 o2 = ms_generate_attribution(d, chem_source = 'both',
@@ -62,7 +64,8 @@ test_that('IR details properly formatted', {
                     c('bear', 'boulder', 'calhoun', 'catalina_jemez', 'shale_hills',
                       'east_river', 'walker_branch', 'krycklan', 'arctic', 'baltimore',
                       'bonanza', 'hbef', 'hjandrews', 'konza', 'luquillo', 'mcmurdo', 'niwot',
-                      'plum', 'santa_barbara', 'fernow', 'krew', 'santee', 'suef'))
+                      'plum', 'santa_barbara', 'fernow', 'krew', 'santee', 'suef', 'sleepers',
+                      'neon', 'panola', 'trout_lake', 'loch_vale', 'usgs'))
     expect_equal(ncol(o$full_details_ws_attr), 8)
     expect_gt(nrow(o$full_details_ws_attr), 5)
 })
@@ -72,7 +75,7 @@ test_that('filtering done properly', {
     expect_lt(length(o3$bibliography), 30)
     expect_equal(nrow(o3$intellectual_rights_notifications[[1]]), 1)
     expect_equal(length(o3$intellectual_rights_explanations), 1)
-    expect_equal(nrow(o3$full_details_timeseries), 1)
+    expect_equal(nrow(o3$full_details_timeseries), 4)
 })
 
 test_that('files written properly', {
@@ -81,5 +84,5 @@ test_that('files written properly', {
     expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_definitions.txt'))), 2)
     expect_gte(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_notifications.txt'))), 6)
     expect_gt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 100)
-    expect_lt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 200)
+    expect_lt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 250)
 })

@@ -32,15 +32,10 @@ ms_load_variables <- function(var_set = 'timeseries'){
     requireNamespace('macrosheds', quietly = TRUE)
     
     if(var_set == 'timeseries'){
-        
         return(dplyr::select(macrosheds::ms_vars_ts, -molecule))
-        
     } else if(var_set == 'ws_attr'){
-        
         return(macrosheds::ms_vars_ws)
-        
     } else {
-        
         return(macrosheds::ms_var_catalog)
     }
 }

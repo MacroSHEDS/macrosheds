@@ -28,11 +28,11 @@ ms_separate_baseflow <- function(discharge, alpha = 0.975, n.reflected = 30) {
     check_suggested_pkgs(c('hydrostats'))
     
     # Checks
-    if(!all(c('site_code', 'datetime', 'val', 'var') %in% names(discharge))){
-        stop('discharge files must be in MacroSheds format with names: site_code, datetime, val, var')
+    if(! all(c('site_code', 'datetime', 'val', 'var') %in% names(discharge))){
+        stop('discharge must be in MacroSheds format (required columns: date, site_code, var, val)')
     }
     
-    if(!length(unique(discharge$site_code) == 1)){
+    if(! length(unique(discharge$site_code) == 1)){
         stop('only one site can be run at a time')
     }
 

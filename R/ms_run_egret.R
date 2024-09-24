@@ -50,14 +50,12 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
     check_suggested_pkgs(c('EGRET'))
 
     # Checks 
-    if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(stream_chemistry))){
-        stop('stream_chemistry must be a data.frame in MacroSheds format with the columns site_code, 
-             datetime, var, and, val')
+    if(any(! c('date', 'site_code', 'var', 'val') %in% names(stream_chemistry))){
+        stop('stream_chemistry must be in MacroSheds format (required columns: date, site_code, var, val)')
     }
     
-    if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(discharge))){
-        stop('discharge must be a data.frame in MacroSheds format with the columns site_code, 
-             datetime, var, and, val')
+    if(any(! c('site_code', 'var', 'val', 'date') %in% names(discharge))){
+        stop('discharge must be in MacroSheds format (required columns: date, site_code, var, val)')
     }
     
     if(! length(unique(macrosheds::ms_drop_var_prefix(stream_chemistry$var))) == 1){
@@ -90,6 +88,7 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
     }
     
     ms_vars <- macrosheds::ms_vars_ts %>% 
+        filter(unit != 'kg/ha/d') %>% 
         dplyr::select(variable_code, unit) %>% 
         distinct()
     

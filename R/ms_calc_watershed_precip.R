@@ -100,6 +100,7 @@ ms_calc_watershed_precip <- function(precip,
     requireNamespace('macrosheds', quietly = TRUE)
     
     ms_vars <- macrosheds::ms_vars_ts %>% 
+        filter(unit != 'kg/ha/d') %>% 
         dplyr::select(variable_code, flux_convertible) %>% 
         distinct()
         
@@ -179,10 +180,10 @@ ms_calc_watershed_precip <- function(precip,
         stop('ws_boundary file must be an sf object.')
     }
     if(!missing(precip) && !all(c('datetime', 'val', 'var', 'site_code', 'val_err') %in% names(precip))){
-        stop('precip must be in macrosheds format with the column names datetime, site_code, val, val_err, and var at minimum')
+        stop('precip must be in MacroSheds format (required columns: datetime, site_code, var, val, val_err)')
     }
     if(!missing(pchem) && !all(c('datetime', 'val', 'var', 'site_code', 'val_err') %in% names(pchem))){
-        stop('precip_chem must be in macrosheds format with the column names datetime, site_code, val, val_err, and var at minimum')
+        stop('precip_chem must be in MacroSheds format (required columns: datetime, site_code, var, val, val_err)')
     }
     if(! length(unique(rg$site_code)) == length(rg$site_code)){
         stop('precip_gauge contains duplicate entries for the same gauge')

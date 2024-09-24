@@ -80,8 +80,8 @@ ms_generate_attribution <- function(d, chem_source = 'both',
 
     library("dplyr", quietly = TRUE)
     
-    if(! missing(d) && (! inherits(d, 'data.frame') | ! all(c('site_code', 'datetime', 'var') %in% colnames(d)))){
-        stop('d must be a data.frame in MacroSheds format (with at least datetime, site_code, and var columns)')
+    if(! missing(d) && (! inherits(d, 'data.frame') | ! all(c('site_code', 'date', 'var') %in% colnames(d)))){
+        stop('d must be a data.frame in MacroSheds format (required columns: date, site_code, var)')
     }
     
     if(! chem_source %in% c('stream', 'precip', 'both')){

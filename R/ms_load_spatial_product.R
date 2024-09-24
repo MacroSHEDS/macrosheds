@@ -2,7 +2,7 @@
 #'
 #' Load a macrosheds spatial product (ws_boundary, precip_gauge_locations, 
 #' or stream_gauge_locations) from a downloaded MacroSheds dataset. See 
-#' [ms_load_product()] for time-series data.
+#' [ms_load_product()] for core time-series data and watershed attributes.
 #'
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}

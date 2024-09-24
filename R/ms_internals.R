@@ -1091,44 +1091,6 @@ shortcut_idw_concflux_v2 <- function(encompassing_dem,
     return(ws_means)
 }
 
-expo_backoff <- function(expr,
-                         max_attempts = 10,
-                         verbose = TRUE){
-    
-    for(attempt_i in seq_len(max_attempts)){
-        
-        results <- try(expr = expr,
-                       silent = TRUE)
-        
-        if(inherits(results, 'try-error')){
-            
-            if(attempt_i == max_attempts){
-                stop(attr(results, 'condition'))
-            }
-            
-            backoff <- runif(n = 1,
-                             min = 0,
-                             max = 2^attempt_i - 1)
-            
-            if(verbose){
-                print(glue::glue("Backing off for ", round(backoff, 1), " seconds."))
-            }
-            
-            Sys.sleep(backoff)
-            
-        } else {
-            
-            # if(verbose){
-            #     print(paste0("Request succeeded after ", attempt_i, " attempt(s)."))
-            # }
-            
-            break
-        }
-    }
-    
-    return(results)
-}
-
 idw_log_wb <- function(verbose, site_code, i, nw){
     
     if(! verbose) return()
@@ -1142,7 +1104,6 @@ idw_log_wb <- function(verbose, site_code, i, nw){
     
     #return()
 }
-
 
 err_df_to_matrix <- function(df){
     
@@ -1831,7 +1792,7 @@ gsub_v <- function(pattern, replacement_vec, x){
     return(subbed)
 }
 
-resolve_datetime <- function(d,
+resolve_datetime <- function(d, #needs updates if we ever re-implement!
                              datetime_colnames,
                              datetime_formats,
                              datetime_tz,
@@ -2121,148 +2082,7 @@ identify_sampling <- function(df,
     return(df)
 }
 
-Mode <- function(x, na.rm = TRUE){
-    
-    if(na.rm){
-        x <- na.omit(x)
-    }
-    
-    ux <- unique(x)
-    mode_out <- ux[which.max(tabulate(match(x, ux)))]
-    return(mode_out)
-    
-}
-
-numeric_any_v <- function(...){ #attack of the ellipses
-    
-    #...: numeric vectors of equal length. should be just 0s and 1s, but
-    #   integers other than 1 are also considered TRUE by as.logical()
-    
-    #the vectorized version of numeric_any. good for stuff like:
-    #    mutate(ms_status = numeric_any(c(ms_status_x, ms_status_flow)))
-    
-    #returns a single vector of the same length as arguments
-    
-    #this func could be useful in global situations
-    numeric_any_positional <- function(...) numeric_any(c(...))
-    
-    numeric_any_elementwise <- function(...){
-        Map(function(...) numeric_any_positional(...), ...)
-    }
-    
-    out <- do.call(numeric_any_elementwise,
-                   args = list(...)) %>%
-        unlist()
-    
-    if(is.null(out)) out <- numeric()
-    
-    return(out)
-}
-
-# misc helpers ####
-
-sd_or_0 <- function(x, na.rm = FALSE){
-    
-    #Only used to bypass the tyranny of the errors package not letting
-    #me take the mean of an errors object of length 1 without setting the
-    #uncertainty to 0
-    
-    x <- if(is.vector(x) || is.factor(x)) x else as.double(x)
-    
-    if(length(x) == 1) return(0)
-    
-    x <- sqrt(var(x, na.rm = na.rm))
-}
-
-populate_implicit_NAs <- function(d,
-                                  interval,
-                                  val_fill = NA,
-                                  edges_only = FALSE){
-    
-    #TODO: this would be more flexible if we could pass column names as
-    #   positional args and use them in group_by and mutate
-    
-    #d: a ms tibble with at minimum datetime, site_code, and var columns
-    #interval: the interval along which to populate missing values. (must be
-    #   either '15 min' or '1 day'.
-    #val_fill: character or NA. the token with which to populate missing
-    #   elements of the `val` column. All other columns will be populated
-    #   invariably with NA or 0. See details.
-    #edges_only: logical. if TRUE, only two filler rows will be inserted into each
-    #   gap, one just after the gap begins and the other just before the gap ends.
-    #   If FALSE (the default), the gap will be fully populated according to
-    #   the methods outlined in the details section.
-    
-    #this function makes implicit missing timeseries records explicit,
-    #   by populating rows so that the datetime column is complete
-    #   with respect to the sampling interval. In other words, if
-    #   samples are taken every 15 minutes, but some samples are skipped
-    #   (rows not present), this will create those rows. If ms_status or
-    #   ms_interp columns are present, their new records will be populated
-    #   with 0s. The val column will be populated with whatever is passed to
-    #   val_fill. Any other columns will be populated with NAs.
-    
-    #returns d, complete with new rows, sorted by site_code, then var, then datetime
-    
-    
-    complete_d <- d %>%
-        mutate(fill_marker = 1) %>%
-        group_by(site_code, var) %>%
-        tidyr::complete(datetime = seq(min(datetime),
-                                       max(datetime),
-                                       by = interval)) %>%
-        # mutate(site_code = .$site_code[1],
-        #        var = .$var[1]) %>%
-        ungroup() %>%
-        arrange(site_code, var, datetime) %>%
-        dplyr::select(datetime, site_code, var, everything())
-    
-    if(! any(is.na(complete_d$fill_marker))) return(d)
-    
-    if(! is.na(val_fill)){
-        complete_d$val[is.na(complete_d$fill_marker)] <- val_fill
-    }
-    
-    if('ms_status' %in% colnames(complete_d)){
-        complete_d$ms_status[is.na(complete_d$ms_status)] <- 0
-    }
-    
-    if('ms_interp' %in% colnames(complete_d)){
-        complete_d$ms_interp[is.na(complete_d$ms_interp)] <- 0
-    }
-    
-    if(edges_only){
-        
-        midgap_rows <- rle2(is.na(complete_d$fill_marker)) %>%
-            filter(values == TRUE) %>%
-            # if(nrow(fill_runs) == 0) return(d)
-            # midgap_rows <- fill_runs %>%
-            dplyr::select(starts, stops) %>%
-            {purrr::map2(.x = .$starts,
-                         .y = .$stops,
-                         ~seq(.x, .y))} %>%
-            purrr::map(~( if(length(.x) <= 2)
-            {
-                return(NULL)
-            } else {
-                return(.x[2:(length(.x) - 1)])
-            }
-            )) %>%
-            unlist()
-        if(! is.null(midgap_rows)){
-            complete_d <- slice(complete_d,
-                                -midgap_rows)
-        }
-    }
-    
-    complete_d$fill_marker <- NULL
-    
-    return(complete_d)
-}
-
-numeric_any <- function(num_vec){
-    return(as.numeric(any(as.logical(num_vec))))
-}
+# user response helpers ####
 
 get_response_1char <- function(msg,
                                possible_chars,
@@ -2455,6 +2275,8 @@ get_response_enter <- function(msg,
     return(invisible(NULL))
 }
 
+# attribution helpers ####
+
 format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
     
     custom_acks <- ts_attrib %>% 
@@ -2510,7 +2332,7 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     authors <- stringr::str_match(bts, 'author = \\{(.+?)\\},\\\n')[, 2]
     authors <- stringr::str_replace_all(authors, ' and ', '')
     authors <- stringr::str_remove_all(authors, '[[[:punct:]] ]')
-    year <- stringr::str_match(bts, 'year = \\{([0-9]{4})\\},\\\n')[, 2]
+    year <- stringr::str_match(bts, 'year = \\{([0-9]{4})\\},?\\\n')[, 2]
     title <- stringr::str_match(bts, '\\\ttitle = \\{(.+?)(?=(?:\\.| ver |\\},\\\n|$))')[, 2]
     title <- stringr::str_remove_all(title, '[[[:punct:]] ]')
     title <- tolower(title)
@@ -2537,12 +2359,15 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
         mch1 <- which(title == extracts$title[i])
         mch2 <- which(year == extracts$pubyr[i])
         mch <- intersect(intersect(mch0, mch1), mch2)
-        if(length(mch) != 1) stop(i)
+        if(length(mch) != 1) stop('error in bibliographic extract ', i)
         
         matches <- c(matches, mch)
     }
     
-    #include the entry for MacroSheds itself
+    #retrieve bibtex for any matches
+    bibtex_out <- bts[matches]
+    
+    #include the entry for MacroSheds itself, and for NWIS if applicable
     ms_bib <- paste0(
         "@article{vlah_etal_macrosheds_2023,\n\t",
         "author = {Vlah, Michael J. and Rhea, Spencer and Bernhardt, Emily S. and Slaughter, Weston and Gubbins, Nick and DelVecchia, Amanda G. and Thellman, Audrey and Ross, Matthew R. V.},\n\t",
@@ -2555,8 +2380,33 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
         "url = {https://aslopubs.onlinelibrary.wiley.com/doi/abs/10.1002/lol2.10325},\n\t",
         "year = {2023},\n}")
     
-    #retrieve bibtex for any matches
-    bibtex_out <- bts[matches]
+    usgs_borrowing_domains <- c(
+        'baltimore', 'santa_barbara', 'luquillo', 'bear', 'sleepers',
+        'trout_lake', 'loch_vale', 'streampulse'
+    )
+    
+    if(any(ts_attrib$domain %in% usgs_borrowing_domains) &&
+       'discharge' %in% ts_attrib$macrosheds_prodname){
+        
+        nwisyr <- macrosheds::attrib_ts_data %>% 
+            filter(domain == 'usgs',
+                   macrosheds_prodname == 'discharge') %>% 
+            pull(link_download_datetime) %>% 
+            lubridate::year()
+        
+        nwis_bib <- glue::glue(
+            '\n@misc{nwis_<<nwisyr>>,\n\t',
+            'title = {{National} {Water} {Information} {System} data available on the {World} {Wide} {Web} ({USGS} {Water} {Data} for the {Nation})},\n\t',
+            'publisher = {National Water Information System},\n\t',
+            'author = {{U.S. Geological Survey}},\n\t',
+            'year = {<<nwisyr>>},\n\t',
+            'url = {http://waterdata.usgs.gov/nwis/}\n}',
+            .open = '<<', .close = '>>', .trim = FALSE
+        )
+        
+        bibtex_out <- c(bibtex_out, nwis_bib)
+    } 
+    
     bibtex_out <- c(ms_bib, bibtex_out)
     
     #tack on ws attr bibtex if requested
@@ -2684,6 +2534,175 @@ attrib_output_write <- function(attrib, write_to_dir){
                        file.path(write_to_dir, 'ms_bibliography.bib'))
 }
 
+
+# misc helpers ####
+expo_backoff <- function(expr,
+                         max_attempts = 10,
+                         verbose = TRUE){
+    
+    for(attempt_i in seq_len(max_attempts)){
+        
+        results <- try(expr = expr,
+                       silent = TRUE)
+        
+        if(inherits(results, 'try-error')){
+            
+            if(attempt_i == max_attempts){
+                stop(attr(results, 'condition'))
+            }
+            
+            backoff <- runif(n = 1,
+                             min = 0,
+                             max = 2^attempt_i - 1)
+            
+            if(verbose){
+                print(glue::glue("Backing off for ", round(backoff, 1), " seconds."))
+            }
+            
+            Sys.sleep(backoff)
+            
+        } else {
+            
+            # if(verbose){
+            #     print(paste0("Request succeeded after ", attempt_i, " attempt(s)."))
+            # }
+            
+            break
+        }
+    }
+    
+    return(results)
+}
+
+sd_or_0 <- function(x, na.rm = FALSE){
+    
+    #Only used to bypass the tyranny of the errors package not letting
+    #me take the mean of an errors object of length 1 without setting the
+    #uncertainty to 0
+    
+    x <- if(is.vector(x) || is.factor(x)) x else as.double(x)
+    
+    if(length(x) == 1) return(0)
+    
+    x <- sqrt(var(x, na.rm = na.rm))
+}
+
+populate_implicit_NAs <- function(d,
+                                  interval,
+                                  val_fill = NA,
+                                  edges_only = FALSE){
+    
+    #TODO: this would be more flexible if we could pass column names as
+    #   positional args and use them in group_by and mutate
+    
+    #d: a ms tibble with at minimum datetime, site_code, and var columns
+    #interval: the interval along which to populate missing values. (must be
+    #   either '15 min' or '1 day'.
+    #val_fill: character or NA. the token with which to populate missing
+    #   elements of the `val` column. All other columns will be populated
+    #   invariably with NA or 0. See details.
+    #edges_only: logical. if TRUE, only two filler rows will be inserted into each
+    #   gap, one just after the gap begins and the other just before the gap ends.
+    #   If FALSE (the default), the gap will be fully populated according to
+    #   the methods outlined in the details section.
+    
+    #this function makes implicit missing timeseries records explicit,
+    #   by populating rows so that the datetime column is complete
+    #   with respect to the sampling interval. In other words, if
+    #   samples are taken every 15 minutes, but some samples are skipped
+    #   (rows not present), this will create those rows. If ms_status or
+    #   ms_interp columns are present, their new records will be populated
+    #   with 0s. The val column will be populated with whatever is passed to
+    #   val_fill. Any other columns will be populated with NAs.
+    
+    #returns d, complete with new rows, sorted by site_code, then var, then datetime
+    
+    
+    complete_d <- d %>%
+        mutate(fill_marker = 1) %>%
+        group_by(site_code, var) %>%
+        tidyr::complete(datetime = seq(min(datetime),
+                                       max(datetime),
+                                       by = interval)) %>%
+        # mutate(site_code = .$site_code[1],
+        #        var = .$var[1]) %>%
+        ungroup() %>%
+        arrange(site_code, var, datetime) %>%
+        dplyr::select(datetime, site_code, var, everything())
+    
+    if(! any(is.na(complete_d$fill_marker))) return(d)
+    
+    if(! is.na(val_fill)){
+        complete_d$val[is.na(complete_d$fill_marker)] <- val_fill
+    }
+    
+    if('ms_status' %in% colnames(complete_d)){
+        complete_d$ms_status[is.na(complete_d$ms_status)] <- 0
+    }
+    
+    if('ms_interp' %in% colnames(complete_d)){
+        complete_d$ms_interp[is.na(complete_d$ms_interp)] <- 0
+    }
+    
+    if(edges_only){
+        
+        midgap_rows <- rle2(is.na(complete_d$fill_marker)) %>%
+            filter(values == TRUE) %>%
+            # if(nrow(fill_runs) == 0) return(d)
+            # midgap_rows <- fill_runs %>%
+            dplyr::select(starts, stops) %>%
+            {purrr::map2(.x = .$starts,
+                         .y = .$stops,
+                         ~seq(.x, .y))} %>%
+            purrr::map(~( if(length(.x) <= 2)
+            {
+                return(NULL)
+            } else {
+                return(.x[2:(length(.x) - 1)])
+            }
+            )) %>%
+            unlist()
+        if(! is.null(midgap_rows)){
+            complete_d <- slice(complete_d,
+                                -midgap_rows)
+        }
+    }
+    
+    complete_d$fill_marker <- NULL
+    
+    return(complete_d)
+}
+
+numeric_any <- function(num_vec){
+    return(as.numeric(any(as.logical(num_vec))))
+}
+
+numeric_any_v <- function(...){ #attack of the ellipses
+    
+    #...: numeric vectors of equal length. should be just 0s and 1s, but
+    #   integers other than 1 are also considered TRUE by as.logical()
+    
+    #the vectorized version of numeric_any. good for stuff like:
+    #    mutate(ms_status = numeric_any(c(ms_status_x, ms_status_flow)))
+    
+    #returns a single vector of the same length as arguments
+    
+    #this func could be useful in global situations
+    numeric_any_positional <- function(...) numeric_any(c(...))
+    
+    numeric_any_elementwise <- function(...){
+        Map(function(...) numeric_any_positional(...), ...)
+    }
+    
+    out <- do.call(numeric_any_elementwise,
+                   args = list(...)) %>%
+        unlist()
+    
+    if(is.null(out)) out <- numeric()
+    
+    return(out)
+}
+
 check_suggested_pkgs <- function(pkgs){
     
     #pkgs: character vector of package names
@@ -2706,7 +2725,7 @@ list_all_product_dirs <- function(macrosheds_root, prodname){
                                full.names = TRUE,
                                recursive = TRUE)
     
-    prodname_dirs <- grep(pattern = paste0(prodname),
+    prodname_dirs <- grep(pattern = paste0('/', prodname),
                           x = prodname_dirs,
                           value = TRUE)
     
@@ -3379,14 +3398,12 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                                    site_data = NULL, min_q_method = 'USGS', minNumObs = 2, minNumUncen = 2, gap_period = 730){
         
         # Checks
-        if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(stream_chemistry))){
-            stop('stream_chemistry must be a data.frame in MacroSheds format with the columns site_code,
-             datetime, var, and, val')
+        if(any(! c('site_code', 'var', 'val', 'date') %in% names(stream_chemistry))){
+            stop('The argument to `stream_chemistry` must be in MacroSheds format (required columns: date, site_code, val, var).')
         }
         
-        if(any(! c('site_code', 'var', 'val', 'datetime') %in% names(discharge))){
-            stop('discharge must be a data.frame in MacroSheds format with the columns site_code,
-             datetime, var, and, val')
+        if(any(! c('site_code', 'var', 'val', 'date') %in% names(discharge))){
+            stop('The argument to `discharge` must be in MacroSheds format (required columns: date, site_code, val, var).')
         }
         
         if(! length(unique(macrosheds::ms_drop_var_prefix(stream_chemistry$var))) == 1){
