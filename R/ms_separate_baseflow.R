@@ -13,7 +13,6 @@
 #' @details This function uses the Lynne-Hollick baseflow filter to separate baseflow 
 #'    and stormflow. The underlying package hydrostats is used for this calculation. Additional 
 #'    information on alpha values and n.reflected can be found using ?hydrostats::baseflows
-#' @export
 #' @examples
 #' q = macrosheds::ms_load_product(
 #'     macrosheds_root = 'my/ms/root/',

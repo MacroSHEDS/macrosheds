@@ -23,17 +23,19 @@
 #' @details
 #'
 #' NEED TO MENTION WATER YEAR OUTPUT AND HOW IT'S DEFINED (and that it's in kg/ha/yr)
+#' DEPENDS ON IMPUTETS. IS THAT HANDLED?
 #'
 #' The \code{chemistry} and \code{q} parameters require inputs in MacroSheds format, which is the format returned by ms_load_product for core time-series data. MacroSheds format is:
 #' | header value  | column_definition |
 #' | ------------- | ----------------- |
-#' | datetime      | Date and time in UTC. Time is specified in order to accommodate subdaily time-series data in future updates, though at present all time components are 00:00:00. |
-#' | site_code     | A unique identifier for each MacroSheds site. Identical to primary source site code where possible. See sites.csv metadata on EDI or run ms_load_sites() from the macrosheds package for more information. |
-#' | var           | Variable code, including sample type prefix (described in "Tracking of Sampling Methods for Each Record" section). see variables_timeseries.csv on EDI or run ms_load_variables() from the macrosheds package for more information. |
-#' | val           | The data value. |
-#' | ms_status     | QC flag. See "Technical Validation" section. Lowercase "ms" here stands for "MacroSheds." |
-#' | ms_interp     | Imputation flag, described in "Temporal Imputation and Aggregation" section. |
-#' | val_err       | The combined standard uncertainty associated with the corresponding data point, if estimable. See “Detection Limits and Propagation of Uncertainty” section for details. |
+#' | date          | Date in YYYY-mm-dd |
+#' | site_code     | A unique identifier for each MacroSheds site, identical to primary source site code where possible. See [ms_load_sites()]. |
+#' | grab_sample   | Boolean integer indicating whether the observation was obtained via grab sample or installed sensor. 1 = TRUE (grab sample), 0 = FALSE (installed sensor). |
+#' | var           | Variable code. See [ms_load_variables()]. |
+#' | val           | Data value. See [ms_load_variables()] for units. |
+#' | ms_status     | Boolean integer. 0 = clean value. 1 = questionable value. See "Technical Validation" section of [the MacroSheds data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325) for details. |
+#' | ms_interp     | Boolean integer. 0 = measured or imputed by primary source. 1 = interpolated by MacroSheds. See "Temporal Imputation and Aggregation" section of [the MacroSheds data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325) for details. |
+#' | val_err       | The combined standard uncertainty associated with the corresponding data point, if estimable. See "Detection Limits and Propagation of Uncertainty" section of [the MacroSheds data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325) for details. |
 #'
 #' `method` = 'simple' computes flux by multiplying solute concentration by discharge at each timestep.
 #' The output units depend on the time
@@ -189,24 +191,26 @@ ms_calc_flux <- function(chemistry,
         stop('"chemistry" and "q" must have the same sites.')
     }
     
-    # add errors if they don't exist
-    if('val_err' %in% colnames(chemistry)){
-        
-        errors::errors(chemistry$val) <- chemistry$val_err
-        chemistry <- dplyr::select(chemistry, -val_err)
-        
-    } else if(! inherits(chemistry$val, 'errors')){
-        errors::errors(chemistry$val) <- 0
-    }
-    
-    if('val_err' %in% colnames(q)){
-        
-        errors::errors(q$val) <- q$val_err
-        q <- dplyr::select(q, -val_err)
-        
-    } else if(! inherits(q$val, 'errors')){
-        errors::errors(q$val) <- 0
-    }
+    ## add errors if they don't exist
+    #if('val_err' %in% colnames(chemistry)){
+    #    
+    #    errors::errors(chemistry$val) <- chemistry$val_err
+    #    chemistry <- dplyr::select(chemistry, -val_err)
+    #    
+    #} else if(! inherits(chemistry$val, 'errors')){
+    #    errors::errors(chemistry$val) <- 0
+    #}
+    #
+    #if('val_err' %in% colnames(q)){
+    #    
+    #    errors::errors(q$val) <- q$val_err
+    #    q <- dplyr::select(q, -val_err)
+    #    
+    #} else if(! inherits(q$val, 'errors')){
+    #    errors::errors(q$val) <- 0
+    #}
+	chemistry <- select(chemistry, -any_of('val_err'))
+	q <- select(q, -any_of('val_err'))
     
     flux_out <- diag_out <- tibble()
     for(s in seq_along(sites)){
@@ -290,10 +294,10 @@ ms_calc_flux <- function(chemistry,
         flux_out <- bind_rows(flux_site, flux_out)
     }
     
-    if(any(method == 'simple') && nrow(flux_out) > 0){
-        flux_out$val_err <- errors::errors(flux_out$val)
-        flux_out$val <- errors::drop_errors(flux_out$val)
-    }
+    #if(any(method == 'simple') && nrow(flux_out) > 0){
+    #    flux_out$val_err <- errors::errors(flux_out$val)
+    #    flux_out$val <- errors::drop_errors(flux_out$val)
+    #}
     
     if(! 'simple' %in% method){
         

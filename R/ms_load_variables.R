@@ -1,7 +1,7 @@
 #' load MacroSheds variables data table
 #'
 #' Load a data.frame of MacroSheds variables with information on variable codes,
-#' units, and more.
+#' units, and more. Visit [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262) for complete metadata.
 #'
 #' @author Wes Slaughter, \email{weston.slaughter@duke.edu}
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}

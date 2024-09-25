@@ -60,11 +60,11 @@ ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
     if(! grepl('(precipitation|discharge)', q_type)){
         stop('q_type must be "discharge" or "precipitation"')
     }
-    if(! 'POSIXct' %in% class(q$datetime)){
-        q$datetime <- as.POSIXct(q$datetime)
+    if(! 'Date' %in% class(q$date)){
+        q$date <- as.POSIXct(q$date)
     }
-    if(! 'POSIXct' %in% class(chemistry$datetime)){
-        chemistry$datetime <- as.POSIXct(chemistry$datetime)
+    if(! 'Date' %in% class(chemistry$date)){
+        chemistry$date <- as.POSIXct(chemistry$date)
     }
 
     requireNamespace('macrosheds', quietly = TRUE)
@@ -94,26 +94,28 @@ ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
         print(paste0('q dataset has a ', interval, ' interval'))
     }
 
-    # add errors if they don't exist
-    if('val_err' %in% names(chemistry)){
-        errors::errors(chemistry$val) <- chemistry$val_err
+    ## add errors if they don't exist
+    #if('val_err' %in% names(chemistry)){
+    #    errors::errors(chemistry$val) <- chemistry$val_err
 
-        chemistry <- chemistry %>%
-            dplyr::select(-val_err)
+    #    chemistry <- chemistry %>%
+    #        dplyr::select(-val_err)
 
-    } else if(all(errors::errors(chemistry$val) == 0)){
-        errors::errors(chemistry$val) <- 0
-    }
+    #} else if(all(errors::errors(chemistry$val) == 0)){
+    #    errors::errors(chemistry$val) <- 0
+    #}
 
-    if('val_err' %in% names(q)){
-        errors::errors(q$val) <- q$val_err
+    #if('val_err' %in% names(q)){
+    #    errors::errors(q$val) <- q$val_err
 
-        q <- q %>%
-            dplyr::select(-val_err)
+    #    q <- q %>%
+    #        dplyr::select(-val_err)
 
-    } else if(all(errors::errors(q$val) == 0)){
-        errors::errors(q$val) <- 0
-    }
+    #} else if(all(errors::errors(q$val) == 0)){
+    #    errors::errors(q$val) <- 0
+    #}
+	chemistry <- select(chemistry, -any_of('val_err'))
+	q <- select(q, -any_of('val_err'))
 
     # calc VWC
     sites <- unique(chemistry$site_code)
@@ -212,8 +214,8 @@ ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
 
     if(nrow(all_sites_vwc) == 0) { return(NULL) }
 
-    all_sites_vwc$val_err <- errors::errors(all_sites_vwc$val)
-    all_sites_vwc$val <- errors::drop_errors(all_sites_vwc$val)
+    #all_sites_vwc$val_err <- errors::errors(all_sites_vwc$val)
+    #all_sites_vwc$val <- errors::drop_errors(all_sites_vwc$val)
 
     return(all_sites_vwc)
 }

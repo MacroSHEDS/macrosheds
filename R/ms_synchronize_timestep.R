@@ -28,7 +28,6 @@
 #' @param quiet logical. Should warnings be printed to console.
 #' @return returns a \code{tibble} with data in the new desired_interval with a 
 #'     ms_interp column indicating if a value was interpolated.
-#' @export
 #' @examples
 #' ### Load some MacroSheds data:
 #' ms_root = 'data/macrosheds'

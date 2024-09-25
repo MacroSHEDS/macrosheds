@@ -28,7 +28,7 @@
 #'    terrain, vegetation, parent material, land use, and hydrology data (which are tiny).
 #' @param timeout integer. Temporarily overrides getOption(timeout).
 #' @return Returns NULL. Downloads watershed attribute data to the
-#'    directory specified by \code{macrosheds_root}. For documentation, visit
+#'    directory specified by \code{macrosheds_root}. For full documentation, visit
 #'   [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262). 
 #' @seealso [ms_download_core_data()], [ms_load_product()]
 #' @export

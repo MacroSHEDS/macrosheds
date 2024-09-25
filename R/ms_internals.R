@@ -2377,7 +2377,7 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
         "number = {3},\n\t",
         "pages = {419-452},\n\t",
         "doi = {https://doi.org/10.1002/lol2.10325},\n\t",
-        "url = {https://aslopubs.onlinelibrary.wiley.com/doi/abs/10.1002/lol2.10325},\n\t",
+        "url = {https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325},\n\t",
         "year = {2023},\n}")
     
     usgs_borrowing_domains <- c(
@@ -3835,7 +3835,8 @@ calc_simple_flux <- function(chem, q){
         
         d <- d %>%
             mutate(# kg/d = mg/L *  L/s  * s / 1e6
-                val = val_x * val_y * errors::as.errors(86400) / errors::as.errors(1e6),
+                val = val_x * val_y * 86400 / 1e6,
+                #val = val_x * val_y * errors::as.errors(86400) / errors::as.errors(1e6),
                 ms_status = numeric_any_v(ms_status_x, ms_status_y),
                 ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
             dplyr::select(-starts_with(c('site_code_', 'var_', 'val_',
@@ -3848,7 +3849,8 @@ calc_simple_flux <- function(chem, q){
         
         d <- d %>%
             mutate(# kg/ha/d = mg/L *  mm/d * ha/100
-                val = val_x * val_y / errors::as.errors(100),
+                val = val_x * val_y / 100,
+                #val = val_x * val_y / errors::as.errors(100),
                 ms_status = numeric_any_v(ms_status_x, ms_status_y),
                 ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
             dplyr::select(-starts_with(c('site_code_', 'var_', 'val_',
@@ -3867,7 +3869,8 @@ calc_load <- function(chem, q, site_code, area, method,
     
     chem_filt <- chem %>%
         filter(ms_interp == 0,
-               errors::drop_errors(val) > 0) %>%
+               val > 0) %>%
+               #errors::drop_errors(val) > 0) %>%
         dplyr::select(date, val) %>%
         sw(tidyr::drop_na(date, val))
     
@@ -3958,8 +3961,10 @@ calc_load <- function(chem, q, site_code, area, method,
         #                        period = aggregation)
         
         q_chem_yr <- raw_data_full %>%
-            mutate(conc = errors::drop_errors(conc),
-                   q_lps = errors::drop_errors(q_lps)) %>% 
+            mutate(conc = conc,
+                   q_lps = q_lps) %>% 
+            #mutate(conc = errors::drop_errors(conc),
+            #       q_lps = errors::drop_errors(q_lps)) %>% 
             filter(wy == !!target_year)
         
         q_yr <- q_chem_yr %>%

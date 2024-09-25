@@ -17,7 +17,6 @@
 #' This function will search for a USGS gauge within the radius supplied 
 #' for every site in the sites file. The \code{dataRetrieval} package is used to locate USGS gauges.
 #' If no USGS gauge is found, then the \code{usgs_site} column will be NA for that site. 
-#' @export
 #' @examples
 #' # With lat long 
 #' sites <- tibble(site_code = c('MA_AE03', 'MI_KR01'),

@@ -1,7 +1,7 @@
 #' Load MacroSheds site data table
 #'
 #' Load the MacroSheds site data table with information on networks, domains,
-#'  location of stream gauges, and more.
+#'  location of stream gauges, and more. Visit [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262) for complete metadata.
 #'
 #' @author Wes Slaughter, \email{weston.slaughter@duke.edu}
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}

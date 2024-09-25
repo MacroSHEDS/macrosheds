@@ -39,7 +39,6 @@
 #' fail if there are 0 values in a dataset), remove years with fewer than 6 chemistry samples,
 #' and remove datetimes when there is chemistry but no discharge data reported.
 #' @seealso [ms_load_product()], [ms_conversions()]
-#' @export
 
 ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE, 
                          run_egret = TRUE, kalman = FALSE, quiet = FALSE,

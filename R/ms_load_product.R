@@ -3,6 +3,7 @@
 #' Loads MacroSheds core time-series products and watershed attributes from the
 #' MacroSheds dataset after components have been downloaded using [ms_download_core_data()]
 #' or [ms_download_ws_attr()]. For watershed boundaries and gauge locations, see [ms_load_spatial_product()].
+#' Complete documentation is available on [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
 #'
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
@@ -35,12 +36,12 @@
 #' + ws_attr_timeseries:vegetation
 #' + ws_attr_CAMELS_summaries
 #' + ws_attr_CAMELS_Daymet_forcings
-#' @param filter_vars character vector. for products like stream_chemistry that include
+#' @param filter_vars character vector of variable codes. for products like stream_chemistry that include
 #'    multiple variables, this filters to just the ones specified (ignores
 #'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
-#'    To see a catalog of variables, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
-#' @param networks,domains,site_codes character vectors of MacroSheds networks/domains/sites to load. Omit to load all. See [ms_load_sites()],
-#'    or visit [macrosheds.org] or [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
+#'    To see a catalog of variable codes, run [ms_load_variables()] or visit macrosheds.org.
+#' @param networks,domains,site_codes character vectors of MacroSheds networks/domains/sites to load. Omit to load all.
+#'    To see a catalog of site codes, run [ms_load_sites()] or visit [macrosheds.org].
 #' @param sort_result logical. Ignored if requesting watershed attributes.
 #'    If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
 #'    datetime. this may add considerable loading time for large datasets.
@@ -59,7 +60,21 @@
 #'    can be loaded via `prodname = "CUSTOMstream_flux_inst_scaled"`. Consider these
 #'    products to be "secret menu items" for now. You may identify them by searching for the
 #'    word "CUSTOM" in your macrosheds_root directory. 
-#' @return Returns a \code{tibble} in MacroSheds format. See [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262) for definitions.
+#' @return For all core timeseries products except load, returns a \code{tibble} in MacroSheds format.
+#'    This format is often required in inputs to macrosheds tools, but usually only date, site_code, var, and val columns are required.
+#' | header value  | column_definition |
+#' | ------------- | ----------------- |
+#' | date          | Date in YYYY-mm-dd |
+#' | site_code     | A unique identifier for each MacroSheds site, identical to primary source site code where possible. See [ms_load_sites()]. |
+#' | grab_sample   | Boolean integer indicating whether the observation was obtained via grab sample or installed sensor. 1 = TRUE (grab sample), 0 = FALSE (installed sensor). |
+#' | var           | Variable code. See [ms_load_variables()]. |
+#' | val           | Data value. See [ms_load_variables()] for units. |
+#' | ms_status     | Boolean integer. 0 = clean value. 1 = questionable value. See "Technical Validation" section of [the MacroSheds data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325) for details. |
+#' | ms_interp     | Boolean integer. 0 = measured or imputed by primary source. 1 = interpolated by MacroSheds. See "Temporal Imputation and Aggregation" section of [the MacroSheds data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325) for details. |
+#' | val_err       | The combined standard uncertainty associated with the corresponding data point, if estimable. See "Detection Limits and Propagation of Uncertainty" section of [the MacroSheds data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325) for details. |
+#'
+#'   For other products, returns a tibble with one of several formats. Visit [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
+#'   for complete column descriptions.
 #' @export
 #' @seealso [ms_download_core_data()], [ms_download_ws_attr()], [ms_load_spatial_product()], [ms_load_variables()], [ms_load_sites()]
 #' @examples
