@@ -1,6 +1,5 @@
 
 setwd('~/git/macrosheds/r_package/')
-devtools::load_all()
 # setwd('~/git/macrosheds/data_acquisition/')
 
 #regenerate package docs
@@ -10,9 +9,13 @@ devtools::document() #preview won't render markdown-style Rd formatting
 devtools::load_all() # OR
 devtools::install(quick = TRUE)
 
-#full install of package (and even beefier install that includes running vignette code)
+#full install of package (and even beefier install that builds vignettes)
 devtools::install()
 devtools::install(build_vignettes = TRUE)
+devtools::build_vignettes()
+
+#before publishing:
+devtools::check()
 
 #run all tests (optionally log output to file with sink)
 sink('tests/results.log')

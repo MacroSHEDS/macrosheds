@@ -3,14 +3,17 @@ library(macrosheds)
 library(testthat)
 library(readr)
 
+#ms_root <- '../../data/ms_test' #superfluous files in the data/ directory causes problems for build.
+ms_root <- '~/ssd2/ms_test' #so use a directory that works for your machine
+
 options(timeout = 6000)
 
 o = ms_generate_attribution(abide_by = 'suggestions')
 tmpd = tempdir()
 # macrosheds::ms_download_core_data(tmpd, domains = 'hbef')
-macrosheds::ms_download_core_data('data/macrosheds', domains = 'hbef')
+macrosheds::ms_download_core_data(ms_root, domains = 'hbef')
 d = macrosheds::ms_load_product(
-    macrosheds_root = 'data/macrosheds',
+    macrosheds_root = ms_root,
     # macrosheds_root = tmpd,
     prodname = 'discharge',
     domains = 'hbef')

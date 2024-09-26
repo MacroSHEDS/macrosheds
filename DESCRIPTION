@@ -30,7 +30,7 @@ Imports:
     feather, sf, glue, stringr, purrr, readr, tidyr, lubridate, PeriodicTable
 Suggests:
     testthat (>= 3.0.0), terra, mapview, elevatr, whitebox, raster, knitr, rmarkdown, imputeTS
-VignetteBuilder: knitr
+VignetteBuilder: knitr, rmarkdown
 Roxygen: list(markdown = TRUE)
 License: MIT
 Encoding: UTF-8

@@ -2,9 +2,11 @@ library(macrosheds)
 library(testthat)
 library(feather)
 
+#wd <- '../../data/ms_test' #superfluous files in the data/ directory causes problems for build.
+wd <- '~/ssd2/ms_test' #so use a directory that works for your machine
+
 # setwd('./tests/testthat/')
-ms_root <- '../../data/ms_test/'
-# ms_root <- '../data_acquisition/macrosheds_figshare_v2/macrosheds_files_by_domain/'
+# ms_root <- '../data_acquisition/macrosheds_figshare_v2/macrosheds_files_by_domain/' #not sure what this was about
 
 flux_fp <- 'data/ms_test/ms_flux_annual'
 

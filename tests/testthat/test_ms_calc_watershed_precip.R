@@ -2,7 +2,7 @@ library(macrosheds)
 library(testthat)
 
 #### data for test
-temp_dir <- 'data/test_precip_function'
+temp_dir <- 'data/test_precip_function' #this needs to be outside the package directory. interferes with build
 unlink(temp_dir, recursive = TRUE)
 dir.create(temp_dir, recursive = TRUE)
 

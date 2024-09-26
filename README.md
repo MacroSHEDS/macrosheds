@@ -1,56 +1,31 @@
-<!--
-thank you "https://github.com/DouweHorsthuis/README-Template/blob/master/BLANK_README.md" for skeleton
--->
 
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
+<!--[![Issues][issues-shield]][issues-url]-->
 [![MIT License][license-shield]][license-url]
 <!-- [![LinkedIn][linkedin-shield]][linkedin-url] -->
 
 <br>
-<!-- <p align="center"> -->
-  <!-- <a href="https://github.com/MacroSHEDS/macrosheds/"> -->
-  <!--   <img src="images/logo.png" alt="macrosheds logo" width="160" height="80"> -->
-  <!-- </a>  -->
-<!-- <h3 align="center">MacroSheds</h3> -->
-<!-- <h4 align="center">MacroSheds unites stream and watershed data from myriad public datasets onto one platform, making it easy to epxlore the hydrology, water quality, and biogeochemistry of rivers across North America and beyond</h4> -->
 
-The **MacroSheds R package** provides functions for accessing, manipulating, and analyzing the MacroSheds dataset, a growing collection of stream and watershed data from across North America and beyond. 
+# macrosheds
 
-While built for and around the MacroSheds dataset and project, many functions are also of general value, and can be applied to non-MacroSheds data. Functions are provided to help coax non-MacroSheds data into a suitable format for use with the MacroSheds dataset and package.
+The **macrosheds R package** provides functions for accessing, manipulating, and analyzing the MacroSheds dataset, a growing collection of data from long term, small-watershed ecosystem studies across North America and beyond. 
 
-To learn more about the MacroSheds project, and to explore the data itself via interactive maps and visualizations, go to the [MacroSheds Web Portal](https://macrosheds.org).
+ + [MacroSheds Data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325)
+ + [Data dashboard for visualization](https://macrosheds.org)
+ + [Dataset changelog](https://macrosheds.org/pages/changelog.html)
+ + Questions: mail@macrosheds.org
 
-**Table of Contents**
+<hr>
   
-1. [About the project](#about-the-project)
-2. [Getting started](#getting-started)
-    - [Installation](#installation)  
-3. [Usage](#usage)
-4. [License](#license)
-5. [Contact](#contact)
-<!-- 3. [Acknowledgement](#acknowledgement) -->
-
-<!-- ABOUT THE PROJECT -->
-## About The MacroSheds Project
+1. [Installation](#installation)  
+2. [Usage](#usage)
+3. [Changelog](#changelog)
+4. [Issues](#issues)
 
 
-Watershed ecosystem science has identified plenty of idiosyncrasy within watersheds, but hasn't produced many general theories about watersheds at large. A major reason has been the challenge of data access and integration across all the organizations that house watershed data. (LTER, CZO/CZ Net, NEON, DOE, USFS, etc.).
-
-MacroSheds unites stream and watershed data from all these sources on one platform, making it easy for anyone to explore the hydrology, water quality, and biogeochemistry of rivers across North America and beyond.
-
-MacroSheds is funded by the U.S. National Science Foundation (Awd. 1926420). MacroSheds aquatic data are collected and provided by U.S. federally funded projects, with limited exception, see notes tab on the [MacroSheds Web Portal](https://macrosheds.org)
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-### Prerequisites
-
-To use the MacroSheds R package a user must have at least R version 3.6.1 installed. We recommend the latest R version.
-
-### Installation
+# Installation
 
 ```{r}
 install.packages("devtools")
@@ -64,44 +39,48 @@ whitebox::wbt_init()
 whitebox::install_whitebox()
 ```
 
-which initializes the WhiteboxTools geospatial backend and installs its Rust binaries that aren't included on CRAN. More info [here](https://giswqs.github.io/whiteboxR/).
+which initializes the WhiteboxTools geospatial backend. More info [here](https://giswqs.github.io/whiteboxR/).
 
-<!-- USAGE EXAMPLES -->
-## Usage
+# Usage
 
-_For more information about how to use the MacroSheds R package, please refer to the [Vignettes](https://github.com/MacroSHEDS/macrosheds/tree/master/vignettes). To see the compiled vignettes through your browser, click on the *.html* or *.md* files, for example this [flux data retrieval and calculation  vignette](https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_retrieval_flux_calc.md). The *.Rmd* version of these files can also be compiled using an R interpeter. 
+```{r}
+library(macrosheds)
 
-_For more information about the MacroSheds Project, visit the [data portal](https://macrosheds.org)_
+ms_root <- 'path/to/wherever'
 
-<!-- LICENSE -->
-## License
+ms_sites <- ms_load_sites() #site metadata
+ms_vars <- ms_load_variables('timeseries') #variable metadata
 
-Distributed under the MIT License. See `LICENSE` for more information.
+selected_domains <- c('niwot', 'hjandrews')
+ms_download_core_data(ms_root, domains = selected_domains)
 
+ms_download_ws_attr(ms_root, dataset = 'time series')
 
+macrosheds_data <- ms_load_product(ms_root, prodname = 'stream_chemistry')
+macrosheds_data <- ms_load_product(ms_root, prodname = 'discharge')
+macrosheds_data <- ms_load_product(ms_root, prodname = 'stream_load_annual_scaled')
+macrosheds_data <- ms_load_product(ms_root, prodname = 'ws_attr_timeseries:all')
 
-<!-- CONTACT -->
-## Contact
+#etc
+```
 
-<!-- Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email -->
+For more examples, see the [Vignettes](https://github.com/MacroSHEDS/macrosheds/tree/master/vignettes). You can open the `.html` files in your browser.
 
-Project Link: [https://github.com/MacroSHEDS/macrosheds/](https://github.com/MacroSHEDS/macrosheds)
+# Changelog
 
-  - Mike Vlah, vlahm13@gmail.com
-  - Spencer Rhea, spencerrhea41@gmail.com
-  - Wes Slaughter, weston.slaughter@duke.edu
+*v2* (2024-09-30):
+ + Now able to retrieve any available version of the MacroSheds dataset. Dataset v2 is being published concurrently.
+   + If you already had v1 files stored locally in `macrosheds_root`, these will be moved to `macrosheds_root/v1` the first time you use `ms_download_core_data`, `ms_download_ws_attr`, `ms_load_product`, or `ms_load_spatial_product`.
+ + MacroSheds won't include sub-daily data any time soon, so the `datetime` column is now `date`.
+ + We've done away with variable prefixes and added a Boolean `grab_sample` column to core time-series data. Watershed attribute sources and categories are in the variable metadata, which can be joined to any table.
+ + We still report standard uncertainty via the `val_err` column, but none of the package functions attempt to carry it. It is there to be propagated on your own terms, if you so choose.
+ + See the changelog for the MacroSheds dataset [here](https://macrosheds.org/pages/changelog.html).
+
+# Issues
+
+[https://github.com/MacroSHEDS/macrosheds/issues]
 
 <br><br>
-<!-- ACKNOWLEDGEMENTS -->
-<!-- ## Acknowledgements -->
-
-<!-- * []() -->
-<!-- * []() -->
-<!-- * []() -->
-
-
-
-
 
 [contributors-shield]: https://cuahsi.shinyapps.io/macrosheds/_w_eb92b9c2/new_logo_full.png
 [contributors-url]: https://github.com/MacroSHEDS/macrosheds/graphs/contributors
