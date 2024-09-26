@@ -2,7 +2,7 @@
 % Please edit documentation in R/ms_extract_var_prefix.R
 \name{ms_extract_var_prefix}
 \alias{ms_extract_var_prefix}
-\title{Extract MacroSheds variable prefixes}
+\title{Extract MacroSheds variable prefixes (DEPRECATED)}
 \usage{
 ms_extract_var_prefix(x)
 }
@@ -14,16 +14,17 @@ Returns a vector of two-character prefixes. If x is not
 prefixed, returns an error.
 }
 \description{
-Isolate the two-letter prefixes from MacroSheds variable codes. See details.
+Isolate the two-letter prefixes from MacroSheds variable codes. Retained for legacy use, but will be removed in a later version. See details.
 }
 \details{
-MacroSheds variable codes all include a two-letter prefix to denote the
+In version 1 of the MacroSheds dataset, variable codes all include a two-letter prefix to denote the
 sampling regimen. The first letter is either I for "installed"
 or G for "grab," denoting if this variable was recorded by a continuously
 monitoring piece of equipment, or manually by a human.
 The second position is either S for "sensor" or N for "non-sensor".
 Non-sensor samples are generally measured analytically, in a laboratory.
-For more information, see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.
+In version 2 and later, this system has been simplified and replaced by a single,
+logical column called "grab_sample".
 }
 \examples{
 macrosheds_vars <- c('GN_NO3_N', 'GN_Mg', 'IS_discharge')

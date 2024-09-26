@@ -8,7 +8,7 @@ ms_download_core_data(
   macrosheds_root,
   networks,
   domains,
-  version = "1.0",
+  version = "latest",
   quiet = FALSE
 )
 }
@@ -24,8 +24,7 @@ for networks available for download.}
 Either a single domain, vector of domains, or 'all'. See \code{ms_load_sites()}
 for domains available for download.}
 
-\item{version}{character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to
-most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.}
+\item{version}{numeric or "latest". The MacroSheds dataset version to download.}
 
 \item{quiet}{logical. If TRUE, some messages will be suppressed.}
 }
@@ -33,7 +32,7 @@ most recent. As of 2023-03-17, only version 1.0 is available, so this parameter 
 Downloads all core data for selected domains to the
 directory specified by \code{macrosheds_root}. Site datasets are arranged according to the following
 structure: domain/prodname/site_code.feather. For definitions of these terms as used by
-MacroSheds, see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.
+MacroSheds, see glossary.txt on \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.
 }
 \description{
 Download the macrosheds core datasets of stream chemistry, stream

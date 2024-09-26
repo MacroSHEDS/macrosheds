@@ -2,42 +2,86 @@
 % Please edit documentation in R/ms_calc_flux.R
 \name{ms_calc_flux}
 \alias{ms_calc_flux}
-\title{Calculate daily solute fluxes}
+\title{Calculate daily solute fluxes, or monthly/annual solute loads}
 \usage{
-ms_calc_flux(chemistry, q, verbose = TRUE, ws_area_scaled = TRUE)
+ms_calc_flux(
+  chemistry,
+  q,
+  method = "simple",
+  aggregation = NULL,
+  verbose = TRUE,
+  good_year_check = TRUE
+)
 }
 \arguments{
-\item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or
-stream chemistry data in MacroSheds format and in units of mg/L.}
+\item{chemistry}{A \code{data.frame} of precipitation chemistry or
+stream chemistry data in MacroSheds format (see details) and in units of mg/L.}
 
-\item{q}{\code{data.frame}. A \code{data.frame} of precipitation or stream
-discharge in MacroSheds format and in units of mm or L/s, respectively.}
+\item{q}{A \code{data.frame} or \code{tibble} of stream
+discharge (L/s) or precipitation depth (mm) in MacroSheds format (see detaails).}
 
-\item{verbose}{logical. Default TRUE; prints more information to console.}
+\item{method}{character either 'simple' for for daily flux, or a vector including any
+combination of the following for computing monthly or annual cumulative flux, AKA load: 'pw', 'rating', 'composite', 'beale', 'average'. See details.}
 
-\item{ws_area_scaled}{logical. Default TRUE; flux values are divided by watershed area.}
+\item{aggregation}{character. For method='simple', this argument should remain NULL. If using any
+other method(s), specify either "monthly" or "annual".}
+
+\item{verbose}{logical. control the level of informational printing.}
+
+\item{good_year_check}{logical. definition forthcoming}
 }
 \value{
-returns a \code{tibble} of stream or precipitation chemical flux for every timestep
-where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep.
+a \code{tibble} of stream or precipitation solute flux (if method="simple") or monthly or annual load. Output units are kg/ha/timestep.
 }
 \description{
-Determines solute fluxes from interpolated daily Q (discharge
-or precipitation) and corresponding chemistry data.
+Determines solute fluxes from daily Q (stream discharge
+or precipitation depth) and corresponding chemistry data using any of
+six available methods.
 }
 \details{
-For monthly and annual fluxes computed by various methods, see \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}.
+NEED TO MENTION WATER YEAR OUTPUT AND HOW IT'S DEFINED (and that it's in kg/ha/yr)
+DEPENDS ON IMPUTETS. IS THAT HANDLED?
 
-Here, solute flux is calculated by multiplying solute concentration by flow
-of water (flux = concentration * flow). The output units depend on the time
+MacroSheds format (): This is the format returned by ms_load_product for core time-series data.\tabular{ll}{
+   header value \tab column_definition \cr
+   date \tab Date in YYYY-mm-dd \cr
+   site_code \tab A unique identifier for each MacroSheds site, identical to primary source site code where possible. See \code{\link[=ms_load_sites]{ms_load_sites()}}. \cr
+   grab_sample \tab Boolean integer indicating whether the observation was obtained via grab sample or installed sensor. 1 = TRUE (grab sample), 0 = FALSE (installed sensor). \cr
+   var \tab Variable code. See \code{\link[=ms_load_variables]{ms_load_variables()}}. \cr
+   val \tab Data value. See \code{\link[=ms_load_variables]{ms_load_variables()}} for units. \cr
+   ms_status \tab Boolean integer. 0 = clean value. 1 = questionable value. See "Technical Validation" section of \href{https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325}{the MacroSheds data paper} for details. \cr
+   ms_interp \tab Boolean integer. 0 = measured or imputed by primary source. 1 = interpolated by MacroSheds. See "Temporal Imputation and Aggregation" section of \href{https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325}{the MacroSheds data paper} for details. \cr
+   val_err \tab The combined standard uncertainty associated with the corresponding data point, if estimable. See "Detection Limits and Propagation of Uncertainty" section of \href{https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325}{the MacroSheds data paper} for details. \cr
+}
+
+
+\code{method} = 'simple' computes flux by multiplying solute concentration by discharge at each timestep.
+The output units depend on the time
 interval at which input data are collected. The resulting flux units will always be
-kg/ha/T, where T is the time interval of the input.
-Stream and precipitation flux are calculated differently. For stream flux (stream chemistry * discharge),
-flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
-For precipitation flux (precip chemistry * precip depth over the watershed) is calculated as: kg/ha/T = mg/L * mm/T / 100.
+kg/ha/T, where T is the time interval of the input (as of MacroSheds version 1, all time-series data are provided at a daily interval).
+For stream_chemistry and discharge, flux is calculated as:
+kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
+For precipitation chemistry and precip depth, flux is calculated as:
+kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 You can convert between kg/ha/T and kg/T using \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}} and
-\code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}, which can also be applied using the ws_area_scaled parameter to
-this function.
+\code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}.
+
+Annual/monthly cumulative flux, or load, can also be estimated with this function, using one of five \code{method}s detailed below. Consult Figure 10 in Aulenbach et al. 2016 for guidance on method selection. See Figure 1 for some intuition.
+\itemize{
+\item 'pw': period-weighted method, described in Aulenbach et al. 2016. Here, C is linearly interpolated. This option uses package RiverLoad.
+\item 'rating': AKA regression-model method, described in Aulenbach et al. 2016. This option uses package RiverLoad.
+\item 'composite': composite method, described in Aulenbach et al. 2016. This option uses package RiverLoad.
+\item 'beale': Beale ratio estimator, described in Meals et al. 2013. This option uses package RiverLoad.
+\item 'average': mean Q over the aggregation period times mean C over the aggregation period
+}
+
+All output units are kg/ha/T, where T is the aggregation period.
+
+References:
+\itemize{
+\item Aulenbach, B. T., Burns, D. A., Shanley, J. B., Yanai, R. D., Bae, K., Wild, A. D., ... & Yi, D. (2016). Approaches to stream solute load estimation for solutes with varying dynamics from five diverse small watersheds. Ecosphere, 7(6), e01298.
++Meals, D. W., Richards, R. P., & Dressing, S. A. (2013). Pollutant load estimation for water quality monitoring projects. Tech Notes, 8, 1-21.
+}
 
 Before running \code{\link[=ms_calc_flux]{ms_calc_flux()}}, ensure both \code{q} and
 \code{chemistry} have the same time interval. See \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}.
@@ -58,15 +102,19 @@ q <- ms_load_product(macrosheds_root = ms_root,
                      site_codes = c('w1', 'w3', 'w6'))
 
 flux <- ms_calc_flux(chemistry = chemistry,
-                     q = q)
+                     q = q,
+                     q_type = 'discharge',
+                     method = c('beale', 'pw'))
 }
 \seealso{
-\code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}, \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}, \code{\link[=ms_conversions]{ms_conversions()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}, \code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}
+\code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}, \code{\link[=ms_conversions]{ms_conversions()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}, \code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}
 }
 \author{
-Spencer Rhea
+Wes Slaughter, \email{wslaughter@berkeley.edu}
+
+Nick Gubbins, \email{gubbinsnick@gmail.com}
 
 Mike Vlah, \email{vlahm13@gmail.com}
 
-Wes Slaughter
+Spencer Rhea
 }

@@ -13,7 +13,7 @@ additional information.
 }
 \description{
 Load the MacroSheds site data table with information on networks, domains,
-location of stream gauges, and more.
+location of stream gauges, and more. Visit \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{EDI} for complete metadata.
 }
 \details{
 Site metadata are included as an .RData file with the macrosheds package, and

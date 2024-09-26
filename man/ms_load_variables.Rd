@@ -17,7 +17,7 @@ returns a \code{data.frame} of variables, codes, units, and other metadata.
 }
 \description{
 Load a data.frame of MacroSheds variables with information on variable codes,
-units, and more.
+units, and more. Visit \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{EDI} for complete metadata.
 }
 \details{
 Variable metadata are included as an .RData file with the macrosheds package, and

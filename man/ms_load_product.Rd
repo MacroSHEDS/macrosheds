@@ -22,14 +22,16 @@ If you specified different locations with each of these functions, you'll need t
 refer to them separately when loading time-series data vs. watershed attribute data.}
 
 \item{prodname}{character. A MacroSheds product name. Files associated with this
-product name will be read and combined (see * caveat). Available prodnames are (for core time-series products):
+product name will be read and combined. See details for footnotes.
+Available prodnames are (for core time-series products):
 \itemize{
 \item discharge
 \item stream_chemistry
-\item stream_flux*
+\item stream_flux_inst_scaled*
 \item precipitation,
 \item precip_chemistry
-\item precip_flux*
+\item precip_flux_inst_scaled*
+\item stream_load_annual_scaled**
 }
 
 (and for watershed attribute products):
@@ -44,19 +46,15 @@ product name will be read and combined (see * caveat). Available prodnames are (
 \item ws_attr_timeseries:vegetation
 \item ws_attr_CAMELS_summaries
 \item ws_attr_CAMELS_Daymet_forcings
-
-*note that flux products cannot be loaded using
-this function, but can be calculated from component products using \code{\link[=ms_calc_flux]{ms_calc_flux()}}
-and \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}.
 }}
 
-\item{filter_vars}{character vector. for products like stream_chemistry that include
+\item{filter_vars}{character vector of variable codes. for products like stream_chemistry that include
 multiple variables, this filters to just the ones specified (ignores
 variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
-To see a catalog of variables, visit macrosheds.org or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}.}
+To see a catalog of variable codes, run \code{\link[=ms_load_variables]{ms_load_variables()}} or visit macrosheds.org.}
 
-\item{networks, domains, site_codes}{character vectors of MacroSheds networks/domains/sites to load. Omit to load all. See \code{\link[=ms_load_sites]{ms_load_sites()}},
-or visit \link{macrosheds.org} or \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{EDI}.}
+\item{networks, domains, site_codes}{character vectors of MacroSheds networks/domains/sites to load. Omit to load all.
+To see a catalog of site codes, run \code{\link[=ms_load_sites]{ms_load_sites()}} or visit \link{macrosheds.org}.}
 
 \item{sort_result}{logical. Ignored if requesting watershed attributes.
 If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
@@ -65,11 +63,43 @@ datetime. this may add considerable loading time for large datasets.}
 \item{warn}{logical. If TRUE, function will not load more than 100 MB without permission.}
 }
 \value{
-Returns a \code{tibble} in MacroSheds format. See \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI} for definitions.
+For all core timeseries products except load, returns a \code{tibble} in MacroSheds format.
+This format is often required in inputs to macrosheds tools, but usually only date, site_code, var, and val columns are required.\tabular{ll}{
+   header value \tab column_definition \cr
+   date \tab Date in YYYY-mm-dd \cr
+   site_code \tab A unique identifier for each MacroSheds site, identical to primary source site code where possible. See \code{\link[=ms_load_sites]{ms_load_sites()}}. \cr
+   grab_sample \tab Boolean integer indicating whether the observation was obtained via grab sample or installed sensor. 1 = TRUE (grab sample), 0 = FALSE (installed sensor). \cr
+   var \tab Variable code. See \code{\link[=ms_load_variables]{ms_load_variables()}}. \cr
+   val \tab Data value. See \code{\link[=ms_load_variables]{ms_load_variables()}} for units. \cr
+   ms_status \tab Boolean integer. 0 = clean value. 1 = questionable value. See "Technical Validation" section of \href{https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325}{the MacroSheds data paper} for details. \cr
+   ms_interp \tab Boolean integer. 0 = measured or imputed by primary source. 1 = interpolated by MacroSheds. See "Temporal Imputation and Aggregation" section of \href{https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325}{the MacroSheds data paper} for details. \cr
+   val_err \tab The combined standard uncertainty associated with the corresponding data point, if estimable. See "Detection Limits and Propagation of Uncertainty" section of \href{https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325}{the MacroSheds data paper} for details. \cr
+}
+
+
+For other products, returns a tibble with one of several formats. Visit \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{EDI}.
+for complete column descriptions.
 }
 \description{
-Loads and optionally filters MacroSheds time-series products (e.g stream_chemistry, discharge, etc.) from a
-downloaded MacroSheds dataset. For watershed boundaries and gauge locations, see \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}.
+Loads MacroSheds core time-series products and watershed attributes from the
+MacroSheds dataset after components have been downloaded using \code{\link[=ms_download_core_data]{ms_download_core_data()}}
+or \code{\link[=ms_download_ws_attr]{ms_download_ws_attr()}}. For watershed boundaries and gauge locations, see \code{\link[=ms_load_spatial_product]{ms_load_spatial_product()}}.
+Complete documentation is available on \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{EDI}.
+}
+\details{
+*"instantaneous" (i.e. daily) flux, scaled by watershed area and reported in kg/ha/d.
+Note that flux products can also be computed from component products using
+\code{\link[=ms_calc_flux]{ms_calc_flux()}} and \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}.
+**load = flux aggregated by water-year (Oct 1 to Sept 30). Load is computed by various methods,
+with MacroSheds-recommended method identified for each site_code-variable-water_year combination.
+Scaled by watershed area and reported in kg/ha/yr. See ms_calc_flux for method details.
+
+For some domains, it is possible to request "custom" variants of products, which
+are analogous to their standard types, but are calculated according to the methods
+employed by the primary source data provider. Examples are Panola stream flux, which
+can be loaded via \code{prodname = "CUSTOMstream_flux_inst_scaled"}. Consider these
+products to be "secret menu items" for now. You may identify them by searching for the
+word "CUSTOM" in your macrosheds_root directory.
 }
 \examples{
 ms_root = 'data/macrosheds'

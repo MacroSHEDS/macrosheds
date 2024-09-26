@@ -1,22 +1,22 @@
-#' Calculate daily, monthly or annual solute fluxes (loads)
+#' Calculate daily solute fluxes, or monthly/annual solute loads
 #'
 #' Determines solute fluxes from daily Q (stream discharge
-#' or precipitation depth) and corresponding chemistry data using
+#' or precipitation depth) and corresponding chemistry data using any of
 #' six available methods.
 #'
 #' @author Wes Slaughter, \email{wslaughter@@berkeley.edu}
 #' @author Nick Gubbins, \email{gubbinsnick@@gmail.com}
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
-#' @author Spencer Rhea 
+#' @author Spencer Rhea
 #'
-#' @param chemistry A \code{data.frame} or \code{tibble} of precipitation or
+#' @param chemistry A \code{data.frame} of precipitation chemistry or
 #'    stream chemistry data in MacroSheds format (see details) and in units of mg/L.
 #' @param q A \code{data.frame} or \code{tibble} of stream
 #'    discharge (L/s) or precipitation depth (mm) in MacroSheds format (see detaails).
 #' @param method character either 'simple' for for daily flux, or a vector including any
 #'    combination of the following for computing monthly or annual cumulative flux, AKA load: 'pw', 'rating', 'composite', 'beale', 'average'. See details.
 #' @param aggregation character. For method='simple', this argument should remain NULL. If using any
-#'    other method(s), specify either "monthly" or "annual". 
+#'    other method(s), specify either "monthly" or "annual".
 #' @param good_year_check logical. definition forthcoming
 #' @param verbose logical. control the level of informational printing.
 #' @return a \code{tibble} of stream or precipitation solute flux (if method="simple") or monthly or annual load. Output units are kg/ha/timestep.
@@ -25,7 +25,7 @@
 #' NEED TO MENTION WATER YEAR OUTPUT AND HOW IT'S DEFINED (and that it's in kg/ha/yr)
 #' DEPENDS ON IMPUTETS. IS THAT HANDLED?
 #'
-#' The \code{chemistry} and \code{q} parameters require inputs in MacroSheds format, which is the format returned by ms_load_product for core time-series data. MacroSheds format is:
+#' MacroSheds format (): This is the format returned by ms_load_product for core time-series data.
 #' | header value  | column_definition |
 #' | ------------- | ----------------- |
 #' | date          | Date in YYYY-mm-dd |
@@ -41,9 +41,9 @@
 #' The output units depend on the time
 #' interval at which input data are collected. The resulting flux units will always be
 #' kg/ha/T, where T is the time interval of the input (as of MacroSheds version 1, all time-series data are provided at a daily interval).
-#' For stream_chemistry and discharge, flux is calculated as: 
+#' For stream_chemistry and discharge, flux is calculated as:
 #' kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
-#' For precipitation chemistry and precip depth, flux is calculated as: 
+#' For precipitation chemistry and precip depth, flux is calculated as:
 #' kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 #' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
 #' [ms_undo_scale_flux_by_area()].
@@ -86,15 +86,15 @@
 #'                      method = c('beale', 'pw'))
 #' @export
 
-ms_calc_flux <- function(chemistry, 
-                         q, 
+ms_calc_flux <- function(chemistry,
+                         q,
                          method = 'simple',
-                         aggregation = NULL, 
+                         aggregation = NULL,
                          verbose = TRUE,
                          good_year_check = TRUE){
-    
+
     library('dplyr', quietly = TRUE)
-    
+
     #checks
     if(! all(c('site_code', 'val', 'var', 'date') %in% names(chemistry))){
         stop('The argument to `chemistry` must be in MacroSheds format (required columns: date, site_code, var, val).')
@@ -102,7 +102,7 @@ ms_calc_flux <- function(chemistry,
     if(! all(c('site_code', 'val', 'var', 'date') %in% names(q))){
         stop('The argument to `q` must be in MacroSheds format (required columns: date, site_code, var, val).')
     }
-    
+
     q_type <- unique(q$var)
     if(length(q_type) > 1){
         stop('q$var` may not contain more than 1 unique value')
@@ -110,29 +110,29 @@ ms_calc_flux <- function(chemistry,
     if(! q_type %in% c('discharge', 'precipitation')){
         stop('`q$var` must be entirely "discharge" or "precipitation".')
     }
-    
+
     if(q_type == 'precipitation' & any(method != 'simple')){
         stop('Only method = "simple" is appropriate for precipitation data.')
     }
-    
+
     if(! inherits(q$date, 'Date')){
         q$date <- as.Date(q$date)
     }
     if(! inherits(chemistry$date, 'Date')){
         chemistry$date <- as.Date(chemistry$date)
     }
-    
+
     requireNamespace('macrosheds', quietly = TRUE)
-    
+
     # make sure method is accepted, and if method is 'rsfme' set method to all rsfme methods
     # check that method, if non-null, is in accepted list
     rsfme_accepted  <- c('average', 'pw', 'composite', 'beale', 'rating', 'simple', 'rsfme')
     rsfme_methods  <- c('average', 'pw', 'composite', 'beale', 'rating')
-    
+
     if('rsfme' %in% method){
         method <- rsfme_methods
     }
-    
+
     if(! all(method %in% rsfme_accepted)){
         stop(glue::glue('Unrecognized flux method: {setdiff(method, rsfme_accepted)}'))
     } else {
@@ -142,138 +142,138 @@ ms_calc_flux <- function(chemistry,
                 '\n')
         }
     }
-    
+
     riverload_methods <- c('pw', 'beale', 'rating', 'composite')
     if(any(method %in% riverload_methods)){
-        
+
         # look for RiverLoad package on user machine
         rl.res <- try(find.package('RiverLoad'), silent = TRUE)
-        
+
         # if not found, stop and give address for download
         if(inherits(rl.res, 'try-error')){
             stop('package "RiverLoad" required for methods: pw, beale, rating, and composite. ',
                  'Install with:\n\tremotes::install_github("https://github.com/cran/RiverLoad.git")')
         }
     }
-    
+
     #validate aggregation and method parameters
     if(any(method == 'simple')){
-        
+
         if(length(method) > 1){
             warning('method = "simple" detected, so ignoring other methods. ',
                     'Omit "simple" to use other flux methods.')
         }
         method <- 'simple'
-        
+
         if(! is.null(aggregation)){
             if(verbose){
                 cat('Ignoring "aggregation" parameter because method = "simple".\n')
             }
         }
         aggregation <- 'simple'
-        
+
     } else {
-        
+
         if(is.null(aggregation) || length(aggregation) != 1 || ! aggregation %in% c('annual', 'monthly')){
             stop('Unless method = "simple", aggregation must be either "annual" or "monthly"')
         }
     }
-    
+
     var_info <- macrosheds::ms_load_variables()
     site_info <- macrosheds::ms_load_sites()
-    
+
     # verify that both files have the same sites
     sites_chem <- unique(chemistry$site_code)
     sites <- sites_chem
     sites_q <- unique(q$site_code)
-    
+
     if(! setequal(sites_chem, sites_q)){
         stop('"chemistry" and "q" must have the same sites.')
     }
-    
+
     ## add errors if they don't exist
     #if('val_err' %in% colnames(chemistry)){
-    #    
+    #
     #    errors::errors(chemistry$val) <- chemistry$val_err
     #    chemistry <- dplyr::select(chemistry, -val_err)
-    #    
+    #
     #} else if(! inherits(chemistry$val, 'errors')){
     #    errors::errors(chemistry$val) <- 0
     #}
     #
     #if('val_err' %in% colnames(q)){
-    #    
+    #
     #    errors::errors(q$val) <- q$val_err
     #    q <- dplyr::select(q, -val_err)
-    #    
+    #
     #} else if(! inherits(q$val, 'errors')){
     #    errors::errors(q$val) <- 0
     #}
 	chemistry <- select(chemistry, -any_of('val_err'))
 	q <- select(q, -any_of('val_err'))
-    
+
     flux_out <- diag_out <- tibble()
     for(s in seq_along(sites)){
-        
+
         if(verbose) cat('Working on site', s, 'of', length(sites), '\n')
-        
+
         site_code <- sites[s]
-        
+
         # filter q and chem to just this site for calcs
         site_chem <- chemistry %>%
             filter(site_code == !!site_code)
-        
+
         # get daterange of chem dataset and filter q to match
         daterange <- as.Date(range(site_chem$date))
         site_q <- q %>%
             filter(site_code == !!site_code,
                    date >= !!daterange[1] - 14, # two weeks before chem
                    date <= !!daterange[2] + 14) # two weeks after chem
-        
+
         if(nrow(site_q) == 0){
             warning(glue::glue('Site {site_code} has no Q-C overlap; skipping.'))
             next
         }
-        
-        this_site_info <- site_info %>% 
+
+        this_site_info <- site_info %>%
             filter(site_code == !!site_code,
-                   site_type == 'stream_gauge') %>% 
+                   site_type == 'stream_gauge') %>%
             distinct()
-        
+
         area <- this_site_info$ws_area_ha
         if(is.na(area)){
             warning('Watershed area for site "', site_code, '" is unknown')
         }
         # area <- errors::set_errors(this_site_info$ws_area_ha, 0)
-        
+
         vars_ <- unique(site_chem$var)
-        
+
         flux_site <- diag_site <- tibble()
         for(i in seq_along(vars_)){
-            
+
             # if(verbose) cat('\tWorking on var', vars_[i], '\n')
-            
-            chem_var <- site_chem %>% 
-                filter(var == !!vars_[i]) %>% 
+
+            chem_var <- site_chem %>%
+                filter(var == !!vars_[i]) %>%
                 arrange(date)
-            
+
             fluxable <- var_info %>%
-                filter(variable_code == !!ms_drop_var_prefix(vars_[i])) %>% 
+                filter(variable_code == !!ms_drop_var_prefix(vars_[i])) %>%
                 pull(flux_convertible)
-            
+
             if(any(fluxable == 0)){
                 warning(glue::glue('Flux methods not yet defined for {vars_[i]}; skipping'))
                 next
             }
-            
+
             if(any(method == 'simple')){
-                
+
                 flux_site <- calc_simple_flux(chem = chem_var,
-                                              q = site_q) %>% 
+                                              q = site_q) %>%
                     bind_rows(flux_site)
-                
+
             } else {
-                
+
                 load_out <- calc_load(
                     chem = chem_var,
                     q = site_q,
@@ -284,42 +284,42 @@ ms_calc_flux <- function(chemistry,
                     good_year_check = good_year_check,
                     verbose = verbose
                 )
-                
+
                 diag_site <- bind_rows(load_out$diag, diag_site)
                 flux_site <- bind_rows(load_out$load, flux_site)
             }
         }
-        
+
         diag_out <- bind_rows(diag_site, diag_out)
         flux_out <- bind_rows(flux_site, flux_out)
     }
-    
+
     #if(any(method == 'simple') && nrow(flux_out) > 0){
     #    flux_out$val_err <- errors::errors(flux_out$val)
     #    flux_out$val <- errors::drop_errors(flux_out$val)
     #}
-    
+
     if(! 'simple' %in% method){
-        
+
         if(nrow(flux_out)){
-            
-            flux_out <- flux_out %>% 
-                relocate(site_code, var, wy) %>% 
-                rename(water_year = wy, load = val) %>% 
-                arrange(site_code, var, water_year) %>% 
+
+            flux_out <- flux_out %>%
+                relocate(site_code, var, wy) %>%
+                rename(water_year = wy, load = val) %>%
+                arrange(site_code, var, water_year) %>%
                 filter(! is.na(load))
-            
+
             diag_out <- arrange(diag_out, site_code, var, water_year)
-            
+
         } else {
-            
+
             flux_out <- tibble(site_code = character(),
                                var = character(),
                                water_year = numeric(),
                                load = numeric(),
                                method = character(),
                                ms_recommended = logical())
-            
+
             diag_out <- tibble(site_code = character(),
                                var = character(),
                                water_year = numeric(),
@@ -331,11 +331,11 @@ ms_calc_flux <- function(chemistry,
                                n_paired_cq_obs = numeric(),
                                ws_area_ha = numeric())
         }
-        
+
         # flux_out <- mutate(flux_out, val = if_else(val < 0, 0, val))
         if(any(flux_out$load < 0) || any(is.infinite(flux_out$load))) warning('negative/infinite load values detected')
     }
-    
+
     return(list(load = flux_out,
                 diagnostics = diag_out))
 }

@@ -1,6 +1,6 @@
 ---
 title: MacroSheds data retrieval and flux calculation 
-author: Weston Slaughter, Spencer Rhea, Mike Vlah
+author: Weston Slaughter, Mike Vlah, Spencer Rhea
 subtitle: Using the `macrosheds` package to retrieve discharge and chemistry data for target sites and variables, and to calculate simple stream solute flux
 output: rmarkdown::html_vignette
 vignette: >
@@ -72,36 +72,36 @@ The `ms_sites` `data.frame` columns include "latitude", "longitude", "first\_rec
 
 ```{r ms-site-filter}
 # calculate the approximate number of days in sixty years
-sixty_yrs_days <- 365 * 60
-
-# filter the dataframe of macrosheds sites
-target_sites <- ms_sites %>%
-    # to make sure our sites are roughly western or eastern 
-    filter(longitude > -95 | longitude < -115) %>%
-    mutate(period = as.numeric(
-        difftime(last_record_utc,
-                 first_record_utc,
-                 units = 'days'
-                 ))) %>%
-    # to get records > 60 years
-    filter(period > sixty_yrs_days)
-
-# let's list the unique sites left after our filtering
-unique(target_sites$domain)
-head(target_sites)
-  
-# and calculate summary statistics on these sites, to help
-# choose which sites have the best data for our needs
-target_summary <- target_sites %>%
-    group_by(domain) %>%
-    summarize(
-        mean_long = mean(longitude),
-        sum_obs = sum(n_observations),
-        min_date = min(first_record_utc),
-        max_date = min(last_record_utc)
-    )
-  
-head(target_summary)
+# sixty_yrs_days <- 365 * 60
+# 
+# # filter the dataframe of macrosheds sites
+# target_sites <- ms_sites %>%
+#     # to make sure our sites are roughly western or eastern 
+#     filter(longitude > -95 | longitude < -115) %>%
+#     mutate(period = as.numeric(
+#         difftime(last_record_utc,
+#                  first_record_utc,
+#                  units = 'days'
+#                  ))) %>%
+#     # to get records > 60 years
+#     filter(period > sixty_yrs_days)
+# 
+# # let's list the unique sites left after our filtering
+# unique(target_sites$domain)
+# head(target_sites)
+#   
+# # and calculate summary statistics on these sites, to help
+# # choose which sites have the best data for our needs
+# target_summary <- target_sites %>%
+#     group_by(domain) %>%
+#     summarize(
+#         mean_long = mean(longitude),
+#         sum_obs = sum(n_observations),
+#         min_date = min(first_record_utc),
+#         max_date = min(last_record_utc)
+#     )
+#   
+# head(target_summary)
 ```
 
 By filtering the site metadata, we have found three domains that meet our requirements. Two of these sites are in the Northeastern US (Fernow, HBEF) and one is on the West Coast (HJ Andrews). See the map at [macrosheds.org](https://macrosheds.org). Our summary data show that HBEF has a greater number of overall observations, so let's go with that and HJ Andrews.
@@ -163,13 +163,13 @@ and it _must_ be used to load data via `ms_load_product`. You can download all c
 with `domains = 'all'`
 
 ``` {r ms-data, eval = TRUE}
-options(timeout = 600) #default 60 might not be enough if your connection is slow
-
-ms_download_core_data(
-    macrosheds_root = my_ms_dir,
-    domains = my_domains,
-    quiet = TRUE
-)
+# options(timeout = 600) #default 60 might not be enough if your connection is slow
+# 
+# ms_download_core_data(
+#     macrosheds_root = my_ms_dir,
+#     domains = my_domains,
+#     quiet = TRUE
+# )
 ```
 
 
@@ -203,7 +203,7 @@ Now that we have discharge, we will use `ms_load_product` again, but for nitrate
 my_chem <- ms_load_product(
     my_ms_dir,
     prodname = 'stream_chemistry',
-    filter_vars = 'NO3_N',
+    # filter_vars = 'NO3_N',
     site_codes = c('w7', 'GSWS07')
 )
 
@@ -228,13 +228,13 @@ Use `ms_calc_flux` to calculate daily nitrate-N flux from discharge and concentr
 We can plug in our discharge and chemistry data directly. 
 
 ```{r ms-flux}
-my_flux <- ms_calc_flux(
-    chemistry = my_chem,
-    q = my_q,
-    q_type = 'discharge'
-)
+# my_flux <- ms_calc_flux(
+#     chemistry = my_chem,
+#     q = my_q,
+#     q_type = 'discharge'
+# )
 
-head(my_flux)
+# head(my_flux)
 ```
 
 From the documentation of `ms_calc_flux` we can see that flux units are `kg/ha/T`, where T is the sampling interval. This is desirable because we are comparing between two very different watersheds and it is usually appropriate to scale by their areas. If you're interested in the unscaled flux, see 'ms\_undo\_scale\_flux\_by\_area'.
@@ -253,18 +253,18 @@ If you'd like to modify these thresholds or use different techniques, you may:
  3. specify interpolation methods via `ms_synchronize_timestep`
 
 ```{r ms-sync, message = FALSE}
-my_chem2 <- ms_synchronize_timestep(
-    my_chem,
-    desired_interval = '1 day',
-    interpolate_limit = 40
-)
-my_flux2 <- ms_calc_flux(
-    chemistry = my_chem2,
-    q = my_q,
-    q_type = 'discharge'
-)
+# my_chem2 <- ms_synchronize_timestep(
+#     my_chem,
+#     desired_interval = '1 day',
+#     interpolate_limit = 40
+# )
+# my_flux2 <- ms_calc_flux(
+#     chemistry = my_chem2,
+#     q = my_q,
+#     q_type = 'discharge'
+# )
 
-head(my_flux)
+# head(my_flux)
 ```
 
 # Results
@@ -275,37 +275,37 @@ Note: `macrosheds::ms_calc_flux_rsfme` will produce much more robust monthly and
 This function is in development, so check back. 
 
 ```{r ms-explore}
-my_annual_mean_flux <- my_flux2 %>%
-    mutate(year = as.numeric(format(as.Date(datetime), format='%Y'))) %>%
-    group_by(year, site_code) %>%
-    summarize(
-        mean_flux = sum(val, na.rm = TRUE),
-        n = n(),
-        .groups = 'drop',
-    ) %>%
-    filter(n > 330)
-
-ggplot(data=my_annual_mean_flux, aes(x=year, y=mean_flux, group=site_code)) +
-    geom_line(aes(color=site_code), lwd = 2)+
-    geom_point() +
-    scale_color_manual(
-      values=c('#E69F00', '#56B4E9'),
-      name = 'Site'
-    ) +
-    ggtitle(
-      label = 'Mean Annual Nitrate-N Flux',
-      subtitle = 'Hubbard Brook (w7) and HJ Andrews (GSWS07), 1970-2020'
-    ) +
-    xlab('Year') +
-    ylab('Nitrate-N Flux (kg/ha/day)') +
-    theme_minimal() +
-    theme(
-      axis.text = element_text(size = 16),
-      axis.title = element_text(size = 20),
-      plot.title = element_text(size = 24),
-      plot.subtitle = element_text(size = 22),
-      legend.title = element_text(size = 21),
-      legend.text = element_text(size = 20),
-    ) 
+# my_annual_mean_flux <- my_flux2 %>%
+#     mutate(year = as.numeric(format(as.Date(datetime), format='%Y'))) %>%
+#     group_by(year, site_code) %>%
+#     summarize(
+#         mean_flux = sum(val, na.rm = TRUE),
+#         n = n(),
+#         .groups = 'drop',
+#     ) %>%
+#     filter(n > 330)
+# 
+# ggplot(data=my_annual_mean_flux, aes(x=year, y=mean_flux, group=site_code)) +
+#     geom_line(aes(color=site_code), lwd = 2)+
+#     geom_point() +
+#     scale_color_manual(
+#       values=c('#E69F00', '#56B4E9'),
+#       name = 'Site'
+#     ) +
+#     ggtitle(
+#       label = 'Mean Annual Nitrate-N Flux',
+#       subtitle = 'Hubbard Brook (w7) and HJ Andrews (GSWS07), 1970-2020'
+#     ) +
+#     xlab('Year') +
+#     ylab('Nitrate-N Flux (kg/ha/day)') +
+#     theme_minimal() +
+#     theme(
+#       axis.text = element_text(size = 16),
+#       axis.title = element_text(size = 20),
+#       plot.title = element_text(size = 24),
+#       plot.subtitle = element_text(size = 22),
+#       legend.title = element_text(size = 21),
+#       legend.text = element_text(size = 20),
+#     ) 
   
 ```
