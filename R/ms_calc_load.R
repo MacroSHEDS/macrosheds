@@ -1,36 +1,34 @@
-#' Calculate monthly or annual solute loads (i.e. cumulative fluxes)
+#' Calculate annual solute loads (i.e. cumulative fluxes)
 #'
-#' Determines solute loads from daily Q (stream discharge
-#' or precipitation depth) and corresponding chemistry data using any of
-#' five available methods.
+#' Determines solute loads from daily stream discharge and corresponding chemistry
+#' data using any of five available methods. For daily stream/precip solute fluxes, see [ms_calc_flux()].
 #'
 #' @author Wes Slaughter, \email{wslaughter@@berkeley.edu}
 #' @author Nick Gubbins, \email{gubbinsnick@@gmail.com}
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Spencer Rhea
 #'
-#' @param chemistry A \code{data.frame} of precipitation chemistry or
+#' @param chemistry A `data.frame` of
 #'    stream chemistry data in MacroSheds format (see details) and in units of mg/L.
-#' @param q A \code{data.frame} of stream
-#'    discharge (L/s) or precipitation depth (mm) in MacroSheds format (see details).
+#' @param q A `data.frame` of stream discharge (L/s) in MacroSheds format (see details).
 #' @param method character vector. Any combination of: 'pw', 'rating',
 #'    'composite', 'beale', 'average'. See details.
-#' @param aggregation character. Either "monthly" or "annual". If "annual", each year
-#' is defined as the "water year" beginning on Oct 1 and ending on Sept 30.
+# @param aggregation character. Either "monthly" or "annual". If "annual", each year
+# is defined as the "water year" beginning on Oct 1 and ending on Sept 30.
 #' @param verbose logical. FALSE for less frequent informational messaging.
 #' @return
 #' A `list` containing two tibbles:
-#' *load*: a `tibble` of monthly/annual loads with the following structure:
+#' *load*: a `tibble` of annual loads with the following structure:
 #' | column | definition |
 #' | ------ | ---------- |
 #' | site_code | short name for MacroSheds site. See MacroSheds format below. |
 #' | var | Variable code. See MacroSheds format below. |
 #' | water_year | Full year beginning on October 1 and ending on Sept 30 |
-#' | load | Annual or monthly solute load for the watershed |
+#' | load | Annual solute load for the watershed |
 #' | method | The method used to compute annual solute load. See [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf) and [Gubbins et al. in review](https://eartharxiv.org/repository/view/6513/) |
 #' | ms_recommended | The most appropriate load estimation method based on Fig 10 from [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf) and Fig 16 from [Gubbins et al. in review](https://eartharxiv.org/repository/view/6513/). 1 = recommended, 0 = not recommended. NA = insufficient data to generate meaningful load estimate by the corresponding method. |
 #'
-#' Output units are kg/ha/T, where T is month or water-year, as specified by `aggregation`, or day for method = "simple".
+#' Output units are kg/ha/yr, where yr is water-year.
 #'
 #' *diagnostics*: a `tibble` of quantities that may be used to filter load estimates.
 # 'Some of these are used to select `ms_recommended` according to
@@ -74,7 +72,7 @@
 #'  Consult Figure 10 in [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf)
 #'  for guidance on method selection. See Figure 1 for some intuition.
 #'
-#' Output units are kg/ha/T, where T is month or water-year, as specified by `aggregation`.
+#' Output units are kg/ha/yr, where yr is water-year.
 #'
 #' References:
 #'
@@ -86,6 +84,7 @@
 #' ms_root = 'data/macrosheds'
 #' ms_download_core_data(macrosheds_root = ms_root,
 #'                       domains = 'hbef')
+
 #' chemistry <- ms_load_product(macrosheds_root = ms_root,
 #'                              prodname = 'stream_chemistry',
 #'                              site_codes = c('w1', 'w3'),
@@ -99,11 +98,13 @@
 #'                      q = q)
 #' @export
 #'
-ms_calc_flux <- function(chemistry,
+ms_calc_load <- function(chemistry,
                          q,
                          method = 'all',
-                         aggregation = 'annual',
+                         # aggregation = 'annual',
                          verbose = TRUE){
+
+    aggregation <- 'annual'
 
     library('dplyr', quietly = TRUE)
 
@@ -199,8 +200,8 @@ ms_calc_flux <- function(chemistry,
     #} else if(! inherits(q$val, 'errors')){
     #    errors::errors(q$val) <- 0
     #}
-	chemistry <- select(chemistry, -any_of('val_err'))
-	q <- select(q, -any_of('val_err'))
+    chemistry <- select(chemistry, -any_of('val_err'))
+    q <- select(q, -any_of('val_err'))
 
     load_out <- diag_out <- tibble()
     for(s in seq_along(sites)){
@@ -256,7 +257,7 @@ ms_calc_flux <- function(chemistry,
                 next
             }
 
-            load_out <- calc_load(
+            load_out_ <- calc_load(
                 chem = chem_var,
                 q = site_q,
                 site_code = site_code,
@@ -266,8 +267,8 @@ ms_calc_flux <- function(chemistry,
                 verbose = verbose
             )
 
-            diag_site <- bind_rows(load_out$diag, diag_site)
-            load_site <- bind_rows(load_out$load, load_site)
+            diag_site <- bind_rows(load_out_$diag, diag_site)
+            load_site <- bind_rows(load_out_$load, load_site)
         }
 
         diag_out <- bind_rows(diag_site, diag_out)

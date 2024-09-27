@@ -3912,7 +3912,7 @@ calc_load <- function(chem, q, site_code, area, method,
 
     fvar <- chem$var[1]
 
-    if(any(chem$val == 0)){
+    if(any(na.omit(chem$val == 0))){
         warning('Concentration values of 0 detected. These will be removed before computing load.')
     }
 
@@ -4297,7 +4297,7 @@ calc_load <- function(chem, q, site_code, area, method,
                                         unique_c_quarters = length(unique(lubridate::quarter(chem_yr$date))),
                                         ws_area_ha = area)
 
-            target_year_deets[is.nan(target_year_deets)] <- NA
+            target_year_deets[is.na(target_year_deets)] <- NA
         }
 
         out_frame <- bind_rows(out_frame, target_year_out)

@@ -28,10 +28,10 @@ ppt <- ms_load_product(macrosheds_root = ms_root,
                        site_codes = test_sites) %>%
     filter(date > as.Date('2016-01-01'))
 
-ms_flux <- ms_calc_flux(chemistry = chemistry,
-                              q = q,
-                              method = test_methods,
-                              aggregation = 'annual')
+ms_flux <- ms_calc_load(chemistry = chemistry,
+                        q = q,
+                        method = test_methods,
+                        aggregation = 'annual')
 
 flux_gubbins <- feather::read_feather(file.path(flux_fp, 'baltimore/stream_flux/BARN.feather')) %>%
     rbind(feather::read_feather(file.path(flux_fp, 'hjandrews/stream_flux/GSMACK.feather'))) %>%
