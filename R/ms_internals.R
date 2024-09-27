@@ -3031,10 +3031,6 @@ calculate_pw <- function(chem_df, q_df, datecol = 'date', area = 1, period = NUL
             message('why is method6 rewritten for monthly pw load?')
             browser()
 
-            if(! requireNamespace('imputeTS', quietly = TRUE)){
-                stop('package imputeTS required to compute load via method = "pw"')
-            }
-
             n <- nrow(db)
             interpolation <- data.frame(imputeTS::na_interpolation(db, 'linear'))
             load <- data.frame(interpolation[, 2] * interpolation[, -c(1:2)])

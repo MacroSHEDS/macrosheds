@@ -11,8 +11,8 @@
 #' @param chemistry A `data.frame` of
 #'    stream chemistry data in MacroSheds format (see details) and in units of mg/L.
 #' @param q A `data.frame` of stream discharge (L/s) in MacroSheds format (see details).
-#' @param method character vector. Any combination of: 'pw', 'rating',
-#'    'composite', 'beale', 'average'. See details.
+#' @param method character vector. Any combination of: "pw", "rating",
+#'    "composite", "beale", "average". Use "all" to run every method. See details.
 # @param aggregation character. Either "monthly" or "annual". If "annual", each year
 # is defined as the "water year" beginning on Oct 1 and ending on Sept 30.
 #' @param verbose logical. FALSE for less frequent informational messaging.
@@ -152,19 +152,20 @@ ms_calc_load <- function(chemistry,
         }
     }
 
-    riverload_methods <- c('pw', 'beale', 'rating', 'composite')
-    if(any(method %in% riverload_methods)){
+    got_riverload <- requireNamespace('RiverLoad', quietly = TRUE)
+    got_imputets <- requireNamespace('imputeTS', quietly = TRUE)
 
-        # look for RiverLoad package on user machine
-        rl.res <- try(find.package('RiverLoad'), silent = TRUE)
-
-        # if not found, stop and give address for download
-        if(inherits(rl.res, 'try-error')){
-            stop('package "RiverLoad" required for methods: pw, beale, rating, and composite. ',
-                 'Install with:\n\tremotes::install_github("https://github.com/cran/RiverLoad.git")')
-        }
+    if(! got_imputets && ! got_riverload){
+        stop('The "RiverLoad" and "imputeTS" packages are required to run ms_calc_load. ',
+             'Install with:\n\tremotes::install_github("cran/RiverLoad")',
+             '\n\tinstall.packages("imputeTS")')
+    } else if(! got_imputets){
+        stop('The "imputeTS" package is required to run ms_calc_load. ',
+             'Install it with:\n\tinstall.packages("imputeTS")')
+    } else if(! got_riverload){
+        stop('The "RiverLoad" package is required to run ms_calc_load. ',
+             'Install it with:\n\tremotes::install_github("cran/RiverLoad")')
     }
-
 
     if(is.null(aggregation) || length(aggregation) != 1 || ! aggregation %in% c('annual', 'monthly')){
         stop('`aggregation` must be either "annual" or "monthly"')
