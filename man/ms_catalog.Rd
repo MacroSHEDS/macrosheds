@@ -7,7 +7,7 @@
 ms_catalog()
 }
 \description{
-this function has been retired, and replaced with \code{ms_load_variables}, please use this instead
+this function has been retired, and replaced with \code{ms_load_variables}
 }
 \seealso{
 \code{\link[=ms_load_variables]{ms_load_variables()}}

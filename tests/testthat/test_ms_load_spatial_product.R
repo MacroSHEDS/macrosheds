@@ -1,7 +1,8 @@
 library(macrosheds)
 library(testthat)
 
-wd <- '../../data/ms_test'
+#wd <- '../../data/ms_test' #superfluous files in the data/ directory causes problems for build.
+wd <- '~/ssd2/ms_test' #so use a directory that works for your machine
 
 options(timeout = 1200)
 dir.create(wd, showWarnings = FALSE)

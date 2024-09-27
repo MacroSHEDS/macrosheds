@@ -8,7 +8,7 @@ ms_download_ws_attr(
   macrosheds_root,
   dataset = "summaries",
   quiet = FALSE,
-  version = "1.0",
+  version = "latest",
   omit_climate_data = FALSE,
   timeout = 10000
 )
@@ -35,8 +35,7 @@ Once downloaded, data can be loaded into R with \code{\link[=ms_load_product]{ms
 
 \item{quiet}{logical. If TRUE, some messages will be suppressed.}
 
-\item{version}{character. The MacroSheds dataset version to download, e.g. "1.0". Defaults to
-most recent. As of 2023-03-17, only version 1.0 is available, so this parameter is a stub.}
+\item{version}{numeric or "latest". The MacroSheds dataset version to download.}
 
 \item{omit_climate_data}{logical. Ignored unless \code{dataset == 'time series'}. If you don't care about climate data,
 you may use this argument to avoid downloading it (because it's huge), while still downloading
@@ -46,7 +45,7 @@ terrain, vegetation, parent material, land use, and hydrology data (which are ti
 }
 \value{
 Returns NULL. Downloads watershed attribute data to the
-directory specified by \code{macrosheds_root}. For documentation, visit
+directory specified by \code{macrosheds_root}. For full documentation, visit
 \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{EDI}.
 }
 \description{

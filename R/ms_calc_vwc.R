@@ -18,14 +18,14 @@
 #' Chemical Volume Weighted Concentration (VWC) is 'traditionally' calculated as
 #' VWC = sum(concentrations * volumes) / sum(volumes) over a given period. Because we have discharge
 #' (a rate), rather than volume, we could scale it to the sample interval and then use the equation
-#' above. For simplicity, I use this instead, which works out the same:
+#' above. For simplicity, we use this instead, which works out the same:
 #' VWC = mean(concentrations * discharges) / mean(discharges)
 #' Note also that we're starting from flux here, for computational efficiency, so the "concentrations * volumes"
 #' part is already computed, and it's a rate too. That means the modified equation is:
 #' VWC = mean(fluxes) / mean(discharges). There are two minor introductions of
 #' error. The first is that we don't omit discharge values from the denominator that lack a corresponding
 #' flux value (this is expensive, and not doing it should rarely skew the results). The second is that a "month"
-#' is considered 30 days here, which only affects coverage filtering.
+#' is considered 30 days here, which only affects filtering by coverage.
 #' @seealso [ms_calc_flux], [ms_synchronize_timestep()], [ms_conversions()], [ms_scale_flux_by_area()], [ms_undo_scale_flux_by_area()]
 #' @examples
 #' #' ### Load some MacroSheds data:
@@ -51,20 +51,20 @@ ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
     library("dplyr", quietly = TRUE)
 
     #### Checks
-    if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(chemistry))){
-        stop('The argument to chemistry must contain precipitation chemistry or stream chemistry data in MacroSheds format (column names of site_code, val, var, datetime, ms_interp, ms_status at minimum).')
+    if(! all(c('site_code', 'val', 'var', 'date') %in% names(chemistry))){
+        stop('The argument to chemistry must contain precipitation chemistry or stream chemistry data in MacroSheds format (required columns: date, site_code, var, val).')
     }
-    if(! all(c('site_code', 'val', 'var', 'datetime', 'ms_interp', 'ms_status') %in% names(q))){
-        stop('The argument to q must contain precipitation or stream discharge data in MacroSheds format (column names of site_code, val, var, datetime, ms_interp, ms_status at minimum).')
+    if(! all(c('site_code', 'val', 'var', 'date') %in% names(q))){
+        stop('The argument to q must contain precipitation or stream discharge data in MacroSheds format (required columns: date, site_code, var, val).')
     }
     if(! grepl('(precipitation|discharge)', q_type)){
         stop('q_type must be "discharge" or "precipitation"')
     }
-    if(! 'POSIXct' %in% class(q$datetime)){
-        q$datetime <- as.POSIXct(q$datetime)
+    if(! 'Date' %in% class(q$date)){
+        q$date <- as.POSIXct(q$date)
     }
-    if(! 'POSIXct' %in% class(chemistry$datetime)){
-        chemistry$datetime <- as.POSIXct(chemistry$datetime)
+    if(! 'Date' %in% class(chemistry$date)){
+        chemistry$date <- as.POSIXct(chemistry$date)
     }
 
     requireNamespace('macrosheds', quietly = TRUE)
@@ -94,26 +94,28 @@ ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
         print(paste0('q dataset has a ', interval, ' interval'))
     }
 
-    # add errors if they don't exist
-    if('val_err' %in% names(chemistry)){
-        errors::errors(chemistry$val) <- chemistry$val_err
+    ## add errors if they don't exist
+    #if('val_err' %in% names(chemistry)){
+    #    errors::errors(chemistry$val) <- chemistry$val_err
 
-        chemistry <- chemistry %>%
-            dplyr::select(-val_err)
+    #    chemistry <- chemistry %>%
+    #        dplyr::select(-val_err)
 
-    } else if(all(errors::errors(chemistry$val) == 0)){
-        errors::errors(chemistry$val) <- 0
-    }
+    #} else if(all(errors::errors(chemistry$val) == 0)){
+    #    errors::errors(chemistry$val) <- 0
+    #}
 
-    if('val_err' %in% names(q)){
-        errors::errors(q$val) <- q$val_err
+    #if('val_err' %in% names(q)){
+    #    errors::errors(q$val) <- q$val_err
 
-        q <- q %>%
-            dplyr::select(-val_err)
+    #    q <- q %>%
+    #        dplyr::select(-val_err)
 
-    } else if(all(errors::errors(q$val) == 0)){
-        errors::errors(q$val) <- 0
-    }
+    #} else if(all(errors::errors(q$val) == 0)){
+    #    errors::errors(q$val) <- 0
+    #}
+	chemistry <- select(chemistry, -any_of('val_err'))
+	q <- select(q, -any_of('val_err'))
 
     # calc VWC
     sites <- unique(chemistry$site_code)
@@ -212,8 +214,8 @@ ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
 
     if(nrow(all_sites_vwc) == 0) { return(NULL) }
 
-    all_sites_vwc$val_err <- errors::errors(all_sites_vwc$val)
-    all_sites_vwc$val <- errors::drop_errors(all_sites_vwc$val)
+    #all_sites_vwc$val_err <- errors::errors(all_sites_vwc$val)
+    #all_sites_vwc$val <- errors::drop_errors(all_sites_vwc$val)
 
     return(all_sites_vwc)
 }

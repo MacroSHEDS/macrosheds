@@ -2,44 +2,117 @@
 % Please edit documentation in R/ms_calc_flux.R
 \name{ms_calc_flux}
 \alias{ms_calc_flux}
-\title{Calculate daily solute fluxes}
+\title{Calculate daily solute fluxes, or monthly/annual solute loads}
 \usage{
-ms_calc_flux(chemistry, q, q_type, verbose = TRUE, ws_area_scaled = TRUE)
+ms_calc_flux(
+  chemistry,
+  q,
+  method = "simple",
+  aggregation = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
-\item{chemistry}{\code{data.frame}. A \code{data.frame} of precipitation or
-stream chemistry data in MacroSheds format and in units of mg/L.}
+\item{chemistry}{A \code{data.frame} of precipitation chemistry or
+stream chemistry data in MacroSheds format (see details) and in units of mg/L.}
 
-\item{q}{\code{data.frame}. A \code{data.frame} of precipitation or stream
-discharge in MacroSheds format and in units of mm or L/s, respectively.}
+\item{q}{A \code{data.frame} of stream
+discharge (L/s) or precipitation depth (mm) in MacroSheds format (see details).}
 
-\item{q_type}{character. Either 'precipitation' or 'discharge'.}
+\item{method}{character. Either 'simple' for for daily flux, or a vector including any
+combination of the following for cumulative flux, AKA load: 'pw', 'rating',
+'composite', 'beale', 'average'. See details.}
 
-\item{verbose}{logical. Default TRUE; prints more information to console.}
+\item{aggregation}{character. Either "monthly" or "annual". If "annual", each year
+is defined as the "water year" beginning on Oct 1 and ending on Sept 30.
+For method = "simple", this argument is ignored.}
 
-\item{ws_area_scaled}{logical. Default TRUE; flux values are divided by watershed area.}
+\item{verbose}{logical. FALSE for less informational messaging.}
 }
 \value{
-returns a \code{tibble} of stream or precipitation chemical flux for every timestep
-where discharge/precipitation and chemistry are reported. Output units are kg/ha/timestep.
+For method = "simple", A \code{tibble} of daily fluxes with the following structure:
+
+For any other method, or combination of methods, a \code{list} containing two tibbles:
+\emph{load}: a \code{tibble} of monthly/annual loads with the following structure:\tabular{ll}{
+   column \tab definition \cr
+   site_code \tab short name for MacroSheds site. See MacroSheds format below. \cr
+   var \tab Variable code. See MacroSheds format below. \cr
+   water_year \tab Full year beginning on October 1 and ending on Sept 30 \cr
+   load \tab Annual or monthly solute load for the watershed \cr
+   method \tab The method used to compute annual solute load. See \href{https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf}{Aulenbach et al. 2016} and \href{https://eartharxiv.org/repository/view/6513/}{Gubbins et al. in review} \cr
+   ms_recommended \tab The most appropriate load estimation method based on Fig 10 from \href{https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf}{Aulenbach et al. 2016} and Fig 16 from \href{https://eartharxiv.org/repository/view/6513/}{Gubbins et al. in review}. 1 = recommended, 0 = not recommended. NA = insufficient data to generate meaningful load estimate by the corresponding method. \cr
+}
+
+
+Output units are kg/ha/T, where T is month or water-year, as specified by \code{aggregation}, or day for method = "simple".
+
+\emph{diagnostics}: a \code{tibble} of quantities that may be used to filter load estimates.
+\href{https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf}{Aulenbach et al. 2016} and
+\href{https://eartharxiv.org/repository/view/6513/}{Gubbins et al. in review}.\tabular{ll}{
+   column \tab definition \cr
+   site_code \tab short name for MacroSheds site. See MacroSheds format below. \cr
+   var \tab Variable code. See MacroSheds format below. \cr
+   water_year \tab Full year beginning on October 1 and ending on Sept 30 \cr
+   cq_rsquared \tab The coefficient of determination from the concentration-discharge relationship \cr
+   cq_resid_acf \tab Autocorrelation coefficient at lag 1 on the residuals of the concentration-discharge relationship \cr
+   c_acf \tab Autocorrelation coefficient at lag 1 for the concentration series \cr
+   n_c_obs \tab Number of concentration observations \cr
+   n_q_obs \tab Number of discharge observations \cr
+   n_paired_obs \tab Number of paired concentration and discharge observations \cr
+   unique_c_quarters \tab Number of unique quarters (even divisions of the calendar year into four parts) represented in the concentration data \cr
+   ws_area_ha \tab The watershed area in hectares \cr
+}
 }
 \description{
-Determines solute fluxes from interpolated daily Q (discharge
-or precipitation) and corresponding chemistry data.
+Determines solute fluxes from daily Q (stream discharge
+or precipitation depth) and corresponding chemistry data using any of
+six available methods.
 }
 \details{
-For monthly and annual fluxes computed by various methods, see \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}.
+DEPENDS ON IMPUTETS. IS THAT HANDLED?
 
-Here, solute flux is calculated by multiplying solute concentration by flow
-of water (flux = concentration * flow). The output units depend on the time
+MacroSheds format (only date, site_code, var, and val are required for this function):\tabular{ll}{
+   column \tab definition \cr
+   date \tab Date in YYYY-mm-dd \cr
+   site_code \tab A unique identifier for each MacroSheds site, identical to primary source site code where possible. See \code{\link[=ms_load_sites]{ms_load_sites()}}. \cr
+   grab_sample \tab Boolean integer indicating whether the observation was obtained via grab sample or installed sensor. 1 = TRUE (grab sample), 0 = FALSE (installed sensor). \cr
+   var \tab Variable code. See \code{\link[=ms_load_variables]{ms_load_variables()}}. \cr
+   val \tab Data value. See \code{\link[=ms_load_variables]{ms_load_variables()}} for units. \cr
+   ms_status \tab Boolean integer. 0 = clean value. 1 = questionable value. See "Technical Validation" section of \href{https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325}{the MacroSheds data paper} for details. \cr
+   ms_interp \tab Boolean integer. 0 = measured or imputed by primary source. 1 = interpolated by MacroSheds. See "Temporal Imputation and Aggregation" section of \href{https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325}{the MacroSheds data paper} for details. \cr
+   val_err \tab The combined standard uncertainty associated with the corresponding data point, if estimable. See "Detection Limits and Propagation of Uncertainty" section of \href{https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325}{the MacroSheds data paper} for details. \cr
+}
+
+
+This is the format returned by ms_load_product for core time-series data.
+
+\code{method} = 'simple' computes flux by multiplying solute concentration by discharge at each timestep.
+The output units depend on the time
 interval at which input data are collected. The resulting flux units will always be
-kg/ha/T, where T is the time interval of the input \code{tibble}. \code{q_type} is used
-to calculate flux differently because of the different units of discharge and precipitation.
-If \code{q_type} is 'discharge', flux is calculated as: kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
-If \code{q_type} is 'precipitation', is calculated as: kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
+kg/ha/T, where T is the time interval of the input (as of MacroSheds version 1, all time-series data are provided at a daily interval).
+For stream_chemistry and discharge, flux is calculated as:
+kg/ha/T = mg/L * L/s * T / 1e6 / ws_area.
+For precipitation chemistry and precip depth, flux is calculated as:
+kg/ha/T (kg/ha/T = mg/L * mm/T / 100).
 You can convert between kg/ha/T and kg/T using \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}} and
-\code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}, which can also be applied using the ws_area_scaled argument in
-this function.
+\code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}.
+
+Annual/monthly cumulative flux, or load, can also be estimated with this function, using one of five \code{method}s detailed below. Consult Figure 10 in \href{https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf}{Aulenbach et al. 2016} for guidance on method selection. See Figure 1 for some intuition.
+\itemize{
+\item 'pw': period-weighted method, described in \href{https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf}{Aulenbach et al. 2016}. Here, C is linearly interpolated. This option uses package RiverLoad.
+\item 'rating': AKA regression-model method, described in \href{https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf}{Aulenbach et al. 2016}. This option uses package RiverLoad.
+\item 'composite': composite method, described in \href{https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf}{Aulenbach et al. 2016}. This option uses package RiverLoad.
+\item 'beale': Beale ratio estimator, described in \href{https://www.epa.gov/sites/default/files/2016-05/documents/tech_notes_8_dec_2013_load.pdf}{Meals et al. 2013}. This option uses package RiverLoad.
+\item 'average': mean Q over the aggregation period times mean C over the aggregation period
+}
+
+Output units are kg/ha/T, where T is month or year, as specified by \code{aggregation}, or day for method = "simple".
+
+References:
+\itemize{
+\item Aulenbach, B. T., Burns, D. A., Shanley, J. B., Yanai, R. D., Bae, K., Wild, A. D., Yang, Y., & Yi, D. (2016). Approaches to stream solute load estimation for solutes with varying dynamics from five diverse small watersheds. Ecosphere, 7(6), e01298.
+\item Meals, D. W., Richards, R. P., & Dressing, S. A. (2013). Pollutant load estimation for water quality monitoring projects. Tech Notes, 8, 1-21.
+}
 
 Before running \code{\link[=ms_calc_flux]{ms_calc_flux()}}, ensure both \code{q} and
 \code{chemistry} have the same time interval. See \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}.
@@ -61,15 +134,18 @@ q <- ms_load_product(macrosheds_root = ms_root,
 
 flux <- ms_calc_flux(chemistry = chemistry,
                      q = q,
-                     q_type = 'discharge')
+                     q_type = 'discharge',
+                     method = c('beale', 'pw'))
 }
 \seealso{
-\code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}, \code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}, \code{\link[=ms_conversions]{ms_conversions()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}, \code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}
+\code{\link[=ms_synchronize_timestep]{ms_synchronize_timestep()}}, \code{\link[=ms_conversions]{ms_conversions()}}, \code{\link[=ms_scale_flux_by_area]{ms_scale_flux_by_area()}}, \code{\link[=ms_undo_scale_flux_by_area]{ms_undo_scale_flux_by_area()}}
 }
 \author{
-Spencer Rhea
+Wes Slaughter, \email{wslaughter@berkeley.edu}
+
+Nick Gubbins, \email{gubbinsnick@gmail.com}
 
 Mike Vlah, \email{vlahm13@gmail.com}
 
-Wes Slaughter
+Spencer Rhea
 }

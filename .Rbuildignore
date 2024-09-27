@@ -11,3 +11,9 @@
 tests/testthat/data/test_precip_function
 ^doc$
 ^Meta$
+^data/test_precip_function$
+^data/macrosheds$
+^data/ms_test$
+^\.git/$
+^dev/$
+^.gitignore$

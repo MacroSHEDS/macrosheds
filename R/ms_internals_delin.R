@@ -694,8 +694,9 @@ delineate_watershed_apriori <- function(lat,
                        .trim = FALSE))
         }
         
-        site_buf <- sf::st_buffer(x = site,
-                                  dist = buffer_radius)
+		site_buf <- sf::st_buffer(x = st_transform(site, get_utm_crs(site)),
+                                  dist = buffer_radius) %>% 
+            st_transform(st_crs(site))
         
         dem <- expo_backoff(
             expr = {
@@ -999,4 +1000,18 @@ delineate_watershed_apriori <- function(lat,
                       unique_snaps_f = unique_snaps_f)
     
     return(delin_out)
+}
+
+get_utm_crs <- function(point){
+
+    lon <- sf::st_coordinates(point)[1, 1]
+    lat <- sf::st_coordinates(point)[1, 2]
+
+    zone_number <- floor((lon + 180) / 6) + 1
+    zone_hemisphere <- ifelse(lat >= 0, 'N', 'S')
+
+    zone <- paste0(zone_number, zone_hemisphere)
+    crs <- paste0("EPSG:", ifelse(grepl('N', zone), 32600, 32700) + zone_number)
+
+    return(crs)
 }

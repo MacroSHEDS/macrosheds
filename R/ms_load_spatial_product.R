@@ -2,7 +2,7 @@
 #'
 #' Load a macrosheds spatial product (ws_boundary, precip_gauge_locations, 
 #' or stream_gauge_locations) from a downloaded MacroSheds dataset. See 
-#' [ms_load_product()] for time-series data.
+#' [ms_load_product()] for core time-series data and watershed attributes.
 #'
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
@@ -12,12 +12,12 @@
 #' @param spatial_product character. Either "ws_boundary" for watershed boundary,
 #'    "stream_gauge_locations", or "precip_gauge_locations". Files associated with this
 #'    product will be combined across specified networks/domains.
-#' @param networks character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
-#' @param domains character vector. MacroSheds domains to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
-#' @param site_codes character vector. MacroSheds networks to load; optional. To see a catalog of 
-#'    networks, visit macrosheds.org or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
+#' @param networks character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. To see a catalog of 
+#'    networks, use [ms_load_sites()], visit macrosheds.org, or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
+#' @param domains character vector. MacroSheds domains to load; optional. Omit networks, domains, and site_codes to load all. To see a catalog of 
+#'    domains, use [ms_load_sites()], visit macrosheds.org, or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
+#' @param site_codes character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. To see a catalog of 
+#'    sites, use [ms_load_sites()], visit macrosheds.org, or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
 #' @return returns an \code{sf} object containing all data belonging to the 
 #'    selected spatial product in the \code{macrosheds_root} directory.
 #' @export
