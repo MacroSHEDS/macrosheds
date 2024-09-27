@@ -117,7 +117,7 @@ ms_conversions <- function(d,
         stop('convert_units_from and convert_units_to must have the same length')
     }
     
-    vars <- ms_drop_var_prefix(d$var)
+    vars <- ms_drop_var_prefix_(d$var)
     
     # if(any(! vars %in% ms_vars$variable_code)){
     #     not_a_ms_var <- unique(vars[!vars %in% ms_vars$variable_code])

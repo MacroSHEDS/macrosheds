@@ -298,7 +298,7 @@ ms_calc_watershed_precip <- function(precip,
         
         day_durations_byproduct <- datetimes_to_durations(
             datetime_vec = precip$datetime,
-            variable_prefix_vec = ms_extract_var_prefix(precip$var),
+            variable_prefix_vec = ms_extract_var_prefix_(precip$var),
             unit = 'days',
             installed_maxgap = 2,
             grab_maxgap = 30)
@@ -328,9 +328,9 @@ ms_calc_watershed_precip <- function(precip,
             pull(variable_code)
         
         pchem_vars <- unique(pchem$var)
-        pchem_vars_fluxable0 <- base::intersect(ms_drop_var_prefix(pchem_vars),
+        pchem_vars_fluxable0 <- base::intersect(ms_drop_var_prefix_(pchem_vars),
                                                 flux_vars)
-        pchem_vars_fluxable <- pchem_vars[ms_drop_var_prefix(pchem_vars) %in%
+        pchem_vars_fluxable <- pchem_vars[ms_drop_var_prefix_(pchem_vars) %in%
                                               pchem_vars_fluxable0]
         
         #this avoids a lot of slow summarizing

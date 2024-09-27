@@ -11,22 +11,54 @@
 #'
 #' @param chemistry A \code{data.frame} of precipitation chemistry or
 #'    stream chemistry data in MacroSheds format (see details) and in units of mg/L.
-#' @param q A \code{data.frame} or \code{tibble} of stream
-#'    discharge (L/s) or precipitation depth (mm) in MacroSheds format (see detaails).
-#' @param method character either 'simple' for for daily flux, or a vector including any
-#'    combination of the following for computing monthly or annual cumulative flux, AKA load: 'pw', 'rating', 'composite', 'beale', 'average'. See details.
-#' @param aggregation character. For method='simple', this argument should remain NULL. If using any
-#'    other method(s), specify either "monthly" or "annual".
-#' @param good_year_check logical. definition forthcoming
-#' @param verbose logical. control the level of informational printing.
-#' @return a \code{tibble} of stream or precipitation solute flux (if method="simple") or monthly or annual load. Output units are kg/ha/timestep.
+#' @param q A \code{data.frame} of stream
+#'    discharge (L/s) or precipitation depth (mm) in MacroSheds format (see details).
+#' @param method character. Either 'simple' for for daily flux, or a vector including any
+#'    combination of the following for cumulative flux, AKA load: 'pw', 'rating',
+#'    'composite', 'beale', 'average'. See details.
+#' @param aggregation character. Either "monthly" or "annual". If "annual", each year
+#' is defined as the "water year" beginning on Oct 1 and ending on Sept 30.
+#' For method = "simple", this argument is ignored.
+#' @param good_year_check logical.
+#' @param verbose logical. FALSE for less informational messaging.
+#' @return For method = "simple", A \code{tibble} of daily fluxes with the following structure:
+#'
+#' For any other method, or combination of methods, a `list` containing two tibbles:
+#' *load*: a `tibble` of monthly/annual loads with the following structure:
+#' | column | definition |
+#' | ------ | ---------- |
+#' | site_code | short name for MacroSheds site. See MacroSheds format below. |
+#' | var | Variable code. See MacroSheds format below. |
+#' | water_year | Full year beginning on October 1 and ending on Sept 30 |
+#' | load | Annual or monthly solute load for the watershed |
+#' | method | The method used to compute annual solute load. See [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf) and [Gubbins et al. in review](https://eartharxiv.org/repository/view/6513/) |
+#' | ms_recommended | The most appropriate load estimation method based on Fig 10 from [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf) and Fig 16 from [Gubbins et al. in review](https://eartharxiv.org/repository/view/6513/). 1 = recommended, 0 = not recommended. NA = insufficient data to generate meaningful load estimate by the corresponding method. |
+#'
+#' Output units are kg/ha/T, where T is month or water-year, as specified by `aggregation`, or day for method = "simple".
+#'
+#' *diagnostics*: a `tibble` of quantities that may be used to filter load estimates.
+# 'Some of these are used to select `ms_recommended` according to
+#' [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf) and
+#' [Gubbins et al. in review](https://eartharxiv.org/repository/view/6513/).
+#' | column | definition |
+#' | ------ | ---------- |
+#' | site_code | short name for MacroSheds site. See MacroSheds format below. |
+#' | var | Variable code. See MacroSheds format below. |
+#' | water_year | Full year beginning on October 1 and ending on Sept 30 |
+#' | cq_rsquared | The coefficient of determination from the concentration-discharge relationship |
+#' | cq_resid_acf | Autocorrelation coefficient at lag 1 on the residuals of the concentration-discharge relationship |
+#' | c_acf | Autocorrelation coefficient at lag 1 for the concentration series |
+#' | n_c_obs | Number of concentration observations |
+#' | n_q_obs | Number of discharge observations |
+#' | n_paired_obs | Number of paired concentration and discharge observations |
+#' | ws_area_ha | The watershed area in hectares |
+#'
 #' @details
 #'
-#' NEED TO MENTION WATER YEAR OUTPUT AND HOW IT'S DEFINED (and that it's in kg/ha/yr)
 #' DEPENDS ON IMPUTETS. IS THAT HANDLED?
 #'
-#' MacroSheds format (): This is the format returned by ms_load_product for core time-series data.
-#' | header value  | column_definition |
+#' MacroSheds format (only date, site_code, var, and val are required for this function):
+#' | column        | definition        |
 #' | ------------- | ----------------- |
 #' | date          | Date in YYYY-mm-dd |
 #' | site_code     | A unique identifier for each MacroSheds site, identical to primary source site code where possible. See [ms_load_sites()]. |
@@ -36,6 +68,8 @@
 #' | ms_status     | Boolean integer. 0 = clean value. 1 = questionable value. See "Technical Validation" section of [the MacroSheds data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325) for details. |
 #' | ms_interp     | Boolean integer. 0 = measured or imputed by primary source. 1 = interpolated by MacroSheds. See "Temporal Imputation and Aggregation" section of [the MacroSheds data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325) for details. |
 #' | val_err       | The combined standard uncertainty associated with the corresponding data point, if estimable. See "Detection Limits and Propagation of Uncertainty" section of [the MacroSheds data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325) for details. |
+#'
+#' This is the format returned by ms_load_product for core time-series data.
 #'
 #' `method` = 'simple' computes flux by multiplying solute concentration by discharge at each timestep.
 #' The output units depend on the time
@@ -48,19 +82,19 @@
 #' You can convert between kg/ha/T and kg/T using [ms_scale_flux_by_area()] and
 #' [ms_undo_scale_flux_by_area()].
 #'
-#' Annual/monthly cumulative flux, or load, can also be estimated with this function, using one of five `method`s detailed below. Consult Figure 10 in Aulenbach et al. 2016 for guidance on method selection. See Figure 1 for some intuition.
-#'  + 'pw': period-weighted method, described in Aulenbach et al. 2016. Here, C is linearly interpolated. This option uses package RiverLoad.
-#'  + 'rating': AKA regression-model method, described in Aulenbach et al. 2016. This option uses package RiverLoad.
-#'  + 'composite': composite method, described in Aulenbach et al. 2016. This option uses package RiverLoad.
-#'  + 'beale': Beale ratio estimator, described in Meals et al. 2013. This option uses package RiverLoad.
+#' Annual/monthly cumulative flux, or load, can also be estimated with this function, using one of five `method`s detailed below. Consult Figure 10 in [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf) for guidance on method selection. See Figure 1 for some intuition.
+#'  + 'pw': period-weighted method, described in [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf). Here, C is linearly interpolated. This option uses package RiverLoad.
+#'  + 'rating': AKA regression-model method, described in [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf). This option uses package RiverLoad.
+#'  + 'composite': composite method, described in [Aulenbach et al. 2016](https://www.esf.edu/srm/yanai/documents/Aulenbach_et_al-2016-Ecosphere.pdf). This option uses package RiverLoad.
+#'  + 'beale': Beale ratio estimator, described in [Meals et al. 2013](https://www.epa.gov/sites/default/files/2016-05/documents/tech_notes_8_dec_2013_load.pdf). This option uses package RiverLoad.
 #'  + 'average': mean Q over the aggregation period times mean C over the aggregation period
 #'
-#' All output units are kg/ha/T, where T is the aggregation period.
+#' Output units are kg/ha/T, where T is month or year, as specified by `aggregation`, or day for method = "simple".
 #'
 #' References:
 #'
-#'  + Aulenbach, B. T., Burns, D. A., Shanley, J. B., Yanai, R. D., Bae, K., Wild, A. D., ... & Yi, D. (2016). Approaches to stream solute load estimation for solutes with varying dynamics from five diverse small watersheds. Ecosphere, 7(6), e01298.
-#'  +Meals, D. W., Richards, R. P., & Dressing, S. A. (2013). Pollutant load estimation for water quality monitoring projects. Tech Notes, 8, 1-21.
+#'  + Aulenbach, B. T., Burns, D. A., Shanley, J. B., Yanai, R. D., Bae, K., Wild, A. D., Yang, Y., & Yi, D. (2016). Approaches to stream solute load estimation for solutes with varying dynamics from five diverse small watersheds. Ecosphere, 7(6), e01298.
+#'  + Meals, D. W., Richards, R. P., & Dressing, S. A. (2013). Pollutant load estimation for water quality monitoring projects. Tech Notes, 8, 1-21.
 #'
 #' Before running [ms_calc_flux()], ensure both \code{q} and
 #' \code{chemistry} have the same time interval. See [ms_synchronize_timestep()].
@@ -85,7 +119,7 @@
 #'                      q_type = 'discharge',
 #'                      method = c('beale', 'pw'))
 #' @export
-
+#'
 ms_calc_flux <- function(chemistry,
                          q,
                          method = 'simple',
@@ -258,7 +292,7 @@ ms_calc_flux <- function(chemistry,
                 arrange(date)
 
             fluxable <- var_info %>%
-                filter(variable_code == !!ms_drop_var_prefix(vars_[i])) %>%
+                filter(variable_code == !!ms_drop_var_prefix_(vars_[i])) %>%
                 pull(flux_convertible)
 
             if(any(fluxable == 0)){

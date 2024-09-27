@@ -141,7 +141,7 @@ ms_fill_missing_precip <- function(precip,
  
     day_durations_byproduct <- datetimes_to_durations(
         datetime_vec = precip$datetime,
-        variable_prefix_vec = ms_extract_var_prefix(precip$var),
+        variable_prefix_vec = ms_extract_var_prefix_(precip$var),
         unit = 'days',
         installed_maxgap = 2,
         grab_maxgap = 30)

@@ -148,7 +148,7 @@ ms_generate_attribution <- function(d, chem_source = 'both',
     }
     
     sitevars <- d %>% 
-        mutate(var = macrosheds::ms_drop_var_prefix(var)) %>%
+        mutate(var = macrosheds::ms_drop_var_prefix_(var)) %>%
         mutate(var = case_when(var == 'precipitation' ~ 'precipitation',
                                var == 'discharge' ~ 'discharge',
                                TRUE ~ 'chemistry')) %>% 

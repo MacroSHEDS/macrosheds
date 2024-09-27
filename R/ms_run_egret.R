@@ -57,7 +57,7 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
         stop('discharge must be in MacroSheds format (required columns: date, site_code, var, val)')
     }
     
-    if(! length(unique(macrosheds::ms_drop_var_prefix(stream_chemistry$var))) == 1){
+    if(! length(unique(macrosheds::ms_drop_var_prefix_(stream_chemistry$var))) == 1){
         stop('Only one chemistry variable can be run at a time.')
     }
     
@@ -211,7 +211,7 @@ ms_run_egret <- function(stream_chemistry, discharge, prep_data = TRUE,
                i, LogQ, Q7, Q30)
 
     # Set up INFO table 
-    var <- macrosheds::ms_drop_var_prefix(unique(stream_chemistry$var))
+    var <- macrosheds::ms_drop_var_prefix_(unique(stream_chemistry$var))
     var_unit <- ms_vars %>%
         filter(variable_code == !!var) %>%
         pull(unit)
