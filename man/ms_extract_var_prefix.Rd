@@ -31,7 +31,7 @@ macrosheds_vars <- c('GN_NO3_N', 'GN_Mg', 'IS_discharge')
 macrosheds_prefixs <- extract_var_prefix(x = macrosheds_vars)
 }
 \seealso{
-\code{\link[=ms_drop_var_prefix]{ms_drop_var_prefix()}}
+\code{\link[=ms_drop_var_prefix_]{ms_drop_var_prefix_()}}
 }
 \author{
 Spencer Rhea

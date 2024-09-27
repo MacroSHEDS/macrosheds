@@ -3144,7 +3144,7 @@ calculate_rating <- function(chem_df, q_df, datecol = 'date', period = NULL, are
 }
 
 calculate_wrtds <- function(chem_df, q_df, ws_size, lat, long, datecol = 'date',
-                            agg = 'default', minNumObs = 2, minNumUncen = 2, gap_period = 730) {
+                            agg = 'default', minNumObs = 2, minNumUncen = 2, gap_period = 730){
     tryCatch(
         expr = {
             # default sums all daily flux values in df
@@ -3272,7 +3272,7 @@ detect_record_break <- function(data){
     return(data_time)
 }
 
-get_break_dates <- function(data, gap_period = 730) {
+get_break_dates <- function(data, gap_period = 730){
     start = list()
     end = list()
 
@@ -3847,6 +3847,14 @@ calc_simple_flux <- function(chem, q){
 
     q_type <- q$var[1]
 
+    c_stts <- 'ms_status' %in% colnames(chem)
+    c_intp <- 'ms_interp' %in% colnames(chem)
+    q_stts <- 'ms_status' %in% colnames(q)
+    q_intp <- 'ms_interp' %in% colnames(q)
+
+    if(sum(c(c_stts, q_stts)) == 1) stop('ms_status column should be present in both OR neither of `q` and `chemistry`.')
+    if(sum(c(c_intp, q_intp)) == 1) stop('ms_interp column should be present in both OR neither of `q` and `chemistry`.')
+
     d <- left_join(
         chem,
         select(q, date, val, starts_with('ms_')),
@@ -3858,10 +3866,17 @@ calc_simple_flux <- function(chem, q){
 
         d <- d %>%
             mutate(# kg/d = mg/L *  L/s  * s / 1e6
-                val = val_x * val_y * 86400 / 1e6,
+                val = val_x * val_y * 86400 / 1e6)
                 #val = val_x * val_y * errors::as.errors(86400) / errors::as.errors(1e6),
-                ms_status = numeric_any_v(ms_status_x, ms_status_y),
-                ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
+
+        if(c_stts){
+            d <- mutate(d, ms_status = numeric_any_v(ms_status_x, ms_status_y))
+        }
+        if(c_intp){
+            d <- mutate(d, ms_interp = numeric_any_v(ms_interp_x, ms_interp_y))
+        }
+
+        d <- d %>%
             dplyr::select(-starts_with(c('site_code_', 'var_', 'val_',
                                          'ms_status_', 'ms_interp_'))) %>%
             filter(! is.na(val)) %>% #should be redundant
@@ -3872,10 +3887,17 @@ calc_simple_flux <- function(chem, q){
 
         d <- d %>%
             mutate(# kg/ha/d = mg/L *  mm/d * ha/100
-                val = val_x * val_y / 100,
+                val = val_x * val_y / 100)
                 #val = val_x * val_y / errors::as.errors(100),
-                ms_status = numeric_any_v(ms_status_x, ms_status_y),
-                ms_interp = numeric_any_v(ms_interp_x, ms_interp_y)) %>%
+
+        if(c_stts){
+            d <- mutate(d, ms_status = numeric_any_v(ms_status_x, ms_status_y))
+        }
+        if(c_intp){
+            d <- mutate(d, ms_interp = numeric_any_v(ms_interp_x, ms_interp_y))
+        }
+
+        d <- d %>%
             dplyr::select(-starts_with(c('site_code_', 'var_', 'val_',
                                          'ms_status_', 'ms_interp_'))) %>%
             filter(! is.na(val)) %>% #should be redundant
@@ -3886,13 +3908,16 @@ calc_simple_flux <- function(chem, q){
 }
 
 calc_load <- function(chem, q, site_code, area, method,
-                      aggregation, good_year_check, verbose){
+                      aggregation, verbose){
 
     fvar <- chem$var[1]
 
+    if(any(chem$val == 0)){
+        warning('Concentration values of 0 detected. These will be removed before computing load.')
+    }
+
     chem_filt <- chem %>%
-        filter(ms_interp == 0,
-               val > 0) %>%
+        filter(val > 0) %>%
                #errors::drop_errors(val) > 0) %>%
         dplyr::select(date, val) %>%
         sw(tidyr::drop_na(date, val))
@@ -3903,45 +3928,18 @@ calc_load <- function(chem, q, site_code, area, method,
                      date >= !!chunk_daterange[1],
                      date <= !!chunk_daterange[2])
 
-    # check for "good years", where Q and Chem data both meet min requirements
-    if(good_year_check){
+    #find water years during which Q and chem overlap
+    gd_q <- q_filt %>%
+        mutate(water_year = wtr_yr(date, start_month = 10)) %>%
+        pull(water_year)
 
-        q_check <- q_filt %>%
-            filter(ms_interp == 0) %>%
-            distinct(date, .keep_all = TRUE) %>%
-            mutate(water_year = wtr_yr(date, start_month = 10)) %>%
-            group_by(water_year) %>%
-            summarize(n = n(),
-                      .groups = 'drop') %>%
-            filter(n >= 311)
+    gd_chm <- chem_filt %>%
+        mutate(water_year = wtr_yr(date, start_month = 10)) %>%
+        pull(water_year)
 
-        conc_check <- chem_filt %>%
-            distinct(date, .keep_all = TRUE) %>%
-            mutate(water_year = wtr_yr(date, start_month = 10),
-                   quart = lubridate::quarter(date)) %>%
-            group_by(water_year) %>%
-            summarize(count = n_distinct(quart),
-                      n = n(),
-                      .groups = 'drop') %>%
-            filter(n >= 4,
-                   count > 3)
+    paired_years <- intersect(gd_q, gd_chm)
 
-        good_years <- intersect(q_check$water_year, conc_check$water_year)
-
-    } else {
-
-        gd_q <- q_filt %>%
-            mutate(water_year = wtr_yr(date, start_month = 10)) %>%
-            pull(water_year)
-
-        gd_chm <- chem_filt %>%
-            mutate(water_year = wtr_yr(date, start_month = 10)) %>%
-            pull(water_year)
-
-        good_years <- intersect(gd_q, gd_chm)
-    }
-
-    if(! length(good_years)){
+    if(! length(paired_years)){
         warning(glue::glue('Not enough overlap between {fvar} and discharge to calculate flux.'))
         return(tibble(site_code = character(),
                       var = character(),
@@ -3969,19 +3967,12 @@ calc_load <- function(chem, q, site_code, area, method,
                                by = c('site_code', 'date')) %>%
         mutate(wy = wtr_yr(date, start_month = 10),
                month = lubridate::month(date)) %>%
-        filter(wy %in% good_years)
+        filter(wy %in% paired_years)
 
     out_frame <- out_deets <- tibble()
-    for(target_year in good_years){
+    for(target_year in paired_years){
 
-        # target_year <- good_years[k]
         aggregation <- ifelse(aggregation == 'monthly', 'month', aggregation)
-
-        # flag_df <- carry_flags(raw_q_df = q_filt,
-        #                        raw_con_df = chem,
-        #                        target_year = target_year,
-        #                        target_solute = fvar,
-        #                        period = aggregation)
 
         q_chem_yr <- raw_data_full %>%
             mutate(conc = conc,
@@ -4000,7 +3991,7 @@ calc_load <- function(chem, q, site_code, area, method,
             tidyr::drop_na() %>%
             mutate(month = lubridate::month(date))
 
-        # set up dummy flux values to be replaced if user has chosen to run method
+        # set up default flux values to be replaced if user has chosen to run method
         if(aggregation == 'annual'){
 
             flux_annual_average <- NA
@@ -4303,7 +4294,10 @@ calc_load <- function(chem, q, site_code, area, method,
                                         n_c_obs = length(na.omit(chem_yr$conc)),
                                         n_q_obs = length(na.omit(q_yr$q_lps)),
                                         n_paired_cq_obs = nrow(paired_df),
+                                        unique_c_quarters = length(unique(lubridate::quarter(chem_yr$date))),
                                         ws_area_ha = area)
+
+            target_year_deets[is.nan(target_year_deets)] <- NA
         }
 
         out_frame <- bind_rows(out_frame, target_year_out)
