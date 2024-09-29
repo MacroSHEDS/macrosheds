@@ -35,7 +35,7 @@
             figshare_message <- paste0('Dataset connection is up to date ', enc2native('\U2713'))
         } else {
             figshare_message <- paste0(enc2native('\U274C'), ' Package version is behind current dataset version. Update with ',
-                'devtools::install_github("MacroSheds/macrosheds")')
+                'remotes::install_github("MacroSheds/macrosheds")')
         }
     } else {
         figshare_message <- 'Failed to verify version is up to date. No connection.'

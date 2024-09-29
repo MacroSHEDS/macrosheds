@@ -105,10 +105,10 @@ word "CUSTOM" in your macrosheds_root directory.
 ms_root = 'data/macrosheds'
 ms_download_core_data(macrosheds_root = ms_root, domains = c('niwot', 'hjandrews'))
 ms_download_ws_attr(macrosheds_root = ms_root, dataset = 'time series')
-macrosheds_data <- ms_load_product(macrosheds_root = ms_root, 
-                                   prodname = 'stream_chemistry', 
+macrosheds_data <- ms_load_product(macrosheds_root = ms_root,
+                                   prodname = 'stream_chemistry',
                                    filter_vars = 'NO3_N')
-macrosheds_data <- ms_load_product(macrosheds_root = ms_root, 
+macrosheds_data <- ms_load_product(macrosheds_root = ms_root,
                                    prodname = 'ws_attr_timeseries:all')
 }
 \seealso{
