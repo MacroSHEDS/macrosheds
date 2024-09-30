@@ -9,22 +9,27 @@ ms_download_core_data(
   networks,
   domains,
   version = "latest",
+  skip_existing = TRUE,
   quiet = FALSE
 )
 }
 \arguments{
 \item{macrosheds_root}{character. Directory where macrosheds data files will be downloaded.
-If this directory does not exist, it will be created.}
+If this directory does not exist, it will be created. The \code{macrosheds_root} directory should
+only be used for MacroSheds data files.}
 
 \item{networks}{character vector. macrosheds networks that will be downloaded.
-Either a single network, vector of networks, or 'all'. See \code{ms_load_sites()}
-for networks available for download.}
+Either a single network, vector of networks, or 'all'. Either \code{networks} or \code{domains} must be supplied.
+See \code{\link[=ms_load_sites]{ms_load_sites()}} for networks available for download.}
 
 \item{domains}{character vector. macrosheds domains that will be downloaded.
-Either a single domain, vector of domains, or 'all'. See \code{ms_load_sites()}
-for domains available for download.}
+Either a single domain, vector of domains, or 'all'. Either \code{domains} or \code{networks} must be supplied.
+See \code{\link[=ms_load_sites]{ms_load_sites()}} for domains available for download.}
 
 \item{version}{numeric or "latest". The MacroSheds dataset version to download.}
+
+\item{skip_existing}{logical. If FALSE, dataset components already downloaded to macrosheds_root will
+be overwritten. If TRUE, these will be skipped.}
 
 \item{quiet}{logical. If TRUE, some messages will be suppressed.}
 }
@@ -36,17 +41,13 @@ MacroSheds, see glossary.txt on \href{https://portal.edirepository.org/nis/mapbr
 }
 \description{
 Download the macrosheds core datasets of stream chemistry, stream
-discharge, stream chemical flux, precipitation, precipitation chemistry,
-precipitation chemical flux, ws_boundary, stream_gauge_locations, and
+discharge, stream solute flux, precipitation, precipitation chemistry,
+precipitation solute flux, annual solute loads, ws_boundary, stream_gauge_locations, and
 precip_gauge_locations. Not all products are available at all sites, but
 all products available for the selected domains will be downloaded.
 }
 \details{
-Either \code{networks} or \code{domains} must be supplied. If 'all' is
-supplied to either argument, all domains will be downloaded regardless of
-what is supplied to the other argument. The full (core) dataset is approximately 500 MiB when
-compressed and may take minutes to hours to download, depending on connection speed. When uncompressed,
-the dataset is approximately 4 GiB, so be mindful of disk space.
+The core time-series dataset is approximately 6 GiB uncompressed.
 }
 \examples{
 dir.create('data/macrosheds', recursive = TRUE)

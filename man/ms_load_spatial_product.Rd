@@ -7,27 +7,33 @@
 ms_load_spatial_product(
   macrosheds_root,
   spatial_product,
+  version,
   networks,
   domains,
-  site_codes
+  site_codes,
+  warn = TRUE
 )
 }
 \arguments{
 \item{macrosheds_root}{character. The path to the macrosheds dataset's parent
 directory, established with \code{\link[=ms_download_core_data]{ms_download_core_data()}}.}
 
-\item{spatial_product}{character. Either "ws_boundary" for watershed boundary,
-"stream_gauge_locations", or "precip_gauge_locations". Files associated with this
+\item{spatial_product}{character. One of "stream_gauge_locations", "precip_gauge_locations",
+or "ws_boundary" (watershed boundary) Files associated with the requested
 product will be combined across specified networks/domains.}
 
-\item{networks}{character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. To see a catalog of
+\item{version}{numeric or "latest". The MacroSheds dataset version from which to load data.}
+
+\item{networks}{character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. For a catalog of
 networks, use \code{\link[=ms_load_sites]{ms_load_sites()}}, visit macrosheds.org, or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}}
 
-\item{domains}{character vector. MacroSheds domains to load; optional. Omit networks, domains, and site_codes to load all. To see a catalog of
+\item{domains}{character vector. MacroSheds domains to load; optional. Omit networks, domains, and site_codes to load all. For a catalog of
 domains, use \code{\link[=ms_load_sites]{ms_load_sites()}}, visit macrosheds.org, or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}}
 
-\item{site_codes}{character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. To see a catalog of
+\item{site_codes}{character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. For a catalog of
 sites, use \code{\link[=ms_load_sites]{ms_load_sites()}}, visit macrosheds.org, or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}}
+
+\item{warn}{logical. If TRUE, you'll get notifications about more recent versions of the MacroSheds dataset, if available.}
 }
 \value{
 returns an \code{sf} object containing all data belonging to the
@@ -43,7 +49,7 @@ ms_root = 'data/macrosheds'
 dir.create(ms_root, recursive = TRUE)
 ms_download_core_data(macrosheds_root = ms_root,
                       domains = c('niwot', 'hjandrews', 'hbef'))
-macrosheds_data <- load_spatial_product(macrosheds_root = ms_root, 
+macrosheds_data <- load_spatial_product(macrosheds_root = ms_root,
                                         spatial_product = 'ws_boundary'
                                         domains = 'hbef')
 }

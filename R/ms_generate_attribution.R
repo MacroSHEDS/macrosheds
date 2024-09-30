@@ -50,7 +50,7 @@
 #'   the full output:
 #' * acknowledgements: a string of acknowledgement text
 #' * bibliography: a vector of BibTeX entries
-#' * intellectual_rights_explanations: a vector of definitions pertaining to 
+#' * intellectual_rights_explanations: a vector of definitions pertaining to
 #'   \code{intellectual_rights_notifications}
 #' * intellectual_rights_notifications: a list of tibbles containing special
 #'   notifications
@@ -58,7 +58,7 @@
 #'   for each primary source time-series dataset
 #' * full_details_ws_attr: a tibble containing full IR, URL, and contact information
 #'   for each primary source watershed attribute dataset
-#'       
+#'
 #'  If \code{write_to_dir} is provided, this list contains only \code{full_details_timeseries}
 #'  and \code{full_details_ws_attr}, and all other information is written to files
 #'  in \code{write_to_dir/macrosheds_attribution_information}.
@@ -69,7 +69,7 @@
 #'     macrosheds_root = 'my/macrosheds/root/',
 #'     prodname = 'precip_chemistry',
 #'     domains = 'hbef')
-#' 
+#'
 #' ms_generate_attribution(d, chem_source = 'precip',
 #'                         write_to_dir = '~/projects/hbef_precip/')
 
@@ -79,27 +79,27 @@ ms_generate_attribution <- function(d, chem_source = 'both',
                                     write_to_dir = NULL){
 
     library("dplyr", quietly = TRUE)
-    
+
     if(! missing(d) && (! inherits(d, 'data.frame') | ! all(c('site_code', 'date', 'var') %in% colnames(d)))){
         stop('d must be a data.frame in MacroSheds format (required columns: date, site_code, var)')
     }
-    
+
     if(! chem_source %in% c('stream', 'precip', 'both')){
         stop('chem_source must be one of "stream", "precip", or "both"')
     }
-    
+
     if(! abide_by %in% c('suggestions', 'requirements only')){
         stop('abide_by must be either "suggestions" or "requirements only"')
     }
-    
+
     if(! is.null(write_to_dir) && ! inherits(write_to_dir, 'character')){
         stop('write_to_dir must be NULL or a valid path.')
     }
-    
+
     if(! is.logical(include_ws_attr)){
         stop('include_ws_attr must be TRUE or FALSE.')
     }
-    
+
     if(! is.null(write_to_dir)){
         if(! dir.exists(write_to_dir)){
             stop(paste(write_to_dir, 'does not exist. Make sure write_to_dir is a valid directory, not a file.'))
@@ -107,35 +107,35 @@ ms_generate_attribution <- function(d, chem_source = 'both',
     }
 
     requireNamespace('macrosheds', quietly = TRUE)
-    
+
     attrib <- list()
-    
+
     if(missing(d)){
-        
+
         message('d (data.frame in MacroSheds format) not supplied. Returning all records')
-        
+
         attrib$acknowledgements <- macrosheds:::format_acknowledgements(
             macrosheds::attrib_ts_data,
             ws_attr = include_ws_attr)
-        
+
         attrib$bibliography <- macrosheds:::format_bibliography(
             macrosheds::attrib_ts_data,
             ws_attr = include_ws_attr)
-        
+
         ir <- macrosheds:::format_IR(
             macrosheds::attrib_ts_data,
             ws_attr = include_ws_attr,
             abide_by = abide_by)
-        
+
         attrib$intellectual_rights_notifications <- ir$intellectual_rights
         attrib$intellectual_rights_explanations <- ir$IR_explanations
-        
+
         attrib$full_details_timeseries <- macrosheds::attrib_ts_data
-        
+
         if(include_ws_attr){
             attrib$full_details_ws_attr <- macrosheds::attrib_ws_data
         }
-        
+
         if(is.null(write_to_dir)){
             return(attrib)
         } else {
@@ -143,19 +143,19 @@ ms_generate_attribution <- function(d, chem_source = 'both',
             message(paste0('Output files written to ', write_to_dir,
                            '/macrosheds_attribution_information/'))
         }
-        
+
         return(attrib[c('full_details_timeseries', 'full_details_ws_attr')])
     }
-    
-    sitevars <- d %>% 
-        mutate(var = macrosheds::ms_drop_var_prefix_(var)) %>%
+
+    sitevars <- d %>%
+        mutate(var = ms_drop_var_prefix_(var)) %>%
         mutate(var = case_when(var == 'precipitation' ~ 'precipitation',
                                var == 'discharge' ~ 'discharge',
-                               TRUE ~ 'chemistry')) %>% 
+                               TRUE ~ 'chemistry')) %>%
         distinct(site_code, var)
-    
+
     if('chemistry' %in% sitevars$var){
-        
+
         if(chem_source == 'precip'){
             sitevars$var[sitevars$var == 'chemistry'] <- 'precip_chemistry'
         } else if(chem_source == 'stream'){
@@ -167,47 +167,47 @@ ms_generate_attribution <- function(d, chem_source = 'both',
             sitevars <- bind_rows(sv0, sitevars)
         }
     }
-    
+
     sitevars <- left_join(sitevars,
                           dplyr::select(macrosheds::ms_site_data, domain, site_code),
-                          by = 'site_code') %>% 
-        filter(! is.na(domain)) %>% 
+                          by = 'site_code') %>%
+        filter(! is.na(domain)) %>%
         distinct(domain, var)
-    
+
     dmns <- unique(sitevars$domain)
     sitevars <- tibble(domain = rep(dmns, each = 3),
            var = rep(c('ws_boundary', 'stream_gauge_locations', 'precip_gauge_locations'),
-                     times = length(dmns))) %>% 
+                     times = length(dmns))) %>%
         bind_rows(sitevars)
 
     sitevars <- left_join(sitevars, macrosheds::attrib_ts_data,
-                          by = c('domain', var = 'macrosheds_prodname')) %>% 
+                          by = c('domain', var = 'macrosheds_prodname')) %>%
         rename(macrosheds_prodname = var) %>%
-        relocate(macrosheds_prodname, .after = macrosheds_prodcode) %>% 
+        relocate(macrosheds_prodname, .after = macrosheds_prodcode) %>%
         filter(! is.na(network))
 
     attrib$acknowledgements <- macrosheds:::format_acknowledgements(
         sitevars,
         ws_attr = include_ws_attr)
-    
+
     attrib$bibliography <- macrosheds:::format_bibliography(
         sitevars,
         ws_attr = include_ws_attr)
-    
+
     ir <- macrosheds:::format_IR(
         sitevars,
         ws_attr = include_ws_attr,
         abide_by = abide_by)
-    
+
     attrib$intellectual_rights_notifications <- ir$intellectual_rights
     attrib$intellectual_rights_explanations <- ir$IR_explanations
-    
+
     attrib$full_details_timeseries <- sitevars
-    
+
     if(include_ws_attr){
         attrib$full_details_ws_attr <- macrosheds::attrib_ws_data
     }
-    
+
     if(is.null(write_to_dir)){
         return(attrib)
     } else {
@@ -215,7 +215,7 @@ ms_generate_attribution <- function(d, chem_source = 'both',
         message(paste0('Output files written to ', write_to_dir,
                        '/macrosheds_attribution_information/'))
     }
-    
+
     return(attrib[c('full_details_timeseries', 'full_details_ws_attr')])
 }
-    
+

@@ -1,6 +1,7 @@
 library(macrosheds)
 library(testthat)
 library(lubridate)
+library(dplyr)
 
 w1 <- tibble(datetime = c(lubridate::ymd('2001-01-01', '2001-01-02', '2001-01-03')),
              site_code = 'w1',
@@ -12,6 +13,6 @@ w1 <- tibble(datetime = c(lubridate::ymd('2001-01-01', '2001-01-02', '2001-01-03
 
 test_that('undo_scale followed by scale results in ~identity', {
     expect_equal(ms_scale_flux_by_area(ms_undo_scale_flux_by_area(w1)),
-                     w1)
+                     dplyr::select(w1, -val_err))
 })
 

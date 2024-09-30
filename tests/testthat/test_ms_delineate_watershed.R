@@ -1,9 +1,10 @@
 library(macrosheds)
 library(testthat)
 
+whitebox::wbt_init(exe_path = '~/git/others_projects/whitebox-tools/target/release/whitebox_tools')
 
 test_that('output watershed area is correct when specs supplied and confirm = FALSE. files written.', {
-    
+
     out <- ms_delineate_watershed(
         lat = 44.21013,
         long = -122.2571,
@@ -20,7 +21,7 @@ test_that('output watershed area is correct when specs supplied and confirm = FA
         confirm = FALSE,
         verbose = FALSE
     )
-    
+
     expect_equal(round(out$watershed_area_ha), 6220)
     expect_true(file.exists(file.path(out$out_path, paste0(out$filename_base, '.shp'))))
     expect_true(file.exists(file.path(out$out_path, paste0(out$filename_base, '.shx'))))
@@ -29,10 +30,10 @@ test_that('output watershed area is correct when specs supplied and confirm = FA
 })
 
 test_that('output watershed area is correct when specs supplied and confirm = TRUE (also burning streams)', {
-    
+
     f <- tempfile()
     write('1', f)
-    
+
     out <- ms_delineate_watershed(
         lat = 44.21013,
         long = -122.2571,
@@ -49,15 +50,15 @@ test_that('output watershed area is correct when specs supplied and confirm = TR
         verbose = FALSE,
         responses_from_file = f
     )
-    
+
     expect_equal(round(out$watershed_area_ha), 6218) #interesting that burn streams changes area slightly
 })
 
 test_that('all options can be set interactively by user', {
-    
+
     f <- tempfile()
     writeLines(c('MDSBURI', '1', '200', '10000', '9', 'L', 'a'), f)
-    
+
     out <- ms_delineate_watershed(
         lat = 44.21013,
         long = -122.2571,
@@ -74,15 +75,15 @@ test_that('all options can be set interactively by user', {
         verbose = FALSE,
         responses_from_file = f
     )
-    
+
     expect_null(out)
 })
 
 test_that('flipping through multiple candidates works', {
-    
+
     f <- tempfile()
     writeLines(c('', '2'), f)
-    
+
     out <- ms_delineate_watershed(
         lat = 44.210,
         long = -122.251,
@@ -97,15 +98,15 @@ test_that('flipping through multiple candidates works', {
         verbose = FALSE,
         responses_from_file = f
     )
-    
+
     expect_equal(round(out$watershed_area_ha), 2)
 })
 
 test_that('illegal operations raise error', {
-    
+
     f <- tempfile()
     writeLines(c('MDSBURI', '1', '200', '10000', '9', 'L', 'a'), f)
-    
+
     expect_error(ms_delineate_watershed(
         lat = 44.21013,
         crs = 4326

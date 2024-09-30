@@ -114,8 +114,8 @@ ms_calc_vwc <- function(chemistry, q, q_type, agg = "yearly", verbose = TRUE) {
     #} else if(all(errors::errors(q$val) == 0)){
     #    errors::errors(q$val) <- 0
     #}
-	chemistry <- select(chemistry, -any_of('val_err'))
-	q <- select(q, -any_of('val_err'))
+	chemistry <- dplyr::select(chemistry, -any_of('val_err'))
+	q <- dplyr::select(q, -any_of('val_err'))
 
     # calc VWC
     sites <- unique(chemistry$site_code)

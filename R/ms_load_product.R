@@ -36,16 +36,18 @@
 #' + ws_attr_timeseries:vegetation
 #' + ws_attr_CAMELS_summaries
 #' + ws_attr_CAMELS_Daymet_forcings
+#' @param version numeric or "latest". The MacroSheds dataset version from which to load data.
 #' @param filter_vars character vector of variable codes. for products like stream_chemistry that include
-#'    multiple variables, this filters to just the ones specified (ignores
-#'    variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
+#'    multiple variables, this filters to just the ones specified
+#'    Ignored if requesting discharge, precipitation, or watershed attributes.
 #'    To see a catalog of variable codes, run [ms_load_variables()] or visit macrosheds.org.
 #' @param networks,domains,site_codes character vectors of MacroSheds networks/domains/sites to load. Omit to load all.
 #'    To see a catalog of site codes, run [ms_load_sites()] or visit [macrosheds.org].
 #' @param sort_result logical. Ignored if requesting watershed attributes.
 #'    If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
 #'    datetime. this may add considerable loading time for large datasets.
-#' @param warn logical. If TRUE, function will not load more than 100 MB without permission.
+#' @param warn logical. If TRUE, no more than 1 GiB will be loaded into memory without permission,
+#'    and you'll get notifications about more recent versions of the MacroSheds dataset, if available.
 #' @details
 #'    *"instantaneous" (i.e. daily) flux, scaled by watershed area and reported in kg/ha/d.
 #'    Note that flux products can also be computed from component products using
@@ -89,6 +91,7 @@
 
 ms_load_product <- function(macrosheds_root,
                             prodname,
+                            version = 'latest',
                             filter_vars,
                             networks,
                             domains,
@@ -115,6 +118,8 @@ ms_load_product <- function(macrosheds_root,
 
     if(missing(macrosheds_root)){
         stop('macrosheds_root must be supplied.')
+    } else {
+        macrosheds_root <- sw(normalizePath(macrosheds_root))
     }
     if(! dir.exists(macrosheds_root)){
         stop('macrosheds_root does not exist. This should be the directory you specified when you ran ms_download_core_data or ms_download_ws_attr.')
@@ -174,6 +179,29 @@ ms_load_product <- function(macrosheds_root,
         filter_vars <- NULL
     }
 
+    #handle derelict files from pre-v2
+    root_files <- list.files(macrosheds_root,
+                              full.names = TRUE)
+    root_files <- grep('/v[0-9]+$', root_files, value = TRUE, invert = TRUE)
+
+    if(length(root_files)){
+        v1path <- file.path(macrosheds_root, 'v1')
+        rsp <- get_response_1char(paste0('Since v2, MacroSheds data files are stored by version. Is it okay to move all contents of ',
+                                         macrosheds_root, ' into ', v1path, '? (y/n) >'),
+                                  possible_chars = c('y', 'n'))
+        if(rsp == 'n'){
+            cat('Please set macrosheds_root to a location where only MacroSheds data files will be stored.\n')
+            return(invisible())
+        }
+
+        dir.create(v1path, showWarnings = FALSE)
+        file.rename(root_files, file.path(v1path, basename(root_files)))
+    }
+
+    root_vsn <- validate_version(macrosheds_root = macrosheds_root,
+                                 version = version,
+                                 warn = warn)
+
     if(grepl('^ws_attr_', prodname)){
 
         if(prodname == 'ws_attr_summaries') msfile <- 'watershed_summaries.feather'
@@ -192,7 +220,7 @@ ms_load_product <- function(macrosheds_root,
 
             msfile <- paste0('spatial_timeseries_', attr_set, '.feather')
         }
-        msfile <- file.path(macrosheds_root, msfile)
+        msfile <- file.path(root_vsn, msfile)
 
         filecheck <- file.exists(msfile)
         if(! all(filecheck)){
@@ -210,7 +238,7 @@ ms_load_product <- function(macrosheds_root,
 
         # Create size warning
         file_sizes <- sum(file.info(msfile)$size)
-        file_sizes <- round(sum(file_sizes, na.rm = TRUE)/1000000, 1)
+        file_sizes <- round(sum(file_sizes, na.rm = TRUE) / 1000000, 1)
 
         if(warn && file_sizes > 1000){
 
@@ -242,7 +270,7 @@ ms_load_product <- function(macrosheds_root,
         return(o)
     }
 
-    prodname_dirs <- list_all_product_dirs(macrosheds_root = macrosheds_root,
+    prodname_dirs <- list_all_product_dirs(macrosheds_root = root_vsn,
                                            prodname = prodname)
 
     # List network files
@@ -255,10 +283,6 @@ ms_load_product <- function(macrosheds_root,
             filter(network %in% !!networks) %>%
             pull(domain)
 
-        # prodpaths_net <- grep(paste0(paste0(macrosheds_root, '/', network_domains, '/', prodname),
-        #                              collapse = '|'),
-        #                       prodpaths, value = TRUE)
-
         prodpaths_net <- grep(paste(network_domains, collapse = '|'), prodname_dirs, value = TRUE)
         prodpaths_net <- list.files(prodpaths_net, full.names = TRUE)
     } else {
@@ -267,9 +291,6 @@ ms_load_product <- function(macrosheds_root,
 
     # List domains files
     if(! missing(domains)){
-        # prodpaths_dom <- grep(paste0(paste0(macrosheds_root, '/', domains, '/', prodname),
-        #                              collapse = '|'),
-        #                       prodpaths, value = TRUE)
         prodpaths_dom <- grep(paste(domains, collapse = '|'), prodname_dirs, value = TRUE)
         prodpaths_dom <- list.files(prodpaths_dom, full.names = TRUE)
     } else {
@@ -281,7 +302,6 @@ ms_load_product <- function(macrosheds_root,
     if(! missing(site_codes)){
         sites <- stringr::str_match(string = all_files,
                                     pattern = '([^/]+)(?=\\.feather$)')[,1]
-        # prodpaths_sites <- all_files[grep(paste0(site_codes, collapse = '|'), sites)]
         prodpaths_sites <- all_files[sites %in% site_codes]
     } else {
         prodpaths_sites <- NULL
@@ -335,8 +355,23 @@ ms_load_product <- function(macrosheds_root,
     }
 
     if(nrow(d) == 0){
-        stop(paste('No results. Check macrosheds_root and verify that desired networks/domains/sites have been',
+        stop(paste('No results. Check macrosheds_root and verify that desired products have been',
                    'downloaded (see ms_download_core_data.) Some products do not exist for some domains.'))
+    }
+
+    if(! grepl('^ws_attr', prodname) && as.character(version) == '1'){
+
+        #conform to v2+ specifications
+        d <- d %>%
+            rename(date = datetime) %>%
+            mutate(date = as.Date(date)) %>%
+            tidyr::separate_wider_regex(
+                cols = var,
+                patterns = c(grab_sample = '.',
+                             '..',
+                             var = '.*')
+            ) %>%
+            mutate(grab_sample = grab_sample == 'G')
     }
 
     if(! is.null(filter_vars)){
@@ -355,7 +390,7 @@ ms_load_product <- function(macrosheds_root,
     }
 
     if(sort_result){
-        d <- arrange(d, site_code, var, datetime)
+        d <- arrange(d, site_code, var, date)
     }
 
     return(d)
