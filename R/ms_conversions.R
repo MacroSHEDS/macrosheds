@@ -320,7 +320,7 @@ ms_conversions <- function(d,
         }
     }
 
-	d <- select(d, -any_of('val_err'))
+	d <- dplyr::select(d, -any_of('val_err'))
 
     return(d)
 }

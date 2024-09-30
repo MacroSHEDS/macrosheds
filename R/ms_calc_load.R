@@ -173,7 +173,7 @@ ms_calc_load <- function(chemistry,
     }
 
     var_info <- macrosheds::ms_load_variables() %>%
-        select(variable_code, flux_convertible) %>%
+        dplyr::select(variable_code, flux_convertible) %>%
         distinct()
     site_info <- macrosheds::ms_load_sites()
 
@@ -204,8 +204,8 @@ ms_calc_load <- function(chemistry,
     #} else if(! inherits(q$val, 'errors')){
     #    errors::errors(q$val) <- 0
     #}
-    chemistry <- select(chemistry, -any_of('val_err'))
-    q <- select(q, -any_of('val_err'))
+    chemistry <- dplyr::select(chemistry, -any_of('val_err'))
+    q <- dplyr::select(q, -any_of('val_err'))
 
     load_out <- diag_out <- tibble()
     for(s in seq_along(sites)){

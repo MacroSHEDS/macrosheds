@@ -62,7 +62,7 @@ ms_download_core_data <- function(macrosheds_root,
     version <- as.character(version)
 
     avail_vsns <- figshare_codes %>%
-        select(starts_with('fig_code_')) %>%
+        dplyr::select(starts_with('fig_code_')) %>%
         rename_with(~sub('fig_code_v', '', .)) %>%
         colnames()
 
@@ -80,7 +80,7 @@ ms_download_core_data <- function(macrosheds_root,
     }
 
     figshare_codes <- figshare_codes %>%
-        select(network, domain, fig_code = !!paste0('fig_code_v', version))
+        dplyr::select(network, domain, fig_code = !!paste0('fig_code_v', version))
 
     if(net_missing) networks <- NULL
     if(dom_missing) domains <- NULL
@@ -161,6 +161,7 @@ ms_download_core_data <- function(macrosheds_root,
     }
 
     root_vsn <- file.path(macrosheds_root, paste0('v', version))
+    dir.create(root_vsn, showWarnings = FALSE)
 
     if(skip_existing){
         existing_dirs <- list.files(root_vsn)

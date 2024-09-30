@@ -87,7 +87,7 @@ ms_calc_flux <- function(chemistry, q){
 
     site_info <- macrosheds::ms_load_sites()
     var_info <- macrosheds::ms_load_variables() %>%
-        select(variable_code, flux_convertible) %>%
+        dplyr::select(variable_code, flux_convertible) %>%
         distinct()
 
     # verify that both files have the same sites
@@ -144,8 +144,8 @@ ms_calc_flux <- function(chemistry, q){
     # } else if(all(errors::errors(q$val) == 0)){
     #     errors::errors(q$val) <- 0
     # }
-    chemistry <- select(chemistry, -any_of('val_err'))
-    q <- select(q, -any_of('val_err'))
+    chemistry <- dplyr::select(chemistry, -any_of('val_err'))
+    q <- dplyr::select(q, -any_of('val_err'))
 
     chemistry <- chemistry %>%
         left_join(var_info,
@@ -162,7 +162,7 @@ ms_calc_flux <- function(chemistry, q){
         chemistry <- filter(chemistry, ! is.na(flux_convertible & flux_convertible == 1))
     }
 
-    chemistry <- select(chemistry, -flux_convertible)
+    chemistry <- dplyr::select(chemistry, -flux_convertible)
 
     # calc flux
     all_sites_flux <- tibble()

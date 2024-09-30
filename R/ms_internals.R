@@ -1534,7 +1534,7 @@ ms_linear_interpolate <- function(d, interval, max_samples_to_impute){
                    'with more than one variable'))
     }
 
-    var <- macrosheds::ms_drop_var_prefix_(d$var[1])
+    var <- ms_drop_var_prefix_(d$var[1])
 
     d <- arrange(d, datetime)
     ms_interp_column <- is.na(d$val)
@@ -1590,7 +1590,7 @@ ms_zero_interpolate <- function(d, interval, max_samples_to_impute){
                    'with more than one variable'))
     }
 
-    var <- macrosheds::ms_drop_var_prefix_(d$var[1])
+    var <- ms_drop_var_prefix_(d$var[1])
 
     d <- arrange(d, datetime)
     ms_interp_column <- is.na(d$val)
@@ -1645,7 +1645,7 @@ ms_nocb_interpolate <- function(d, interval, max_samples_to_impute){
                    'with more than one variable'))
     }
 
-    var <- macrosheds::ms_drop_var_prefix_(d$var[1])
+    var <- ms_drop_var_prefix_(d$var[1])
 
     d <- arrange(d, datetime)
     ms_interp_column <- is.na(d$val)
@@ -1707,7 +1707,7 @@ ms_nocb_mean_interpolate <- function(d, interval, max_samples_to_impute){
                    'with more than one variable'))
     }
 
-    var <- macrosheds::ms_drop_var_prefix_(d$var[1])
+    var <- ms_drop_var_prefix_(d$var[1])
 
     d <- arrange(d, datetime)
     ms_interp_column <- is.na(d$val)
@@ -2395,7 +2395,7 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
             lubridate::year()
 
         nwis_bib <- glue::glue(
-            '\n@misc{nwis_<<nwisyr>>,\n\t',
+            '@misc{nwis_<<nwisyr>>,\n\t',
             'title = {{National} {Water} {Information} {System} data available on the {World} {Wide} {Web} ({USGS} {Water} {Data} for the {Nation})},\n\t',
             'publisher = {National Water Information System},\n\t',
             'author = {{U.S. Geological Survey}},\n\t',
@@ -2801,7 +2801,7 @@ validate_version <- function(macrosheds_root, version, warn = TRUE){
     version <- as.character(version)
     figshare_codes <- macrosheds::file_ids_for_r_package #loaded in R/sysdata.rda, which is written in postprocessing
     avail_vsns <- figshare_codes %>%
-        select(starts_with('fig_code_')) %>%
+        dplyr::select(starts_with('fig_code_')) %>%
         rename_with(~sub('fig_code_v', '', .)) %>%
         colnames()
 
@@ -3470,7 +3470,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
             stop('The argument to `discharge` must be in MacroSheds format (required columns: date, site_code, val, var).')
         }
 
-        if(! length(unique(macrosheds::ms_drop_var_prefix_(stream_chemistry$var))) == 1){
+        if(! length(unique(ms_drop_var_prefix_(stream_chemistry$var))) == 1){
             stop('Only one chemistry variable can be run at a time.')
         }
 
@@ -3684,7 +3684,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
                           i, LogQ, Q7, Q30)
 
         # Set up INFO table
-        var <- macrosheds::ms_drop_var_prefix_(unique(stream_chemistry$var))
+        var <- ms_drop_var_prefix_(unique(stream_chemistry$var))
         var_unit <- ms_vars %>%
             filter(variable_code == !!var) %>%
             pull(unit)
@@ -3898,7 +3898,7 @@ calc_simple_flux <- function(chem, q){
 
     d <- left_join(
         chem,
-        select(q, date, val, starts_with('ms_')),
+        dplyr::select(q, date, val, starts_with('ms_')),
         by = 'date',
         suffix = c('_x', '_y')
     )
@@ -4061,7 +4061,7 @@ calc_load <- function(chem, q, site_code, area, method,
                               .groups = 'drop') %>%
                     # multiply by seconds in a year, and divide by mg to kg conversion (1M)
                     mutate(flux = conc * q_lps * 31557600 * (1 / area) * 1e-6) %>%
-                    select(month, flux) %>%
+                    dplyr::select(month, flux) %>%
                     if_else(is.na(.), NA, .) #convert NaN
 
             } else {
@@ -4163,7 +4163,7 @@ calc_load <- function(chem, q, site_code, area, method,
             months <- sapply(strsplit(flux_annual_pw$date, '-'), `[`, 2)
             flux_monthly_pw <- flux_annual_pw %>%
                 mutate(month = months) %>%
-                select(month, flux)
+                dplyr::select(month, flux)
 
             if(length(months) != 12){
                 warning('NOTE: number of months in pw not 12, need handling for setting NA to uncalc months')
@@ -4175,9 +4175,9 @@ calc_load <- function(chem, q, site_code, area, method,
                 flux_monthly_beale <- flux_annual_beale %>%
                     mutate(month = as.character(months_beale))
                 flux_monthly_beale <- flux_monthly_beale[match(months, flux_monthly_beale$month),]
-                flux_monthly_beale <- left_join(flux_monthly_pw %>% select(month),
+                flux_monthly_beale <- left_join(flux_monthly_pw %>% dplyr::select(month),
                                                 flux_monthly_beale, by = 'month') %>%
-                    select(month, flux)
+                    dplyr::select(month, flux)
             }
 
             # rating
@@ -4186,9 +4186,9 @@ calc_load <- function(chem, q, site_code, area, method,
                 flux_monthly_rating <- flux_annual_rating %>%
                     mutate(month = as.character(months_rating))
                 flux_monthly_rating <- flux_monthly_rating[match(months, flux_monthly_rating$month),]
-                flux_monthly_rating <- left_join(flux_monthly_pw %>% select(month),
+                flux_monthly_rating <- left_join(flux_monthly_pw %>% dplyr::select(month),
                                                  flux_monthly_rating, by = 'month') %>%
-                    select(month, flux)
+                    dplyr::select(month, flux)
             }
 
             # comp
@@ -4197,9 +4197,9 @@ calc_load <- function(chem, q, site_code, area, method,
                 flux_monthly_comp <- flux_monthly_comp %>%
                     mutate(month = sprintf('%02d', month))
                 # make sure all months present, filled w NAs if no value
-                flux_monthly_comp <- left_join(flux_monthly_pw %>% select(month),
+                flux_monthly_comp <- left_join(flux_monthly_pw %>% dplyr::select(month),
                                                flux_monthly_comp, by = 'month') %>%
-                    select(month, flux)
+                    dplyr::select(month, flux)
             }
 
             if(!'pw' %in% method){
@@ -4214,8 +4214,8 @@ calc_load <- function(chem, q, site_code, area, method,
                                    by = c('date', 'site_code', 'wy', 'month'))
         } else {
             paired_df <- q_yr %>%
-                select(-month) %>%
-                full_join(select(chem_yr, -month),
+                dplyr::select(-month) %>%
+                full_join(dplyr::select(chem_yr, -month),
                           by = c('date', 'site_code', 'wy'))
         }
 

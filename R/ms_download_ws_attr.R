@@ -61,7 +61,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
     version <- as.character(version)
 
     avail_vsns <- figshare_codes %>%
-        select(starts_with('fig_code_')) %>%
+        dplyr::select(starts_with('fig_code_')) %>%
         rename_with(~sub('fig_code_v', '', .)) %>%
         colnames()
 
@@ -75,7 +75,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
     if(version == 'latest') version <- max(avail_vsns)
 
     figshare_codes <- figshare_codes %>%
-        select(ut, fig_code = !!paste0('fig_code_v', version))
+        dplyr::select(ut, fig_code = !!paste0('fig_code_v', version))
 
     # download directory handling
     if(missing(macrosheds_root)){
@@ -110,6 +110,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
     }
 
     root_vsn <- file.path(macrosheds_root, paste0('v', version))
+    dir.create(root_vsn, showWarnings = FALSE)
 
     # locate fighsare id for chosen dataset
     if(dataset == 'summaries'){

@@ -4,6 +4,7 @@ library(feather)
 
 temp_root <- tempdir()
 temp_root <- file.path(temp_root, 'ms_test')
+
 skip_for_now <- FALSE
 options(timeout = 6000)
 
@@ -34,7 +35,7 @@ test_that("all watershed time series files download successfully", {
         pull(ut) %>%
         paste(collapse = "|")
 
-    expect_match(list.files(file.path(temp_root, vroot, ts_vars), all = FALSE)
+    expect_match(list.files(file.path(temp_root, vroot)), ts_vars, all = FALSE)
     expect_no_match(list.files(file.path(temp_root, vroot)), 'climate')
     expect_equal(length(list.files(file.path(temp_root, vroot), pattern = 'spatial_timeseries')), 5)
 })
