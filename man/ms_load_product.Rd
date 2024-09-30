@@ -7,6 +7,7 @@
 ms_load_product(
   macrosheds_root,
   prodname,
+  version,
   filter_vars,
   networks,
   domains,
@@ -48,9 +49,11 @@ Available prodnames are (for core time-series products):
 \item ws_attr_CAMELS_Daymet_forcings
 }}
 
+\item{version}{numeric or "latest". The MacroSheds dataset version from which to load data.}
+
 \item{filter_vars}{character vector of variable codes. for products like stream_chemistry that include
-multiple variables, this filters to just the ones specified (ignores
-variable prefixes). Ignored if requesting discharge, precipitation, or watershed attributes.
+multiple variables, this filters to just the ones specified
+Ignored if requesting discharge, precipitation, or watershed attributes.
 To see a catalog of variable codes, run \code{\link[=ms_load_variables]{ms_load_variables()}} or visit macrosheds.org.}
 
 \item{networks, domains, site_codes}{character vectors of MacroSheds networks/domains/sites to load. Omit to load all.
@@ -60,7 +63,8 @@ To see a catalog of site codes, run \code{\link[=ms_load_sites]{ms_load_sites()}
 If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
 datetime. this may add considerable loading time for large datasets.}
 
-\item{warn}{logical. If TRUE, function will not load more than 100 MB without permission.}
+\item{warn}{logical. If TRUE, no more than 1 GiB will be loaded into memory without permission,
+and you'll get notifications about more recent versions of the MacroSheds dataset, if available.}
 }
 \value{
 For all core timeseries products except load, returns a \code{tibble} in MacroSheds format.

@@ -3,6 +3,7 @@ library(lubridate)
 library(testthat)
 
 temp_root <- tempdir()
+temp_root <- file.path(temp_root, 'ms_test')
 skip_for_now <- FALSE
 options(timeout = 6000)
 
@@ -13,7 +14,8 @@ test_that('a domain is downloaded successfully', {
                                                     domains = c('hbef')),
                   'hbef successfully downloaded and unzipped')
 
-    expect_gte(length(list.files(paste0(temp_root, '/hbef'))), 1)
+    vroot <- paste0('v', substr(list.files(temp_root), 2, 999))
+    expect_gte(length(list.files(file.path(temp_root, vroot, 'hbef'))), 10)
 })
 
 test_that('a network is downloaded successfully', {
@@ -23,11 +25,11 @@ test_that('a network is downloaded successfully', {
                                                     networks = c('czo')),
                   'shale_hills successfully downloaded and unzipped')
 
-    expect_gte(length(list.files(paste0(temp_root, '/boulder'))), 1)
-    expect_gte(length(list.files(paste0(temp_root, '/shale_hills'))), 1)
-    expect_gte(length(list.files(paste0(temp_root, '/calhoun'))), 1)
-    expect_gte(length(list.files(paste0(temp_root, '/catalina_jemez'))), 1)
-
+    vroot <- paste0('v', substr(list.files(temp_root), 2, 999))
+    expect_gte(length(list.files(file.path(temp_root, vroot, 'boulder'))), 1)
+    expect_gte(length(list.files(file.path(temp_root, vroot, 'shale_hills'))), 1)
+    expect_gte(length(list.files(file.path(temp_root, vroot, 'calhoun'))), 1)
+    expect_gte(length(list.files(file.path(temp_root, vroot, 'catalina_jemez'))), 1)
 })
 
 test_that('if warn removes outputs', {
@@ -37,6 +39,6 @@ test_that('if warn removes outputs', {
                                                        domains = c('walker_branch'),
                                                        quiet = TRUE))
 
-    expect_gte(length(list.files(paste0(temp_root, '/walker_branch'))), 1)
-
+    vroot <- paste0('v', substr(list.files(temp_root), 2, 999))
+    expect_gte(length(list.files(file.path(temp_root, vroot, 'walker_branch'))), 1)
 })

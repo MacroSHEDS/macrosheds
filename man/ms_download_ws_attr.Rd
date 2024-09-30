@@ -10,21 +10,23 @@ ms_download_ws_attr(
   quiet = FALSE,
   version = "latest",
   omit_climate_data = FALSE,
-  timeout = 10000
+  skip_existing = TRUE,
+  timeout = 300
 )
 }
 \arguments{
 \item{macrosheds_root}{character. Directory where watershed attribute files will be downloaded.
 If this directory does not exist, it will be created. Does not have to be the same
-as \code{macrosheds_root} provided to \code{\link[=ms_download_core_data]{ms_download_core_data()}}, but might as well be.}
+as \code{macrosheds_root} provided to \code{\link[=ms_download_core_data]{ms_download_core_data()}}, but might as well be. This directory should
+only be used for MacroSheds data files.}
 
 \item{dataset}{character. This function can download each of the four collections of watershed attribute data
 provided by MacroSheds.
 \itemize{
-\item "summaries" will download watershed attributes summarized across time and space (i.e. one value for each site-attribute).
-\item "time series" will download temporally explicit watershed attributes where available. See \code{omit_climate_data} parameter.
+\item "summaries": watershed attributes summarized across time and space (i.e. one value for each site).
+\item "time series": temporally explicit watershed attributes where available. See \code{omit_climate_data} parameter.
 \item "CAMELS summaries" and...
-\item "CAMELS Daymet forcings" will download additional watershed
+\item "CAMELS Daymet forcings": additional watershed
 summary data that conform as closely as possible to the specifications of the
 \href{https://ral.ucar.edu/solutions/products/camels}{CAMELS dataset}. See MacroSheds metadata
 for a list of discrepancies.
@@ -38,10 +40,13 @@ Once downloaded, data can be loaded into R with \code{\link[=ms_load_product]{ms
 \item{version}{numeric or "latest". The MacroSheds dataset version to download.}
 
 \item{omit_climate_data}{logical. Ignored unless \code{dataset == 'time series'}. If you don't care about climate data,
-you may use this argument to avoid downloading it (because it's huge), while still downloading
-terrain, vegetation, parent material, land use, and hydrology data (which are tiny).}
+you may use this argument to avoid downloading it (because it's large, approx 2 GiB), while still downloading
+terrain, vegetation, parent material, land use, and hydrology data.}
 
-\item{timeout}{integer. Temporarily overrides getOption(timeout).}
+\item{skip_existing}{logical. If FALSE, dataset components already downloaded to macrosheds_root will
+be overwritten. If TRUE, these will be skipped.}
+
+\item{timeout}{integer. Temporarily overrides \code{getOption(timeout)}.}
 }
 \value{
 Returns NULL. Downloads watershed attribute data to the
@@ -51,6 +56,7 @@ directory specified by \code{macrosheds_root}. For full documentation, visit
 \description{
 Download MacroSheds watershed attribute data for all sites. Choose between
 temporally explicit spatial summaries, or summaries across both time and space.
+For some variables that are not time-varying, these are the same.
 }
 \examples{
 ms_download_ws_attr(macrosheds_root = 'my/macrosheds/root', dataset = 'time series')

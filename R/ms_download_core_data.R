@@ -133,7 +133,7 @@ ms_download_core_data <- function(macrosheds_root,
              paste(sort(unavail_ntw_dmn), collapse = ', '))
     }
 
-    macrosheds_root <- normalizePath(macrosheds_root)
+    macrosheds_root <- sw(normalizePath(macrosheds_root))
 
     if(! dir.exists(macrosheds_root)){
         print(paste0('Creating macrosheds_root at ',

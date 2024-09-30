@@ -172,7 +172,9 @@ ms_calc_load <- function(chemistry,
         stop('`aggregation` must be either "annual" or "monthly"')
     }
 
-    var_info <- macrosheds::ms_load_variables()
+    var_info <- macrosheds::ms_load_variables() %>%
+        select(variable_code, flux_convertible) %>%
+        distinct()
     site_info <- macrosheds::ms_load_sites()
 
     # verify that both files have the same sites

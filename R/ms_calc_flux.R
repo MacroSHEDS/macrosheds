@@ -85,8 +85,10 @@ ms_calc_flux <- function(chemistry, q){
 
     requireNamespace('macrosheds', quietly = TRUE)
 
-    var_info <- macrosheds::ms_load_variables()
     site_info <- macrosheds::ms_load_sites()
+    var_info <- macrosheds::ms_load_variables() %>%
+        select(variable_code, flux_convertible) %>%
+        distinct()
 
     # verify that both files have the same sites
     sites_chem <- unique(chemistry$site_code)
@@ -146,7 +148,7 @@ ms_calc_flux <- function(chemistry, q){
     q <- select(q, -any_of('val_err'))
 
     chemistry <- chemistry %>%
-        left_join(select(var_info, variable_code, flux_convertible),
+        left_join(var_info,
                   by = c(var ='variable_code'))
 
     nonconvertible <- chemistry %>%

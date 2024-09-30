@@ -2778,6 +2778,51 @@ ms_extract_var_prefix_ <- function(x){
     return(prefix)
 }
 
+validate_version <- function(macrosheds_root, version, warn = TRUE){
+
+    root_files <- list.files(macrosheds_root,
+                             full.names = TRUE)
+    held_versions <- grep('/v[0-9]+$', root_files, value = TRUE) %>%
+        stringr::str_extract('/v([0-9]+)$', group = 1)
+
+    if(version == 'latest'){
+        if(! length(held_versions)){
+            stop('No data detected in macrosheds_root. This should be the directory you specified when you ran ms_download_core_data or ms_download_ws_attr.')
+        }
+        version <- max(as.numeric(held_versions))
+    }
+
+    v_num <- sw(as.numeric(version))
+    if(is.na(v_num) || v_num <= 0 || v_num %% 1 != 0){
+        stop('`version` must be a positive integer, or "latest".')
+    }
+    root_vsn <- file.path(macrosheds_root, paste0('v', version))
+
+    version <- as.character(version)
+    figshare_codes <- macrosheds::file_ids_for_r_package #loaded in R/sysdata.rda, which is written in postprocessing
+    avail_vsns <- figshare_codes %>%
+        select(starts_with('fig_code_')) %>%
+        rename_with(~sub('fig_code_v', '', .)) %>%
+        colnames()
+
+    latest_avail <- max(as.numeric(avail_vsns))
+    if(warn && as.numeric(version) < latest_avail){
+        warning('Data from MacroSheds v', version, ' were requested, but v', latest_avail, ' is available. See ms_download_core_data() and ms_download_ws_attr().')
+    }
+
+    if(as.numeric(version) > latest_avail){
+        stop('Version ', version, ' data were requested, but ', latest_avail,
+             ' is the highest version of the MacroSheds dataset known to this version of the macrosheds package.')
+    }
+
+    if(as.numeric(version) > max(as.numeric(held_versions))){
+        stop('Version ', version, ' data were requested, but v', version,
+             ' is not present in macrosheds_root. see ms_download_core_data()/ms_download_ws_attr() or check macrosheds_root.')
+    }
+
+    return(root_vsn)
+}
+
 
 # flux helpers ####
 

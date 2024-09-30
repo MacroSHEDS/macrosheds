@@ -27,7 +27,7 @@ ms_extract_var_prefix <- function(x){
 
     library("dplyr", quietly = TRUE)
 
-    warning('Since version 2 of the MacroSheds dataset, variable prefixes have been replaced by a "grab_sample" column. ms_extract_var_prefix_ is deprecated and will be removed in a later version of this package. Please use ms_download_core_data to upgrade to dataset v2.')
+    warning('Since version 2 of the MacroSheds dataset, variable prefixes have been replaced by a "grab_sample" column. ms_extract_var_prefix is deprecated and will be removed in a later version of this package. Please use ms_download_core_data to upgrade to dataset v2.')
 
     if(any(is.na(stringr::str_match(x, '^[IGa-z][SNa-z]_.+')))){
         stop('x is not prefixed.')

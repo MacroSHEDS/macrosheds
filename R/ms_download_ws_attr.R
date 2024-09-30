@@ -82,7 +82,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
         stop('macrosheds_root must be supplied')
     }
 
-    macrosheds_root <- normalizePath(macrosheds_root)
+    macrosheds_root <- sw(normalizePath(macrosheds_root))
 
     if(! dir.exists(macrosheds_root)){
         print(paste0('Creating macrosheds_root at ',
@@ -199,8 +199,8 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
         ws_attr_fp <- file.path(root_vsn, paste0(filename, '.feather'))
 
         if(! quiet){
-            print(glue::glue('Downloading dataset type: {ds} ({ii}/{iN}; download id {rc})',
-                             ds = dataset,
+            print(glue::glue('Downloading {ii}/{iN}; download id: {rc}',
+                             # ds = dataset,
                              ii = i,
                              iN = n_downloads,
                              rc = rel_code))
@@ -212,7 +212,10 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
                   cacheOK = FALSE,
                   mode = 'wb'))
 
-        if(! quiet) print(glue::glue('Downloaded {filename}.feather to {root_vsn}'))
+        if(! quiet){
+            print(glue::glue('Downloaded {filename}.feather to {root_vsn}'))
+            cat('\n')
+        }
     }
 
     options(timeout = default_timeout)
