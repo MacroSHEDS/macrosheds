@@ -26,7 +26,6 @@
 #' @seealso [ms_download_core_data()], [ms_load_product()], [ms_load_variables()], [ms_load_sites()]
 #' @examples
 #' ms_root = 'data/macrosheds'
-#' dir.create(ms_root, recursive = TRUE)
 #' ms_download_core_data(macrosheds_root = ms_root,
 #'                       domains = c('niwot', 'hjandrews', 'hbef'))
 #' macrosheds_data <- load_spatial_product(macrosheds_root = ms_root,

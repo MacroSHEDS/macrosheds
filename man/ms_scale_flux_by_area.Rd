@@ -39,12 +39,11 @@ MacroSheds format (only site_code and val columns required as inputs to this fun
 }
 }
 \examples{
-### Load some MacroSheds data:
-ms_root = 'data/macrosheds'
+ms_root <- 'data/macrosheds'
 ms_download_core_data(macrosheds_root = ms_root,
                       domains = 'hbef')
-d <- ms_load_product(macrosheds_root = ms_root, 
-                     prodname = 'stream_flux_inst_scaled', 
+d <- ms_load_product(macrosheds_root = ms_root,
+                     prodname = 'stream_flux_inst_scaled',
                      domains = 'hbef',
                      filter_vars = 'NO3_N')
 

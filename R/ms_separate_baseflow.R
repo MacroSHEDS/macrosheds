@@ -2,6 +2,7 @@
 #'
 #' Use the Lynne-Hollick baseflow filter, via hydrostats, to perform baseflow separation 
 #'
+#' @keywords internal
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter

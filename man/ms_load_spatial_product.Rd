@@ -7,7 +7,7 @@
 ms_load_spatial_product(
   macrosheds_root,
   spatial_product,
-  version,
+  version = "latest",
   networks,
   domains,
   site_codes,
@@ -46,7 +46,6 @@ or stream_gauge_locations) from a downloaded MacroSheds dataset. See
 }
 \examples{
 ms_root = 'data/macrosheds'
-dir.create(ms_root, recursive = TRUE)
 ms_download_core_data(macrosheds_root = ms_root,
                       domains = c('niwot', 'hjandrews', 'hbef'))
 macrosheds_data <- load_spatial_product(macrosheds_root = ms_root,

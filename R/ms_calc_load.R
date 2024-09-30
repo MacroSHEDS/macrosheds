@@ -147,9 +147,8 @@ ms_calc_load <- function(chemistry,
         stop(glue::glue('Unrecognized flux method: {setdiff(method, rsfme_accepted)}'))
     } else {
         if(verbose){
-            cat(glue::glue('calculating flux using method(s): {m}',
-                           m = paste(method, collapse = ', ')),
-                '\n')
+            message(glue::glue('calculating flux using method(s): {m}',
+                               m = paste(method, collapse = ', ')))
         }
     }
 
@@ -210,7 +209,7 @@ ms_calc_load <- function(chemistry,
     load_out <- diag_out <- tibble()
     for(s in seq_along(sites)){
 
-        if(verbose) cat('Working on site', s, 'of', length(sites), '\n')
+        if(verbose) message('Working on site ', s, ' of ', length(sites))
 
         site_code <- sites[s]
 
@@ -245,8 +244,6 @@ ms_calc_load <- function(chemistry,
 
         load_site <- diag_site <- tibble()
         for(i in seq_along(vars_)){
-
-            # if(verbose) cat('\tWorking on var', vars_[i], '\n')
 
             chem_var <- site_chem %>%
                 filter(var == !!vars_[i]) %>%
@@ -311,7 +308,9 @@ ms_calc_load <- function(chemistry,
     }
 
     # load_out <- mutate(load_out, val = if_else(val < 0, 0, val))
-    if(any(load_out$load < 0) || any(is.infinite(load_out$load))) warning('negative/infinite load values detected')
+    if(any(load_out$load < 0) || any(is.infinite(load_out$load))){
+        warning('Negative/infinite load values detected.')
+    }
 
     return(list(load = load_out,
                 diagnostics = diag_out))

@@ -2,6 +2,7 @@
 #'
 #' Search for USGS gauges within a radius of a location specified by latitude and longitude
 #'
+#' @keywords internal
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter

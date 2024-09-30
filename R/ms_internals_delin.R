@@ -1,3 +1,4 @@
+#' @noRd
 #moving shapefiles can be annoying, since they're actually represented by
 #   3-4 files
 move_shapefiles <- function(shp_files,
@@ -425,7 +426,7 @@ delineate_watershed_apriori_recurse <- function(lat,
 
     if('a' %in% resp){
 
-        print(glue::glue('Aborted delineation.'))
+        message(glue::glue('Aborted delineation.'))
 
         abortdelin <- 1
         class(abortdelin) <- 'abort_delin'
@@ -926,20 +927,20 @@ delineate_watershed_apriori <- function(lat,
                                                 dem = dem)
 
             if(verbose){
-                print(glue::glue('site buffer radius: {br}; pour point snap: {sn}/{tot}; ',
-                           'n intersecting border cells: {ni}; pct intersect: {pct}',
-                           br = buffer_radius,
-                           sn = i,
-                           tot = length(unique_snaps_f),
-                           ni = round(smry$n_intersections, 2),
-                           pct = round(smry$pct_wb_cells_intersect, 2)))
+                message(glue::glue('site buffer radius: {br}; pour point snap: {sn}/{tot}; ',
+                                   'n intersecting border cells: {ni}; pct intersect: {pct}',
+                                   br = buffer_radius,
+                                   sn = i,
+                                   tot = length(unique_snaps_f),
+                                   ni = round(smry$n_intersections, 2),
+                                   pct = round(smry$pct_wb_cells_intersect, 2)))
             }
 
             if(smry$pct_wb_cells_intersect > 0.1 || smry$n_intersections > 5){
 
                 buffer_radius_new <- buffer_radius * 10
                 dem_coverage_insufficient <- TRUE
-                print(glue::glue('Hit DEM edge. Incrementing buffer.'))
+                message(glue::glue('Hit DEM edge. Incrementing buffer.'))
                 break
 
             } else {

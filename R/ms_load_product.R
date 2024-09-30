@@ -248,7 +248,7 @@ ms_load_product <- function(macrosheds_root,
                                        possible_chars = c('y', 'n'))
 
             if(resp == 'n'){
-                message('Aborting dataset load. Sorry, but there\'s no easy way to make this one smaller. Contact us at mail@macrosheds.org')
+                cat('Aborting dataset load. Sorry, but there\'s no easy way to make this one smaller. Contact us at mail@macrosheds.org\n')
                 return(invisible())
             }
         }
@@ -258,14 +258,14 @@ ms_load_product <- function(macrosheds_root,
         sit_filt <- ! missing(site_codes)
 
         o <- purrr::map_dfr(msfile, function(x){
-                o_ <- feather::read_feather(x)
+            o_ <- feather::read_feather(x)
 
-                if(ntw_filt) o_ <- filter(o_, network %in% networks)
-                if(dmn_filt) o_ <- filter(o_, domain %in% domains)
-                if(sit_filt) o_ <- filter(o_, site_code %in% site_codes)
+            if(ntw_filt) o_ <- filter(o_, network %in% networks)
+            if(dmn_filt) o_ <- filter(o_, domain %in% domains)
+            if(sit_filt) o_ <- filter(o_, site_code %in% site_codes)
 
-                return(o_)
-            })
+            return(o_)
+        })
 
         return(o)
     }
@@ -328,7 +328,7 @@ ms_load_product <- function(macrosheds_root,
                                    possible_chars = c('y', 'n'))
 
         if(resp == 'n'){
-            message('You can reduce dataset size by specifying network, domain, site_code, or filter_vars.')
+            cat('You can reduce dataset size by specifying network, domain, site_code, or filter_vars.\n')
             return(invisible())
         }
     }

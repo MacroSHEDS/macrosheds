@@ -9,7 +9,7 @@
 #' }
 #' 
 #' @references Blodgett, D., 2019, nhdplusTools: Tools for Accessing and Working with the NHDPlus, https://code.usgs.gov/water/nhdplusTools
-#'
+#' @noRd
 #' @examples
 #' To use this data:
 #' data(poudre_ws)

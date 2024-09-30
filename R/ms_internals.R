@@ -2,7 +2,7 @@
 #'
 #' Not intended to be called directly by the user
 #'
-#' @keywords internal
+#' @noRd
 
 # Function aliases
 sw <- suppressWarnings
@@ -483,9 +483,7 @@ idw_log_var <- function(verbose,
                       f = flux_calc_msg,
                       n = note)
 
-    print(msg)
-
-    #return()
+    message(msg)
 }
 
 ms_parallelize <- function(maxcores = Inf){
@@ -1100,9 +1098,7 @@ idw_log_wb <- function(verbose, site_code, i, nw){
                       ii = i,
                       w = nw)
 
-    print(msg)
-
-    #return()
+    message(msg)
 }
 
 err_df_to_matrix <- function(df){
@@ -2556,7 +2552,7 @@ expo_backoff <- function(expr,
                              max = 2^attempt_i - 1)
 
             if(verbose){
-                print(glue::glue("Backing off for ", round(backoff, 1), " seconds."))
+                message(glue::glue("Backing off for ", round(backoff, 1), " seconds."))
             }
 
             Sys.sleep(backoff)
@@ -2885,7 +2881,9 @@ carry_flags <- function(raw_q_df, raw_conc_df, target_solute = NULL, target_year
 
             return(interp_ratio)
 
-        }else{print('Specify period as month or annual.')}
+        } else {
+            message('Specify period as month or annual.')
+        }
 
     }
 
@@ -2918,7 +2916,9 @@ carry_flags <- function(raw_q_df, raw_conc_df, target_solute = NULL, target_year
 
             return(status_ratio)
 
-        }else{print('Specify period as month or annual.')}
+        } else {
+            message('Specify period as month or annual.')
+        }
     }
 
     # missing ratio
@@ -2948,8 +2948,8 @@ carry_flags <- function(raw_q_df, raw_conc_df, target_solute = NULL, target_year
 
             return(missing_ratio)
 
-        }else{
-            print('Specify period as month or annual.')
+        } else {
+            message('Specify period as month or annual.')
         }
 
     }
@@ -3652,7 +3652,7 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
             # trying USGS WRTDS flow min method,
             # also NOTE: USGS WRTDS manual says no flow > %0.2 of days is an issue
             if(min_q_method == 'USGS'){
-                print('using USGS reccomended no flow replacement method')
+                message('using USGS reccomended no flow replacement method')
                 mean_flow <- mean(Daily_file$Q[Daily_file$Q > 0], na.rm = TRUE)
 
                 Daily_file <- Daily_file %>%
@@ -3689,8 +3689,8 @@ adapt_ms_egret <- function(chem_df, q_df, ws_size, lat, long,
             filter(variable_code == !!var) %>%
             pull(unit)
 
-        if(length(var_unit) == 0) {
-            print("length of var_unit for this flux calc is zero, setting var_unit to NA")
+        if(length(var_unit) == 0){
+            message("length of var_unit for this flux calc is zero, setting var_unit to NA")
             var_unit <- NA
         }
 

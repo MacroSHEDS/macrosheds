@@ -59,7 +59,7 @@ temporally explicit spatial summaries, or summaries across both time and space.
 For some variables that are not time-varying, these are the same.
 }
 \examples{
-ms_download_ws_attr(macrosheds_root = 'my/macrosheds/root', dataset = 'time series')
+ms_download_ws_attr(macrosheds_root = 'data/macrosheds', dataset = 'time series')
 }
 \seealso{
 \code{\link[=ms_download_core_data]{ms_download_core_data()}}, \code{\link[=ms_load_product]{ms_load_product()}}

@@ -50,7 +50,6 @@ all products available for the selected domains will be downloaded.
 The core time-series dataset is approximately 6 GiB uncompressed.
 }
 \examples{
-dir.create('data/macrosheds', recursive = TRUE)
 ms_download_core_data(macrosheds_root = 'data/macrosheds',
                       domains = c('niwot', 'hjandrews'))
 }

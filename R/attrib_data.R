@@ -4,6 +4,6 @@
 #'
 #' @docType data
 #' @author Mike Vlah, \email{vlahm13@@gmail.com} 
-#' @keywords data
+#' @keywords data internal
 "attrib_ts_data"
 "attrib_ws_data"
