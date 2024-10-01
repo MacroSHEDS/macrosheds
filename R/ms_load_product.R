@@ -181,7 +181,7 @@ ms_load_product <- function(macrosheds_root,
 
     #handle derelict files from pre-v2
     root_files <- list.files(macrosheds_root,
-                              full.names = TRUE)
+                             full.names = TRUE)
     root_files <- grep('/v[0-9]+$', root_files, value = TRUE, invert = TRUE)
 
     if(length(root_files)){
@@ -267,6 +267,10 @@ ms_load_product <- function(macrosheds_root,
             return(o_)
         })
 
+        if(! is.null(filter_vars)){
+            o <- filter(o, var %in% filter_vars)
+        }
+
         return(o)
     }
 
@@ -320,7 +324,7 @@ ms_load_product <- function(macrosheds_root,
     file_sizes <- file.info(rel_files)$size
     file_sizes <- round(sum(file_sizes, na.rm = TRUE) / 1000000, 1)
 
-    if(warn && file_sizes > 100 && is.null(filter_vars)){
+    if(warn && file_sizes > 1000 && is.null(filter_vars)){
 
         resp <- get_response_1char(msg = paste0('This dataset will occupy about ',
                                                 file_sizes,

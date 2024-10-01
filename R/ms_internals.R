@@ -3954,7 +3954,7 @@ calc_load <- function(chem, q, site_code, area, method,
     fvar <- chem$var[1]
 
     if(any(na.omit(chem$val == 0))){
-        warning('Concentration values of 0 detected. These will be removed before computing load.')
+        message('Concentration values of 0 detected. These will be removed before computing load.')
     }
 
     chem_filt <- chem %>%
@@ -3981,7 +3981,7 @@ calc_load <- function(chem, q, site_code, area, method,
     paired_years <- intersect(gd_q, gd_chm)
 
     if(! length(paired_years)){
-        warning(glue::glue('Not enough overlap between {fvar} and discharge to calculate flux.'))
+        message(glue::glue('Not enough overlap between {fvar} and discharge to calculate flux.'))
         return(tibble(site_code = character(),
                       var = character(),
                       wy = numeric(),
@@ -4166,7 +4166,7 @@ calc_load <- function(chem, q, site_code, area, method,
                 dplyr::select(month, flux)
 
             if(length(months) != 12){
-                warning('NOTE: number of months in pw not 12, need handling for setting NA to uncalc months')
+                warning('Number of months in pw not 12, need handling for setting NA to uncalc months')
             }
 
             # beale
@@ -4265,7 +4265,7 @@ calc_load <- function(chem, q, site_code, area, method,
 
         } else {
             if(verbose){
-                warning(glue::glue('Invalid C-Q regression for: {site_code}, {fvar}, {target_year}. Not recommending any method.'))
+                message(glue::glue('Invalid C-Q regression for: {site_code}, {fvar}, {target_year}. Not recommending any method.'))
                 # 'during application of Aulenbach et al. 2016 procedure for choosing recommended load estimation method',
                 # ' concentration:discharge log-log linear regression r_squared value was NaN; recommended method set to NA\n\n'))
             }
@@ -4275,7 +4275,7 @@ calc_load <- function(chem, q, site_code, area, method,
         if(! is.na(recommended_method) && recommended_method == 'composite' &&
            ! is.na(comp_violation) && comp_violation){
             if(verbose){
-                warning(glue::glue('Composite method invalid for: {site_code}, {fvar}, {target_year}. ',
+                message(glue::glue('Composite method invalid for: {site_code}, {fvar}, {target_year}. ',
                                    'Using period-weighting instead.'))
                 # 'the recommended method was set to composite',
                 # ' using procedure from Aulenbach et al. 2016, but that method results in illegal values.',

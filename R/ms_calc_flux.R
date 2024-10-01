@@ -72,8 +72,8 @@ ms_calc_flux <- function(chemistry, q){
     if(length(q_type) > 1){
         stop('q$var` may not contain more than 1 unique value')
     }
-    if(! q_type %in% c('precipitation', 'discharge')){
-        stop('`q$var` must be entirely "discharge" or "precipitation".')
+    if(! q_type %in% c('precipitation', 'discharge', 'precip_median', 'CUSTOMprecipitation')){
+        stop('`q$var` must be entirely "discharge", "precipitation", or "precip_median" (PRISM).')
     }
 
     if(! inherits(q$date, 'Date')){

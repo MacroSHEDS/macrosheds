@@ -9,23 +9,25 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-See https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325 for background.
+<!-- to avoid re-downloading during knit, `mkdir ~/git/macrosheds/r_package/vignettes/example; cd $_; ln -s ~/ssd2/ms_test/ data` -->
 
-You can use [macrosheds.org](https://macrosheds.org) to explore the full dataset, and to identify sites that
-fit your needs.
-
-The complete dataset, including all metadata, is available on [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
-
+ + Interactive visualizations: [macrosheds.org](https://macrosheds.org)
+ + The MacroSheds [data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325)
+ + The complete dataset, including all metadata, is on [EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262).
+ 
 ---
 
 # Install and load the macrosheds package
 
+```{r pkg-load, results = "hide", message = FALSE, echo = FALSE}
+library(macrosheds)
+```
+
 ```{r ms-install, eval = FALSE}
-# install.packages('devtools') #you may need to install devtools too
 remotes::install_github('MacroSHEDS/macrosheds')
 library(macrosheds)
 
-help(package = macrosheds)
+help(package = 'macrosheds')
 ```
 
 # Identify target sites and variables
@@ -36,27 +38,27 @@ Let's say we're looking for watersheds with pre-1970 data records that are still
 ?ms_load_sites
 
 ms_sites <- ms_load_sites()
-colnames(ms_sites)
+colnames(ms_sites) # sites are grouped into domains, which are grouped into networks
 
-ms_sites %>% 
+ms_sites %>%
     filter(site_type == 'stream_gauge',
            first_record < as.Date('1970-01-01'),
-           last_record > as.Date('2020-01-01')) %>% 
-    select(domain, site_code, first_record, last_record) %>% 
-    print(n = 100)
+           last_record > as.Date('2020-01-01')) %>%
+    select(domain, site_code, first_record, last_record) %>%
+    print(n = 18)
 ```
 
-And maybe we're interesting in nitrate.
+And maybe we're interested in nitrate.
 
-```{r nitrate meta}
-ms_load_variables(var_set = 'timeseries') %>% 
-    filter(grepl('nitrate', variable_name, ignore.case = TRUE)) %>% 
+```{r nitrate-meta}
+ms_load_variables(var_set = 'timeseries') %>%
+    filter(grepl('nitrate', variable_name, ignore.case = TRUE)) %>%
     distinct(variable_code, variable_name)
 
-ms_load_variables(var_set = 'timeseries_by_site') %>% 
+ms_load_variables(var_set = 'timeseries_by_site') %>%
     filter(variable_code == 'NO3_N', #MacroSheds doesn't store NO3 data, but you can convert NO3-N using ms_conversions()
-           observations > 1000) %>% 
-    distinct(domain) %>% 
+           observations > 1000) %>%
+    distinct(domain) %>%
     pull()
 ```
 
@@ -65,9 +67,9 @@ ms_load_variables(var_set = 'timeseries_by_site') %>%
 HBEF and H. J. Andrews look like good candidates. Next, retrieve discharge and nitrate data for one site from each domain.
 You can have as many `macrosheds_root` directories as you like, but they should only be used for MacroSheds data.
 
-```{r}
+```{r load, message = FALSE}
 my_domains <- c('hbef', 'hjandrews')
-my_sites <- c('w7', 'GSWS07')
+my_sites <- c('w1', 'GSWS10')
 my_ms_dir <- './example/data'
 options(timeout = 300) #default 60 seconds might not be enough if your connection is slow
 
@@ -76,20 +78,18 @@ ms_download_core_data(
     domains = my_domains #use "all" to retrieve all networks, domains, and sites.
 )
 
-my_q <- ms_load_product(
+q <- ms_load_product(
     my_ms_dir,
     prodname = 'discharge',
     site_codes = my_sites
 )
 
-my_chem <- ms_load_product(
+no3 <- ms_load_product(
     my_ms_dir,
     prodname = 'stream_chemistry',
     filter_vars = 'NO3_N',
     site_codes = my_sites
 )
-
-head(my_chem)
 ```
 
 # Calculate flux and load
@@ -97,24 +97,71 @@ head(my_chem)
 This yields daily nitrate-N fluxes and annual nitrate-N loads (i.e. cumulative fluxes) for stream water.
 Note that you can also retrieve these quantities directly using `ms_load_product`.
 
-```{r ms-flux}
-no3_flux <- ms_calc_flux(my_chem, my_q)
+```{r ms-flux, message = FALSE}
+no3_flux <- ms_calc_flux(no3, q)
 
 #you can convert flux from kg/ha/d to kg/d (and back)
 ms_undo_scale_flux_by_area(no3_flux)
-
-plot()
 ```
 
-```{r ms-load}
-no3_load <- ms_calc_load(my_chem, my_q)
+```{r ms-load, fig.width = 6, message = FALSE}
+no3_load_out <- ms_calc_load(filter(no3, ms_interp == 0),
+                             filter(q, ms_interp == 0))
+no3_load <- filter(no3_load_out$load, ms_recommended)
+
+plot(no3_load$water_year[no3_load$site_code == 'w1'],
+     no3_load$load[no3_load$site_code == 'w1'], type = 'l', xlab = '',
+     ylab = 'NO3-N load (kg/ha/yr)', lwd = 2)
+lines(no3_load$water_year[no3_load$site_code == 'GSWS10'],
+     no3_load$load[no3_load$site_code == 'GSWS10'], type = 'l', col = 'blue', lwd = 2)
+legend('topright', legend = c('w1', 'GSWS10'), col = c('black', 'blue'), lwd = 2, bty = 'n')
 ```
-As you can see from the warnings, not all load methods are appropriate. Consider
+
+As you can see from the warning, not all load methods are appropriate for every use case. Consider
 the `ms_recommended` column and check the docs (`?ms_calc_load`) and these references for more information:
 
- + Aulenbach, B. T., Burns, D. A., Shanley, J. B., Yanai, R. D., Bae, K., Wild, A. D., Yang, Y., & Yi, D. (2016). Approaches to stream solute load estimation for solutes with varying dynamics from five diverse small watersheds. Ecosphere, 7(6), e01298.
- + Gubbins N. J., Slaughter, W. M., Vlah, M. J., Rhea, S., McDowell, W. H., Ross, M. R. V., & Bernhardt, E. S. (in review). An Assessment of Annual Load Estimation Methods in Small Watersheds for Cross Site Comparisons. https://eartharxiv.org/repository/view/6513/
- 
- ```{r PRISM flux}
- 
- ```
+ + *Aulenbach, B. T., Burns, D. A., Shanley, J. B., Yanai, R. D., Bae, K., Wild, A. D., Yang, Y., & Yi, D. (2016). Approaches to stream solute load estimation for solutes with varying dynamics from five diverse small watersheds. Ecosphere, 7(6), e01298.*
+ + *Gubbins N. J., Slaughter, W. M., Vlah, M. J., Rhea, S., McDowell, W. H., Ross, M. R. V., & Bernhardt, E. S. (in review). An Assessment of Annual Load Estimation Methods in Small Watersheds for Cross Site Comparisons. https://eartharxiv.org/repository/view/6513/*
+
+# Calculate precipitation flux
+
+Note that you can use `ms_calc_flux` to compute daily precipitation solute
+fluxes as well. Many domains provide their own gauged precipitation data, but you
+will often get better coverage and across-site comparison by using a gridded
+product like PRISM. Here's how to compute daily SO4-S influxes using PRISM precip.
+
+```{r PRISM-flux, message = FALSE}
+ms_load_variables(var_set = 'ws_attr') %>%
+    filter(data_class == 'climate',
+           grepl('precip', variable_name))
+
+ms_download_ws_attr(
+    macrosheds_root = my_ms_dir,
+    dataset = 'time series' #watershed attribute (spatially-explicit) time series. This file is over 1.5 GiB
+)
+
+precip <- ms_load_product(
+    my_ms_dir,
+    prodname = 'ws_attr_timeseries:climate',
+    filter_vars = 'precip_median',
+    site_codes = my_sites,
+    warn = FALSE
+)
+
+so4 <- ms_load_product(
+    my_ms_dir,
+    prodname = 'stream_chemistry',
+    filter_vars = 'SO4_S',
+    site_codes = my_sites
+) %>%
+    select(-ms_status, -ms_interp)
+
+so4_precip_flux <- ms_calc_flux(so4, precip)
+```
+
+# Cite your sources
+
+```{r attrib}
+attrib <- ms_generate_attribution(bind_rows(so4, no3, precip, q))
+cat(head(attrib$bibliography, n = 2), '...\n')
+```

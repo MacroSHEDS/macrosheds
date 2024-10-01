@@ -184,7 +184,8 @@ ms_generate_attribution <- function(d, chem_source = 'both',
                           by = c('domain', var = 'macrosheds_prodname')) %>%
         rename(macrosheds_prodname = var) %>%
         relocate(macrosheds_prodname, .after = macrosheds_prodcode) %>%
-        filter(! is.na(network))
+        filter(! is.na(network)) %>%
+        arrange(domain, macrosheds_prodname, network)
 
     attrib$acknowledgements <- macrosheds:::format_acknowledgements(
         sitevars,
