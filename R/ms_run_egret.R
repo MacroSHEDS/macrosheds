@@ -3,6 +3,7 @@
 #' ms_run_egret prepares data for the EGRET package and runs the Weighted Regression
 #' on Time, Discharge, and Season (WRTDS) model.
 #'
+#' @keywords internal
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter

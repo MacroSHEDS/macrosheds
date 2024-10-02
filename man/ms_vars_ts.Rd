@@ -17,3 +17,4 @@ MacroSheds variable metadata
 Mike Vlah, \email{vlahm13@gmail.com}
 }
 \keyword{data}
+\keyword{internal}

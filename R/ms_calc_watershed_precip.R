@@ -8,6 +8,7 @@
 #' If precipitation chemistry is supplied in addition to depth, then watershed-average
 #' precipitation depth, chemistry, and chemical flux estimates will all be generated.
 #' 
+#' @keywords internal
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter

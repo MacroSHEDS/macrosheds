@@ -64,7 +64,7 @@ macrosheds_data <- ms_load_product(ms_root, prodname = 'ws_attr_timeseries:all')
 #etc
 ```
 
-For more examples, see the [Vignettes](https://github.com/MacroSHEDS/macrosheds/tree/master/vignettes). You can open the `.html` files in your browser.
+For more examples, see the [Vignettes](https://macrosheds.org/pages/vignettes).
 
 # Changelog
 

@@ -7,7 +7,7 @@
 ms_load_product(
   macrosheds_root,
   prodname,
-  version,
+  version = "latest",
   filter_vars,
   networks,
   domains,

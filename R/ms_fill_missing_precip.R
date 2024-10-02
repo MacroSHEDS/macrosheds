@@ -2,6 +2,7 @@
 #'
 #' Fill precipitation gauges based on relationship to surrounding gauges.
 #'
+#' @keywords internal
 #' @author Spencer Rhea 
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Wes Slaughter

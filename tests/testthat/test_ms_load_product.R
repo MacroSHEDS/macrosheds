@@ -12,6 +12,10 @@ macrosheds::ms_download_core_data(macrosheds_root = wd,
                                   domains = c('hbef', 'hjandrews', 'boulder',
                                               'santee'),
                                   quiet = TRUE)
+macrosheds::ms_download_core_data(macrosheds_root = wd,
+                                  domains='santee',
+                                  version = 1,
+                                  quiet = TRUE)
 macrosheds::ms_download_ws_attr(macrosheds_root = wd, dataset = 'summaries')
 macrosheds::ms_download_ws_attr(macrosheds_root = wd, dataset = 'time series', omit_climate_data = T)
 macrosheds::ms_download_ws_attr(macrosheds_root = wd, dataset = 'CAMELS summaries')
@@ -108,9 +112,9 @@ test_that('loading ws attr summaries works', {
     r = macrosheds::ms_load_product(macrosheds_root = wd,
                     prodname = 'ws_attr_summaries',
                     domains = c('hjandrews', 'hbef'),
-                    filter_vars = c('PO4_P', 'temp')) #ignored
+                    filter_vars = c('los', 'GPP'))
 
-    expect_length(unique(r$domain), 2)
+    expect_length(colnames(r), 6)
 
     r = macrosheds::ms_load_product(macrosheds_root = wd,
                     prodname = 'ws_attr_CAMELS_summaries',
@@ -134,4 +138,69 @@ test_that('misspecified network produces error', {
                     prodname = 'ws_attr_timeseries:landcover',
                     domains = c('hjandrews', 'hbef', 'donkey')),
                  regexp = 'Unknown')
+})
+
+test_that('v1 and v2 load properly', {
+
+    d1 <- macrosheds::ms_load_product(macrosheds_root = wd,
+                                      prodname = 'discharge',
+                                      domains = 'santee',
+                                      version = 1,
+                                      warn = FALSE)
+    expect_gt(nrow(d1), 76000)
+    expect_contains(colnames(d1), 'grab_sample')
+
+    d2 <- macrosheds::ms_load_product(macrosheds_root = wd,
+                                      prodname = 'discharge',
+                                      domains = 'santee',
+                                      version = 2,
+                                      warn = FALSE)
+    expect_gt(nrow(d2), 76000)
+})
+
+test_that('warnings and errors are properly issued.', {
+
+    expect_error(
+        macrosheds::ms_load_product(
+            macrosheds_root = wd,
+            prodname = 'discharge',
+            domains = 'santee',
+            version = 3,
+            warn = FALSE
+        ),
+        'Version 3 data were'
+    )
+
+    expect_error(
+        macrosheds::ms_load_product(
+            macrosheds_root = wd,
+            prodname = 'discharge',
+            domains = 'santee',
+            version = 'gg',
+            warn = FALSE
+        ),
+        'must be a positive integer'
+    )
+
+    expect_warning(
+        macrosheds::ms_load_product(
+            macrosheds_root = wd,
+            prodname = 'discharge',
+            domains = 'santee',
+            version = '1'
+        ),
+        'Data from MacroSheds v1 were requested'
+    )
+
+    expect_error(
+        macrosheds::ms_load_product(
+            macrosheds_root = wd,
+            prodname = 'ws_attr_summaries',
+            domains = 'santee',
+            version = '1',
+            warn = FALSE
+        ),
+        'No file found for'
+    )
+
 })

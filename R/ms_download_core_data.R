@@ -30,7 +30,6 @@
 #' @export
 #' @seealso [ms_load_sites()], [ms_load_variables()], [ms_load_product()], [ms_load_spatial_product()]
 #' @examples
-#' dir.create('data/macrosheds', recursive = TRUE)
 #' ms_download_core_data(macrosheds_root = 'data/macrosheds',
 #'                       domains = c('niwot', 'hjandrews'))
 
@@ -76,7 +75,7 @@ ms_download_core_data <- function(macrosheds_root,
 
     if(version == 'latest'){
         version <- max(avail_vsns)
-        cat('Retrieving data from MacroSheds v', version, '\n')
+        message('Retrieving data from MacroSheds v', version)
     }
 
     figshare_codes <- figshare_codes %>%
@@ -136,8 +135,8 @@ ms_download_core_data <- function(macrosheds_root,
     macrosheds_root <- sw(normalizePath(macrosheds_root))
 
     if(! dir.exists(macrosheds_root)){
-        print(paste0('Creating macrosheds_root at ',
-            macrosheds_root))
+        message(paste0('Creating macrosheds_root at ',
+                       macrosheds_root))
         dir.create(macrosheds_root, recursive = TRUE)
     }
 
@@ -152,7 +151,7 @@ ms_download_core_data <- function(macrosheds_root,
                                          macrosheds_root, ' into ', v1path, '? (y/n) >'),
                                   possible_chars = c('y', 'n'))
         if(rsp == 'n'){
-            cat('Please set macrosheds_root to a location where only MacroSheds data files will be stored.\n')
+            message('Please set macrosheds_root to a location where only MacroSheds data files will be stored.')
             return(invisible())
         }
 
@@ -167,9 +166,9 @@ ms_download_core_data <- function(macrosheds_root,
         existing_dirs <- list.files(root_vsn)
         ovw_doms <- intersect(rel_download$domain, existing_dirs)
         if(length(ovw_doms)){
-            cat(paste0('Data for these domains already present in', root_vsn, ':\n\t',
-                       paste(ovw_doms, collapse = ', '),
-                       '\n\tSet skip_existing = FALSE to overwrite. For now, skipping these domains.\n'))
+            message(paste0('Data for these domains already present in ', root_vsn, ':\n\t',
+                           paste(ovw_doms, collapse = ', '),
+                           '\n\tSet skip_existing = FALSE to overwrite. For now, skipping these domains.'))
             rel_download <- filter(rel_download, ! domain %in% ovw_doms)
         }
     }
@@ -177,7 +176,7 @@ ms_download_core_data <- function(macrosheds_root,
     n_downloads <- nrow(rel_download)
 
     if(n_downloads == 0){
-        cat('Nothing to do\n')
+        message('Nothing to do')
         return(invisible())
     }
 
@@ -190,11 +189,11 @@ ms_download_core_data <- function(macrosheds_root,
         fig_call <- paste0(figshare_base, rel_code)
 
         if(! quiet){
-            print(glue::glue('Downloading domain: {rd} ({ii}/{iN}; download id {rc})',
-                             rd = rel_dom,
-                             ii = i,
-                             iN = n_downloads,
-                             rc = rel_code))
+            message(glue::glue('Downloading domain: {rd} ({ii}/{iN}; download id {rc})',
+                               rd = rel_dom,
+                               ii = i,
+                               iN = n_downloads,
+                               rc = rel_code))
         }
 
         download_status <- try(download.file(url = fig_call,
@@ -210,13 +209,14 @@ ms_download_core_data <- function(macrosheds_root,
         }
 
         unzip_status <- try(unzip(zipfile = temp_file_dom, exdir = root_vsn))
+        file.remove(temp_file_dom)
 
         if(inherits(unzip_status, 'try-error')){
             fails <- c(fails, pull(rel_dom))
             next
         }
 
-        if(! quiet) print(paste(rel_dom, 'successfully downloaded and unzipped.'))
+        if(! quiet) message(paste(rel_dom, 'successfully downloaded and unzipped.'))
     }
 
     if(length(fails)){
@@ -225,6 +225,6 @@ ms_download_core_data <- function(macrosheds_root,
                         '. Do you need to increase timeout limit with e.g. `options(timeout = 3600)`?')
         warning(report)
     } else {
-        cat('All downloads succeeded\n')
+        message('All downloads succeeded')
     }
 }

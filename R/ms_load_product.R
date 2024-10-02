@@ -181,7 +181,7 @@ ms_load_product <- function(macrosheds_root,
 
     #handle derelict files from pre-v2
     root_files <- list.files(macrosheds_root,
-                              full.names = TRUE)
+                             full.names = TRUE)
     root_files <- grep('/v[0-9]+$', root_files, value = TRUE, invert = TRUE)
 
     if(length(root_files)){
@@ -248,7 +248,7 @@ ms_load_product <- function(macrosheds_root,
                                        possible_chars = c('y', 'n'))
 
             if(resp == 'n'){
-                message('Aborting dataset load. Sorry, but there\'s no easy way to make this one smaller. Contact us at mail@macrosheds.org')
+                cat('Aborting dataset load. Sorry, but there\'s no easy way to make this one smaller. Contact us at mail@macrosheds.org\n')
                 return(invisible())
             }
         }
@@ -258,14 +258,26 @@ ms_load_product <- function(macrosheds_root,
         sit_filt <- ! missing(site_codes)
 
         o <- purrr::map_dfr(msfile, function(x){
-                o_ <- feather::read_feather(x)
+            o_ <- feather::read_feather(x)
 
-                if(ntw_filt) o_ <- filter(o_, network %in% networks)
-                if(dmn_filt) o_ <- filter(o_, domain %in% domains)
-                if(sit_filt) o_ <- filter(o_, site_code %in% site_codes)
+            if(ntw_filt) o_ <- filter(o_, network %in% networks)
+            if(dmn_filt) o_ <- filter(o_, domain %in% domains)
+            if(sit_filt) o_ <- filter(o_, site_code %in% site_codes)
 
-                return(o_)
-            })
+            return(o_)
+        })
+
+        if(! is.null(filter_vars) && ! grepl('CAMELS', prodname)){
+            if(prodname == 'ws_attr_summaries'){
+                o <- select(o, network, domain, site_code,
+                            matches(paste0('(?<=^|\\W|_)',
+                                           paste(filter_vars, collapse = '|'),
+                                           '(?=$|\\W|_)'),
+                                    perl = TRUE))
+            } else {
+                o <- filter(o, var %in% filter_vars)
+            }
+        }
 
         return(o)
     }
@@ -320,7 +332,7 @@ ms_load_product <- function(macrosheds_root,
     file_sizes <- file.info(rel_files)$size
     file_sizes <- round(sum(file_sizes, na.rm = TRUE) / 1000000, 1)
 
-    if(warn && file_sizes > 100 && is.null(filter_vars)){
+    if(warn && file_sizes > 1000 && is.null(filter_vars)){
 
         resp <- get_response_1char(msg = paste0('This dataset will occupy about ',
                                                 file_sizes,
@@ -328,7 +340,7 @@ ms_load_product <- function(macrosheds_root,
                                    possible_chars = c('y', 'n'))
 
         if(resp == 'n'){
-            message('You can reduce dataset size by specifying network, domain, site_code, or filter_vars.')
+            cat('You can reduce dataset size by specifying network, domain, site_code, or filter_vars.\n')
             return(invisible())
         }
     }

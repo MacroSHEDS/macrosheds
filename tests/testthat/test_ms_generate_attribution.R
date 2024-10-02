@@ -24,7 +24,7 @@ o3 = ms_generate_attribution(d, chem_source = 'both')
 test_that('errors are intelligible', {
     expect_error(ms_generate_attribution(d = data.frame(y=1)), regexp = 'data\\.frame')
     expect_error(ms_generate_attribution(chem_source = 'a'), regexp = 'chem_source must')
-    expect_error(ms_generate_attribution(include_ws_attr = 'b'), regexp = 'TRUE or')
+    expect_error(ms_generate_attribution(d, include_all_ws_attr = 'b'), regexp = 'TRUE or')
     expect_error(ms_generate_attribution(abide_by = 'b'), regexp = 'abide_by must')
     expect_error(ms_generate_attribution(write_to_dir = 'test.txt'), regexp = 'does not exist')
 })
@@ -50,7 +50,7 @@ test_that('full bibliography properly formatted', {
 test_that('IR notifications properly formatted', {
     expect_equal(names(o$intellectual_rights_notifications),
                  c("noncommercial_license", "sharealike_license", "notify_of_intent_S",
-                   "notify_of_intent_M", "notify_on_distribution_S", 
+                   "notify_of_intent_M", "notify_on_distribution_S",
                    "notify_on_distribution_M", "provide_access_S", "provide_access_M",
                    "consult_or_collab_S"))
     expect_true(all(sapply(o$intellectual_rights_notifications, nrow)))
@@ -76,16 +76,24 @@ test_that('IR details properly formatted', {
 test_that('filtering done properly', {
     expect_equal(length(o3$acknowledgements), 1)
     expect_lt(length(o3$bibliography), 30)
-    expect_equal(nrow(o3$intellectual_rights_notifications[[1]]), 1)
-    expect_equal(length(o3$intellectual_rights_explanations), 1)
+    expect_length(o3$intellectual_rights_notifications, 0)
+    expect_length(o3$intellectual_rights_explanations, 0)
     expect_equal(nrow(o3$full_details_timeseries), 4)
 })
 
 test_that('files written properly', {
     expect_equal(length(o2), 2)
-    expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'acknowledgements.txt'))), 4)
-    expect_equal(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_definitions.txt'))), 2)
-    expect_gte(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_notifications.txt'))), 6)
-    expect_gt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 100)
-    expect_lt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 250)
+    expect_length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'acknowledgements.txt')), 2)
+    expect_false(file.exists(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_definitions.txt')))
+    expect_false(file.exists(file.path(tmpd, 'macrosheds_attribution_information', 'intellectual_rights_notifications.txt')))
+    expect_gt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 40)
+    expect_lt(length(read_lines(file.path(tmpd, 'macrosheds_attribution_information', 'ms_bibliography.bib'))), 50)
+})
+
+test_that('all ws_attr can be passed in piecemeal', {
+
+    d <- dplyr::select(ms_load_variables('ws_attr'), var = variable_code) %>%
+        mutate(site_code = 'w1')
+    zz <- ms_generate_attribution(d)
+    expect_equal(nrow(zz$full_details_ws_attr), 21)
 })

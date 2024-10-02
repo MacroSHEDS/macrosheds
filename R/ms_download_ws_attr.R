@@ -37,7 +37,7 @@
 #' @seealso [ms_download_core_data()], [ms_load_product()]
 #' @export
 #' @examples
-#' ms_download_ws_attr(macrosheds_root = 'my/macrosheds/root', dataset = 'time series')
+#' ms_download_ws_attr(macrosheds_root = 'data/macrosheds', dataset = 'time series')
 
 ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = FALSE,
                                 version = "latest", omit_climate_data = FALSE,
@@ -48,7 +48,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
 
     # figshare basic info handling
     if(inherits(try(macrosheds::file_ids_for_r_package2, silent = TRUE), 'try-error')){
-      stop('Necessary package files missing; please re-install macrosheds with remotes::install_github("MacroSheds/macrosheds")')
+      stop('Necessary package files missing; please re-install macrosheds with remotes::install_github("MacroSHEDS/macrosheds")')
     }
 
     if(! dataset %in% c('summaries', 'time series', 'CAMELS summaries', 'CAMELS Daymet forcings', 'all')){
@@ -85,8 +85,8 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
     macrosheds_root <- sw(normalizePath(macrosheds_root))
 
     if(! dir.exists(macrosheds_root)){
-        print(paste0('Creating macrosheds_root at ',
-                     macrosheds_root))
+        message(paste0('Creating macrosheds_root at: ',
+                       macrosheds_root))
         dir.create(macrosheds_root, recursive = TRUE)
     }
 
@@ -124,7 +124,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
             filter(grepl('timeseries', ut))
 
         if(omit_climate_data){
-            if(! quiet) print('omitting climate data from download')
+            if(! quiet) message('omitting climate data from download')
             rel_download <- rel_download %>%
                 filter(! grepl('_climate', ut))
         }
@@ -145,7 +145,7 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
             filter(! grepl('README|POLICY', ut))
 
         if(omit_climate_data){
-            if(! quiet) print('omitting temporally explicit climate data from download')
+            if(! quiet) message('omitting temporally explicit climate data from download')
             rel_download <- filter(rel_download, ut != 'spatial_timeseries_climate')
         }
     }
@@ -170,9 +170,9 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
             stringr::str_extract('(.+?)\\.feather', group = 1)
         ovw_fls <- intersect(rel_download$ut, existing_fls)
         if(length(ovw_fls)){
-            cat(paste0('These files are already present in', root_vsn, ':\n\t',
-                       paste(paste0(ovw_fls, '.feather'), collapse = ', '),
-                       '\n\tSet skip_existing = FALSE to overwrite. For now, skipping.\n'))
+            message(paste0('These files are already present in ', root_vsn, ':\n\t',
+                           paste(paste0(ovw_fls, '.feather'), collapse = ', '),
+                           '\n\tSet `skip_existing = FALSE` to overwrite. For now, skipping.'))
             rel_download <- filter(rel_download, ! ut %in% ovw_fls)
         }
     }
@@ -180,14 +180,14 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
     n_downloads <- nrow(rel_download)
 
     if(n_downloads == 0){
-        cat('Nothing to do\n')
+        message('Nothing to do')
         return(invisible())
     }
 
     # save user default timeout value and set new
     default_timeout <- getOption('timeout')
     if(! quiet){
-        cat(paste0('Temporarily setting `options(timeout = ', timeout, ')`\n'))
+        message(paste0('Temporarily setting `options(timeout = ', timeout, ')`\n'))
         options(timeout = timeout)
     }
 
@@ -200,11 +200,11 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
         ws_attr_fp <- file.path(root_vsn, paste0(filename, '.feather'))
 
         if(! quiet){
-            print(glue::glue('Downloading {ii}/{iN}; download id: {rc}',
-                             # ds = dataset,
-                             ii = i,
-                             iN = n_downloads,
-                             rc = rel_code))
+            message(glue::glue('Downloading {ii}/{iN}; download id: {rc}',
+                               # ds = dataset,
+                               ii = i,
+                               iN = n_downloads,
+                               rc = rel_code))
         }
 
         dl <- try(download.file(url = fig_call,
@@ -214,8 +214,8 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
                   mode = 'wb'))
 
         if(! quiet){
-            print(glue::glue('Downloaded {filename}.feather to {root_vsn}'))
-            cat('\n')
+            message(glue::glue('Downloaded {filename}.feather to {root_vsn}\n',
+                               .trim = FALSE))
         }
     }
 

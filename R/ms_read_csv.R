@@ -4,6 +4,7 @@
 #' as possible to heterogeneous data formats and contents. 
 #'
 #'
+#' @keywords internal
 #' @author Wes Slaughter \email{weston.slaughter@@duke.edu}
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Spencer Rhea
