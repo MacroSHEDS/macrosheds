@@ -17,3 +17,4 @@ tests/testthat/data/test_precip_function
 ^\.git/$
 ^dev/$
 ^.gitignore$
+^vignettes/example/$

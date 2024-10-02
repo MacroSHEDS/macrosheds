@@ -2273,13 +2273,58 @@ get_response_enter <- function(msg,
 
 # attribution helpers ####
 
-format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
+match_ws_attr_attrib <- function(ws_attrib){
+
+    attr_sources_ <- ms_load_variables('ws_attr') %>%
+        filter(variable_code %in% ws_attrib)
+
+    attr_sources1 <- attr_sources_ %>%
+        filter(data_source %in% c('USGS', 'MODIS')) %>%
+        mutate(prodname = case_when(
+            data_source == 'USGS' ~ recode(
+                data_class,
+                !!!c(hydrology = 'bfi',
+                     vegetation = 'start_season',
+                     `parent material` = 'geochemical'
+                )),
+            data_source == 'MODIS' & data_class == 'landcover' ~ 'modis_igbp',
+            data_source == 'MODIS' & grepl('lai|fpar', variable_code) ~ 'lai',
+            grepl('^ndvi_', variable_code) ~ 'ndvi',
+            grepl('^evi_', variable_code) ~ 'evi',
+            data_source == 'MODIS' & grepl('cover', variable_code) ~ 'veg_cover',
+            data_source == 'MODIS' & grepl('global_500', variable_code) ~ 'gpp_global_500m',
+            TRUE ~ variable_code)
+        ) %>%
+        dplyr::select(data_source, prodname) %>%
+        left_join(macrosheds::attrib_ws_data,
+                  by = c(data_source = 'primary_source',
+                         prodname = 'prodname')) %>%
+        distinct()
+
+    attr_sources <- attr_sources_ %>%
+        dplyr::select(data_source) %>%
+        filter(! is.na(data_source),
+               ! data_source %in% c('USGS', 'MODIS')) %>%
+        left_join(macrosheds::attrib_ws_data,
+                  by = c(data_source = 'primary_source')) %>%
+        distinct(data_source, .keep_all = TRUE) %>%
+        bind_rows(attr_sources1) %>%
+        dplyr::select(prodname, primary_source = data_source, retrieved_from_GEE,
+                      doi, license, citation, url, addtl_info)
+
+    return(attr_sources)
+}
+
+format_acknowledgements <- function(ts_attrib, ws_attrib, all_ws_attr = FALSE){
+
+    ntw_join <- macrosheds::ms_site_data %>%
+        dplyr::select(domain, network_fullname, domain_fullname) %>%
+        distinct()
 
     custom_acks <- ts_attrib %>%
         filter(! is.na(IR_acknowledgement_text)) %>%
         dplyr::select(domain, IR_acknowledgement_text) %>%
-        left_join(dplyr::select(macrosheds::ms_site_data, domain, network_fullname, domain_fullname),
-                  by = 'domain') %>%
+        left_join(ntw_join, by = 'domain') %>%
         distinct() %>%
         mutate(network_fullname = ifelse(network_fullname == domain_fullname, '', network_fullname)) %>%
         mutate(txt = paste0(domain_fullname, ' ', network_fullname, ': ', IR_acknowledgement_text)) %>%
@@ -2287,8 +2332,7 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
 
     relevant_deets <- ts_attrib %>%
         distinct(domain, funding) %>%
-        left_join(dplyr::select(macrosheds::ms_site_data, domain, network_fullname, domain_fullname),
-                  by = 'domain') %>%
+        left_join(ntw_join, by = 'domain') %>%
         distinct() %>%
         # bind_rows(tibble(domain='a', domain_fullname = 'a', network_fullname='a', funding='NSF awards: 345, 3535')) %>%
         mutate(network_fullname = ifelse(stringr::str_detect(domain_fullname, network_fullname), '', network_fullname)) %>%
@@ -2298,28 +2342,48 @@ format_acknowledgements <- function(ts_attrib, ws_attr = FALSE){
 
     ndeets <- length(relevant_deets)
 
-    relevant_deets <- paste0(1:ndeets, '. ', relevant_deets)
+    if(ndeets){
+        relevant_deets <- paste0(1:ndeets, '. ', relevant_deets)
+        sepr <- '.'
+    } else {
+        sepr <- ''
+    }
 
-    ack <- glue::glue('Primary data were provided by the following sources:\n{ack_ls}.',
+    ack <- glue::glue('Primary data were provided by the following sources:\n{ack_ls}{sepr}',
                       ack_ls = paste(relevant_deets, collapse = '\n'))
 
     if(length(custom_acks)){
         ack <- paste(ack, paste(custom_acks, collapse = '\n'), sep = '\n')
     }
 
-    if(ws_attr){
-        ws_add <- glue::glue('Spatial summary data were derived from layers ',
-                             'provided by:\n{ack_ls2}',
-                             ack_ls2 = paste(unique(macrosheds::attrib_ws_data$primary_source),
-                                             collapse = ', '))
+    if(all_ws_attr){
 
+        ack_ls2 <- paste(unique(macrosheds::attrib_ws_data$primary_source),
+                         collapse = ', ')
+
+    } else if(length(ws_attrib)){
+
+        ack_ls2 <- ms_load_variables('ws_attr') %>%
+            filter(! is.na(data_class),
+                   variable_code %in% ws_attrib) %>%
+            pull(data_source) %>%
+            unique() %>%
+            paste(collapse = ', ')
+
+    } else {
+        ack_ls2 <- ''
+    }
+
+    if(nchar(ack_ls2)){
+        ws_add <- glue::glue('Spatial summary data were derived from layers ',
+                             'provided by:\n{ack_ls2}')
         ack <- paste(ack, ws_add, sep = '\n')
     }
 
     return(ack)
 }
 
-format_bibliography <- function(ts_attrib, ws_attr = FALSE){
+format_bibliography <- function(ts_attrib, ws_attrib, all_ws_attr = FALSE){
 
     #organize bibtex records
     bts <- strsplit(macrosheds::ts_bib, '\n\n')[[1]]
@@ -2406,10 +2470,28 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     bibtex_out <- c(ms_bib, bibtex_out)
 
     #tack on ws attr bibtex if requested
-    if(ws_attr){
+    if(all_ws_attr){
+
         bts_w <- strsplit(macrosheds::ws_bib, '\n\n')[[1]]
         bts_w[1] <- stringr::str_replace(bts_w[1], '\\\n', '')
         bibtex_out <- c(bibtex_out, bts_w)
+
+    } else if(length(ws_attrib)){
+
+        bts_w <- strsplit(macrosheds::ws_bib, '\n\n')[[1]]
+        bts_w[1] <- stringr::str_replace(bts_w[1], '\\\n', '')
+
+        ws_cites <- match_ws_attr_attrib(ws_attrib) %>%
+            pull(citation) %>%
+            stringr::str_extract('\\([12][0-9]{3}\\). ([^\\.]+)', group = 1)
+
+        keepers <- c()
+        for(b in bts_w){
+            for(cc in ws_cites){
+                if(grepl(cc, gsub('[{}]', '', b), fixed = TRUE)) keepers <- c(keepers, b)
+            }
+        }
+        bibtex_out <- c(bibtex_out, keepers)
     }
 
     bibtex_out <- paste0(bibtex_out, '\n')
@@ -2417,7 +2499,7 @@ format_bibliography <- function(ts_attrib, ws_attr = FALSE){
     return(bibtex_out)
 }
 
-format_IR <- function(ts_attrib, ws_attr = FALSE, abide_by){
+format_IR <- function(ts_attrib, ws_attrib, all_ws_attr = FALSE, abide_by){
 
     noncomm <- ts_attrib %>%
         filter(grepl('NonCommercial', license_type)) %>%
@@ -2430,7 +2512,7 @@ format_IR <- function(ts_attrib, ws_attr = FALSE, abide_by){
         dplyr::select(network, domain, macrosheds_prodname, may_disregard_with_permission, contact) %>%
         distinct()
 
-    if(ws_attr){
+    if(all_ws_attr || any(grepl('tcw', ws_attrib))){
         sharealike <- bind_rows(
             sharealike,
             tibble(network = NA, domain = NA, macrosheds_prodname = 'tcw (watershed attribute)',
@@ -2518,13 +2600,17 @@ attrib_output_write <- function(attrib, write_to_dir){
     readr::write_lines(attrib$acknowledgements,
                        file.path(write_to_dir, 'acknowledgements.txt'))
 
-    readr::write_lines(attrib$intellectual_rights_explanations, sep = '\n\n',
-                       file.path(write_to_dir, 'intellectual_rights_definitions.txt'))
+    if(length(attrib$intellectual_rights_explanations)){
+        readr::write_lines(attrib$intellectual_rights_explanations, sep = '\n\n',
+                           file.path(write_to_dir, 'intellectual_rights_definitions.txt'))
+    }
 
-    sink(file = file.path(write_to_dir, 'intellectual_rights_notifications.txt'))
-    cat('----INTELLECTUAL RIGHTS NOTIFICATIONS----\n\n')
-    print(lapply(attrib$intellectual_rights_notifications, as.data.frame))
-    sink()
+    if(length(attrib$intellectual_rights_notifications)){
+        sink(file = file.path(write_to_dir, 'intellectual_rights_notifications.txt'))
+        cat('----INTELLECTUAL RIGHTS NOTIFICATIONS----\n\n')
+        print(lapply(attrib$intellectual_rights_notifications, as.data.frame))
+        sink()
+    }
 
     readr::write_lines(attrib$bibliography, sep = '\n',
                        file.path(write_to_dir, 'ms_bibliography.bib'))

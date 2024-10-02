@@ -9,7 +9,7 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
-<!-- to avoid re-downloading during knit, `mkdir ~/git/macrosheds/r_package/vignettes/example; cd $_; ln -s ~/ssd2/ms_test/ data` -->
+<!-- to avoid re-downloading during knit, `mkdir ~/git/macrosheds/r_package/vignettes/example; cd $_; ln -s ~/ssd2/ms_test/ data` break this link before installing package-->
 
  + Interactive visualizations: [macrosheds.org](https://macrosheds.org)
  + The MacroSheds [data paper](https://aslopubs.onlinelibrary.wiley.com/doi/full/10.1002/lol2.10325)
