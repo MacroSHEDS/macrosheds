@@ -92,7 +92,8 @@ test_that('files written properly', {
 
 test_that('all ws_attr can be passed in piecemeal', {
 
-    d <- select(ms_load_variables('ws_attr'), var = variable_code) %>%
+    d <- dplyr::select(ms_load_variables('ws_attr'), var = variable_code) %>%
         mutate(site_code = 'w1')
     zz <- ms_generate_attribution(d)
+    expect_equal(nrow(zz$full_details_ws_attr), 21)
 })

@@ -112,9 +112,9 @@ test_that('loading ws attr summaries works', {
     r = macrosheds::ms_load_product(macrosheds_root = wd,
                     prodname = 'ws_attr_summaries',
                     domains = c('hjandrews', 'hbef'),
-                    filter_vars = c('PO4_P', 'temp')) #ignored
+                    filter_vars = c('los', 'GPP'))
 
-    expect_length(unique(r$domain), 2)
+    expect_length(colnames(r), 6)
 
     r = macrosheds::ms_load_product(macrosheds_root = wd,
                     prodname = 'ws_attr_CAMELS_summaries',

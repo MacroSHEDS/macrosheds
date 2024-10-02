@@ -27,6 +27,7 @@ test_that("all watershed time series files download successfully", {
                                                      dataset = c('time series'),
                                                      omit_climate_data = TRUE))
 
+    vroot <- paste0('v', substr(list.files(temp_root), 2, 999))
     expect_gt(nrow(read_feather(file.path(temp_root, vroot, 'spatial_timeseries_landcover.feather'))), 100)
 
     ts_vars <- macrosheds::file_ids_for_r_package2 %>%
@@ -46,5 +47,6 @@ test_that("CAMELS datasets download successfully", {
     macrosheds::ms_download_ws_attr(macrosheds_root = temp_root,
                                     dataset = c('CAMELS summaries'))
 
+    vroot <- paste0('v', substr(list.files(temp_root), 2, 999))
     expect_gt(nrow(read_feather(file.path(temp_root, vroot, 'watershed_summaries_CAMELS.feather'))), 100)
 })

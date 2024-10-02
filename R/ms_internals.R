@@ -2305,6 +2305,7 @@ match_ws_attr_attrib <- function(ws_attrib){
         dplyr::select(data_source) %>%
         filter(! is.na(data_source),
                ! data_source %in% c('USGS', 'MODIS')) %>%
+        distinct() %>%
         left_join(macrosheds::attrib_ws_data,
                   by = c(data_source = 'primary_source')) %>%
         distinct(data_source, .keep_all = TRUE) %>%

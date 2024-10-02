@@ -267,8 +267,16 @@ ms_load_product <- function(macrosheds_root,
             return(o_)
         })
 
-        if(! is.null(filter_vars)){
-            o <- filter(o, var %in% filter_vars)
+        if(! is.null(filter_vars) && ! grepl('CAMELS', prodname)){
+            if(prodname == 'ws_attr_summaries'){
+                o <- select(o, network, domain, site_code,
+                            matches(paste0('(?<=^|\\W|_)',
+                                           paste(filter_vars, collapse = '|'),
+                                           '(?=$|\\W|_)'),
+                                    perl = TRUE))
+            } else {
+                o <- filter(o, var %in% filter_vars)
+            }
         }
 
         return(o)
