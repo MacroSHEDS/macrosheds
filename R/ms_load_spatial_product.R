@@ -130,14 +130,14 @@ ms_load_spatial_product <- function(macrosheds_root,
 
     shapes <- lapply(prodpaths,
                      function(x){
-                         sf::st_read(x,
-                                     stringsAsFactors = FALSE,
-                                     quiet = TRUE) %>%
+                         z <- sf::st_read(x,
+                                          stringsAsFactors = FALSE,
+                                          quiet = TRUE) %>%
                              slice_tail()
+                         sw(sf::st_set_crs(z, 4326))
                      })
 
     combined <- suppressMessages(Reduce(bind_rows, shapes))
 
     return(combined)
 }
-
