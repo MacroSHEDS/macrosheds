@@ -207,11 +207,18 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
                                rc = rel_code))
         }
 
-        dl <- try(download.file(url = fig_call,
-                  destfile = ws_attr_fp,
-                  quiet = quiet,
-                  cacheOK = FALSE,
-                  mode = 'wb'))
+        dl <- try(robust_download_file(
+            url = fig_call,
+            destfile = ws_attr_fp,
+            quiet = quiet,
+            cacheOK = FALSE,
+            mode = 'wb',
+            headers = c(
+                "User-Agent" = sprintf("R/%s libcurl", getRversion()),
+                "Accept" = "*/*",
+                "Referer" = "https://figshare.com"
+            )
+        ))
 
         if(! quiet){
             message(glue::glue('Downloaded {filename}.feather to {root_vsn}\n',

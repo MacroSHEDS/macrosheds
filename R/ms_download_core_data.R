@@ -196,11 +196,18 @@ ms_download_core_data <- function(macrosheds_root,
                                rc = rel_code))
         }
 
-        download_status <- try(download.file(url = fig_call,
-                                             destfile = temp_file_dom,
-                                             quiet = quiet,
-                                             cacheOK = FALSE,
-                                             mode = 'wb'))
+        download_status <- try(robust_download_file(
+            url = fig_call,
+            destfile = temp_file_dom,
+            quiet = quiet,
+            cacheOK = FALSE,
+            mode = 'wb',
+            headers = c(
+                "User-Agent" = sprintf("R/%s libcurl", getRversion()),
+                "Accept" = "*/*",
+                "Referer" = "https://figshare.com"
+            )
+        ))
 
         fails <- c()
         if(inherits(download_status, 'try-error')){

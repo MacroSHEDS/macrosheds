@@ -3,8 +3,10 @@ library(testthat)
 library(feather)
 
 # setwd('./tests/testthat/')
-#ms_root <- '../../data/ms_test' #superfluous files in the data/ directory causes problems for build.
-ms_root <- '~/ssd2/ms_test' #so use a directory that works for your machine
+#ms_root <- '../../data/ms_test' #superfluous files in the data/ directory cause problems for build.
+# ms_root <- '~/ssd2/ms_test' #so use a directory that works for your machine
+ms_root <- tempdir()
+ms_root <- file.path(ms_root, 'ms_test')
 
 flux_fp <- 'data/ms_test/ms_flux_annual'
 

@@ -1,7 +1,7 @@
 Package: macrosheds
 Title: Tools for interfacing with the MacroSheds dataset
-Version: 2.0.2
-Date: 2024-10-25
+Version: 2.0.3
+Date: 2025-09-18
 Authors@R: c(
     person(given = "Spencer",
            family = "Rhea",
@@ -27,9 +27,9 @@ Authors@R: c(
 Description: The macrosheds package accompanies the MacroSheds dataset and web portal (macrosheds.org). It provides data access, facilitates proper attribution, and helps with common routines for watershed data analysis.
 Depends: R (>= 3.6.1), dplyr
 Imports:
-    feather, sf, glue, stringr, purrr, readr, tidyr, lubridate, PeriodicTable
+    feather, sf, glue, stringr, purrr, readr, tidyr, lubridate, PeriodicTable, curl
 Suggests:
-    testthat (>= 3.0.0), terra, mapview, elevatr, whitebox, raster, knitr, rmarkdown, imputeTS
+    testthat (>= 3.0.0), terra, mapview, elevatr, whitebox, raster, knitr, rmarkdown, imputeTS, osmdata, data.table, foreach
 VignetteBuilder: knitr, rmarkdown
 Roxygen: list(markdown = TRUE)
 License: MIT
@@ -37,5 +37,5 @@ Encoding: UTF-8
 LazyData: true
 URL: https://github.com/MacroSHEDS/macrosheds
 BugReports: https://github.com/MacroSHEDS/macrosheds/issues
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 Config/testthat/edition: 3

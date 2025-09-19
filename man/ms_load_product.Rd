@@ -54,10 +54,10 @@ Available prodnames are (for core time-series products):
 \item{filter_vars}{character vector of variable codes. for products like stream_chemistry that include
 multiple variables, this filters to just the ones specified
 Ignored if requesting discharge, precipitation, or watershed attributes.
-To see a catalog of variable codes, run \code{\link[=ms_load_variables]{ms_load_variables()}} or visit macrosheds.org.}
+To see a catalog of variable codes, run \code{\link[=ms_load_variables]{ms_load_variables()}} or visit \href{https://macrosheds.org}{macrosheds.org}.}
 
 \item{networks, domains, site_codes}{character vectors of MacroSheds networks/domains/sites to load. Omit to load all.
-To see a catalog of site codes, run \code{\link[=ms_load_sites]{ms_load_sites()}} or visit \link{macrosheds.org}.}
+To see a catalog of site codes, run \code{\link[=ms_load_sites]{ms_load_sites()}} or visit \href{https://macrosheds.org}{macrosheds.org}.}
 
 \item{sort_result}{logical. Ignored if requesting watershed attributes.
 If TRUE, and requesting core time-series data, output will be sorted by site_code, var,
@@ -93,7 +93,7 @@ Complete documentation is available on \href{https://portal.edirepository.org/ni
 \details{
 *"instantaneous" (i.e. daily) flux, scaled by watershed area and reported in kg/ha/d.
 Note that flux products can also be computed from component products using
-\code{\link[=ms_calc_flux]{ms_calc_flux()}} and \code{\link[=ms_calc_flux_rsfme]{ms_calc_flux_rsfme()}}.
+\code{\link[=ms_calc_flux]{ms_calc_flux()}}.
 **load = flux aggregated by water-year (Oct 1 to Sept 30). Load is computed by various methods,
 with MacroSheds-recommended method identified for each site_code-variable-water_year combination.
 Scaled by watershed area and reported in kg/ha/yr. See ms_calc_flux for method details.

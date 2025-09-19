@@ -28,8 +28,8 @@ The **macrosheds R package** provides functions for accessing, manipulating, and
 # Installation
 
 ```{r}
-install.packages("devtools")
-devtools::install_github("https://github.com/MacroSHEDS/macrosheds.git")
+install.packages("remotes")
+remotes::install_github("https://github.com/MacroSHEDS/macrosheds.git")
 ```
 
 If you'll be using our watershed delineator `ms_delineate_watershed`, you'll also need to run

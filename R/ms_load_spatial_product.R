@@ -14,11 +14,11 @@
 #'    product will be combined across specified networks/domains.
 #' @param version numeric or "latest". The MacroSheds dataset version from which to load data.
 #' @param networks character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. For a catalog of
-#'    networks, use [ms_load_sites()], visit macrosheds.org, or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
+#'    networks, use [ms_load_sites()], visit [macrosheds.org](https://macrosheds.org), or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
 #' @param domains character vector. MacroSheds domains to load; optional. Omit networks, domains, and site_codes to load all. For a catalog of
-#'    domains, use [ms_load_sites()], visit macrosheds.org, or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
+#'    domains, use [ms_load_sites()], visit [macrosheds.org](https://macrosheds.org), or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
 #' @param site_codes character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. For a catalog of
-#'    sites, use [ms_load_sites()], visit macrosheds.org, or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
+#'    sites, use [ms_load_sites()], visit [macrosheds.org](https://macrosheds.org), or see [MacroSheds EDI](https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262)
 #' @param warn logical. If TRUE, you'll get notifications about more recent versions of the MacroSheds dataset, if available.
 #' @return returns an \code{sf} object containing all data belonging to the
 #'    selected spatial product in the \code{macrosheds_root} directory.
@@ -29,7 +29,7 @@
 #' ms_download_core_data(macrosheds_root = ms_root,
 #'                       domains = c('niwot', 'hjandrews', 'hbef'))
 #' macrosheds_data <- load_spatial_product(macrosheds_root = ms_root,
-#'                                         spatial_product = 'ws_boundary'
+#'                                         spatial_product = 'ws_boundary',
 #'                                         domains = 'hbef')
 
 ms_load_spatial_product <- function(macrosheds_root,

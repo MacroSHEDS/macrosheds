@@ -82,8 +82,8 @@
 #' @seealso [ms_load_product()], [ms_delineate_watershed()], [ms_scale_flux_by_area()]
 #' @importFrom data.table ':='
 #' @examples
-#' See vignette: https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_interpolate_precip.md
-
+#' #See vignette:
+#' #https://github.com/MacroSHEDS/macrosheds/blob/master/vignettes/ms_interpolate_precip.md
 ms_calc_watershed_precip <- function(precip,
                                      ws_boundary,
                                      precip_gauge,
