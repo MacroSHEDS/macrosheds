@@ -14,21 +14,18 @@ devtools::install(quick = TRUE) # reloads and reinstalls, without checks
 devtools::install()
 devtools::install(build_vignettes = TRUE)
 
-#before publishing:
-devtools::check()
-
 #run all tests (optionally log output to file with sink)
 sink('tests/results.log')
 devtools::test()
 sink()
 
 #run individual tests, or groups of tests via regex (though lookarounds not implemented)
+devtools::test(filter='ms_download_core_data')
+devtools::test(filter='ms_download_ws_attr')
 devtools::test(filter='ms_calc_flux')
 devtools::test(filter='ms_calc_load')
 devtools::test(filter='ms_conversions')
 devtools::test(filter='ms_delineate_watershed')
-devtools::test(filter='ms_download_core_data')
-devtools::test(filter='ms_download_ws_attr')
 devtools::test(filter='ms_drop_var_prefix')
 devtools::test(filter='ms_extract_var_prefix')
 devtools::test(filter='ms_generate_attribution')

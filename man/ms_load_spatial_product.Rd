@@ -25,13 +25,13 @@ product will be combined across specified networks/domains.}
 \item{version}{numeric or "latest". The MacroSheds dataset version from which to load data.}
 
 \item{networks}{character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. For a catalog of
-networks, use \code{\link[=ms_load_sites]{ms_load_sites()}}, visit macrosheds.org, or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}}
+networks, use \code{\link[=ms_load_sites]{ms_load_sites()}}, visit \href{https://macrosheds.org}{macrosheds.org}, or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}}
 
 \item{domains}{character vector. MacroSheds domains to load; optional. Omit networks, domains, and site_codes to load all. For a catalog of
-domains, use \code{\link[=ms_load_sites]{ms_load_sites()}}, visit macrosheds.org, or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}}
+domains, use \code{\link[=ms_load_sites]{ms_load_sites()}}, visit \href{https://macrosheds.org}{macrosheds.org}, or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}}
 
 \item{site_codes}{character vector. MacroSheds networks to load; optional. Omit networks, domains, and site_codes to load all. For a catalog of
-sites, use \code{\link[=ms_load_sites]{ms_load_sites()}}, visit macrosheds.org, or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}}
+sites, use \code{\link[=ms_load_sites]{ms_load_sites()}}, visit \href{https://macrosheds.org}{macrosheds.org}, or see \href{https://portal.edirepository.org/nis/mapbrowse?scope=edi&identifier=1262}{MacroSheds EDI}}
 
 \item{warn}{logical. If TRUE, you'll get notifications about more recent versions of the MacroSheds dataset, if available.}
 }
@@ -49,7 +49,7 @@ ms_root = 'data/macrosheds'
 ms_download_core_data(macrosheds_root = ms_root,
                       domains = c('niwot', 'hjandrews', 'hbef'))
 macrosheds_data <- load_spatial_product(macrosheds_root = ms_root,
-                                        spatial_product = 'ws_boundary'
+                                        spatial_product = 'ws_boundary',
                                         domains = 'hbef')
 }
 \seealso{

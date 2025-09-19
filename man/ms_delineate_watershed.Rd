@@ -129,7 +129,7 @@ other fashion, let us know. See details.
 }
 \details{
 Output files are unprojected (WGS 84), though processing is done
-on projected data. A projection is chosen automatically by \code{\link[=choose_projection]{choose_projection()}},
+on projected data. A projection is chosen automatically by macrosheds:::choose_projection(),
 based on pour point location. Note that this has nothing to do with the crs parameter,
 which only allows you to specify the coordinate reference system of your input
 coordinates. Also note that for watersheds that span several latitudes or longitudes,
@@ -137,7 +137,7 @@ calculated watershed areas might be inaccurate.
 
 For the fully agnostic delineation procedure, here are the steps:
 \enumerate{
-\item A reasonable projection is chosen via \code{\link[=choose_projection]{choose_projection()}}.
+\item A reasonable projection is chosen via macrosheds:::choose_projection().
 \item A digital elevation model is retrieved via \code{\link[elevatr:get_elev_raster]{elevatr::get_elev_raster()}}.
 This initial DEM is 4 km^2 and is centered on the given location.
 \item Single-cell pits in the DEM are filled using \code{\link[whitebox:wbt_fill_single_cell_pits]{whitebox::wbt_fill_single_cell_pits()}}.

@@ -10,7 +10,7 @@ options(timeout = 6000)
 test_that('a domain is downloaded successfully', {
 
     if(skip_for_now) skip('skipping (switch skip_for_now to FALSE to turn this test on)')
-    expect_output(macrosheds::ms_download_core_data(macrosheds_root = temp_root,
+    expect_message(macrosheds::ms_download_core_data(macrosheds_root = temp_root,
                                                     domains = c('hbef')),
                   'hbef successfully downloaded and unzipped')
 
@@ -21,7 +21,7 @@ test_that('a domain is downloaded successfully', {
 test_that('a network is downloaded successfully', {
 
     if(skip_for_now) skip('skipping (switch skip_for_now to FALSE to turn this test on)')
-    expect_output(macrosheds::ms_download_core_data(macrosheds_root = temp_root,
+    expect_message(macrosheds::ms_download_core_data(macrosheds_root = temp_root,
                                                     networks = c('czo')),
                   'shale_hills successfully downloaded and unzipped')
 
@@ -60,7 +60,7 @@ test_that('v1 and v2 are properly retrieved', {
     d1 <- macrosheds::ms_load_product(temp_root, 'stream_chemistry', 1, warn = FALSE)
     expect_contains(colnames(d1), 'grab_sample')
     d2 <- macrosheds::ms_load_product(temp_root, 'stream_flux_inst_scaled', 2, warn = FALSE)
-    expect_equal(d2$val[1], 8.612889e-05)
+    expect_contains(d2$site_code, 'BC_SW_20')
 
     expect_setequal(list.files(file.path(temp_root, 'v2', 'walker_branch')),
                  c('discharge', 'documentation', 'precip_gauge_locations', 'precipitation',

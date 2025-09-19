@@ -1,5 +1,5 @@
 #' Delineate a watershed from a stream location.
-#' 
+#'
 #' From any geographic location, this function (iteratively) attempts to delineate a watershed,
 #' i.e. the land area that contributes overland flow to that location. You will need to install whitebox
 #' binaries via \code{whitebox::install_whitebox()} before it will work. Delineation
@@ -9,7 +9,7 @@
 #' or try again by interactively providing different specifications. This function
 #' is intended to be used interactively in Rstudio. If you'd like to use it in some
 #' other fashion, let us know. See details.
-#' 
+#'
 #' @author Mike Vlah, \email{vlahm13@@gmail.com}
 #' @author Spencer Rhea
 #' @author Wes Slaughter
@@ -18,7 +18,7 @@
 #' @param long numeric. Represents the longitude of the pour point in decimal degrees
 #' (negative indicates west of prime meridian).
 #' @param crs numeric. Represents the coordinate reference system of your starting
-#' coordinates. EPSG codes work here (e.g. the default is 4326 for WGS 84). 
+#' coordinates. EPSG codes work here (e.g. the default is 4326 for WGS 84).
 #' @param write_dir character string. The directory in which to write output shapefile.
 #' @param write_name character string. the basename of the shapefile components to
 #' be written. e.g. \code{write_name = 'foo'} would produce foo.shp, foo.shx, foo.prj, foo.dbf.
@@ -51,7 +51,7 @@
 #' @param spec_breach_method: optional string. Either 'basic', which invokes [whitebox::wbt_breach_depressions()],
 #' or 'lc', which invokes [whitebox::wbt_breach_depressions_least_cost()]. NOTE: at present,
 #' \code{wbt_breach_depressions} is used regardless of the argument to this parameter, as the least cost
-#' algorithm in \code{whitebox} is non-deterministic. 
+#' algorithm in \code{whitebox} is non-deterministic.
 #' @param spec_burn_streams: logical. if TRUE, both [whitebox::wbt_burn_streams_at_roads()]
 #' and [whitebox::wbt_fill_burn()] are called on the DEM, using road and stream
 #' layers from \code{OpenStreetMap}. This allows delineation to proceed through
@@ -65,7 +65,7 @@
 #' \code{ms_delineate_watershed} internal prompts--one per line. The file must end with
 #' a newline, and it will be emptied, line-by-line from the top, during operation.
 #' This is used for testing and is unlikely to be useful to end-users, but who knows?
-#' @return 
+#' @return
 #' Writes a shapefile to \code{write_dir}. Also returns a list containing the following components:
 #' + watershed_area_ha: the area of the delineated watershed in hectares
 #' + specs: a list of specifications of the successful delineation
@@ -88,14 +88,14 @@
 #'        used to condition the DEM.
 #' @details
 #' Output files are unprojected (WGS 84), though processing is done
-#' on projected data. A projection is chosen automatically by [macrosheds::choose_projection()],
+#' on projected data. A projection is chosen automatically by macrosheds:::choose_projection(),
 #' based on pour point location. Note that this has nothing to do with the crs parameter,
 #' which only allows you to specify the coordinate reference system of your input
 #' coordinates. Also note that for watersheds that span several latitudes or longitudes,
 #' calculated watershed areas might be inaccurate.
 #'
 #' For the fully agnostic delineation procedure, here are the steps:
-#' 1. A reasonable projection is chosen via [choose_projection()].
+#' 1. A reasonable projection is chosen via macrosheds:::choose_projection().
 #' 2. A digital elevation model is retrieved via [elevatr::get_elev_raster()].
 #'    This initial DEM is 4 km^2 and is centered on the given location.
 #' 3. Single-cell pits in the DEM are filled using [whitebox::wbt_fill_single_cell_pits()].
@@ -132,7 +132,7 @@
 #'     write_dir = '/your/path',
 #'     write_name = 'example_site'
 #' )
-#' 
+#'
 #' #or maybe you know the watershed is on the order of 10,000 km^2 and that.
 #' #there are large highway bridges over some reaches.
 #' out <- ms_delineate_watershed(
@@ -182,8 +182,8 @@ ms_delineate_watershed <- function(lat,
 
     library("dplyr", quietly = TRUE)
 
-    check_suggested_pkgs(c('terra', 'elevatr', 'mapview', 'raster', 'whitebox'))
-    
+    check_suggested_pkgs(c('terra', 'elevatr', 'mapview', 'raster', 'whitebox', 'osmdata'))
+
     if(! whitebox::check_whitebox_binary()){
         stop('The whitebox package is not fully installed. Please run whitebox::install_whitebox()')
     }
@@ -197,32 +197,32 @@ ms_delineate_watershed <- function(lat,
     if(is.null(crs)){
         stop('crs must be provided')
     }
-    
+
     if(spec_breach_method == 'lc'){
         spec_breach_method <- 'basic'
         message('spec_breach_method = "lc" is currently unavailable. Setting spec_breach_method = "basic"')
     }
 
     requireNamespace('macrosheds', quietly = TRUE)
-    
+
     if(verbose){
         message('Beginning watershed delineation')
     }
-    
+
     tmp <- tempdir()
-    
+
     all_specs_provided <- ! is.null(spec_buffer_radius_m) &&
         ! is.null(spec_snap_distance_m) &&
         ! is.null(spec_snap_method) &&
         ! is.null(spec_dem_resolution) &&
         ! is.null(spec_breach_method) &&
         ! is.null(spec_burn_streams)
-    
+
     if(! confirm && ! all_specs_provided){
         message('confirm is FALSE but required specs parameters not provided. Setting to TRUE. Note that flat_increment need not be provided.')
         confirm <- TRUE
     }
-    
+
     selection <- try({
         sw(delineate_watershed_apriori_recurse(
             lat = lat,
@@ -243,33 +243,33 @@ ms_delineate_watershed <- function(lat,
             verbose = verbose,
             responses_from_file = responses_from_file))
     })
-    
+
     if(inherits(selection, 'abort_delin')){
         return(invisible(NULL))
     }
-    
+
     if(inherits(selection, 'try-error')){
         message(paste('See additional error details, but note that if you',
                       'haven\'t already run whitebox::install_whitebox(),',
                       'that\'s the solution!'))
         stop(selection)
     }
-    
+
     #calculate watershed area in hectares
     wb <- sf::st_read(glue::glue('{d}/{s}.shp',
                            d = write_dir,
                            s = write_name),
                       quiet = TRUE)
-    
+
     ws_area_ha <- as.numeric(sf::st_area(wb)) / 10000
-    
+
     #return the specifications of the correctly delineated watershed, and some
     #   other goodies
     rgx <- stringr::str_match(selection,
                      paste0('^wb[0-9]+_BUF([0-9]+)(standard|jenson)',
                             'DIST([0-9]+)RES([0-9]+)INC([0-1\\.null]+)',
                             'BREACH(basic|lc)BURN(TRUE|FALSE)\\.shp$'))
-    
+
     deets <- list(name = write_name,
                   buffer_radius_m = as.numeric(rgx[, 2]),
                   snap_distance_m = as.numeric(rgx[, 4]),
@@ -278,7 +278,7 @@ ms_delineate_watershed <- function(lat,
                   flat_increment = rgx[, 6],
                   breach_method = rgx[, 7],
                   burn_streams = as.logical(rgx[, 8]))
-    
+
     return(list(out_path = write_dir,
                 filename_base = write_name,
                 watershed_area_ha = ws_area_ha,

@@ -18,7 +18,7 @@
 #'    In version 2 and later, this system has been simplified and replaced by a single,
 #'    logical column called "grab_sample".
 #' @export
-#' @seealso [ms_extract_var_prefix_()]
+#' @seealso [ms_extract_var_prefix()]
 #' @examples
 #' macrosheds_vars <- c('GN_NO3_N', 'GN_Mg', 'IS_discharge')
 #' macrosheds_vars <- drop_var_prefix(x = macrosheds_vars)

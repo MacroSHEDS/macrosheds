@@ -922,7 +922,7 @@ shortcut_idw_concflux_v2 <- function(encompassing_dem,
 
         just_checkin <- precip_quickref[[1]]
 
-        if(class(just_checkin) == 'character' &&
+        if(inherits(just_checkin, 'character') &&
            just_checkin == 'NO QUICKREF AVAILABLE'){
 
             return(tibble())
@@ -4035,26 +4035,28 @@ calc_simple_flux <- function(chem, q){
     return(d)
 }
 
-calc_load <- function(chem, q, site_code, area, method,
-                      aggregation, verbose){
-
+calc_load <- function(chem, q, site_code, area, method, aggregation, verbose) {
     fvar <- chem$var[1]
 
-    if(any(na.omit(chem$val == 0))){
-        message('Concentration values of 0 detected. These will be removed before computing load.')
+    if (any(na.omit(chem$val == 0))) {
+        message(
+            'Concentration values of 0 detected. These will be removed before computing load.'
+        )
     }
 
     chem_filt <- chem %>%
         filter(val > 0) %>%
-               #errors::drop_errors(val) > 0) %>%
+        #errors::drop_errors(val) > 0) %>%
         dplyr::select(date, val) %>%
         sw(tidyr::drop_na(date, val))
 
     chunk_daterange <- sw(range(chem_filt$date))
 
-    q_filt <- filter(q,
-                     date >= !!chunk_daterange[1],
-                     date <= !!chunk_daterange[2])
+    q_filt <- filter(
+        q,
+        date >= !!chunk_daterange[1],
+        date <= !!chunk_daterange[2]
+    )
 
     #find water years during which Q and chem overlap
     gd_q <- q_filt %>%
@@ -4067,44 +4069,49 @@ calc_load <- function(chem, q, site_code, area, method,
 
     paired_years <- intersect(gd_q, gd_chm)
 
-    if(! length(paired_years)){
-        message(glue::glue('Not enough overlap between {fvar} and discharge to calculate flux.'))
-        return(tibble(site_code = character(),
-                      var = character(),
-                      wy = numeric(),
-                      val = numeric(),
-                      method = character(),
-                      ms_recommended = logical()))
+    if (!length(paired_years)) {
+        message(glue::glue(
+            'Not enough overlap between {fvar} and discharge to calculate flux.'
+        ))
+        return(tibble(
+            site_code = character(),
+            var = character(),
+            wy = numeric(),
+            val = numeric(),
+            method = character(),
+            ms_recommended = logical()
+        ))
     }
 
     daily_data_conc <- chem_filt %>%
         group_by(date) %>%
-        summarize(val = mean_or_x(val),
-                  .groups = 'drop') %>%
+        summarize(val = mean_or_x(val), .groups = 'drop') %>%
         mutate(site_code = !!site_code) %>%
         dplyr::select(site_code, date, conc = val)
 
     daily_data_q <- q_filt %>%
         group_by(date) %>%
-        summarize(val = mean_or_x(val, na.rm = TRUE),
-                  .groups = 'drop') %>%
+        summarize(val = mean_or_x(val, na.rm = TRUE), .groups = 'drop') %>%
         mutate(site_code = !!site_code) %>%
         dplyr::select(site_code, date, q_lps = val)
 
-    raw_data_full <- full_join(daily_data_conc, daily_data_q,
-                               by = c('site_code', 'date')) %>%
-        mutate(wy = wtr_yr(date, start_month = 10),
-               month = lubridate::month(date)) %>%
+    raw_data_full <- full_join(
+        daily_data_conc,
+        daily_data_q,
+        by = c('site_code', 'date')
+    ) %>%
+        mutate(
+            wy = wtr_yr(date, start_month = 10),
+            month = lubridate::month(date)
+        ) %>%
         filter(wy %in% paired_years)
 
     out_frame <- out_deets <- tibble()
-    for(target_year in paired_years){
-
+    for (target_year in paired_years) {
         aggregation <- ifelse(aggregation == 'monthly', 'month', aggregation)
 
         q_chem_yr <- raw_data_full %>%
-            mutate(conc = conc,
-                   q_lps = q_lps) %>%
+            mutate(conc = conc, q_lps = q_lps) %>%
             #mutate(conc = errors::drop_errors(conc),
             #       q_lps = errors::drop_errors(q_lps)) %>%
             filter(wy == !!target_year)
@@ -4120,16 +4127,13 @@ calc_load <- function(chem, q, site_code, area, method,
             mutate(month = lubridate::month(date))
 
         # set up default flux values to be replaced if user has chosen to run method
-        if(aggregation == 'annual'){
-
+        if (aggregation == 'annual') {
             flux_annual_average <- NA
             flux_annual_pw <- NA
             flux_annual_beale <- NA
             flux_annual_rating <- NA
             flux_annual_comp <- NA
-
         } else {
-
             flux_monthly_average <- list(flux = rep(NA, 12))
             flux_monthly_pw <- list(flux = rep(NA, 12))
             flux_monthly_beale <- list(flux = rep(NA, 12))
@@ -4138,28 +4142,33 @@ calc_load <- function(chem, q, site_code, area, method,
         }
 
         #### calculate average #####
-        if('average' %in% method){
-            if(aggregation == 'month'){
-
+        if ('average' %in% method) {
+            if (aggregation == 'month') {
                 flux_monthly_average <- q_chem_yr %>%
                     group_by(wy, month) %>%
-                    summarize(q_lps = mean(q_lps, na.rm = TRUE),
-                              conc = mean(conc, na.rm = TRUE),
-                              .groups = 'drop') %>%
+                    summarize(
+                        q_lps = mean(q_lps, na.rm = TRUE),
+                        conc = mean(conc, na.rm = TRUE),
+                        .groups = 'drop'
+                    ) %>%
                     # multiply by seconds in a year, and divide by mg to kg conversion (1M)
-                    mutate(flux = conc * q_lps * 31557600 * (1 / area) * 1e-6) %>%
+                    mutate(
+                        flux = conc * q_lps * 31557600 * (1 / area) * 1e-6
+                    ) %>%
                     dplyr::select(month, flux) %>%
                     if_else(is.na(.), NA, .) #convert NaN
-
             } else {
-
                 flux_annual_average <- q_chem_yr %>%
                     group_by(wy) %>%
-                    summarize(q_lps = mean(q_lps, na.rm = TRUE),
-                              conc = mean(conc, na.rm = TRUE),
-                              .groups = 'drop') %>%
+                    summarize(
+                        q_lps = mean(q_lps, na.rm = TRUE),
+                        conc = mean(conc, na.rm = TRUE),
+                        .groups = 'drop'
+                    ) %>%
                     # multiply by seconds in a year, and divide by mg to kg conversion (1M)
-                    mutate(flux = conc * q_lps * 31557600 * (1 / area) * 1e-6) %>%
+                    mutate(
+                        flux = conc * q_lps * 31557600 * (1 / area) * 1e-6
+                    ) %>%
                     pull(flux) %>%
                     if_else(is.na(.), NA, .) #convert NaN
             }
@@ -4167,9 +4176,8 @@ calc_load <- function(chem, q, site_code, area, method,
 
         #### calculate period weighted #####
 
-        if(aggregation == 'annual'){
-            if('pw' %in% method){
-
+        if (aggregation == 'annual') {
+            if ('pw' %in% method) {
                 flux_annual_pw <- sw(calculate_pw(
                     chem_df = chem_yr,
                     q_df = q_yr,
@@ -4178,9 +4186,7 @@ calc_load <- function(chem, q, site_code, area, method,
                     period = aggregation
                 ))
             }
-
         } else {
-
             # NOTE: for now, month-order is based off of pw, so this needs to run
             # for monthly flux calcs internals to run (should be fixed)
             flux_annual_pw <- sw(calculate_pw(
@@ -4194,7 +4200,7 @@ calc_load <- function(chem, q, site_code, area, method,
 
         #### calculate beale ######
 
-        if('beale' %in% method){
+        if ('beale' %in% method) {
             flux_annual_beale <- calculate_beale(
                 chem_df = chem_yr,
                 q_df = q_yr,
@@ -4206,7 +4212,7 @@ calc_load <- function(chem, q, site_code, area, method,
 
         #### calculate rating #####
 
-        if('rating' %in% method){
+        if ('rating' %in% method) {
             flux_annual_rating <- calculate_rating(
                 chem_df = chem_yr,
                 q_df = q_yr,
@@ -4219,8 +4225,7 @@ calc_load <- function(chem, q, site_code, area, method,
         #### calculate composite ######
 
         comp_violation <- FALSE
-        if('composite' %in% method){
-
+        if ('composite' %in% method) {
             rating_filled_df <- generate_residual_corrected_conc(
                 chem_df = chem_yr,
                 q_df = q_yr,
@@ -4228,13 +4233,13 @@ calc_load <- function(chem, q, site_code, area, method,
                 sitecol = 'site_code'
             )
 
-            if(length(rating_filled_df) > 1 || ! is.na(rating_filled_df)){
-
+            if (length(rating_filled_df) > 1 || !is.na(rating_filled_df)) {
                 flux_annual_comp <- calculate_composite_from_resid_corrected(
                     rating_filled_df = rating_filled_df,
                     area = area,
                     period = aggregation
-                ) %>% pull(flux)
+                ) %>%
+                    pull(flux)
 
                 comp_violation <- flux_annual_comp < 0
             } else {
@@ -4242,8 +4247,7 @@ calc_load <- function(chem, q, site_code, area, method,
             }
         }
 
-        if(aggregation == 'month'){
-
+        if (aggregation == 'month') {
             # NOTE: lots of code with month matching and merging below this is all
             # to match everything to month order of period weighted, to account for
             # possible worlds where water year rearranges month order, etc.
@@ -4252,72 +4256,100 @@ calc_load <- function(chem, q, site_code, area, method,
                 mutate(month = months) %>%
                 dplyr::select(month, flux)
 
-            if(length(months) != 12){
-                warning('Number of months in pw not 12, need handling for setting NA to uncalc months')
+            if (length(months) != 12) {
+                warning(
+                    'Number of months in pw not 12, need handling for setting NA to uncalc months'
+                )
             }
 
             # beale
-            if('beale' %in% method){
-                months_beale <- sapply(strsplit(flux_annual_beale$date, '-'), `[`, 2)
+            if ('beale' %in% method) {
+                months_beale <- sapply(
+                    strsplit(flux_annual_beale$date, '-'),
+                    `[`,
+                    2
+                )
                 flux_monthly_beale <- flux_annual_beale %>%
                     mutate(month = as.character(months_beale))
-                flux_monthly_beale <- flux_monthly_beale[match(months, flux_monthly_beale$month),]
-                flux_monthly_beale <- left_join(flux_monthly_pw %>% dplyr::select(month),
-                                                flux_monthly_beale, by = 'month') %>%
+                flux_monthly_beale <- flux_monthly_beale[
+                    match(months, flux_monthly_beale$month),
+                ]
+                flux_monthly_beale <- left_join(
+                    flux_monthly_pw %>% dplyr::select(month),
+                    flux_monthly_beale,
+                    by = 'month'
+                ) %>%
                     dplyr::select(month, flux)
             }
 
             # rating
-            if('rating' %in% method){
-                months_rating <- sapply(strsplit(flux_annual_rating$date, '-'), `[`, 2)
+            if ('rating' %in% method) {
+                months_rating <- sapply(
+                    strsplit(flux_annual_rating$date, '-'),
+                    `[`,
+                    2
+                )
                 flux_monthly_rating <- flux_annual_rating %>%
                     mutate(month = as.character(months_rating))
-                flux_monthly_rating <- flux_monthly_rating[match(months, flux_monthly_rating$month),]
-                flux_monthly_rating <- left_join(flux_monthly_pw %>% dplyr::select(month),
-                                                 flux_monthly_rating, by = 'month') %>%
+                flux_monthly_rating <- flux_monthly_rating[
+                    match(months, flux_monthly_rating$month),
+                ]
+                flux_monthly_rating <- left_join(
+                    flux_monthly_pw %>% dplyr::select(month),
+                    flux_monthly_rating,
+                    by = 'month'
+                ) %>%
                     dplyr::select(month, flux)
             }
 
             # comp
-            if('composite' %in% method){
-                flux_monthly_comp <- flux_annual_comp[match(as.double(months), flux_annual_comp$month),]
+            if ('composite' %in% method) {
+                flux_monthly_comp <- flux_annual_comp[
+                    match(as.double(months), flux_annual_comp$month),
+                ]
                 flux_monthly_comp <- flux_monthly_comp %>%
                     mutate(month = sprintf('%02d', month))
                 # make sure all months present, filled w NAs if no value
-                flux_monthly_comp <- left_join(flux_monthly_pw %>% dplyr::select(month),
-                                               flux_monthly_comp, by = 'month') %>%
+                flux_monthly_comp <- left_join(
+                    flux_monthly_pw %>% dplyr::select(month),
+                    flux_monthly_comp,
+                    by = 'month'
+                ) %>%
                     dplyr::select(month, flux)
             }
 
-            if(!'pw' %in% method){
+            if (!'pw' %in% method) {
                 flux_monthly_pw$flux <- rep(NA, 12)
             }
         }
 
         #### select MS favored ####
 
-        if(aggregation == 'month'){
-            paired_df <- full_join(q_yr, chem_yr,
-                                   by = c('date', 'site_code', 'wy', 'month'))
+        if (aggregation == 'month') {
+            paired_df <- full_join(
+                q_yr,
+                chem_yr,
+                by = c('date', 'site_code', 'wy', 'month')
+            )
         } else {
             paired_df <- q_yr %>%
                 dplyr::select(-month) %>%
-                full_join(dplyr::select(chem_yr, -month),
-                          by = c('date', 'site_code', 'wy'))
+                full_join(
+                    dplyr::select(chem_yr, -month),
+                    by = c('date', 'site_code', 'wy')
+                )
         }
 
         paired_df <- paired_df %>%
             tidyr::drop_na() %>%
-            filter(q_lps > 0,
-                   is.finite(q_lps),
-                   conc > 0,
-                   is.finite(conc))
+            filter(q_lps > 0, is.finite(q_lps), conc > 0, is.finite(conc))
 
-        model_data <- tibble(c_log = log10(paired_df$conc),
-                             q_log = log10(paired_df$q_lps))
+        model_data <- tibble(
+            c_log = log10(paired_df$conc),
+            q_log = log10(paired_df$q_lps)
+        )
 
-        if(nrow(model_data)){
-
+        if (nrow(model_data)) {
             # `model_data` is the site-variable-year dataframe of Q and concentration
             # log-log rating curve of C by Q
             modl <- lm(model_data$c_log ~ model_data$q_log, singular.ok = TRUE)
@@ -4325,45 +4357,57 @@ calc_load <- function(chem, q, site_code, area, method,
 
             r_squared <- rating$r.squared
             # auto-correlation of residuals of rating curve
-            resid_acf <- abs(acf(rating$residuals, lag.max = 1, plot = FALSE)$acf[2])
+            resid_acf <- abs(acf(
+                rating$residuals,
+                lag.max = 1,
+                plot = FALSE
+            )$acf[2])
 
             # auto-correlation of concentration data
-            con_acf <- abs(acf(paired_df$conc, lag.max = 1, plot = FALSE)$acf[2])
+            con_acf <- abs(acf(paired_df$conc, lag.max = 1, plot = FALSE)$acf[
+                2
+            ])
         } else {
             r_squared <- resid_acf <- con_acf <- NA_real_
         }
 
         # modified from figure 10 of Aulenbach et al 2016
-        if(nrow(model_data) && ! is.na(r_squared)){
-
-            if(r_squared > 0.3 && ! is.na(resid_acf)){
-                if(resid_acf > 0.2){
+        if (nrow(model_data) && !is.na(r_squared)) {
+            if (r_squared > 0.3 && !is.na(resid_acf)) {
+                if (resid_acf > 0.2) {
                     recommended_method <- 'composite'
                 } else {
                     recommended_method <- 'rating'
                 }
             } else {
-                if(! is.na(con_acf) && con_acf > 0.20){
+                if (!is.na(con_acf) && con_acf > 0.20) {
                     recommended_method <- 'pw'
                 } else {
                     recommended_method <- 'average'
                 }
             }
-
         } else {
-            if(verbose){
-                message(glue::glue('Invalid C-Q regression for: {site_code}, {fvar}, {target_year}. Not recommending any method.'))
+            if (verbose) {
+                message(glue::glue(
+                    'Invalid C-Q regression for: {site_code}, {fvar}, {target_year}. Not recommending any method.'
+                ))
                 # 'during application of Aulenbach et al. 2016 procedure for choosing recommended load estimation method',
                 # ' concentration:discharge log-log linear regression r_squared value was NaN; recommended method set to NA\n\n'))
             }
             recommended_method <- NA
         }
 
-        if(! is.na(recommended_method) && recommended_method == 'composite' &&
-           ! is.na(comp_violation) && comp_violation){
-            if(verbose){
-                message(glue::glue('Composite method invalid for: {site_code}, {fvar}, {target_year}. ',
-                                   'Using period-weighting instead.'))
+        if (
+            !is.na(recommended_method) &&
+                recommended_method == 'composite' &&
+                !is.na(comp_violation) &&
+                comp_violation
+        ) {
+            if (verbose) {
+                message(glue::glue(
+                    'Composite method invalid for: {site_code}, {fvar}, {target_year}. ',
+                    'Using period-weighting instead.'
+                ))
                 # 'the recommended method was set to composite',
                 # ' using procedure from Aulenbach et al. 2016, but that method results in illegal values.',
                 # ' Setting recommended method to period-weighting instead.'))
@@ -4373,57 +4417,77 @@ calc_load <- function(chem, q, site_code, area, method,
 
         #### collect fluxes ####
 
-        if(aggregation == 'month'){
-
+        if (aggregation == 'month') {
             target_year_out <- tibble(
                 wy = as.character(target_year),
                 month = rep(months, 5),
-                val = c(flux_monthly_average$flux,
-                        flux_monthly_pw$flux,
-                        flux_monthly_beale$flux,
-                        flux_monthly_rating$flux,
-                        ## flux_monthly_wrtds,
-                        flux_monthly_comp$flux),
+                val = c(
+                    flux_monthly_average$flux,
+                    flux_monthly_pw$flux,
+                    flux_monthly_beale$flux,
+                    flux_monthly_rating$flux,
+                    ## flux_monthly_wrtds,
+                    flux_monthly_comp$flux
+                ),
                 site_code = !!site_code,
                 var = !!fvar,
-                method = c(rep('average', 12), rep('pw', 12), rep('beale', 12),
-                           rep('rating', 12), rep('composite', 12))
+                method = c(
+                    rep('average', 12),
+                    rep('pw', 12),
+                    rep('beale', 12),
+                    rep('rating', 12),
+                    rep('composite', 12)
+                )
             ) %>%
-                mutate(ms_recommended = ifelse(method == !!recommended_method, 1, 0))
-
+                mutate(
+                    ms_recommended = ifelse(
+                        method == !!recommended_method,
+                        1,
+                        0
+                    )
+                )
         } else {
-
             target_year_out <- tibble(
                 wy = target_year,
-                val = c(flux_annual_average,
-                        flux_annual_pw,
-                        flux_annual_beale,
-                        flux_annual_rating,
-                        ## flux_annual_wrtds,
-                        flux_annual_comp),
+                val = c(
+                    flux_annual_average,
+                    flux_annual_pw,
+                    flux_annual_beale,
+                    flux_annual_rating,
+                    ## flux_annual_wrtds,
+                    flux_annual_comp
+                ),
                 site_code = site_code,
                 var = fvar,
                 method = c('average', 'pw', 'beale', 'rating', 'composite')
             ) %>%
-                mutate(ms_recommended = ifelse(method == !!recommended_method,
-                                               TRUE,
-                                               FALSE))
+                mutate(
+                    ms_recommended = ifelse(
+                        method == !!recommended_method,
+                        TRUE,
+                        FALSE
+                    )
+                )
 
-            if(all(is.na(target_year_out$val))){
+            if (all(is.na(target_year_out$val))) {
                 target_year_out$ms_recommended <- NA
             }
 
-            target_year_deets <- tibble(site_code = site_code,
-                                        var = fvar,
-                                        water_year = target_year,
-                                        cq_rsquared = r_squared,
-                                        cq_resid_acf = resid_acf,
-                                        c_acf = con_acf,
-                                        n_c_obs = length(na.omit(chem_yr$conc)),
-                                        n_q_obs = length(na.omit(q_yr$q_lps)),
-                                        n_paired_cq_obs = nrow(paired_df),
-                                        unique_c_quarters = length(unique(lubridate::quarter(chem_yr$date))),
-                                        ws_area_ha = area)
+            target_year_deets <- tibble(
+                site_code = site_code,
+                var = fvar,
+                water_year = target_year,
+                cq_rsquared = r_squared,
+                cq_resid_acf = resid_acf,
+                c_acf = con_acf,
+                n_c_obs = length(na.omit(chem_yr$conc)),
+                n_q_obs = length(na.omit(q_yr$q_lps)),
+                n_paired_cq_obs = nrow(paired_df),
+                unique_c_quarters = length(unique(lubridate::quarter(
+                    chem_yr$date
+                ))),
+                ws_area_ha = area
+            )
 
             target_year_deets[is.na(target_year_deets)] <- NA
         }
@@ -4432,6 +4496,123 @@ calc_load <- function(chem, q, site_code, area, method,
         out_deets <- bind_rows(out_deets, target_year_deets)
     }
 
-    return(list(load = out_frame,
-                diag = out_deets))
+    return(list(load = out_frame, diag = out_deets))
+}
+
+robust_download_file <- function(
+    url,
+    destfile,
+    quiet = TRUE,
+    cacheOK = FALSE, # accepted for compatibility; not used
+    mode = "wb", # accepted for compatibility; always binary
+    headers = c(
+        "User-Agent" = sprintf("R/%s libcurl", getRversion()),
+        "Accept" = "*/*",
+        "Referer" = "https://figshare.com"
+    ),
+    retries = 3,
+    resume = TRUE
+) {
+    if (!requireNamespace("curl", quietly = TRUE)) {
+        stop("Package 'curl' is required for robust_download_file().")
+    }
+
+    # Final target & a .part file we can resume into
+    partfile <- paste0(destfile, ".part")
+    dir.create(dirname(destfile), showWarnings = FALSE, recursive = TRUE)
+
+    # Merge default headers with any supplied; supplied values win
+    default_hdrs <- c(
+        "User-Agent" = sprintf(
+            "R/%s libcurl/%s",
+            getRversion(),
+            curl::curl_version()$version
+        ),
+        "Accept" = "*/*",
+        "Referer" = "https://figshare.com"
+    )
+    if (length(headers)) {
+        default_hdrs[names(headers)] <- headers
+    }
+    hdr_list <- as.list(default_hdrs)
+
+    # Configure a reusable handle
+    h <- curl::new_handle()
+    curl::handle_setheaders(h, .list = hdr_list)
+    curl::handle_setopt(
+        h,
+        followlocation = 1L, # follow redirects (common on Figshare)
+        noproxy = "", # honor env proxies if any
+        http_version = 2L, # allow HTTP/2 when available
+        ssl_verifypeer = 1L,
+        ssl_verifyhost = 2L,
+        noprogress = if (quiet) 1L else 0L,
+        low_speed_limit = 1L, # treat stalls as errors, so we can retry
+        low_speed_time = 60L,
+        connecttimeout = 60L,
+        timeout = 0L, # no overall timeout (large files)
+        nosignal = 1L, # safer in multithreaded R sessions
+        noprogress = as.integer(quiet || !interactive())
+    )
+
+    attempt <- 0L
+    last_err <- NULL
+    repeat {
+        attempt <- attempt + 1L
+        # Resume into .part if requested and present
+        resume_from <- if (resume && file.exists(partfile)) {
+            file.info(partfile)$size
+        } else {
+            0L
+        }
+        curl::handle_setopt(h, resume_from = as.double(resume_from))
+
+        # Ensure we write binary
+        if (file.exists(destfile)) {
+            unlink(destfile)
+        }
+
+        # Perform the download into the .part file
+        ok <- try(
+            {
+                curl::curl_download(
+                    url,
+                    destfile = partfile,
+                    handle = h,
+                    mode = "wb"
+                )
+                TRUE
+            },
+            silent = TRUE
+        )
+
+        if (isTRUE(ok)) {
+            # Atomic finalize
+            if (file.exists(destfile)) {
+                unlink(destfile)
+            }
+            file.rename(partfile, destfile)
+            return(invisible(TRUE))
+        } else {
+            last_err <- ok
+            # Decide whether to retry
+            if (attempt > retries) {
+                break
+            }
+
+            # Small backoff
+            Sys.sleep(min(5 * attempt, 20))
+        }
+    }
+
+    # Clean up partial only if we weren't resuming; otherwise keep for user to resume later
+    if (!resume && file.exists(partfile)) {
+        unlink(partfile)
+    }
+
+    stop(sprintf(
+        "Download failed after %d attempt(s): %s",
+        attempt,
+        conditionMessage(attr(last_err, "condition") %||% last_err)
+    ))
 }
