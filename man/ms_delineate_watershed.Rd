@@ -17,6 +17,8 @@ ms_delineate_watershed(
   spec_flat_increment = NULL,
   spec_breach_method = "basic",
   spec_burn_streams = FALSE,
+  streams_shapefile = NULL,
+  roads_shapefile = NULL,
   verbose = TRUE,
   confirm = TRUE,
   responses_from_file = NULL
@@ -36,6 +38,14 @@ coordinates. EPSG codes work here (e.g. the default is 4326 for WGS 84).}
 
 \item{write_name}{character string. the basename of the shapefile components to
 be written. e.g. \code{write_name = 'foo'} would produce foo.shp, foo.shx, foo.prj, foo.dbf.}
+
+\item{streams_shapefile}{character string. The path to a shapefile with streamlines
+to be burned into the DEM. If not provided, such a file can be retrieved with
+\code{spec_burn_streams = TRUE}.}
+
+\item{roads_shapefile}{character string. The path to a shapefile with roads
+to be burned into the DEM. If not provided, such a file can be retrieved with
+\code{spec_burn_streams = TRUE}.}
 
 \item{verbose}{logical. Determines the amount of informative messaging during run.}
 

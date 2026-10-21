@@ -2099,6 +2099,11 @@ get_response_1char <- function(msg,
         cat(msg)
     }
 
+    #outside an interactive session, stdin() is the running script (or empty), not the user
+    if(is.null(response_from_file) && ! interactive()){
+        stop('\nThis step needs a y/n response, which requires an interactive R session.', call. = FALSE)
+    }
+
     if(! is.null(response_from_file)){
         ch <- as.character(readLines(con = response_from_file, 1))
         rsps <- readLines(con = response_from_file)
@@ -2106,6 +2111,11 @@ get_response_1char <- function(msg,
         writeLines(rsps, con = response_from_file)
     } else {
         ch <- as.character(readLines(con = stdin(), 1))
+    }
+
+    #readLines returns nothing at end of input (e.g. under Rscript), so re-prompting would loop forever
+    if(! length(ch)){
+        stop('No response received. This prompt requires an interactive R session.', call. = FALSE)
     }
 
     if(length(ch) == 1 && ch %in% possible_chars){
@@ -4511,13 +4521,19 @@ robust_download_file <- function(
         "Referer" = "https://figshare.com"
     ),
     retries = 3,
-    resume = TRUE
+    resume = FALSE, # accepted for compatibility; downloads always restart
+    validate = NULL
 ) {
+
+    #downloads url to destfile via a temporary .part file. destfile is only
+    #written (or overwritten) if the download succeeds: HTTP 200, nonempty, and,
+    #if supplied, validate(path) returns TRUE. validate may instead return a
+    #character string describing the problem. Errors after `retries` retries.
+
     if (!requireNamespace("curl", quietly = TRUE)) {
         stop("Package 'curl' is required for robust_download_file().")
     }
 
-    # Final target & a .part file we can resume into
     partfile <- paste0(destfile, ".part")
     dir.create(dirname(destfile), showWarnings = FALSE, recursive = TRUE)
 
@@ -4534,85 +4550,120 @@ robust_download_file <- function(
     if (length(headers)) {
         default_hdrs[names(headers)] <- headers
     }
-    hdr_list <- as.list(default_hdrs)
-
-    # Configure a reusable handle
-    h <- curl::new_handle()
-    curl::handle_setheaders(h, .list = hdr_list)
-    curl::handle_setopt(
-        h,
-        followlocation = 1L, # follow redirects (common on Figshare)
-        noproxy = "", # honor env proxies if any
-        http_version = 2L, # allow HTTP/2 when available
-        ssl_verifypeer = 1L,
-        ssl_verifyhost = 2L,
-        noprogress = if (quiet) 1L else 0L,
-        low_speed_limit = 1L, # treat stalls as errors, so we can retry
-        low_speed_time = 60L,
-        connecttimeout = 60L,
-        timeout = 0L, # no overall timeout (large files)
-        nosignal = 1L, # safer in multithreaded R sessions
-        noprogress = as.integer(quiet || !interactive())
-    )
 
     attempt <- 0L
     last_err <- NULL
     repeat {
         attempt <- attempt + 1L
-        # Resume into .part if requested and present
-        resume_from <- if (resume && file.exists(partfile)) {
-            file.info(partfile)$size
-        } else {
-            0L
-        }
-        curl::handle_setopt(h, resume_from = as.double(resume_from))
+        if (file.exists(partfile)) unlink(partfile)
 
-        # Ensure we write binary
-        if (file.exists(destfile)) {
-            unlink(destfile)
-        }
-
-        # Perform the download into the .part file
-        ok <- try(
-            {
-                curl::curl_download(
-                    url,
-                    destfile = partfile,
-                    handle = h,
-                    mode = "wb"
-                )
-                TRUE
-            },
-            silent = TRUE
+        h <- curl::new_handle()
+        curl::handle_setheaders(h, .list = as.list(default_hdrs))
+        curl::handle_setopt(
+            h,
+            followlocation = 1L, # figshare redirects to S3
+            ssl_verifypeer = 1L,
+            ssl_verifyhost = 2L,
+            low_speed_limit = 1L, # treat stalls as errors, so we can retry
+            low_speed_time = 60L,
+            connecttimeout = 60L,
+            timeout = 0L, # no overall timeout (large files)
+            nosignal = 1L,
+            noprogress = as.integer(quiet || !interactive())
         )
 
-        if (isTRUE(ok)) {
-            # Atomic finalize
-            if (file.exists(destfile)) {
-                unlink(destfile)
-            }
-            file.rename(partfile, destfile)
-            return(invisible(TRUE))
-        } else {
-            last_err <- ok
-            # Decide whether to retry
-            if (attempt > retries) {
-                break
-            }
+        last_err <- tryCatch({
+            curl::curl_download(url, destfile = partfile, handle = h, mode = "wb")
+            resp <- curl::handle_data(h)
+            check_download(partfile, resp, validate)
+        }, error = function(e) conditionMessage(e))
 
-            # Small backoff
-            Sys.sleep(min(5 * attempt, 20))
+        if (is.null(last_err)) {
+            if (file.exists(destfile)) unlink(destfile)
+            if (!file.rename(partfile, destfile)) {
+                stop("Downloaded file could not be moved to ", destfile)
+            }
+            return(invisible(TRUE))
+        }
+
+        if (file.exists(partfile)) unlink(partfile)
+        #client errors (e.g. 404 for a bad file id) won't resolve on retry
+        if (attempt > retries || grepl('returned error: 4[0-9]{2}', last_err)) break
+        if (!quiet) message("Download attempt ", attempt, " failed (", last_err, "). Retrying.")
+        Sys.sleep(min(5 * attempt, 20))
+    }
+
+    stop(sprintf("Download failed after %d attempt(s): %s", attempt, last_err))
+}
+
+check_download <- function(path, resp, validate = NULL){
+
+    #returns NULL if the file at path looks like a complete download; otherwise
+    #a character string describing the problem
+
+    hdrs <- tolower(curl::parse_headers(resp$headers))
+
+    if(any(grepl('^x-amzn-waf-action', hdrs))){
+        return(paste0('HTTP ', resp$status_code,
+                      ': blocked by the server\'s bot protection (AWS WAF challenge)'))
+    }
+
+    if(resp$status_code != 200){
+        return(paste('HTTP', resp$status_code))
+    }
+
+    size <- file.size(path)
+    if(is.na(size) || size == 0){
+        return('server returned an empty file')
+    }
+
+    if(! is.null(validate)){
+        v <- validate(path)
+        if(! isTRUE(v)){
+            return(if(is.character(v)) v else 'downloaded file failed validation')
         }
     }
 
-    # Clean up partial only if we weren't resuming; otherwise keep for user to resume later
-    if (!resume && file.exists(partfile)) {
-        unlink(partfile)
+    NULL
+}
+
+file_has_magic <- function(path, magic){
+    con <- file(path, 'rb')
+    on.exit(close(con))
+    identical(readBin(con, 'raw', n = length(magic)), magic)
+}
+
+is_zip_file <- function(path){
+    if(file_has_magic(path, as.raw(c(0x50, 0x4b, 0x03, 0x04)))) return(TRUE)
+    'not a zip archive'
+}
+
+is_feather_file <- function(path){
+    #feather v2 (Arrow IPC) files begin with ARROW1; feather v1 with FEA1
+    if(file_has_magic(path, charToRaw('ARROW1')) ||
+       file_has_magic(path, charToRaw('FEA1'))) return(TRUE)
+    'not a feather file'
+}
+
+download_figshare_file <- function(file_id, destfile, quiet = TRUE, validate = NULL){
+
+    #figshare's public download endpoint (figshare.com/ndownloader) may answer
+    #scripted requests with a bot-protection challenge (HTTP 202, empty body).
+    #The API endpoint redirects to a direct download and isn't challenged; the
+    #ndownloader subdomain is a fallback.
+
+    urls <- c(paste0('https://api.figshare.com/v2/file/download/', file_id),
+              paste0('https://ndownloader.figshare.com/files/', file_id))
+
+    errs <- c()
+    for(u in urls){
+        res <- tryCatch(robust_download_file(url = u, destfile = destfile,
+                                             quiet = quiet, retries = 2,
+                                             validate = validate),
+                        error = function(e) conditionMessage(e))
+        if(isTRUE(res)) return(invisible(TRUE))
+        errs <- c(errs, paste0(u, ': ', res))
     }
 
-    stop(sprintf(
-        "Download failed after %d attempt(s): %s",
-        attempt,
-        conditionMessage(attr(last_err, "condition") %||% last_err)
-    ))
+    stop(paste(errs, collapse = '\n'))
 }

@@ -52,7 +52,7 @@ Available prodnames are (for core time-series products):
 \item{version}{numeric or "latest". The MacroSheds dataset version from which to load data.}
 
 \item{filter_vars}{character vector of variable codes. for products like stream_chemistry that include
-multiple variables, this filters to just the ones specified
+multiple variables, this filters to just the ones specified.
 Ignored if requesting discharge, precipitation, or watershed attributes.
 To see a catalog of variable codes, run \code{\link[=ms_load_variables]{ms_load_variables()}} or visit \href{https://macrosheds.org}{macrosheds.org}.}
 

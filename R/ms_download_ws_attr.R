@@ -55,7 +55,6 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
         stop('dataset must be one of "summaries", "time series", "CAMELS summaries", "CAMELS Daymet forcings", or "all".')
     }
 
-    figshare_base <- 'https://figshare.com/ndownloader/files/'
     figshare_codes <- macrosheds::file_ids_for_r_package2 #loaded in R/sysdata2.rda
 
     version <- as.character(version)
@@ -166,8 +165,10 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
     if(! n_downloads) stop('Could not find remote file. Reinstall macrosheds to update remote links.')
 
     if(skip_existing){
-        existing_fls <- list.files(root_vsn, pattern = '\\.feather$') %>%
-            stringr::str_extract('(.+?)\\.feather', group = 1)
+        existing_fls <- list.files(root_vsn, pattern = '\\.feather$', full.names = TRUE)
+        #files left empty or invalid by an earlier failed download don't count
+        existing_fls <- existing_fls[vapply(existing_fls, function(f) isTRUE(is_feather_file(f)), logical(1))]
+        existing_fls <- stringr::str_extract(basename(existing_fls), '(.+?)\\.feather', group = 1)
         ovw_fls <- intersect(rel_download$ut, existing_fls)
         if(length(ovw_fls)){
             message(paste0('These files are already present in ', root_vsn, ':\n\t',
@@ -186,17 +187,18 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
 
     # save user default timeout value and set new
     default_timeout <- getOption('timeout')
+    on.exit(options(timeout = default_timeout), add = TRUE)
+    options(timeout = timeout)
     if(! quiet){
         message(paste0('Temporarily setting `options(timeout = ', timeout, ')`\n'))
-        options(timeout = timeout)
     }
 
     # loop through figshare IDs and download each data product
+    fails <- c()
     for(i in seq_len(n_downloads)){
 
         rel_code <- rel_download$fig_code[i]
         filename <- rel_download$ut[i]
-        fig_call <- paste0(figshare_base, rel_code)
         ws_attr_fp <- file.path(root_vsn, paste0(filename, '.feather'))
 
         if(! quiet){
@@ -207,18 +209,19 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
                                rc = rel_code))
         }
 
-        dl <- try(robust_download_file(
-            url = fig_call,
+        dl <- try(download_figshare_file(
+            file_id = rel_code,
             destfile = ws_attr_fp,
             quiet = quiet,
-            cacheOK = FALSE,
-            mode = 'wb',
-            headers = c(
-                "User-Agent" = sprintf("R/%s libcurl", getRversion()),
-                "Accept" = "*/*",
-                "Referer" = "https://figshare.com"
-            )
-        ))
+            validate = is_feather_file
+        ), silent = TRUE)
+
+        if(inherits(dl, 'try-error')){
+            message(paste0(filename, ' failed to download:\n',
+                           attr(dl, 'condition')$message))
+            fails <- c(fails, filename)
+            next
+        }
 
         if(! quiet){
             message(glue::glue('Downloaded {filename}.feather to {root_vsn}\n',
@@ -226,6 +229,12 @@ ms_download_ws_attr <- function(macrosheds_root, dataset = 'summaries', quiet = 
         }
     }
 
-    options(timeout = default_timeout)
+    if(length(fails)){
+        warning(paste0('These files failed to download: ',
+                       paste(fails, collapse = ', '),
+                       '. See messages above. Rerunning with skip_existing = TRUE will retry only these.'),
+                call. = FALSE)
+    }
+
     return(invisible())
 }

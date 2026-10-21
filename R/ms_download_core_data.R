@@ -55,7 +55,6 @@ ms_download_core_data <- function(macrosheds_root,
         stop('macrosheds_root must be supplied.')
     }
 
-    figshare_base <- 'https://figshare.com/ndownloader/files/'
     figshare_codes <- macrosheds::file_ids_for_r_package #loaded in R/sysdata.rda, which is written in postprocessing
 
     version <- as.character(version)
@@ -164,6 +163,10 @@ ms_download_core_data <- function(macrosheds_root,
 
     if(skip_existing){
         existing_dirs <- list.files(root_vsn)
+        #a domain directory left empty by an earlier failed download doesn't count
+        existing_dirs <- existing_dirs[vapply(file.path(root_vsn, existing_dirs),
+                                              function(d) length(list.files(d, recursive = TRUE)) > 0,
+                                              logical(1))]
         ovw_doms <- intersect(rel_download$domain, existing_dirs)
         if(length(ovw_doms)){
             message(paste0('Data for these domains already present in ', root_vsn, ':\n\t',
@@ -181,12 +184,12 @@ ms_download_core_data <- function(macrosheds_root,
     }
 
     temp_dir <- tempdir()
+    fails <- c()
     for(i in seq_len(n_downloads)){
 
         rel_dom <- rel_download$domain[i]
         rel_code <- rel_download$fig_code[i]
         temp_file_dom <- paste0(temp_dir, '/', rel_dom, '.zip')
-        fig_call <- paste0(figshare_base, rel_code)
 
         if(! quiet){
             message(glue::glue('Downloading domain: {rd} ({ii}/{iN}; download id {rc})',
@@ -196,30 +199,30 @@ ms_download_core_data <- function(macrosheds_root,
                                rc = rel_code))
         }
 
-        download_status <- try(robust_download_file(
-            url = fig_call,
+        download_status <- try(download_figshare_file(
+            file_id = rel_code,
             destfile = temp_file_dom,
             quiet = quiet,
-            cacheOK = FALSE,
-            mode = 'wb',
-            headers = c(
-                "User-Agent" = sprintf("R/%s libcurl", getRversion()),
-                "Accept" = "*/*",
-                "Referer" = "https://figshare.com"
-            )
-        ))
+            validate = is_zip_file
+        ), silent = TRUE)
 
-        fails <- c()
         if(inherits(download_status, 'try-error')){
-            fails <- c(fails, pull(rel_dom))
+            message(paste0(rel_dom, ' failed to download:\n',
+                           attr(download_status, 'condition')$message))
+            fails <- c(fails, rel_dom)
             next
         }
 
-        unzip_status <- try(unzip(zipfile = temp_file_dom, exdir = root_vsn))
+        #unzip() signals most problems as warnings, so treat those as failures too
+        unzip_status <- tryCatch(unzip(zipfile = temp_file_dom, exdir = root_vsn),
+                                 warning = function(w) w,
+                                 error = function(e) e)
         file.remove(temp_file_dom)
 
-        if(inherits(unzip_status, 'try-error')){
-            fails <- c(fails, pull(rel_dom))
+        if(inherits(unzip_status, 'condition') || ! length(unzip_status)){
+            msg <- if(inherits(unzip_status, 'condition')) conditionMessage(unzip_status) else 'archive was empty'
+            message(paste0(rel_dom, ' failed to unzip: ', msg))
+            fails <- c(fails, rel_dom)
             next
         }
 
@@ -229,8 +232,8 @@ ms_download_core_data <- function(macrosheds_root,
     if(length(fails)){
         report <- paste0('These domains failed to download: ',
                         paste(fails, collapse = ', '),
-                        '. Do you need to increase timeout limit with e.g. `options(timeout = 3600)`?')
-        warning(report)
+                        '. See messages above. Rerunning with skip_existing = TRUE will retry only these.')
+        warning(report, call. = FALSE)
     } else {
         message('All downloads succeeded')
     }

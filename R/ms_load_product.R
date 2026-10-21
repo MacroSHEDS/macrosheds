@@ -38,7 +38,7 @@
 #' + ws_attr_CAMELS_Daymet_forcings
 #' @param version numeric or "latest". The MacroSheds dataset version from which to load data.
 #' @param filter_vars character vector of variable codes. for products like stream_chemistry that include
-#'    multiple variables, this filters to just the ones specified
+#'    multiple variables, this filters to just the ones specified.
 #'    Ignored if requesting discharge, precipitation, or watershed attributes.
 #'    To see a catalog of variable codes, run [ms_load_variables()] or visit [macrosheds.org](https://macrosheds.org).
 #' @param networks,domains,site_codes character vectors of MacroSheds networks/domains/sites to load. Omit to load all.

@@ -303,6 +303,8 @@ delineate_watershed_apriori_recurse <- function(lat,
                                                 flat_increment = NULL,
                                                 breach_method = 'lc',
                                                 burn_streams = FALSE,
+                                                streams_shapefile = NULL,
+                                                roads_shapefile = NULL,
                                                 confirm = TRUE,
                                                 scratch_dir = tempdir(),
                                                 write_dir,
@@ -327,6 +329,8 @@ delineate_watershed_apriori_recurse <- function(lat,
         flat_increment = flat_increment,
         breach_method = breach_method,
         burn_streams = burn_streams,
+        streams_shapefile = streams_shapefile,
+        roads_shapefile = roads_shapefile,
         buffer_radius = buffer_radius,
         scratch_dir = scratch_dir,
         verbose = verbose)
@@ -529,6 +533,8 @@ delineate_watershed_apriori_recurse <- function(lat,
             flat_increment = flat_increment,
             breach_method = breach_method,
             burn_streams = burn_streams,
+            streams_shapefile = streams_shapefile,
+            roads_shapefile = roads_shapefile,
             buffer_radius = buffer_radius_,
             scratch_dir = scratch_dir,
             write_dir = write_dir,
@@ -566,6 +572,8 @@ delineate_watershed_apriori <- function(lat,
                                         flat_increment = NULL,
                                         breach_method = 'basic',
                                         burn_streams = FALSE,
+                                        streams_shapefile = NULL,
+                                        roads_shapefile = NULL,
                                         buffer_radius = NULL,
                                         scratch_dir = tempdir(),
                                         verbose = FALSE){
@@ -721,10 +729,14 @@ delineate_watershed_apriori <- function(lat,
                      quiet = TRUE)
 
         if(burn_streams){
-            get_osm_roads(extent_raster = dem,
-                          outfile = roads_f)
-            get_osm_streams(extent_raster = dem,
-                            outfile = streams_f)
+            if(is.null(roads_shapefile)){
+                get_osm_roads(extent_raster = dem,
+                              outfile = roads_f)
+            }
+            if(is.null(streams_shapefile)){
+                get_osm_streams(extent_raster = dem,
+                                outfile = streams_f)
+            }
         }
 
         whitebox::wbt_fill_single_cell_pits(dem = dem_f,
@@ -750,6 +762,15 @@ delineate_watershed_apriori <- function(lat,
 
         if(burn_streams){
 
+            if(! is.null(roads_shapefile)){
+                print(paste0('Using roads layer at', roads_f))
+                roads_f <- roads_shapefile
+            }
+            if(! is.null(streams_shapefile)){
+                print(paste0('Using streams layer at', streams_f))
+                streams_f <- streams_shapefile
+            }
+            
             #the secret is that BOTH of these burns can work in tandem!
             whitebox::wbt_burn_streams_at_roads(dem = dem_f,
                                                 streams = streams_f,

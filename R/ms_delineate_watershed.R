@@ -56,6 +56,12 @@
 #' and [whitebox::wbt_fill_burn()] are called on the DEM, using road and stream
 #' layers from \code{OpenStreetMap}. This allows delineation to proceed through
 #' bridges, dams, and other would-be obstacles.
+#' @param streams_shapefile character string. The path to a shapefile with streamlines
+#' to be burned into the DEM. If not provided, such a file can be retrieved with
+#' \code{spec_burn_streams = TRUE}.
+#' @param roads_shapefile character string. The path to a shapefile with roads
+#' to be burned into the DEM. If not provided, such a file can be retrieved with
+#' \code{spec_burn_streams = TRUE}.
 #' @param verbose logical. Determines the amount of informative messaging during run.
 #' @param confirm logical. Ignored unless all delineation parameters
 #' (the ones that start with "spec_") are supplied.
@@ -176,6 +182,8 @@ ms_delineate_watershed <- function(lat,
                                    spec_flat_increment = NULL,
                                    spec_breach_method = 'basic',
                                    spec_burn_streams = FALSE,
+                                   streams_shapefile = NULL,
+                                   roads_shapefile = NULL,
                                    verbose = TRUE,
                                    confirm = TRUE,
                                    responses_from_file = NULL){
@@ -236,6 +244,8 @@ ms_delineate_watershed <- function(lat,
             flat_increment = spec_flat_increment,
             breach_method = spec_breach_method,
             burn_streams = spec_burn_streams,
+            streams_shapefile = streams_shapefile,
+            roads_shapefile = roads_shapefile,
             confirm = confirm,
             # confirm = ! (all_specs_provided && ! confirm),
             scratch_dir = tmp,
